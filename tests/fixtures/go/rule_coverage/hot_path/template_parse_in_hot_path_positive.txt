@@ -21,10 +21,10 @@ type CaseTemplateParseInHotPathDTO struct {
 
 func PositiveTemplateParseInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTemplateParseInHotPathDTO) error {
     for _, item := range items {
-        tmpl := template.Must(template.New("row").Parse("{{.ID}}:{{.Status}}"))
-        var rendered bytes.Buffer
-        _ = tmpl.Execute(&rendered, item)
-        c.Set(item.ID, rendered.String())
+        tmpl := template.Must(template.New("x").Parse("{{.ID}}"))
+        var buf bytes.Buffer
+        tmpl.Execute(&buf, item)
+        c.Set(item.ID, buf.String())
     }
     return nil
 }

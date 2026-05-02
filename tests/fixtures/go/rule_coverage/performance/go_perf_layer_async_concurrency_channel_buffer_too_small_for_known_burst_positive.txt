@@ -51,24 +51,11 @@ type CaseGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurstAuditSink 
 func PositiveGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurst(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurstDTO) error {
     focus := "go_perf_layer_async_concurrency"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
-    perf_layer_async_concurrency_channel_positive := map[string]int{"perf": 1, "layer": 2, "async": 3, "concurrency": 4, "channel": 5, "buffer": 6}
-    perf_layer_async_concurrency_channel_positive["signal"] = len(input) + len(items)
-    perf_positive_0 := perf_layer_async_concurrency_channel_positive["perf"] + len(input)
-    _ = perf_positive_0
-    layer_positive_1 := perf_layer_async_concurrency_channel_positive["layer"] + len(input)
-    _ = layer_positive_1
-    async_positive_2 := perf_layer_async_concurrency_channel_positive["async"] + len(input)
-    _ = async_positive_2
-    concurrency_positive_3 := perf_layer_async_concurrency_channel_positive["concurrency"] + len(input)
-    _ = concurrency_positive_3
-    channel_positive_4 := perf_layer_async_concurrency_channel_positive["channel"] + len(input)
-    _ = channel_positive_4
-    buffer_positive_5 := strings.TrimSpace(input)
-    _ = buffer_positive_5
+    const knownBurst = 100
+    ch := make(chan int, 1)
+    for i := 0; i < knownBurst; i++ {
+        ch <- i
+    }
+    _ = ch
     return nil
 }

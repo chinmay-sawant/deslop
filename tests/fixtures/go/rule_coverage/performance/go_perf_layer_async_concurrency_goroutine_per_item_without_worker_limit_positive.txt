@@ -51,24 +51,11 @@ type CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitAuditSink 
 func PositiveGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitDTO) error {
     focus := "go_perf_layer_async_concurrency"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
-    perf_layer_async_concurrency_goroutine_positive := map[string]int{"perf": 1, "layer": 2, "async": 3, "concurrency": 4, "goroutine": 5, "per": 6}
-    perf_layer_async_concurrency_goroutine_positive["signal"] = len(input) + len(items)
-    perf_positive_0 := perf_layer_async_concurrency_goroutine_positive["perf"] + len(input)
-    _ = perf_positive_0
-    layer_positive_1 := perf_layer_async_concurrency_goroutine_positive["layer"] + len(input)
-    _ = layer_positive_1
-    async_positive_2 := perf_layer_async_concurrency_goroutine_positive["async"] + len(input)
-    _ = async_positive_2
-    concurrency_positive_3 := perf_layer_async_concurrency_goroutine_positive["concurrency"] + len(input)
-    _ = concurrency_positive_3
-    goroutine_positive_4 := ctx
-    _ = goroutine_positive_4
-    for per_positive_5Index, item := range items { perf_layer_async_concurrency_goroutine_positive[item.ID] = per_positive_5Index }
+    worker := func(item CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitDTO) {
+        _ = item.ID
+    }
+    for _, item := range items {
+        go worker(item)
+    }
     return nil
 }

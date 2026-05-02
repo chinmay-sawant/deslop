@@ -2,6 +2,7 @@ package rulecoverage
 
 import (
     "bytes"
+    "container/list"
     "context"
     "database/sql"
     "fmt"
@@ -53,6 +54,17 @@ func PositiveGoPerfLayerDataStructureChoiceLinkedListForCacheIteration(c *gin.Co
     buf := []byte(input)
     start := time.Now()
     _ = start
+    type linkedNode struct {
+        val  CaseGoPerfLayerDataStructureChoiceLinkedListForCacheIterationDTO
+        next *linkedNode
+    }
+    var head *linkedNode
+    for _, item := range items {
+        head = &linkedNode{val: item, next: head}
+    }
+    for cur := head; cur != nil; cur = cur.next {
+        _ = cur.val.ID
+    }
     perf_layer_data_structure_choice_positive := map[string]int{"perf": 1, "layer": 2, "data": 3, "structure": 4, "choice": 5, "linked": 6}
     perf_layer_data_structure_choice_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_data_structure_choice_positive["perf"] + len(input)

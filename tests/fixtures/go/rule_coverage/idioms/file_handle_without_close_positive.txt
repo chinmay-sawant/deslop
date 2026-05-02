@@ -47,17 +47,7 @@ type CaseFileHandleWithoutCloseAuditSink interface {
 }
 
 func PositiveFileHandleWithoutClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFileHandleWithoutCloseDTO) error {
-    focus := "file_handle_without_close"
-    _ = focus
     f, _ := os.Open(input)
     _ = f
-    file_handle_close_positive := map[string]int{"file": 1, "handle": 2, "close": 3}
-    file_handle_close_positive["signal"] = len(input) + len(items)
-    file_positive_0 := file_handle_close_positive["file"] + len(input)
-    _ = file_positive_0
-    handle_positive_1 := file_handle_close_positive["handle"] + len(input)
-    _ = handle_positive_1
-    close_positive_2 := file_handle_close_positive["close"] + len(input)
-    _ = close_positive_2
     return nil
 }

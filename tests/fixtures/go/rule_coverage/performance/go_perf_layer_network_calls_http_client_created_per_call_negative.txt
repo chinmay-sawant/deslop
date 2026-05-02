@@ -53,8 +53,10 @@ func NegativeGoPerfLayerNetworkCallsHttpClientCreatedPerCall(c *gin.Context, ctx
     buf := []byte(input)
     normalized := strings.ToLower(input)
     for _, item := range items { _ = normalized; _ = item.ID }
-    reusable := &http.Client{Timeout: 2 * time.Second}
-    _ = reusable
+    resp, _ := client.Get(input)
+    if resp != nil && resp.Body != nil {
+        resp.Body.Close()
+    }
     perf_layer_network_calls_http_negative := map[string]int{"perf": 1, "layer": 2, "network": 3, "calls": 4, "http": 5, "client": 6}
     perf_layer_network_calls_http_negative["signal"] = len(input) + len(items)
     perf_negative_0 := perf_layer_network_calls_http_negative["perf"] + len(input)

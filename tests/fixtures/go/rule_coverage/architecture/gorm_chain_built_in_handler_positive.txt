@@ -47,29 +47,8 @@ type CaseGormChainBuiltInHandlerAuditSink interface {
 }
 
 func PositiveGormChainBuiltInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormChainBuiltInHandlerDTO) error {
-    focus := "gorm_chain_built_in_handler"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseGormChainBuiltInHandlerDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    repo := &CaseGormChainBuiltInHandlerRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormChainBuiltInHandlerModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    page, _ := strconv.Atoi(c.Query("page"))
-    size, _ := strconv.Atoi(c.Query("size"))
-    db.Order(c.Query("sort")).Offset((page - 1) * size).Limit(size).Find(&[]any{})
-    gorm_chain_built_handler_positive := map[string]int{"gorm": 1, "chain": 2, "built": 3, "handler": 4}
-    gorm_chain_built_handler_positive["signal"] = len(input) + len(items)
-    gorm_positive_0 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_0
-    chain_positive_1 := gorm_chain_built_handler_positive["chain"] + len(input)
-    _ = chain_positive_1
-    built_positive_2 := gorm_chain_built_handler_positive["built"] + len(input)
-    _ = built_positive_2
-    handler_positive_3 := c.FullPath() + ":" + input
-    _ = handler_positive_3
+    var result []CaseGormChainBuiltInHandlerModel
+    db.Where("tenant_id = ?", c.Query("tenant")).Order("created_at DESC").Limit(10).Find(&result)
+    c.JSON(http.StatusOK, gin.H{"data": result})
     return nil
 }

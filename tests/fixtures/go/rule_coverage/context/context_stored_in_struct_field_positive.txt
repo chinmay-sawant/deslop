@@ -46,19 +46,11 @@ type CaseContextStoredInStructFieldAuditSink interface {
 }
 
 func PositiveContextStoredInStructField(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseContextStoredInStructFieldDTO) error {
-    focus := "context_stored_in_struct_field"
-    _ = focus
-    holder := struct{ ctx context.Context }{ctx: ctx}
-    _ = holder
-    context_stored_struct_field_positive := map[string]int{"context": 1, "stored": 2, "struct": 3, "field": 4}
-    context_stored_struct_field_positive["signal"] = len(input) + len(items)
-    context_positive_0 := ctx
-    _ = context_positive_0
-    stored_positive_1 := context_stored_struct_field_positive["stored"] + len(input)
-    _ = stored_positive_1
-    struct_positive_2 := context_stored_struct_field_positive["struct"] + len(input)
-    _ = struct_positive_2
-    field_positive_3 := context_stored_struct_field_positive["field"] + len(input)
-    _ = field_positive_3
+    type Handler struct {
+        ctx context.Context
+        db  *gorm.DB
+    }
+    h := Handler{ctx: ctx, db: db}
+    _ = h.db.Where("id = ?", input).Find(&items)
     return nil
 }

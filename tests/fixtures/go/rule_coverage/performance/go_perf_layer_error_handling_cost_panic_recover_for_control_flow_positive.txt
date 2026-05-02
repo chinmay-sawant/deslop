@@ -53,6 +53,16 @@ func PositiveGoPerfLayerErrorHandlingCostPanicRecoverForControlFlow(c *gin.Conte
     buf := []byte(input)
     start := time.Now()
     _ = start
+    defer func() {
+        if r := recover(); r != nil {
+            _ = r
+        }
+    }()
+    for _, item := range items {
+        if item.Amount < 0 {
+            panic("negative amount not expected")
+        }
+    }
     perf_layer_error_handling_cost_positive := map[string]int{"perf": 1, "layer": 2, "error": 3, "handling": 4, "cost": 5, "panic": 6}
     perf_layer_error_handling_cost_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_error_handling_cost_positive["perf"] + len(input)

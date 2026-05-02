@@ -47,20 +47,9 @@ type CaseBunNewdbPerRequestAuditSink interface {
 }
 
 func PositiveBunNewdbPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBunNewdbPerRequestDTO) error {
-    focus := "bun_newdb_per_request"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    sql.Open("postgres", c.Query("dsn"))
-    var bunDB *bun.DB
-    _ = bunDB.NewSelect().Model(&items).Scan(ctx)
-    bun_newdb_per_request_positive := map[string]int{"bun": 1, "newdb": 2, "per": 3, "request": 4}
-    bun_newdb_per_request_positive["signal"] = len(input) + len(items)
-    bun_positive_0 := bun_newdb_per_request_positive["bun"] + len(input)
-    _ = bun_positive_0
-    newdb_positive_1 := bun_newdb_per_request_positive["newdb"] + len(input)
-    _ = newdb_positive_1
-    for per_positive_2Index, item := range items { bun_newdb_per_request_positive[item.ID] = per_positive_2Index }
-    request_positive_3 := bun_newdb_per_request_positive["request"] + len(input)
-    _ = request_positive_3
+    sqldb, _ := sql.Open("postgres", "dsn")
+    bunDB := bun.NewDB(sqldb, nil)
+    _ = bunDB
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

@@ -47,31 +47,9 @@ type CaseRepositoryReturnsHttpStatusErrorsAuditSink interface {
 }
 
 func NegativeRepositoryReturnsHttpStatusErrors(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsHttpStatusErrorsDTO) error {
-    focus := "repository_returns_http_status_errors"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseRepositoryReturnsHttpStatusErrorsDTO
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return nil
-    }
-    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
-    repo := &CaseRepositoryReturnsHttpStatusErrorsRepository{db: db, sql: sqlDB}
     var model CaseRepositoryReturnsHttpStatusErrorsModel
-    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
-    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
-    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
-    repository_returns_http_status_errors_negative := map[string]int{"repository": 1, "returns": 2, "http": 3, "status": 4, "errors": 5}
-    repository_returns_http_status_errors_negative["signal"] = len(input) + len(items)
-    repository_negative_0 := db.Where("repository_id = ?", input)
-    _ = repository_negative_0
-    returns_negative_1 := repository_returns_http_status_errors_negative["returns"] + len(input)
-    _ = returns_negative_1
-    http_negative_2 := repository_returns_http_status_errors_negative["http"] + len(input)
-    _ = http_negative_2
-    status_negative_3 := repository_returns_http_status_errors_negative["status"] + len(input)
-    _ = status_negative_3
-    errors_negative_4 := repository_returns_http_status_errors_negative["errors"] + len(input)
-    _ = errors_negative_4
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        return err
+    }
     return nil
 }

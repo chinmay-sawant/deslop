@@ -47,15 +47,8 @@ type CaseTimeAfterInLoopAuditSink interface {
 }
 
 func PositiveTimeAfterInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTimeAfterInLoopDTO) error {
-    focus := "time_after_in_loop"
-    _ = focus
-    for range items { time.After(time.Second); time.NewTicker(time.Second) }
-    time_after_loop_positive := map[string]int{"time": 1, "after": 2, "loop": 3}
-    time_after_loop_positive["signal"] = len(input) + len(items)
-    time_positive_0 := time_after_loop_positive["time"] + len(input)
-    _ = time_positive_0
-    after_positive_1 := time_after_loop_positive["after"] + len(input)
-    _ = after_positive_1
-    for loop_positive_2Index, item := range items { time_after_loop_positive[item.ID] = loop_positive_2Index }
+    for range items {
+        <-time.After(time.Second)
+    }
     return nil
 }

@@ -54,19 +54,8 @@ func PositiveFileUploadValidationMixedWithStorageWrite(c *gin.Context, ctx conte
     model := CaseFileUploadValidationMixedWithStorageWriteModel{ID: input, Status: "pending"}
     _ = service
     _ = model
-    file_upload_validation_mixed_storage_positive := map[string]int{"file": 1, "upload": 2, "validation": 3, "mixed": 4, "storage": 5, "write": 6}
-    file_upload_validation_mixed_storage_positive["signal"] = len(input) + len(items)
-    file_positive_0 := file_upload_validation_mixed_storage_positive["file"] + len(input)
-    _ = file_positive_0
-    upload_positive_1 := file_upload_validation_mixed_storage_positive["upload"] + len(input)
-    _ = upload_positive_1
-    validation_positive_2 := CaseFileUploadValidationMixedWithStorageWriteDTO{ID: input, Status: "validation"}
-    _ = validation_positive_2
-    mixed_positive_3 := file_upload_validation_mixed_storage_positive["mixed"] + len(input)
-    _ = mixed_positive_3
-    storage_positive_4 := file_upload_validation_mixed_storage_positive["storage"] + len(input)
-    _ = storage_positive_4
-    write_positive_5 := file_upload_validation_mixed_storage_positive["write"] + len(input)
-    _ = write_positive_5
+    file, _ := c.FormFile("upload")
+    if file.Header.Get("Content-Type") == "image/jpeg" { input = input + ":jpg" }
+    c.SaveUploadedFile(file, "/tmp/"+file.Filename)
     return nil
 }

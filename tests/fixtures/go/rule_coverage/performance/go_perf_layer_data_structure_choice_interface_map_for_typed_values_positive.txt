@@ -54,9 +54,12 @@ func PositiveGoPerfLayerDataStructureChoiceInterfaceMapForTypedValues(c *gin.Con
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
-    var value any = items
-    _ = reflect.DeepEqual(value, items)
+    cfg := map[string]interface{}{
+        "count": 1,
+        "name":  "foo",
+        "rate":  3.14,
+    }
+    _ = cfg["count"].(int) + len(cfg["name"].(string))
     perf_layer_data_structure_choice_positive := map[string]int{"perf": 1, "layer": 2, "data": 3, "structure": 4, "choice": 5, "interface": 6}
     perf_layer_data_structure_choice_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_data_structure_choice_positive["perf"] + len(input)

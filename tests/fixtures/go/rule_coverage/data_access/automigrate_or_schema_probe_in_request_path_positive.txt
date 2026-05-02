@@ -46,21 +46,7 @@ type CaseAutomigrateOrSchemaProbeInRequestPathAuditSink interface {
 }
 
 func PositiveAutomigrateOrSchemaProbeInRequestPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAutomigrateOrSchemaProbeInRequestPathDTO) error {
-    focus := "automigrate_or_schema_probe_in"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
     db.AutoMigrate(&CaseAutomigrateOrSchemaProbeInRequestPathModel{})
-    automigrate_schema_probe_request_path_positive := map[string]int{"automigrate": 1, "schema": 2, "probe": 3, "request": 4, "path": 5}
-    automigrate_schema_probe_request_path_positive["signal"] = len(input) + len(items)
-    automigrate_positive_0 := automigrate_schema_probe_request_path_positive["automigrate"] + len(input)
-    _ = automigrate_positive_0
-    schema_positive_1 := automigrate_schema_probe_request_path_positive["schema"] + len(input)
-    _ = schema_positive_1
-    probe_positive_2 := automigrate_schema_probe_request_path_positive["probe"] + len(input)
-    _ = probe_positive_2
-    request_positive_3 := automigrate_schema_probe_request_path_positive["request"] + len(input)
-    _ = request_positive_3
-    path_positive_4 := automigrate_schema_probe_request_path_positive["path"] + len(input)
-    _ = path_positive_4
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

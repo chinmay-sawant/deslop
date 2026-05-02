@@ -61,24 +61,12 @@ func PositiveGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCall(c *gin
     start := time.Now()
     _ = start
     for _, item := range items {
-        config := caseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallConfig{}
-        fieldValues := map[string]any{"TimeoutMS": item.Amount, "Mode": item.Status}
-        configValue := reflect.ValueOf(&config).Elem()
-        for fieldName, fieldValue := range fieldValues {
-            field := configValue.FieldByName(fieldName)
-            if !field.IsValid() || !field.CanSet() {
-                continue
-            }
-            switch typed := fieldValue.(type) {
-            case int:
-                field.SetInt(int64(typed))
-            case string:
-                field.SetString(typed)
-            }
-        }
-        _ = config
+        cfg := caseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallConfig{}
+        v := reflect.ValueOf(&cfg).Elem()
+        v.FieldByName("TimeoutMS").SetInt(int64(item.Amount))
+        v.FieldByName("Mode").SetString(item.Status)
+        _ = cfg
     }
-    runtime.GOMAXPROCS(runtime.NumCPU())
     perf_layer_runtime_configuration_reflection_positive := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "reflection": 5, "config": 6}
     perf_layer_runtime_configuration_reflection_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_runtime_configuration_reflection_positive["perf"] + len(input)

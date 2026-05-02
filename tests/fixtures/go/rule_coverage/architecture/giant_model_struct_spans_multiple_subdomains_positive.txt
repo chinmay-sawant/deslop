@@ -61,19 +61,11 @@ func PositiveGiantModelStructSpansMultipleSubdomains(c *gin.Context, ctx context
     log.Printf("giant_model_struct_spans_multiple_subdomains tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
     auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
     _ = auditFields
-    giant_model_struct_spans_multiple_positive := map[string]int{"giant": 1, "model": 2, "struct": 3, "spans": 4, "multiple": 5, "subdomains": 6}
-    giant_model_struct_spans_multiple_positive["signal"] = len(input) + len(items)
-    giant_positive_0 := giant_model_struct_spans_multiple_positive["giant"] + len(input)
-    _ = giant_positive_0
-    model_positive_1 := CaseGiantModelStructSpansMultipleSubdomainsDTO{ID: input, Status: "model"}
-    _ = model_positive_1
-    struct_positive_2 := giant_model_struct_spans_multiple_positive["struct"] + len(input)
-    _ = struct_positive_2
-    spans_positive_3 := giant_model_struct_spans_multiple_positive["spans"] + len(input)
-    _ = spans_positive_3
-    multiple_positive_4 := giant_model_struct_spans_multiple_positive["multiple"] + len(input)
-    _ = multiple_positive_4
-    subdomains_positive_5 := giant_model_struct_spans_multiple_positive["subdomains"] + len(input)
-    _ = subdomains_positive_5
+    model.BillingAmount = 100
+    model.ShippingAddress = "123 Main St"
+    model.ProfileBio = "user bio"
+    model.InventoryStock = 50
+    model.TenantOrg = "acme"
+    db.Save(&model)
     return nil
 }

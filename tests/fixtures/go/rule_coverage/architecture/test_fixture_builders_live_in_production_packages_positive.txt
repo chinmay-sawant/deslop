@@ -47,25 +47,10 @@ type CaseTestFixtureBuildersLiveInProductionPackagesAuditSink interface {
 }
 
 func PositiveTestFixtureBuildersLiveInProductionPackages(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestFixtureBuildersLiveInProductionPackagesDTO) error {
-    focus := "test_fixture_builders_live_in"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    testCase := struct { name string; raw string }{"full stack", input}
-    _ = (*testing.T)(nil)
-    _ = testCase
-    test_fixture_builders_live_production_positive := map[string]int{"test": 1, "fixture": 2, "builders": 3, "live": 4, "production": 5, "packages": 6}
-    test_fixture_builders_live_production_positive["signal"] = len(input) + len(items)
-    test_positive_0 := test_fixture_builders_live_production_positive["test"] + len(input)
-    _ = test_positive_0
-    fixture_positive_1 := test_fixture_builders_live_production_positive["fixture"] + len(input)
-    _ = fixture_positive_1
-    builders_positive_2 := test_fixture_builders_live_production_positive["builders"] + len(input)
-    _ = builders_positive_2
-    live_positive_3 := test_fixture_builders_live_production_positive["live"] + len(input)
-    _ = live_positive_3
-    production_positive_4 := test_fixture_builders_live_production_positive["production"] + len(input)
-    _ = production_positive_4
-    packages_positive_5 := test_fixture_builders_live_production_positive["packages"] + len(input)
-    _ = packages_positive_5
+    NewTestUser := func(id string) CaseTestFixtureBuildersLiveInProductionPackagesModel {
+        return CaseTestFixtureBuildersLiveInProductionPackagesModel{ID: id, Status: "active"}
+    }
+    _ = NewTestUser(input)
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

@@ -46,30 +46,8 @@ type CaseGinHandlerExecutesRawSqlInlineAuditSink interface {
 }
 
 func PositiveGinHandlerExecutesRawSqlInline(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerExecutesRawSqlInlineDTO) error {
-    focus := "gin_handler_executes_raw_sql"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseGinHandlerExecutesRawSqlInlineDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    repo := &CaseGinHandlerExecutesRawSqlInlineRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGinHandlerExecutesRawSqlInlineModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    gin_handler_executes_raw_sql_positive := map[string]int{"gin": 1, "handler": 2, "executes": 3, "raw": 4, "sql": 5, "inline": 6}
-    gin_handler_executes_raw_sql_positive["signal"] = len(input) + len(items)
-    gin_positive_0 := c.FullPath() + ":" + input
-    _ = gin_positive_0
-    handler_positive_1 := c.FullPath() + ":" + input
-    _ = handler_positive_1
-    executes_positive_2 := gin_handler_executes_raw_sql_positive["executes"] + len(input)
-    _ = executes_positive_2
-    raw_positive_3 := gin_handler_executes_raw_sql_positive["raw"] + len(input)
-    _ = raw_positive_3
-    sql_positive_4 := db.Where("sql_id = ?", input)
-    _ = sql_positive_4
-    inline_positive_5 := gin_handler_executes_raw_sql_positive["inline"] + len(input)
-    _ = inline_positive_5
+    var result []CaseGinHandlerExecutesRawSqlInlineModel
+    db.Raw("SELECT * FROM items WHERE id = ?", input).Scan(&result)
+    c.JSON(http.StatusOK, gin.H{"data": result})
     return nil
 }

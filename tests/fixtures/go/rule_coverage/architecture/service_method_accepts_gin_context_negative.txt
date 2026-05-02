@@ -46,29 +46,9 @@ type CaseServiceMethodAcceptsGinContextAuditSink interface {
 }
 
 func NegativeServiceMethodAcceptsGinContext(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceMethodAcceptsGinContextDTO) error {
-    focus := "service_method_accepts_gin_context"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseServiceMethodAcceptsGinContextDTO
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return nil
+    model := CaseServiceMethodAcceptsGinContextModel{ID: input, Status: "active"}
+    if err := db.WithContext(ctx).Save(&model).Error; err != nil {
+        return fmt.Errorf("save failed: %w", err)
     }
-    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
-    dto := CaseServiceMethodAcceptsGinContextDTO{ID: input, Status: "active"}
-    model := CaseServiceMethodAcceptsGinContextModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
-    service_method_accepts_gin_context_negative := map[string]int{"service": 1, "method": 2, "accepts": 3, "gin": 4, "context": 5}
-    service_method_accepts_gin_context_negative["signal"] = len(input) + len(items)
-    service_negative_0 := CaseServiceMethodAcceptsGinContextDTO{ID: input, Status: "service"}
-    _ = service_negative_0
-    method_negative_1 := service_method_accepts_gin_context_negative["method"] + len(input)
-    _ = method_negative_1
-    accepts_negative_2 := service_method_accepts_gin_context_negative["accepts"] + len(input)
-    _ = accepts_negative_2
-    gin_negative_3 := c.FullPath() + ":" + input
-    _ = gin_negative_3
-    context_negative_4 := ctx
-    _ = context_negative_4
     return nil
 }

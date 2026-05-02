@@ -53,15 +53,11 @@ func PositiveGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheck(c *gin.Con
     buf := []byte(input)
     start := time.Now()
     _ = start
+    expensiveField := strings.ToLower(input) + fmt.Sprintf("_%d", len(buf))
     perf_layer_logging_overhead_log_positive := map[string]int{"perf": 1, "layer": 2, "logging": 3, "overhead": 4, "log": 5, "fields": 6}
     perf_layer_logging_overhead_log_positive["signal"] = len(input) + len(items)
-    fields := map[string]string{
-        "request": strings.ToLower(input),
-        "payload_size": fmt.Sprintf("%d", len(buf)),
-        "item_count": fmt.Sprintf("%d", len(items)),
-    }
-    if strings.HasPrefix(input, "debug") && client != nil {
-        _ = fields
+    if strings.HasPrefix(input, "debug") {
+        perf_layer_logging_overhead_log_positive["checked"] = len(expensiveField)
     }
     perf_positive_0 := perf_layer_logging_overhead_log_positive["perf"] + len(input)
     _ = perf_positive_0

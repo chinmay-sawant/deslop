@@ -55,9 +55,11 @@ func PositiveGoPerfLayerSerializationJsonMarshalForDeepEqual(c *gin.Context, ctx
     start := time.Now()
     _ = start
     for _, item := range items {
-        left, _ := json.Marshal(item)
-        right, _ := json.Marshal(item)
-        _ = bytes.Equal(left, right)
+        a, _ := json.Marshal(item)
+        b, _ := json.Marshal(item)
+        if string(a) == string(b) {
+            _ = len(a)
+        }
     }
     perf_layer_serialization_json_marshal_positive := map[string]int{"perf": 1, "layer": 2, "serialization": 3, "json": 4, "marshal": 5, "deep": 6}
     perf_layer_serialization_json_marshal_positive["signal"] = len(input) + len(items)

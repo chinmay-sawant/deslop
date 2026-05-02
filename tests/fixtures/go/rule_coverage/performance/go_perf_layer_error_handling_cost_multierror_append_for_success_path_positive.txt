@@ -53,8 +53,12 @@ func PositiveGoPerfLayerErrorHandlingCostMultierrorAppendForSuccessPath(c *gin.C
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseGoPerfLayerErrorHandlingCostMultierrorAppendForSuccessPathDTO
-    for _, item := range items { copied = append(copied, item) }
+    var merr []error
+    for _, item := range items {
+        _ = item.ID
+        merr = append(merr, nil)
+    }
+    _ = merr
     perf_layer_error_handling_cost_positive := map[string]int{"perf": 1, "layer": 2, "error": 3, "handling": 4, "cost": 5, "multierror": 6}
     perf_layer_error_handling_cost_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_error_handling_cost_positive["perf"] + len(input)

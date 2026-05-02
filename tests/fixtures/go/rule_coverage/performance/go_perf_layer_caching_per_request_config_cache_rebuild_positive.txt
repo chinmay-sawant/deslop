@@ -50,22 +50,9 @@ type CaseGoPerfLayerCachingPerRequestConfigCacheRebuildAuditSink interface {
 func PositiveGoPerfLayerCachingPerRequestConfigCacheRebuild(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerCachingPerRequestConfigCacheRebuildDTO) error {
     focus := "go_perf_layer_caching_per"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    perf_layer_caching_per_request_positive := map[string]int{"perf": 1, "layer": 2, "caching": 3, "per": 4, "request": 5, "config": 6}
-    perf_layer_caching_per_request_positive["signal"] = len(input) + len(items)
-    perf_positive_0 := perf_layer_caching_per_request_positive["perf"] + len(input)
-    _ = perf_positive_0
-    layer_positive_1 := perf_layer_caching_per_request_positive["layer"] + len(input)
-    _ = layer_positive_1
-    caching_positive_2 := perf_layer_caching_per_request_positive["caching"] + len(input)
-    _ = caching_positive_2
-    for per_positive_3Index, item := range items { perf_layer_caching_per_request_positive[item.ID] = per_positive_3Index }
-    request_positive_4 := perf_layer_caching_per_request_positive["request"] + len(input)
-    _ = request_positive_4
-    config_positive_5 := perf_layer_caching_per_request_positive["config"] + len(input)
-    _ = config_positive_5
+    cfg := make(map[string]string)
+    cfg["endpoint"] = "https://api.example.com"
+    cfg["timeout"] = "30s"
+    _ = cfg
     return nil
 }

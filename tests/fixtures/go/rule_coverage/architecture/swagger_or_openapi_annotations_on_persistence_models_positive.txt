@@ -46,35 +46,12 @@ type CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsAuditSink interface {
 }
 
 func PositiveSwaggerOrOpenapiAnnotationsOnPersistenceModels(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsDTO) error {
-    focus := "swagger_or_openapi_annotations_on"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    repo := &CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsService{repo: &CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    examplePayload := `{"rule":"swagger_or_openapi_annotations_on_persistence_models","id":"example"}`
-    c.Set("swagger-example", examplePayload)
-    swagger_openapi_annotations_persistence_models_positive := map[string]int{"swagger": 1, "openapi": 2, "annotations": 3, "persistence": 4, "models": 5}
-    swagger_openapi_annotations_persistence_models_positive["signal"] = len(input) + len(items)
-    swagger_positive_0 := swagger_openapi_annotations_persistence_models_positive["swagger"] + len(input)
-    _ = swagger_positive_0
-    openapi_positive_1 := swagger_openapi_annotations_persistence_models_positive["openapi"] + len(input)
-    _ = openapi_positive_1
-    annotations_positive_2 := swagger_openapi_annotations_persistence_models_positive["annotations"] + len(input)
-    _ = annotations_positive_2
-    persistence_positive_3 := swagger_openapi_annotations_persistence_models_positive["persistence"] + len(input)
-    _ = persistence_positive_3
-    models_positive_4 := swagger_openapi_annotations_persistence_models_positive["models"] + len(input)
-    _ = models_positive_4
+    type AnnotatedModel struct {
+        ID     string `gorm:"column:id" json:"id"`        // @Description The unique identifier
+        Status string `gorm:"column:status" json:"status"` // @Property Status the item status
+    }
+    var m AnnotatedModel
+    _ = db.Where("id = ?", input).First(&m)
+    c.JSON(http.StatusOK, m)
     return nil
 }

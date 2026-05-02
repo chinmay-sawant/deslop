@@ -51,24 +51,11 @@ type CaseGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCallAuditSink
 func PositiveGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCallDTO) error {
     focus := "go_perf_layer_async_concurrency"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
-    perf_layer_async_concurrency_context_positive := map[string]int{"perf": 1, "layer": 2, "async": 3, "concurrency": 4, "context": 5, "timeout": 6}
-    perf_layer_async_concurrency_context_positive["signal"] = len(input) + len(items)
-    perf_positive_0 := perf_layer_async_concurrency_context_positive["perf"] + len(input)
-    _ = perf_positive_0
-    layer_positive_1 := perf_layer_async_concurrency_context_positive["layer"] + len(input)
-    _ = layer_positive_1
-    async_positive_2 := perf_layer_async_concurrency_context_positive["async"] + len(input)
-    _ = async_positive_2
-    concurrency_positive_3 := perf_layer_async_concurrency_context_positive["concurrency"] + len(input)
-    _ = concurrency_positive_3
-    context_positive_4 := ctx
-    _ = context_positive_4
-    timeout_positive_5 := perf_layer_async_concurrency_context_positive["timeout"] + len(input)
-    _ = timeout_positive_5
+    for _, item := range items {
+        ctx2, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
+        defer cancel()
+        _ = ctx2
+        _ = item
+    }
     return nil
 }

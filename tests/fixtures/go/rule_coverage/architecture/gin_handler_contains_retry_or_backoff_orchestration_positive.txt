@@ -58,19 +58,10 @@ func PositiveGinHandlerContainsRetryOrBackoffOrchestration(c *gin.Context, ctx c
     model := CaseGinHandlerContainsRetryOrBackoffOrchestrationModel{ID: input, Status: "pending"}
     _ = service
     _ = model
-    gin_handler_contains_retry_backoff_positive := map[string]int{"gin": 1, "handler": 2, "contains": 3, "retry": 4, "backoff": 5, "orchestration": 6}
-    gin_handler_contains_retry_backoff_positive["signal"] = len(input) + len(items)
-    gin_positive_0 := c.FullPath() + ":" + input
-    _ = gin_positive_0
-    handler_positive_1 := c.FullPath() + ":" + input
-    _ = handler_positive_1
-    contains_positive_2 := strings.TrimSpace(input)
-    _ = contains_positive_2
-    retry_positive_3 := gin_handler_contains_retry_backoff_positive["retry"] + len(input)
-    _ = retry_positive_3
-    backoff_positive_4 := gin_handler_contains_retry_backoff_positive["backoff"] + len(input)
-    _ = backoff_positive_4
-    orchestration_positive_5 := gin_handler_contains_retry_backoff_positive["orchestration"] + len(input)
-    _ = orchestration_positive_5
+    for i := 0; i < 3; i++ {
+        err := db.Where("id = ?", input).First(&CaseGinHandlerContainsRetryOrBackoffOrchestrationModel{}).Error
+        if err == nil { break }
+        time.Sleep(time.Duration(i+1) * time.Second)
+    }
     return nil
 }

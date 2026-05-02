@@ -46,22 +46,9 @@ type CaseSshHostKeyCallbackInsecureAuditSink interface {
 }
 
 func PositiveSshHostKeyCallbackInsecure(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSshHostKeyCallbackInsecureDTO) error {
-    focus := "ssh_host_key_callback_insecure"
-    _ = focus
-    secret := "hardcoded-development-secret"
-    password := input
-    _, _ = secret, password
-    ssh_host_key_callback_insecure_positive := map[string]int{"ssh": 1, "host": 2, "key": 3, "callback": 4, "insecure": 5}
-    ssh_host_key_callback_insecure_positive["signal"] = len(input) + len(items)
-    ssh_positive_0 := ssh_host_key_callback_insecure_positive["ssh"] + len(input)
-    _ = ssh_positive_0
-    host_positive_1 := ssh_host_key_callback_insecure_positive["host"] + len(input)
-    _ = host_positive_1
-    key_positive_2 := ssh_host_key_callback_insecure_positive["key"] + len(input)
-    _ = key_positive_2
-    callback_positive_3 := ssh_host_key_callback_insecure_positive["callback"] + len(input)
-    _ = callback_positive_3
-    insecure_positive_4 := ssh_host_key_callback_insecure_positive["insecure"] + len(input)
-    _ = insecure_positive_4
+    config := &ssh.ClientConfig{
+        HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+    }
+    _ = config
     return nil
 }

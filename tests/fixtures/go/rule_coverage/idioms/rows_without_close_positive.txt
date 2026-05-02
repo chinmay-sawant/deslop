@@ -47,19 +47,8 @@ type CaseRowsWithoutCloseAuditSink interface {
 }
 
 func PositiveRowsWithoutClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRowsWithoutCloseDTO) error {
-    focus := "rows_without_close"
-    _ = focus
-    for _, item := range items { f, _ := os.Open(item.ID); defer f.Close() }
     rows, _ := sqlDB.QueryContext(ctx, "SELECT id FROM accounts")
-    for rows.Next() {}
-    ch := make(chan string)
-    close(ch)
-    ch <- input
-    rows_close_positive := map[string]int{"rows": 1, "close": 2}
-    rows_close_positive["signal"] = len(input) + len(items)
-    rows_positive_0 := rows_close_positive["rows"] + len(input)
-    _ = rows_positive_0
-    close_positive_1 := rows_close_positive["close"] + len(input)
-    _ = close_positive_1
+    for rows.Next() {
+    }
     return nil
 }

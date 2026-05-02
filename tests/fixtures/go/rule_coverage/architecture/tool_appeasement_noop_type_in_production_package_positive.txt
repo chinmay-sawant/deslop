@@ -46,22 +46,9 @@ type CaseToolAppeasementNoopTypeInProductionPackageAuditSink interface {
 }
 
 func PositiveToolAppeasementNoopTypeInProductionPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseToolAppeasementNoopTypeInProductionPackageDTO) error {
-    focus := "tool_appeasement_noop_type_in"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    tool_appeasement_noop_type_production_positive := map[string]int{"tool": 1, "appeasement": 2, "noop": 3, "type": 4, "production": 5, "package": 6}
-    tool_appeasement_noop_type_production_positive["signal"] = len(input) + len(items)
-    tool_positive_0 := tool_appeasement_noop_type_production_positive["tool"] + len(input)
-    _ = tool_positive_0
-    appeasement_positive_1 := tool_appeasement_noop_type_production_positive["appeasement"] + len(input)
-    _ = appeasement_positive_1
-    noop_positive_2 := tool_appeasement_noop_type_production_positive["noop"] + len(input)
-    _ = noop_positive_2
-    type_positive_3 := tool_appeasement_noop_type_production_positive["type"] + len(input)
-    _ = type_positive_3
-    production_positive_4 := tool_appeasement_noop_type_production_positive["production"] + len(input)
-    _ = production_positive_4
-    package_positive_5 := tool_appeasement_noop_type_production_positive["package"] + len(input)
-    _ = package_positive_5
+    type NoopLogger struct{}
+    var nl NoopLogger
+    _ = nl
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

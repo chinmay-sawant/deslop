@@ -54,8 +54,16 @@ func PositiveGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannel(c 
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
+    ch := make(chan string, len(items))
+    for _, item := range items {
+        ch <- item.ID
+    }
+    close(ch)
+    var collected []string
+    for id := range ch {
+        collected = append(collected, id)
+    }
+    _ = len(collected)
     perf_layer_collection_iteration_len_positive := map[string]int{"perf": 1, "layer": 2, "collection": 3, "iteration": 4, "len": 5, "called": 6}
     perf_layer_collection_iteration_len_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_collection_iteration_len_positive["perf"] + len(input)

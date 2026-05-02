@@ -18,13 +18,13 @@ type CaseRepeatedMapCloneInLoopDTO struct {
 }
 
 func PositiveRepeatedMapCloneInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepeatedMapCloneInLoopDTO) error {
-    original := map[string]int{"seed": len(items), input: len(input)}
+    oldMap := map[string]int{"seed": 1}
     for _, item := range items {
-        cloned := make(map[string]int, len(original))
-        for k, v := range original {
-            cloned[k] = v
+        newMap := make(map[string]int, len(oldMap))
+        for k, v := range oldMap {
+            newMap[k] = v
         }
-        cloned[item.ID] = item.Amount
+        newMap[item.ID] = item.Amount
     }
     return nil
 }

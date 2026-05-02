@@ -46,32 +46,10 @@ type CaseSameServiceMethodAcceptsTxAndBeginsTxAuditSink interface {
 }
 
 func NegativeSameServiceMethodAcceptsTxAndBeginsTx(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSameServiceMethodAcceptsTxAndBeginsTxDTO) error {
-    focus := "same_service_method_accepts_tx"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseSameServiceMethodAcceptsTxAndBeginsTxDTO
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return nil
-    }
-    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
-    dto := CaseSameServiceMethodAcceptsTxAndBeginsTxDTO{ID: input, Status: "active"}
-    model := CaseSameServiceMethodAcceptsTxAndBeginsTxModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
     return db.Transaction(func(tx *gorm.DB) error {
         return tx.WithContext(ctx).Save(&CaseSameServiceMethodAcceptsTxAndBeginsTxModel{ID: input}).Error
     })
-    service_method_accepts_tx_begins_negative := map[string]int{"service": 1, "method": 2, "accepts": 3, "tx": 4, "begins": 5}
-    service_method_accepts_tx_begins_negative["signal"] = len(input) + len(items)
-    service_negative_0 := CaseSameServiceMethodAcceptsTxAndBeginsTxDTO{ID: input, Status: "service"}
-    _ = service_negative_0
-    method_negative_1 := service_method_accepts_tx_begins_negative["method"] + len(input)
-    _ = method_negative_1
-    accepts_negative_2 := service_method_accepts_tx_begins_negative["accepts"] + len(input)
-    _ = accepts_negative_2
-    tx_negative_3 := service_method_accepts_tx_begins_negative["tx"] + len(input)
-    _ = tx_negative_3
-    begins_negative_4 := service_method_accepts_tx_begins_negative["begins"] + len(input)
-    _ = begins_negative_4
-    return nil
+    return db.Transaction(func(tx *gorm.DB) error {
+        return tx.WithContext(ctx).Save(&CaseSameServiceMethodAcceptsTxAndBeginsTxModel{ID: input}).Error
+    })
 }

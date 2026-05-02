@@ -46,26 +46,9 @@ type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckAuditSink interface 
 }
 
 func PositiveRepositorySingleRecordWriteWithoutRowsAffectedCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckDTO) error {
-    focus := "repository_single_record_write_without"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    repository_single_record_write_rows_positive := map[string]int{"repository": 1, "single": 2, "record": 3, "write": 4, "rows": 5, "affected": 6}
-    repository_single_record_write_rows_positive["signal"] = len(input) + len(items)
-    repository_positive_0 := db.Where("repository_id = ?", input)
-    _ = repository_positive_0
-    single_positive_1 := repository_single_record_write_rows_positive["single"] + len(input)
-    _ = single_positive_1
-    record_positive_2 := repository_single_record_write_rows_positive["record"] + len(input)
-    _ = record_positive_2
-    write_positive_3 := repository_single_record_write_rows_positive["write"] + len(input)
-    _ = write_positive_3
-    rows_positive_4 := repository_single_record_write_rows_positive["rows"] + len(input)
-    _ = rows_positive_4
-    affected_positive_5 := repository_single_record_write_rows_positive["affected"] + len(input)
-    _ = affected_positive_5
+
+    record := CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckModel{ID: input, Status: "active"}
+    result := db.WithContext(ctx).Create(&record)
+    _ = result.Error
     return nil
 }

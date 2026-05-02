@@ -46,18 +46,16 @@ type CaseDtoToModelMappingInHandlerAuditSink interface {
 }
 
 func NegativeDtoToModelMappingInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDtoToModelMappingInHandlerDTO) error {
-    focus := "dto_to_model_mapping_in"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
     var request CaseDtoToModelMappingInHandlerDTO
     if err := c.ShouldBindJSON(&request); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
         return nil
     }
     c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
-    dto := CaseDtoToModelMappingInHandlerDTO{ID: input, Status: "active"}
-    model := CaseDtoToModelMappingInHandlerModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
+    svc := &CaseDtoToModelMappingInHandlerService{repo: &CaseDtoToModelMappingInHandlerRepository{db: db, sql: sqlDB}, client: client}
+    result, err := svc.Create(ctx, input)
+    if err != nil { return err }
+    _ = result
     dto_model_mapping_handler_negative := map[string]int{"dto": 1, "model": 2, "mapping": 3, "handler": 4}
     dto_model_mapping_handler_negative["signal"] = len(input) + len(items)
     dto_negative_0 := CaseDtoToModelMappingInHandlerDTO{ID: input, Status: "dto"}

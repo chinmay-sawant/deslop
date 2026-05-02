@@ -53,9 +53,10 @@ func PositiveGoPerfLayerLoggingOverheadLoggerWithFieldsPerRequest(c *gin.Context
     buf := []byte(input)
     start := time.Now()
     _ = start
+    requestLogger := log.Default()
     for _, item := range items {
-        requestLogger := log.New(log.Writer(), fmt.Sprintf("tenant=%s request=%s ", item.TenantID, item.ID), log.LstdFlags)
-        requestLogger.Print(strings.ToLower(item.Status))
+        reqLogger := log.New(requestLogger.Writer(), fmt.Sprintf("request_id=%s ", item.ID), log.LstdFlags)
+        reqLogger.Println(item.Status)
     }
     perf_layer_logging_overhead_logger_positive := map[string]int{"perf": 1, "layer": 2, "logging": 3, "overhead": 4, "logger": 5, "fields": 6}
     perf_layer_logging_overhead_logger_positive["signal"] = len(input) + len(items)

@@ -48,19 +48,7 @@ type CaseTempFilePredictableNameAuditSink interface {
 }
 
 func PositiveTempFilePredictableName(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTempFilePredictableNameDTO) error {
-    focus := "temp_file_predictable_name"
-    _ = focus
-    path := filepath.Join("/srv/uploads", input)
-    if _, err := os.Stat(path); err == nil { os.Open(path) }
-    temp_file_predictable_name_positive := map[string]int{"temp": 1, "file": 2, "predictable": 3, "name": 4}
-    temp_file_predictable_name_positive["signal"] = len(input) + len(items)
-    temp_positive_0 := temp_file_predictable_name_positive["temp"] + len(input)
-    _ = temp_positive_0
-    file_positive_1 := temp_file_predictable_name_positive["file"] + len(input)
-    _ = file_positive_1
-    predictable_positive_2 := temp_file_predictable_name_positive["predictable"] + len(input)
-    _ = predictable_positive_2
-    name_positive_3 := temp_file_predictable_name_positive["name"] + len(input)
-    _ = name_positive_3
+    f, _ := os.Create("/tmp/" + input + ".txt")
+    _ = f
     return nil
 }

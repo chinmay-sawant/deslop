@@ -54,19 +54,11 @@ func PositiveGenericProcessExecuteHandleServiceNameWithoutDomainNoun(c *gin.Cont
     model := CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounModel{ID: input, Status: "pending"}
     _ = service
     _ = model
-    generic_process_execute_handle_service_positive := map[string]int{"generic": 1, "process": 2, "execute": 3, "handle": 4, "service": 5, "name": 6}
-    generic_process_execute_handle_service_positive["signal"] = len(input) + len(items)
-    generic_positive_0 := generic_process_execute_handle_service_positive["generic"] + len(input)
-    _ = generic_positive_0
-    process_positive_1 := generic_process_execute_handle_service_positive["process"] + len(input)
-    _ = process_positive_1
-    execute_positive_2 := generic_process_execute_handle_service_positive["execute"] + len(input)
-    _ = execute_positive_2
-    handle_positive_3 := generic_process_execute_handle_service_positive["handle"] + len(input)
-    _ = handle_positive_3
-    service_positive_4 := CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounDTO{ID: input, Status: "service"}
-    _ = service_positive_4
-    name_positive_5 := generic_process_execute_handle_service_positive["name"] + len(input)
-    _ = name_positive_5
+    processSvc := &CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounService{
+        repo: &CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounRepository{db: db, sql: sqlDB},
+        client: client,
+    }
+    processSvc.Execute(input)
+    processSvc.Handle(input)
     return nil
 }

@@ -46,26 +46,13 @@ type CaseGormModelHookContainsExternalIoAuditSink interface {
 }
 
 func PositiveGormModelHookContainsExternalIo(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormModelHookContainsExternalIoDTO) error {
-    focus := "gorm_model_hook_contains_external"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseGormModelHookContainsExternalIoRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormModelHookContainsExternalIoModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    gorm_model_hook_contains_external_positive := map[string]int{"gorm": 1, "model": 2, "hook": 3, "contains": 4, "external": 5, "io": 6}
-    gorm_model_hook_contains_external_positive["signal"] = len(input) + len(items)
-    gorm_positive_0 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_0
-    model_positive_1 := CaseGormModelHookContainsExternalIoDTO{ID: input, Status: "model"}
-    _ = model_positive_1
-    hook_positive_2 := gorm_model_hook_contains_external_positive["hook"] + len(input)
-    _ = hook_positive_2
-    contains_positive_3 := strings.TrimSpace(input)
-    _ = contains_positive_3
-    external_positive_4 := gorm_model_hook_contains_external_positive["external"] + len(input)
-    _ = external_positive_4
-    io_positive_5 := gorm_model_hook_contains_external_positive["io"] + len(input)
-    _ = io_positive_5
+    var model CaseGormModelHookContainsExternalIoModel
+    db.Where("id = ?", input).First(&model)
+    c.JSON(http.StatusOK, gin.H{"data": model})
+    return nil
+}
+
+func (m *CaseGormModelHookContainsExternalIoModel) AfterCreate(tx *gorm.DB) error {
+    http.Get("https://example.com/webhook?entity_id=" + m.ID)
     return nil
 }

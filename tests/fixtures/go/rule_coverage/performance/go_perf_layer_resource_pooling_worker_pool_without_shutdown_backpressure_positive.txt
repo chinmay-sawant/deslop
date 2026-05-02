@@ -53,11 +53,11 @@ func PositiveGoPerfLayerResourcePoolingWorkerPoolWithoutShutdownBackpressure(c *
     buf := []byte(input)
     start := time.Now()
     _ = start
-    jobs := make(chan CaseGoPerfLayerResourcePoolingWorkerPoolWithoutShutdownBackpressureDTO, len(items)*2+1)
-    for worker := 0; worker < 4; worker++ {
+    jobs := make(chan CaseGoPerfLayerResourcePoolingWorkerPoolWithoutShutdownBackpressureDTO)
+    for w := 0; w < 4; w++ {
         go func() {
-            for job := range jobs {
-                _ = strings.ToLower(job.ID)
+            for j := range jobs {
+                _ = j.ID
             }
         }()
     }

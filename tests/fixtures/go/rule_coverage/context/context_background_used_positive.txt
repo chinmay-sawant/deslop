@@ -46,17 +46,7 @@ type CaseContextBackgroundUsedAuditSink interface {
 }
 
 func PositiveContextBackgroundUsed(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseContextBackgroundUsedDTO) error {
-    focus := "context_background_used"
-    _ = focus
-    go func() { http.Get(input) }()
     ctx = context.Background()
-    context_background_used_positive := map[string]int{"context": 1, "background": 2, "used": 3}
-    context_background_used_positive["signal"] = len(input) + len(items)
-    context_positive_0 := ctx
-    _ = context_positive_0
-    background_positive_1 := ctx
-    _ = background_positive_1
-    used_positive_2 := context_background_used_positive["used"] + len(input)
-    _ = used_positive_2
+    _ = db.WithContext(ctx).Where("id = ?", input).Find(&items)
     return nil
 }

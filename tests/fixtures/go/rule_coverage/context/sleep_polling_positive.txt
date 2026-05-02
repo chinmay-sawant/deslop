@@ -47,14 +47,12 @@ type CaseSleepPollingAuditSink interface {
 }
 
 func PositiveSleepPolling(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSleepPollingDTO) error {
-    focus := "sleep_polling"
-    _ = focus
-    for i := 0; i < 2; i++ { time.Sleep(time.Millisecond) }
-    sleep_polling_positive := map[string]int{"sleep": 1, "polling": 2}
-    sleep_polling_positive["signal"] = len(input) + len(items)
-    sleep_positive_0 := sleep_polling_positive["sleep"] + len(input)
-    _ = sleep_positive_0
-    polling_positive_1 := sleep_polling_positive["polling"] + len(input)
-    _ = polling_positive_1
+    for {
+        time.Sleep(100 * time.Millisecond)
+        var result CaseSleepPollingModel
+        if err := db.Where("id = ?", input).First(&result).Error; err == nil {
+            break
+        }
+    }
     return nil
 }

@@ -58,19 +58,15 @@ func PositiveGinHandlerAcceptsMoreThanOneBodyContract(c *gin.Context, ctx contex
     model := CaseGinHandlerAcceptsMoreThanOneBodyContractModel{ID: input, Status: "pending"}
     _ = service
     _ = model
-    gin_handler_accepts_more_than_positive := map[string]int{"gin": 1, "handler": 2, "accepts": 3, "more": 4, "than": 5, "one": 6}
-    gin_handler_accepts_more_than_positive["signal"] = len(input) + len(items)
-    gin_positive_0 := c.FullPath() + ":" + input
-    _ = gin_positive_0
-    handler_positive_1 := c.FullPath() + ":" + input
-    _ = handler_positive_1
-    accepts_positive_2 := gin_handler_accepts_more_than_positive["accepts"] + len(input)
-    _ = accepts_positive_2
-    more_positive_3 := gin_handler_accepts_more_than_positive["more"] + len(input)
-    _ = more_positive_3
-    than_positive_4 := gin_handler_accepts_more_than_positive["than"] + len(input)
-    _ = than_positive_4
-    one_positive_5 := gin_handler_accepts_more_than_positive["one"] + len(input)
-    _ = one_positive_5
+    var jsonDTO struct {
+        Name  string `json:"name"`
+        Email string `json:"email"`
+    }
+    var formDTO struct {
+        Name  string `form:"name"`
+        Email string `form:"email"`
+    }
+    c.ShouldBindJSON(&jsonDTO)
+    c.ShouldBind(&formDTO)
     return nil
 }

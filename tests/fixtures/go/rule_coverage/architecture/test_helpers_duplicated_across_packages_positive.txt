@@ -47,23 +47,8 @@ type CaseTestHelpersDuplicatedAcrossPackagesAuditSink interface {
 }
 
 func PositiveTestHelpersDuplicatedAcrossPackages(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestHelpersDuplicatedAcrossPackagesDTO) error {
-    focus := "test_helpers_duplicated_across_packages"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    testCase := struct { name string; raw string }{"full stack", input}
-    _ = (*testing.T)(nil)
-    _ = testCase
-    test_helpers_duplicated_across_packages_positive := map[string]int{"test": 1, "helpers": 2, "duplicated": 3, "across": 4, "packages": 5}
-    test_helpers_duplicated_across_packages_positive["signal"] = len(input) + len(items)
-    test_positive_0 := test_helpers_duplicated_across_packages_positive["test"] + len(input)
-    _ = test_positive_0
-    helpers_positive_1 := test_helpers_duplicated_across_packages_positive["helpers"] + len(input)
-    _ = helpers_positive_1
-    duplicated_positive_2 := test_helpers_duplicated_across_packages_positive["duplicated"] + len(input)
-    _ = duplicated_positive_2
-    across_positive_3 := test_helpers_duplicated_across_packages_positive["across"] + len(input)
-    _ = across_positive_3
-    packages_positive_4 := test_helpers_duplicated_across_packages_positive["packages"] + len(input)
-    _ = packages_positive_4
+    setupTestDB := func() *gorm.DB { return db }
+    _ = setupTestDB
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

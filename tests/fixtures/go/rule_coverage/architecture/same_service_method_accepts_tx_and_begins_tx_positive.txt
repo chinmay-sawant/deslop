@@ -46,32 +46,14 @@ type CaseSameServiceMethodAcceptsTxAndBeginsTxAuditSink interface {
 }
 
 func PositiveSameServiceMethodAcceptsTxAndBeginsTx(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSameServiceMethodAcceptsTxAndBeginsTxDTO) error {
-    focus := "same_service_method_accepts_tx"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseSameServiceMethodAcceptsTxAndBeginsTxDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseSameServiceMethodAcceptsTxAndBeginsTxService{repo: &CaseSameServiceMethodAcceptsTxAndBeginsTxRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseSameServiceMethodAcceptsTxAndBeginsTxModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    tx := db.Begin()
-    tx.Create(&CaseSameServiceMethodAcceptsTxAndBeginsTxModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
-    service_method_accepts_tx_begins_positive := map[string]int{"service": 1, "method": 2, "accepts": 3, "tx": 4, "begins": 5}
-    service_method_accepts_tx_begins_positive["signal"] = len(input) + len(items)
-    service_positive_0 := CaseSameServiceMethodAcceptsTxAndBeginsTxDTO{ID: input, Status: "service"}
-    _ = service_positive_0
-    method_positive_1 := service_method_accepts_tx_begins_positive["method"] + len(input)
-    _ = method_positive_1
-    accepts_positive_2 := service_method_accepts_tx_begins_positive["accepts"] + len(input)
-    _ = accepts_positive_2
-    tx_positive_3 := service_method_accepts_tx_begins_positive["tx"] + len(input)
-    _ = tx_positive_3
-    begins_positive_4 := service_method_accepts_tx_begins_positive["begins"] + len(input)
-    _ = begins_positive_4
+
+    func(tx *gorm.DB) error {
+        newTx := db.Begin()
+        if err := newTx.WithContext(ctx).Save(&CaseSameServiceMethodAcceptsTxAndBeginsTxModel{ID: input}).Error; err != nil {
+            newTx.Rollback()
+            return err
+        }
+        return newTx.Commit().Error
+    }(db)
     return nil
 }

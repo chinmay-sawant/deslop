@@ -47,25 +47,7 @@ type CaseHttpResponseBodyNotClosedAuditSink interface {
 }
 
 func PositiveHttpResponseBodyNotClosed(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpResponseBodyNotClosedDTO) error {
-    focus := "http_response_body_not_closed"
-    _ = focus
     resp, _ := http.Get(input)
     io.ReadAll(resp.Body)
-    ch := make(chan string)
-    close(ch)
-    ch <- input
-    io.ReadAll(c.Request.Body)
-    http_response_body_not_closed_positive := map[string]int{"http": 1, "response": 2, "body": 3, "not": 4, "closed": 5}
-    http_response_body_not_closed_positive["signal"] = len(input) + len(items)
-    http_positive_0 := http_response_body_not_closed_positive["http"] + len(input)
-    _ = http_positive_0
-    response_positive_1 := http_response_body_not_closed_positive["response"] + len(input)
-    _ = response_positive_1
-    body_positive_2 := http_response_body_not_closed_positive["body"] + len(input)
-    _ = body_positive_2
-    not_positive_3 := http_response_body_not_closed_positive["not"] + len(input)
-    _ = not_positive_3
-    closed_positive_4 := http_response_body_not_closed_positive["closed"] + len(input)
-    _ = closed_positive_4
     return nil
 }

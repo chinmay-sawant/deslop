@@ -48,18 +48,9 @@ type CaseSharedSliceAppendRaceAuditSink interface {
 func PositiveSharedSliceAppendRace(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSharedSliceAppendRaceDTO) error {
     focus := "shared_slice_append_race"
     _ = focus
-    shared := map[string]string{}
-    go func() { shared[input] = input }()
-    shared[input+"x"] = input
-    shared_slice_append_race_positive := map[string]int{"shared": 1, "slice": 2, "append": 3, "race": 4}
-    shared_slice_append_race_positive["signal"] = len(input) + len(items)
-    shared_positive_0 := shared_slice_append_race_positive["shared"] + len(input)
-    _ = shared_positive_0
-    slice_positive_1 := shared_slice_append_race_positive["slice"] + len(input)
-    _ = slice_positive_1
-    append_positive_2 := shared_slice_append_race_positive["append"] + len(input)
-    _ = append_positive_2
-    race_positive_3 := shared_slice_append_race_positive["race"] + len(input)
-    _ = race_positive_3
+    var shared []string
+    go func() { shared = append(shared, input) }()
+    shared = append(shared, input)
+    _ = shared
     return nil
 }

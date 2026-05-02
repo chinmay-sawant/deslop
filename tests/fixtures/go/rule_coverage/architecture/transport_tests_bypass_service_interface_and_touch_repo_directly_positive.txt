@@ -47,38 +47,10 @@ type CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyAuditSink inter
 }
 
 func PositiveTransportTestsBypassServiceInterfaceAndTouchRepoDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyDTO) error {
-    focus := "transport_tests_bypass_service_interface"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
     repo := &CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyService{repo: &CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    testCase := struct { name string; raw string }{"full stack", input}
-    _ = (*testing.T)(nil)
-    _ = testCase
-    transport_tests_bypass_service_interface_positive := map[string]int{"transport": 1, "tests": 2, "bypass": 3, "service": 4, "interface": 5, "touch": 6}
-    transport_tests_bypass_service_interface_positive["signal"] = len(input) + len(items)
-    transport_positive_0 := c.FullPath() + ":" + input
-    _ = transport_positive_0
-    tests_positive_1 := transport_tests_bypass_service_interface_positive["tests"] + len(input)
-    _ = tests_positive_1
-    bypass_positive_2 := transport_tests_bypass_service_interface_positive["bypass"] + len(input)
-    _ = bypass_positive_2
-    service_positive_3 := CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyDTO{ID: input, Status: "service"}
-    _ = service_positive_3
-    interface_positive_4 := transport_tests_bypass_service_interface_positive["interface"] + len(input)
-    _ = interface_positive_4
-    touch_positive_5 := transport_tests_bypass_service_interface_positive["touch"] + len(input)
-    _ = touch_positive_5
+    var found []CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyModel
+    repo.db.Where("id = ?", input).Find(&found)
+    _ = found
+    _ = c
     return nil
 }

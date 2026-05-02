@@ -54,6 +54,12 @@ func PositiveGoPerfLayerFrameworkPerformanceGrpcMetadataParsedRepeatedly(c *gin.
     buf := []byte(input)
     start := time.Now()
     _ = start
+    md1, _ := metadata.FromIncomingContext(ctx)
+    _ = md1.Get("tenant-id")
+    md2, _ := metadata.FromIncomingContext(ctx)
+    _ = md2.Get("request-id")
+    md3, _ := metadata.FromIncomingContext(ctx)
+    _ = md3.Get("status")
     perf_layer_framework_performance_grpc_positive := map[string]int{"perf": 1, "layer": 2, "framework": 3, "performance": 4, "grpc": 5, "metadata": 6}
     perf_layer_framework_performance_grpc_positive["signal"] = len(input) + len(items)
     for _, item := range items {

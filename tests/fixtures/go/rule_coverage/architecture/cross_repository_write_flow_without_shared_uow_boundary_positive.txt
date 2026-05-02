@@ -46,34 +46,7 @@ type CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryAuditSink interface {
 }
 
 func PositiveCrossRepositoryWriteFlowWithoutSharedUowBoundary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryDTO) error {
-    focus := "cross_repository_write_flow_without"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryService{repo: &CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    tx := db.Begin()
-    tx.Create(&CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
-    cross_repository_write_flow_shared_positive := map[string]int{"cross": 1, "repository": 2, "write": 3, "flow": 4, "shared": 5, "uow": 6}
-    cross_repository_write_flow_shared_positive["signal"] = len(input) + len(items)
-    cross_positive_0 := cross_repository_write_flow_shared_positive["cross"] + len(input)
-    _ = cross_positive_0
-    repository_positive_1 := db.Where("repository_id = ?", input)
-    _ = repository_positive_1
-    write_positive_2 := cross_repository_write_flow_shared_positive["write"] + len(input)
-    _ = write_positive_2
-    flow_positive_3 := cross_repository_write_flow_shared_positive["flow"] + len(input)
-    _ = flow_positive_3
-    shared_positive_4 := cross_repository_write_flow_shared_positive["shared"] + len(input)
-    _ = shared_positive_4
-    uow_positive_5 := cross_repository_write_flow_shared_positive["uow"] + len(input)
-    _ = uow_positive_5
+    db.Create(&CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryModel{ID: input, Status: "active"})
+    db.Where("id = ?", input).Update("status", "updated")
     return nil
 }

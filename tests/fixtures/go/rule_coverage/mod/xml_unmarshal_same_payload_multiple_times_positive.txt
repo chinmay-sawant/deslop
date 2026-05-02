@@ -47,23 +47,10 @@ type CaseXmlUnmarshalSamePayloadMultipleTimesAuditSink interface {
 }
 
 func PositiveXmlUnmarshalSamePayloadMultipleTimes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseXmlUnmarshalSamePayloadMultipleTimesDTO) error {
-    focus := "xml_unmarshal_same_payload_multiple"
-    _ = focus
-    var first CaseXmlUnmarshalSamePayloadMultipleTimesDTO
-    var second CaseXmlUnmarshalSamePayloadMultipleTimesDTO
-    xml.Unmarshal([]byte(input), &first)
-    xml.Unmarshal([]byte(input), &second)
-    xml_unmarshal_payload_multiple_times_positive := map[string]int{"xml": 1, "unmarshal": 2, "payload": 3, "multiple": 4, "times": 5}
-    xml_unmarshal_payload_multiple_times_positive["signal"] = len(input) + len(items)
-    xml_positive_0 := fmt.Sprintf("xml:%s", input)
-    _ = xml_positive_0
-    unmarshal_positive_1 := fmt.Sprintf("unmarshal:%s", input)
-    _ = unmarshal_positive_1
-    payload_positive_2 := xml_unmarshal_payload_multiple_times_positive["payload"] + len(input)
-    _ = payload_positive_2
-    multiple_positive_3 := xml_unmarshal_payload_multiple_times_positive["multiple"] + len(input)
-    _ = multiple_positive_3
-    times_positive_4 := xml_unmarshal_payload_multiple_times_positive["times"] + len(input)
-    _ = times_positive_4
+    var v1, v2 CaseXmlUnmarshalSamePayloadMultipleTimesDTO
+    xml.Unmarshal([]byte(input), &v1)
+    xml.Unmarshal([]byte(input), &v2)
+    _ = v1
+    _ = v2
     return nil
 }

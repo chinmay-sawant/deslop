@@ -46,22 +46,12 @@ type CaseUpstreamConsumedInterfaceDeclaredInProviderPackageAuditSink interface {
 }
 
 func PositiveUpstreamConsumedInterfaceDeclaredInProviderPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUpstreamConsumedInterfaceDeclaredInProviderPackageDTO) error {
-    focus := "upstream_consumed_interface_declared_in"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    upstream_consumed_interface_declared_provider_positive := map[string]int{"upstream": 1, "consumed": 2, "interface": 3, "declared": 4, "provider": 5, "package": 6}
-    upstream_consumed_interface_declared_provider_positive["signal"] = len(input) + len(items)
-    upstream_positive_0 := upstream_consumed_interface_declared_provider_positive["upstream"] + len(input)
-    _ = upstream_positive_0
-    consumed_positive_1 := upstream_consumed_interface_declared_provider_positive["consumed"] + len(input)
-    _ = consumed_positive_1
-    interface_positive_2 := upstream_consumed_interface_declared_provider_positive["interface"] + len(input)
-    _ = interface_positive_2
-    declared_positive_3 := upstream_consumed_interface_declared_provider_positive["declared"] + len(input)
-    _ = declared_positive_3
-    provider_positive_4 := upstream_consumed_interface_declared_provider_positive["provider"] + len(input)
-    _ = provider_positive_4
-    package_positive_5 := upstream_consumed_interface_declared_provider_positive["package"] + len(input)
-    _ = package_positive_5
+    type Storage interface {
+        Get(id string) (string, error)
+        Set(id string, val string) error
+    }
+    var s Storage
+    _ = s
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

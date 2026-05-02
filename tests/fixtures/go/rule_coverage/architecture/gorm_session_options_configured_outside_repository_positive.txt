@@ -47,30 +47,8 @@ type CaseGormSessionOptionsConfiguredOutsideRepositoryAuditSink interface {
 }
 
 func PositiveGormSessionOptionsConfiguredOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormSessionOptionsConfiguredOutsideRepositoryDTO) error {
-    focus := "gorm_session_options_configured_outside"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseGormSessionOptionsConfiguredOutsideRepositoryRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormSessionOptionsConfiguredOutsideRepositoryModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    tx := db.Begin()
-    tx.Create(&CaseGormSessionOptionsConfiguredOutsideRepositoryModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
-    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
-    gorm_session_options_configured_outside_positive := map[string]int{"gorm": 1, "session": 2, "options": 3, "configured": 4, "outside": 5, "repository": 6}
-    gorm_session_options_configured_outside_positive["signal"] = len(input) + len(items)
-    gorm_positive_0 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_0
-    session_positive_1 := gorm_session_options_configured_outside_positive["session"] + len(input)
-    _ = session_positive_1
-    options_positive_2 := gorm_session_options_configured_outside_positive["options"] + len(input)
-    _ = options_positive_2
-    configured_positive_3 := gorm_session_options_configured_outside_positive["configured"] + len(input)
-    _ = configured_positive_3
-    outside_positive_4 := gorm_session_options_configured_outside_positive["outside"] + len(input)
-    _ = outside_positive_4
-    repository_positive_5 := db.Where("repository_id = ?", input)
-    _ = repository_positive_5
+    db.Session(&gorm.Session{PrepareStmt: true})
+    var results []CaseGormSessionOptionsConfiguredOutsideRepositoryModel
+    db.Where("id = ?", input).Find(&results)
     return nil
 }

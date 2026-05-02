@@ -46,31 +46,13 @@ type CaseManualRequiredChecksAfterValidateTagsAvailableAuditSink interface {
 }
 
 func PositiveManualRequiredChecksAfterValidateTagsAvailable(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseManualRequiredChecksAfterValidateTagsAvailableDTO) error {
-    focus := "manual_required_checks_after_validate"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseManualRequiredChecksAfterValidateTagsAvailableDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseManualRequiredChecksAfterValidateTagsAvailableService{repo: &CaseManualRequiredChecksAfterValidateTagsAvailableRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseManualRequiredChecksAfterValidateTagsAvailableModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    manual_required_checks_after_validate_positive := map[string]int{"manual": 1, "required": 2, "checks": 3, "after": 4, "validate": 5, "tags": 6}
-    manual_required_checks_after_validate_positive["signal"] = len(input) + len(items)
-    manual_positive_0 := manual_required_checks_after_validate_positive["manual"] + len(input)
-    _ = manual_positive_0
-    required_positive_1 := manual_required_checks_after_validate_positive["required"] + len(input)
-    _ = required_positive_1
-    checks_positive_2 := manual_required_checks_after_validate_positive["checks"] + len(input)
-    _ = checks_positive_2
-    after_positive_3 := manual_required_checks_after_validate_positive["after"] + len(input)
-    _ = after_positive_3
-    validate_positive_4 := manual_required_checks_after_validate_positive["validate"] + len(input)
-    _ = validate_positive_4
-    tags_positive_5 := manual_required_checks_after_validate_positive["tags"] + len(input)
-    _ = tags_positive_5
+    var dto CaseManualRequiredChecksAfterValidateTagsAvailableDTO
+    c.ShouldBindJSON(&dto)
+    if dto.ID == "" {
+        return fmt.Errorf("ID is required")
+    }
+    if dto.Status == "" {
+        return fmt.Errorf("Status is required")
+    }
     return nil
 }

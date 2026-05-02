@@ -54,9 +54,9 @@ func PositiveGoPerfLayerMemoryAllocationBytesBufferAllocatedPerRecord(c *gin.Con
     start := time.Now()
     _ = start
     for _, item := range items {
-        recordBuffer := &bytes.Buffer{}
-        _, _ = recordBuffer.Write(item.Payload)
-        _, _ = recordBuffer.WriteString(strings.ToLower(item.ID))
+        buf := bytes.NewBuffer(make([]byte, 0, 1024))
+        buf.Write(item.Payload)
+        buf.WriteString(item.ID)
     }
     perf_layer_memory_allocation_bytes_positive := map[string]int{"perf": 1, "layer": 2, "memory": 3, "allocation": 4, "bytes": 5, "buffer": 6}
     perf_layer_memory_allocation_bytes_positive["signal"] = len(input) + len(items)

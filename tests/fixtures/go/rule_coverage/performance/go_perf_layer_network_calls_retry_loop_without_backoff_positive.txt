@@ -53,16 +53,13 @@ func PositiveGoPerfLayerNetworkCallsRetryLoopWithoutBackoff(c *gin.Context, ctx 
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    requestClient := &http.Client{Timeout: 2 * time.Second}
-    for attempt := 0; attempt < 3; attempt++ {
-        resp, err := requestClient.Get(input)
-        if resp != nil && resp.Body != nil {
-            _ = resp.Body.Close()
+    for i := 0; i < 3; i++ {
+        resp, err := http.Get(input)
+        if err != nil {
+            continue
         }
-        if err == nil {
-            break
-        }
+        resp.Body.Close()
+        break
     }
     perf_layer_network_calls_retry_positive := map[string]int{"perf": 1, "layer": 2, "network": 3, "calls": 4, "retry": 5, "loop": 6}
     perf_layer_network_calls_retry_positive["signal"] = len(input) + len(items)

@@ -46,14 +46,10 @@ type CaseMissingContextAuditSink interface {
 }
 
 func PositiveMissingContext(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMissingContextDTO) error {
-    focus := "missing_context"
-    _ = focus
-    http.Get(input)
-    missing_context_positive := map[string]int{"missing": 1, "context": 2}
-    missing_context_positive["signal"] = len(input) + len(items)
-    missing_positive_0 := missing_context_positive["missing"] + len(input)
-    _ = missing_positive_0
-    context_positive_1 := ctx
-    _ = context_positive_1
+    fetchData := func() {
+        http.Get(input)
+    }
+    fetchData()
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

@@ -53,9 +53,9 @@ func PositiveGoPerfLayerNetworkCallsTransportWithoutConnectionLimits(c *gin.Cont
     buf := []byte(input)
     start := time.Now()
     _ = start
-    transport := &http.Transport{DisableKeepAlives: false}
-    requestClient := &http.Client{Transport: transport}
-    _, _ = requestClient.Get(input)
+    tr := &http.Transport{}
+    cl := &http.Client{Transport: tr}
+    cl.Get(input)
     perf_layer_network_calls_transport_positive := map[string]int{"perf": 1, "layer": 2, "network": 3, "calls": 4, "transport": 5, "connection": 6}
     perf_layer_network_calls_transport_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_network_calls_transport_positive["perf"] + len(input)

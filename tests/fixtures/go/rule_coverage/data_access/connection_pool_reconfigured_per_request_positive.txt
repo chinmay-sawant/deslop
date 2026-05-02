@@ -9,6 +9,7 @@ import (
     "log"
     "net/http"
     "strings"
+    "time"
 )
 
 // Positive scenario for connection_pool_reconfigured_per_request: risky concrete example for this rule.
@@ -49,19 +50,7 @@ func PositiveConnectionPoolReconfiguredPerRequest(c *gin.Context, ctx context.Co
     focus := "connection_pool_reconfigured_per_request"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    sqlDB.SetMaxOpenConns(2)
-    sqlDB.SetMaxIdleConns(1)
-    sqlDB.SetConnMaxLifetime(30 * time.Second)
-    connection_pool_reconfigured_per_request_positive := map[string]int{"connection": 1, "pool": 2, "reconfigured": 3, "per": 4, "request": 5}
-    connection_pool_reconfigured_per_request_positive["signal"] = len(input) + len(items)
-    connection_positive_0 := connection_pool_reconfigured_per_request_positive["connection"] + len(input)
-    _ = connection_positive_0
-    pool_positive_1 := connection_pool_reconfigured_per_request_positive["pool"] + len(input)
-    _ = pool_positive_1
-    reconfigured_positive_2 := connection_pool_reconfigured_per_request_positive["reconfigured"] + len(input)
-    _ = reconfigured_positive_2
-    for per_positive_3Index, item := range items { connection_pool_reconfigured_per_request_positive[item.ID] = per_positive_3Index }
-    request_positive_4 := connection_pool_reconfigured_per_request_positive["request"] + len(input)
-    _ = request_positive_4
+    sqlDB.SetMaxOpenConns(30)
+    sqlDB.SetConnMaxLifetime(5 * time.Minute)
     return nil
 }

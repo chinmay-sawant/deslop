@@ -53,8 +53,18 @@ func PositiveGoPerfLayerAlgorithmicComplexityQuadraticAppendFilterPipeline(c *gi
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseGoPerfLayerAlgorithmicComplexityQuadraticAppendFilterPipelineDTO
-    for _, item := range items { copied = append(copied, item) }
+    var result []CaseGoPerfLayerAlgorithmicComplexityQuadraticAppendFilterPipelineDTO
+    for _, x := range items {
+        result = append(result, x)
+        var filtered []CaseGoPerfLayerAlgorithmicComplexityQuadraticAppendFilterPipelineDTO
+        for _, r := range result {
+            if r.Amount > 0 {
+                filtered = append(filtered, r)
+            }
+        }
+        result = filtered
+    }
+    _ = result
     perf_layer_algorithmic_complexity_quadratic_positive := map[string]int{"perf": 1, "layer": 2, "algorithmic": 3, "complexity": 4, "quadratic": 5, "append": 6}
     perf_layer_algorithmic_complexity_quadratic_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_algorithmic_complexity_quadratic_positive["perf"] + len(input)

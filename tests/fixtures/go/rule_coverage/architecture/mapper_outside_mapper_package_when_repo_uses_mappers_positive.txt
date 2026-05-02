@@ -46,31 +46,8 @@ type CaseMapperOutsideMapperPackageWhenRepoUsesMappersAuditSink interface {
 }
 
 func PositiveMapperOutsideMapperPackageWhenRepoUsesMappers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMapperOutsideMapperPackageWhenRepoUsesMappersDTO) error {
-    focus := "mapper_outside_mapper_package_when"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseMapperOutsideMapperPackageWhenRepoUsesMappersDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseMapperOutsideMapperPackageWhenRepoUsesMappersService{repo: &CaseMapperOutsideMapperPackageWhenRepoUsesMappersRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseMapperOutsideMapperPackageWhenRepoUsesMappersModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    mapper_outside_package_when_repo_positive := map[string]int{"mapper": 1, "outside": 2, "package": 3, "when": 4, "repo": 5, "uses": 6}
-    mapper_outside_package_when_repo_positive["signal"] = len(input) + len(items)
-    mapper_positive_0 := mapper_outside_package_when_repo_positive["mapper"] + len(input)
-    _ = mapper_positive_0
-    outside_positive_1 := mapper_outside_package_when_repo_positive["outside"] + len(input)
-    _ = outside_positive_1
-    package_positive_2 := mapper_outside_package_when_repo_positive["package"] + len(input)
-    _ = package_positive_2
-    when_positive_3 := mapper_outside_package_when_repo_positive["when"] + len(input)
-    _ = when_positive_3
-    repo_positive_4 := db.Where("repo_id = ?", input)
-    _ = repo_positive_4
-    uses_positive_5 := mapper_outside_package_when_repo_positive["uses"] + len(input)
-    _ = uses_positive_5
+    dto := CaseMapperOutsideMapperPackageWhenRepoUsesMappersDTO{ID: input, Status: "active"}
+    model := CaseMapperOutsideMapperPackageWhenRepoUsesMappersModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    db.Create(&model)
     return nil
 }

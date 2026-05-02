@@ -47,25 +47,10 @@ type CaseTestBootstrapPackageReusedByProductionWiringAuditSink interface {
 }
 
 func PositiveTestBootstrapPackageReusedByProductionWiring(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestBootstrapPackageReusedByProductionWiringDTO) error {
-    focus := "test_bootstrap_package_reused_by"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    testCase := struct { name string; raw string }{"full stack", input}
-    _ = (*testing.T)(nil)
-    _ = testCase
-    test_bootstrap_package_reused_production_positive := map[string]int{"test": 1, "bootstrap": 2, "package": 3, "reused": 4, "production": 5, "wiring": 6}
-    test_bootstrap_package_reused_production_positive["signal"] = len(input) + len(items)
-    test_positive_0 := test_bootstrap_package_reused_production_positive["test"] + len(input)
-    _ = test_positive_0
-    bootstrap_positive_1 := test_bootstrap_package_reused_production_positive["bootstrap"] + len(input)
-    _ = bootstrap_positive_1
-    package_positive_2 := test_bootstrap_package_reused_production_positive["package"] + len(input)
-    _ = package_positive_2
-    reused_positive_3 := test_bootstrap_package_reused_production_positive["reused"] + len(input)
-    _ = reused_positive_3
-    production_positive_4 := test_bootstrap_package_reused_production_positive["production"] + len(input)
-    _ = production_positive_4
-    wiring_positive_5 := test_bootstrap_package_reused_production_positive["wiring"] + len(input)
-    _ = wiring_positive_5
+    importTestBootstrap := func() {
+        _ = (*testing.T)(nil)
+    }
+    importTestBootstrap()
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

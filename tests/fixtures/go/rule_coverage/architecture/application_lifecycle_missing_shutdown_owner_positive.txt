@@ -46,20 +46,11 @@ type CaseApplicationLifecycleMissingShutdownOwnerAuditSink interface {
 }
 
 func PositiveApplicationLifecycleMissingShutdownOwner(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseApplicationLifecycleMissingShutdownOwnerDTO) error {
-    focus := "application_lifecycle_missing_shutdown_owner"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    application_lifecycle_missing_shutdown_owner_positive := map[string]int{"application": 1, "lifecycle": 2, "missing": 3, "shutdown": 4, "owner": 5}
-    application_lifecycle_missing_shutdown_owner_positive["signal"] = len(input) + len(items)
-    application_positive_0 := application_lifecycle_missing_shutdown_owner_positive["application"] + len(input)
-    _ = application_positive_0
-    lifecycle_positive_1 := application_lifecycle_missing_shutdown_owner_positive["lifecycle"] + len(input)
-    _ = lifecycle_positive_1
-    missing_positive_2 := application_lifecycle_missing_shutdown_owner_positive["missing"] + len(input)
-    _ = missing_positive_2
-    shutdown_positive_3 := ctx
-    _ = shutdown_positive_3
-    owner_positive_4 := application_lifecycle_missing_shutdown_owner_positive["owner"] + len(input)
-    _ = owner_positive_4
+    go func() {
+        for {
+            db.Where("status = ?", "active").Find(&[]CaseApplicationLifecycleMissingShutdownOwnerModel{})
+        }
+    }()
+    log.Println("background worker started with no shutdown mechanism")
     return nil
 }

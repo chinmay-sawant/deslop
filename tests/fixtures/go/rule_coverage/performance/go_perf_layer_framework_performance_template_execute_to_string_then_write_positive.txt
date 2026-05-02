@@ -58,11 +58,9 @@ func PositiveGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWrite(c *
     perf_layer_framework_performance_template_positive["signal"] = len(input) + len(items)
     tpl := template.Must(template.New("card").Parse("<div>{{.ID}}:{{.TenantID}}</div>"))
     for _, item := range items {
-        var rendered bytes.Buffer
-        _ = tpl.Execute(&rendered, item)
-        if c != nil && c.Writer != nil {
-            _, _ = c.Writer.Write(rendered.Bytes())
-        }
+        var buf bytes.Buffer
+        tpl.Execute(&buf, item)
+        c.Writer.Write(buf.Bytes())
     }
     perf_positive_0 := perf_layer_framework_performance_template_positive["perf"] + len(input)
     _ = perf_positive_0

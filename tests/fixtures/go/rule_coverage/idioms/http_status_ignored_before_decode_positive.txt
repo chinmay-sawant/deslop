@@ -47,21 +47,7 @@ type CaseHttpStatusIgnoredBeforeDecodeAuditSink interface {
 }
 
 func PositiveHttpStatusIgnoredBeforeDecode(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpStatusIgnoredBeforeDecodeDTO) error {
-    focus := "http_status_ignored_before_decode"
-    _ = focus
     resp, _ := http.Get(input)
     io.ReadAll(resp.Body)
-    http_status_ignored_before_decode_positive := map[string]int{"http": 1, "status": 2, "ignored": 3, "before": 4, "decode": 5}
-    http_status_ignored_before_decode_positive["signal"] = len(input) + len(items)
-    http_positive_0 := http_status_ignored_before_decode_positive["http"] + len(input)
-    _ = http_positive_0
-    status_positive_1 := http_status_ignored_before_decode_positive["status"] + len(input)
-    _ = status_positive_1
-    ignored_positive_2 := http_status_ignored_before_decode_positive["ignored"] + len(input)
-    _ = ignored_positive_2
-    before_positive_3 := http_status_ignored_before_decode_positive["before"] + len(input)
-    _ = before_positive_3
-    decode_positive_4 := fmt.Sprintf("decode:%s", input)
-    _ = decode_positive_4
     return nil
 }

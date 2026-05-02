@@ -46,24 +46,8 @@ type CaseUnscopedQueryWithoutExplicitDangerNamingAuditSink interface {
 }
 
 func PositiveUnscopedQueryWithoutExplicitDangerNaming(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUnscopedQueryWithoutExplicitDangerNamingDTO) error {
-    focus := "unscoped_query_without_explicit_danger"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseUnscopedQueryWithoutExplicitDangerNamingRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseUnscopedQueryWithoutExplicitDangerNamingModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    unscoped_query_explicit_danger_naming_positive := map[string]int{"unscoped": 1, "query": 2, "explicit": 3, "danger": 4, "naming": 5}
-    unscoped_query_explicit_danger_naming_positive["signal"] = len(input) + len(items)
-    unscoped_positive_0 := unscoped_query_explicit_danger_naming_positive["unscoped"] + len(input)
-    _ = unscoped_positive_0
-    query_positive_1 := db.Where("query_id = ?", input)
-    _ = query_positive_1
-    explicit_positive_2 := unscoped_query_explicit_danger_naming_positive["explicit"] + len(input)
-    _ = explicit_positive_2
-    danger_positive_3 := unscoped_query_explicit_danger_naming_positive["danger"] + len(input)
-    _ = danger_positive_3
-    naming_positive_4 := unscoped_query_explicit_danger_naming_positive["naming"] + len(input)
-    _ = naming_positive_4
+    var model CaseUnscopedQueryWithoutExplicitDangerNamingModel
+    db.Unscoped().Where("id = ?", input).Find(&model)
+    _ = model
     return nil
 }

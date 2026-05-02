@@ -62,17 +62,8 @@ func (w *WorkerWrapper) DoWork(input string) string {
 }
 
 func PositivePassthroughWrapperInterface(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePassthroughWrapperInterfaceDTO) error {
-    focus := "passthrough_wrapper_interface"
-    _ = focus
     wrapper := &WorkerWrapper{inner: &workerImpl{}}
-    _ = wrapper.DoWork(input)
-    passthrough_wrapper_interface_positive := map[string]int{"passthrough": 1, "wrapper": 2, "interface": 3}
-    passthrough_wrapper_interface_positive["signal"] = len(input) + len(items)
-    passthrough_positive_0 := passthrough_wrapper_interface_positive["passthrough"] + len(input)
-    _ = passthrough_positive_0
-    wrapper_positive_1 := passthrough_wrapper_interface_positive["wrapper"] + len(input)
-    _ = wrapper_positive_1
-    interface_positive_2 := passthrough_wrapper_interface_positive["interface"] + len(input)
-    _ = interface_positive_2
+    result := wrapper.DoWork(input)
+    _ = result
     return nil
 }

@@ -46,25 +46,11 @@ type CaseCmdOrMainContainsDomainRulesAuditSink interface {
 }
 
 func PositiveCmdOrMainContainsDomainRules(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCmdOrMainContainsDomainRulesDTO) error {
-    focus := "cmd_or_main_contains_domain"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseCmdOrMainContainsDomainRulesService{repo: &CaseCmdOrMainContainsDomainRulesRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseCmdOrMainContainsDomainRulesModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    cmd_main_contains_domain_rules_positive := map[string]int{"cmd": 1, "main": 2, "contains": 3, "domain": 4, "rules": 5}
-    cmd_main_contains_domain_rules_positive["signal"] = len(input) + len(items)
-    cmd_positive_0 := cmd_main_contains_domain_rules_positive["cmd"] + len(input)
-    _ = cmd_positive_0
-    main_positive_1 := cmd_main_contains_domain_rules_positive["main"] + len(input)
-    _ = main_positive_1
-    contains_positive_2 := strings.TrimSpace(input)
-    _ = contains_positive_2
-    domain_positive_3 := CaseCmdOrMainContainsDomainRulesDTO{ID: input, Status: "domain"}
-    _ = domain_positive_3
-    rules_positive_4 := cmd_main_contains_domain_rules_positive["rules"] + len(input)
-    _ = rules_positive_4
+    var model CaseCmdOrMainContainsDomainRulesModel
+    db.Where("id = ?", input).First(&model)
+    if model.Status == "confirmed" {
+        log.Printf("order %s is confirmed, applying discount", model.ID)
+        db.Model(&model).Update("amount", 100)
+    }
     return nil
 }

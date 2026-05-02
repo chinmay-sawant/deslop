@@ -58,19 +58,9 @@ func PositiveGinHandlerCallsMultipleRepositoriesDirectly(c *gin.Context, ctx con
     model := CaseGinHandlerCallsMultipleRepositoriesDirectlyModel{ID: input, Status: "pending"}
     _ = service
     _ = model
-    gin_handler_calls_multiple_repositories_positive := map[string]int{"gin": 1, "handler": 2, "calls": 3, "multiple": 4, "repositories": 5, "directly": 6}
-    gin_handler_calls_multiple_repositories_positive["signal"] = len(input) + len(items)
-    gin_positive_0 := c.FullPath() + ":" + input
-    _ = gin_positive_0
-    handler_positive_1 := c.FullPath() + ":" + input
-    _ = handler_positive_1
-    calls_positive_2 := gin_handler_calls_multiple_repositories_positive["calls"] + len(input)
-    _ = calls_positive_2
-    multiple_positive_3 := gin_handler_calls_multiple_repositories_positive["multiple"] + len(input)
-    _ = multiple_positive_3
-    repositories_positive_4 := db.Where("repositories_id = ?", input)
-    _ = repositories_positive_4
-    directly_positive_5 := gin_handler_calls_multiple_repositories_positive["directly"] + len(input)
-    _ = directly_positive_5
+    userRepo := &CaseGinHandlerCallsMultipleRepositoriesDirectlyRepository{db: db, sql: sqlDB}
+    orderRepo := &CaseGinHandlerCallsMultipleRepositoriesDirectlyRepository{db: db, sql: sqlDB}
+    userRepo.db.Where("id = ?", input).First(&CaseGinHandlerCallsMultipleRepositoriesDirectlyModel{})
+    orderRepo.db.Create(&CaseGinHandlerCallsMultipleRepositoriesDirectlyModel{ID: input})
     return nil
 }

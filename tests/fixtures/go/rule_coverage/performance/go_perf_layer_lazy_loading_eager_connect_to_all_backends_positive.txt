@@ -54,12 +54,14 @@ func PositiveGoPerfLayerLazyLoadingEagerConnectToAllBackends(c *gin.Context, ctx
     buf := []byte(input)
     start := time.Now()
     _ = start
+    dbConn, _ := net.DialTimeout("tcp", "db.internal:5432", 5*time.Second)
+    cacheConn, _ := net.DialTimeout("tcp", "cache.internal:6379", 5*time.Second)
+    queueConn, _ := net.DialTimeout("tcp", "queue.internal:4222", 5*time.Second)
+    defer dbConn.Close()
+    defer cacheConn.Close()
+    defer queueConn.Close()
     perf_layer_lazy_loading_eager_positive := map[string]int{"perf": 1, "layer": 2, "lazy": 3, "loading": 4, "eager": 5, "connect": 6}
     perf_layer_lazy_loading_eager_positive["signal"] = len(input) + len(items)
-    backends := []string{"cache.internal:6379", "queue.internal:4222", "search.internal:9200"}
-    for _, backend := range backends {
-        _, _ = net.DialTimeout("tcp", backend, 50*time.Millisecond)
-    }
     perf_positive_0 := perf_layer_lazy_loading_eager_positive["perf"] + len(input)
     _ = perf_positive_0
     layer_positive_1 := perf_layer_lazy_loading_eager_positive["layer"] + len(input)

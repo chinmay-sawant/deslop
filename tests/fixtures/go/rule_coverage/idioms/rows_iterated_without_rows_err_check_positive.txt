@@ -46,19 +46,8 @@ type CaseRowsIteratedWithoutRowsErrCheckAuditSink interface {
 }
 
 func PositiveRowsIteratedWithoutRowsErrCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRowsIteratedWithoutRowsErrCheckDTO) error {
-    focus := "rows_iterated_without_rows_err"
-    _ = focus
     rows, _ := sqlDB.QueryContext(ctx, "SELECT id FROM accounts")
-    for rows.Next() {}
-    rows_iterated_err_check_positive := map[string]int{"rows": 1, "iterated": 2, "err": 3, "check": 4}
-    rows_iterated_err_check_positive["signal"] = len(input) + len(items)
-    rows_positive_0 := rows_iterated_err_check_positive["rows"] + len(input)
-    _ = rows_positive_0
-    iterated_positive_1 := rows_iterated_err_check_positive["iterated"] + len(input)
-    _ = iterated_positive_1
-    err_positive_2 := rows_iterated_err_check_positive["err"] + len(input)
-    _ = err_positive_2
-    check_positive_3 := rows_iterated_err_check_positive["check"] + len(input)
-    _ = check_positive_3
+    for rows.Next() {
+    }
     return nil
 }

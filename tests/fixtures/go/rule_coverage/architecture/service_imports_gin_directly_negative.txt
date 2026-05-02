@@ -46,27 +46,9 @@ type CaseServiceImportsGinDirectlyAuditSink interface {
 }
 
 func NegativeServiceImportsGinDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceImportsGinDirectlyDTO) error {
-    focus := "service_imports_gin_directly"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseServiceImportsGinDirectlyDTO
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return nil
+    model := CaseServiceImportsGinDirectlyModel{ID: input, Status: "active"}
+    if err := db.WithContext(ctx).Save(&model).Error; err != nil {
+        return fmt.Errorf("save failed: %w", err)
     }
-    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
-    dto := CaseServiceImportsGinDirectlyDTO{ID: input, Status: "active"}
-    model := CaseServiceImportsGinDirectlyModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
-    service_imports_gin_directly_negative := map[string]int{"service": 1, "imports": 2, "gin": 3, "directly": 4}
-    service_imports_gin_directly_negative["signal"] = len(input) + len(items)
-    service_negative_0 := CaseServiceImportsGinDirectlyDTO{ID: input, Status: "service"}
-    _ = service_negative_0
-    imports_negative_1 := service_imports_gin_directly_negative["imports"] + len(input)
-    _ = imports_negative_1
-    gin_negative_2 := c.FullPath() + ":" + input
-    _ = gin_negative_2
-    directly_negative_3 := service_imports_gin_directly_negative["directly"] + len(input)
-    _ = directly_negative_3
     return nil
 }

@@ -50,22 +50,8 @@ type CaseGoPerfLayerCachingCacheKeyBuiltWithFmtAuditSink interface {
 func PositiveGoPerfLayerCachingCacheKeyBuiltWithFmt(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerCachingCacheKeyBuiltWithFmtDTO) error {
     focus := "go_perf_layer_caching_cache"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    perf_layer_caching_cache_key_positive := map[string]int{"perf": 1, "layer": 2, "caching": 3, "cache": 4, "key": 5, "built": 6}
-    perf_layer_caching_cache_key_positive["signal"] = len(input) + len(items)
-    perf_positive_0 := perf_layer_caching_cache_key_positive["perf"] + len(input)
-    _ = perf_positive_0
-    layer_positive_1 := perf_layer_caching_cache_key_positive["layer"] + len(input)
-    _ = layer_positive_1
-    caching_positive_2 := perf_layer_caching_cache_key_positive["caching"] + len(input)
-    _ = caching_positive_2
-    cache_positive_3 := perf_layer_caching_cache_key_positive["cache"] + len(input)
-    _ = cache_positive_3
-    key_positive_4 := perf_layer_caching_cache_key_positive["key"] + len(input)
-    _ = key_positive_4
-    built_positive_5 := perf_layer_caching_cache_key_positive["built"] + len(input)
-    _ = built_positive_5
+    id := 42
+    key := fmt.Sprintf("user:%d", id)
+    _ = key
     return nil
 }

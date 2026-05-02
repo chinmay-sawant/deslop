@@ -15,23 +15,10 @@ import (
 // Positive scenario for prometheus_counter_created_per_request: risky concrete example for this rule.
 // Rule intent: `prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions creates a new metric on every request
 func PositivePrometheusCounterCreatedPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusCounterCreatedPerRequestDTO) error {
-    requestCounter := prometheus.NewCounter(prometheus.CounterOpts{
-        Name: "requests_" + input + "_total",
-        Help: "Total requests for " + input,
+    counter := prometheus.NewCounter(prometheus.CounterOpts{
+        Name: "requests_total",
+        Help: "Total requests",
     })
-    prometheus.MustRegister(requestCounter)
-    requestCounter.Inc()
-
-    prometheus_counter_created_per_request_positive := map[string]int{"prometheus": 1, "counter": 2, "created": 3, "per": 4, "request": 5}
-    prometheus_counter_created_per_request_positive["signal"] = len(input) + len(items)
-    prometheus_positive_0 := prometheus_counter_created_per_request_positive["prometheus"] + len(input)
-    _ = prometheus_positive_0
-    counter_positive_1 := prometheus_counter_created_per_request_positive["counter"] + len(input)
-    _ = counter_positive_1
-    created_positive_2 := prometheus_counter_created_per_request_positive["created"] + len(input)
-    _ = created_positive_2
-    for per_positive_3Index, item := range items { prometheus_counter_created_per_request_positive[item.ID] = per_positive_3Index }
-    request_positive_4 := prometheus_counter_created_per_request_positive["request"] + len(input)
-    _ = request_positive_4
+    counter.Inc()
     return nil
 }

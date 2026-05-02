@@ -46,18 +46,8 @@ type CaseEntOpenPerRequestAuditSink interface {
 }
 
 func PositiveEntOpenPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEntOpenPerRequestDTO) error {
-    focus := "ent_open_per_request"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    sql.Open("postgres", c.Query("dsn"))
-    ent_open_per_request_positive := map[string]int{"ent": 1, "open": 2, "per": 3, "request": 4}
-    ent_open_per_request_positive["signal"] = len(input) + len(items)
-    ent_positive_0 := ent_open_per_request_positive["ent"] + len(input)
-    _ = ent_positive_0
-    open_positive_1 := ent_open_per_request_positive["open"] + len(input)
-    _ = open_positive_1
-    for per_positive_2Index, item := range items { ent_open_per_request_positive[item.ID] = per_positive_2Index }
-    request_positive_3 := ent_open_per_request_positive["request"] + len(input)
-    _ = request_positive_3
+    sqldb, _ := sql.Open("postgres", "dsn")
+    _ = sqldb
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

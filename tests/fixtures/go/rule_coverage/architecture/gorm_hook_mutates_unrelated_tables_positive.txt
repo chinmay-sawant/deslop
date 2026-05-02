@@ -46,24 +46,15 @@ type CaseGormHookMutatesUnrelatedTablesAuditSink interface {
 }
 
 func PositiveGormHookMutatesUnrelatedTables(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormHookMutatesUnrelatedTablesDTO) error {
-    focus := "gorm_hook_mutates_unrelated_tables"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseGormHookMutatesUnrelatedTablesRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormHookMutatesUnrelatedTablesModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    gorm_hook_mutates_unrelated_tables_positive := map[string]int{"gorm": 1, "hook": 2, "mutates": 3, "unrelated": 4, "tables": 5}
-    gorm_hook_mutates_unrelated_tables_positive["signal"] = len(input) + len(items)
-    gorm_positive_0 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_0
-    hook_positive_1 := gorm_hook_mutates_unrelated_tables_positive["hook"] + len(input)
-    _ = hook_positive_1
-    mutates_positive_2 := gorm_hook_mutates_unrelated_tables_positive["mutates"] + len(input)
-    _ = mutates_positive_2
-    unrelated_positive_3 := gorm_hook_mutates_unrelated_tables_positive["unrelated"] + len(input)
-    _ = unrelated_positive_3
-    tables_positive_4 := gorm_hook_mutates_unrelated_tables_positive["tables"] + len(input)
-    _ = tables_positive_4
+    var model CaseGormHookMutatesUnrelatedTablesModel
+    db.Where("id = ?", input).First(&model)
+    c.JSON(http.StatusOK, gin.H{"data": model})
     return nil
+}
+
+func (m *CaseGormHookMutatesUnrelatedTablesModel) AfterCreate(tx *gorm.DB) error {
+    return tx.Table("audit_logs").Create(map[string]interface{}{
+        "entity_id": m.ID,
+        "action":    "created",
+    }).Error
 }

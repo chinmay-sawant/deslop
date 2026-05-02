@@ -47,29 +47,10 @@ type CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperAuditSink interf
 }
 
 func NegativeSavepointOrNestedTxLogicScatteredWithoutDedicatedHelper(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperDTO) error {
-    focus := "savepoint_or_nested_tx_logic"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    dto := CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperDTO{ID: input, Status: "active"}
-    model := CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
     return db.Transaction(func(tx *gorm.DB) error {
-        return tx.WithContext(ctx).Save(&CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperModel{ID: input}).Error
+        if err := tx.WithContext(ctx).Save(&CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperModel{ID: input}).Error; err != nil {
+            return err
+        }
+        return nil
     })
-    slog.InfoContext(ctx, "savepoint_or_nested_tx_logic_scattered_without_dedicated_helper", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
-    savepoint_nested_tx_logic_scattered_negative := map[string]int{"savepoint": 1, "nested": 2, "tx": 3, "logic": 4, "scattered": 5, "dedicated": 6}
-    savepoint_nested_tx_logic_scattered_negative["signal"] = len(input) + len(items)
-    savepoint_negative_0 := savepoint_nested_tx_logic_scattered_negative["savepoint"] + len(input)
-    _ = savepoint_negative_0
-    nested_negative_1 := savepoint_nested_tx_logic_scattered_negative["nested"] + len(input)
-    _ = nested_negative_1
-    tx_negative_2 := savepoint_nested_tx_logic_scattered_negative["tx"] + len(input)
-    _ = tx_negative_2
-    logic_negative_3 := savepoint_nested_tx_logic_scattered_negative["logic"] + len(input)
-    _ = logic_negative_3
-    scattered_negative_4 := savepoint_nested_tx_logic_scattered_negative["scattered"] + len(input)
-    _ = scattered_negative_4
-    dedicated_negative_5 := savepoint_nested_tx_logic_scattered_negative["dedicated"] + len(input)
-    _ = dedicated_negative_5
-    return nil
 }

@@ -19,9 +19,8 @@ type CaseStrconvRepeatOnSameBindingDTO struct {
 }
 
 func PositiveStrconvRepeatOnSameBinding(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStrconvRepeatOnSameBindingDTO) error {
-    first, _ := strconv.Atoi(input)
-    second, _ := strconv.ParseInt(input, 10, 64)
-    third, _ := strconv.ParseUint(input, 10, 64)
-    c.Set("parsed", first+int(second)+int(third))
+    a, _ := strconv.Atoi(input)
+    b, _ := strconv.ParseInt(input, 10, 64)
+    c.Set("sum", a+int(b))
     return nil
 }

@@ -46,29 +46,25 @@ type CaseRootMainGoInLayeredServiceRepoAuditSink interface {
 }
 
 func PositiveRootMainGoInLayeredServiceRepo(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRootMainGoInLayeredServiceRepoDTO) error {
-    focus := "root_main_go_in_layered"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
+
+    log.Println("starting server...")
+    router := gin.Default()
+    db, err := gorm.Open(nil)
+    if err != nil {
+        log.Fatalf("failed to connect: %v", err)
+    }
     repo := &CaseRootMainGoInLayeredServiceRepoRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRootMainGoInLayeredServiceRepoModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseRootMainGoInLayeredServiceRepoService{repo: &CaseRootMainGoInLayeredServiceRepoRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseRootMainGoInLayeredServiceRepoModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    root_main_layered_service_repo_positive := map[string]int{"root": 1, "main": 2, "layered": 3, "service": 4, "repo": 5}
-    root_main_layered_service_repo_positive["signal"] = len(input) + len(items)
-    root_positive_0 := root_main_layered_service_repo_positive["root"] + len(input)
-    _ = root_positive_0
-    main_positive_1 := root_main_layered_service_repo_positive["main"] + len(input)
-    _ = main_positive_1
-    layered_positive_2 := root_main_layered_service_repo_positive["layered"] + len(input)
-    _ = layered_positive_2
-    service_positive_3 := CaseRootMainGoInLayeredServiceRepoDTO{ID: input, Status: "service"}
-    _ = service_positive_3
-    repo_positive_4 := db.Where("repo_id = ?", input)
-    _ = repo_positive_4
+    svc := &CaseRootMainGoInLayeredServiceRepoService{repo: repo, client: client}
+    router.GET("/api/users", func(c *gin.Context) {
+        var model CaseRootMainGoInLayeredServiceRepoModel
+        if err := svc.repo.db.WithContext(ctx).Where("id = ?", c.Query("id")).First(&model).Error; err != nil {
+            c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+            return
+        }
+        c.JSON(http.StatusOK, model)
+    })
+    _ = router
+    _ = svc
+    _ = err
     return nil
 }

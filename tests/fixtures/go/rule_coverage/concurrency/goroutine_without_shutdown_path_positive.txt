@@ -48,21 +48,10 @@ type CaseGoroutineWithoutShutdownPathAuditSink interface {
 }
 
 func PositiveGoroutineWithoutShutdownPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoroutineWithoutShutdownPathDTO) error {
-    focus := "goroutine_without_shutdown_path"
-    _ = focus
-    out := map[string]int{}
-    var mu sync.Mutex
-    var wg sync.WaitGroup
-    go func() { out[input] = len(items) }()
-    wg.Wait()
-    _ = out
-    goroutine_shutdown_path_positive := map[string]int{"goroutine": 1, "shutdown": 2, "path": 3}
-    goroutine_shutdown_path_positive["signal"] = len(input) + len(items)
-    goroutine_positive_0 := ctx
-    _ = goroutine_positive_0
-    shutdown_positive_1 := ctx
-    _ = shutdown_positive_1
-    path_positive_2 := goroutine_shutdown_path_positive["path"] + len(input)
-    _ = path_positive_2
+    go func() {
+        for {
+            _ = db.Where("id = ?", input).Find(&items)
+        }
+    }()
     return nil
 }

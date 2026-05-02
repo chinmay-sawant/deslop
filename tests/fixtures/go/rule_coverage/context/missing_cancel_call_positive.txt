@@ -47,17 +47,7 @@ type CaseMissingCancelCallAuditSink interface {
 }
 
 func PositiveMissingCancelCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMissingCancelCallDTO) error {
-    focus := "missing_cancel_call"
-    _ = focus
     child, _ := context.WithTimeout(ctx, time.Second)
-    _ = child
-    missing_cancel_call_positive := map[string]int{"missing": 1, "cancel": 2, "call": 3}
-    missing_cancel_call_positive["signal"] = len(input) + len(items)
-    missing_positive_0 := missing_cancel_call_positive["missing"] + len(input)
-    _ = missing_positive_0
-    cancel_positive_1 := ctx
-    _ = cancel_positive_1
-    call_positive_2 := missing_cancel_call_positive["call"] + len(input)
-    _ = call_positive_2
+    _ = db.WithContext(child).Where("id = ?", input).Find(&items)
     return nil
 }

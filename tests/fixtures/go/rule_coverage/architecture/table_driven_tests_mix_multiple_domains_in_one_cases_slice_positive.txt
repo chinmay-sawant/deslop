@@ -47,34 +47,16 @@ type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceAuditSink interface {
 }
 
 func PositiveTableDrivenTestsMixMultipleDomainsInOneCasesSlice(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceDTO) error {
-    focus := "table_driven_tests_mix_multiple"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceService{repo: &CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    testCase := struct { name string; raw string }{"full stack", input}
-    _ = (*testing.T)(nil)
-    _ = testCase
-    table_driven_tests_mix_multiple_positive := map[string]int{"table": 1, "driven": 2, "tests": 3, "mix": 4, "multiple": 5, "domains": 6}
-    table_driven_tests_mix_multiple_positive["signal"] = len(input) + len(items)
-    table_positive_0 := db.Where("table_id = ?", input)
-    _ = table_positive_0
-    driven_positive_1 := table_driven_tests_mix_multiple_positive["driven"] + len(input)
-    _ = driven_positive_1
-    tests_positive_2 := table_driven_tests_mix_multiple_positive["tests"] + len(input)
-    _ = tests_positive_2
-    mix_positive_3 := table_driven_tests_mix_multiple_positive["mix"] + len(input)
-    _ = mix_positive_3
-    multiple_positive_4 := table_driven_tests_mix_multiple_positive["multiple"] + len(input)
-    _ = multiple_positive_4
-    domains_positive_5 := table_driven_tests_mix_multiple_positive["domains"] + len(input)
-    _ = domains_positive_5
+    tests := []struct {
+        name string
+        user string
+        order string
+    }{
+        {"user creates account", "user1", ""},
+        {"order is placed", "", "order1"},
+        {"user deletes account", "user2", ""},
+    }
+    _ = tests
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

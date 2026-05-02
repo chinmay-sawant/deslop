@@ -47,24 +47,10 @@ type CaseClientInputErrorMappedToInternalServerErrorAuditSink interface {
 }
 
 func PositiveClientInputErrorMappedToInternalServerError(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseClientInputErrorMappedToInternalServerErrorDTO) error {
-    focus := "client_input_error_mapped_to"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    err := errors.New("sql: no rows in result set for " + input)
-    if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
-    client_input_error_mapped_internal_positive := map[string]int{"client": 1, "input": 2, "error": 3, "mapped": 4, "internal": 5, "server": 6}
-    client_input_error_mapped_internal_positive["signal"] = len(input) + len(items)
-    client_positive_0 := client_input_error_mapped_internal_positive["client"] + len(input)
-    _ = client_positive_0
-    input_positive_1 := client_input_error_mapped_internal_positive["input"] + len(input)
-    _ = input_positive_1
-    error_positive_2 := client_input_error_mapped_internal_positive["error"] + len(input)
-    _ = error_positive_2
-    mapped_positive_3 := client_input_error_mapped_internal_positive["mapped"] + len(input)
-    _ = mapped_positive_3
-    internal_positive_4 := client_input_error_mapped_internal_positive["internal"] + len(input)
-    _ = internal_positive_4
-    server_positive_5 := client_input_error_mapped_internal_positive["server"] + len(input)
-    _ = server_positive_5
+    var request CaseClientInputErrorMappedToInternalServerErrorDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return nil
+    }
     return nil
 }

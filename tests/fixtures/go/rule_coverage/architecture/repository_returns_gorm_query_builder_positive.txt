@@ -46,24 +46,9 @@ type CaseRepositoryReturnsGormQueryBuilderAuditSink interface {
 }
 
 func PositiveRepositoryReturnsGormQueryBuilder(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsGormQueryBuilderDTO) error {
-    focus := "repository_returns_gorm_query_builder"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseRepositoryReturnsGormQueryBuilderRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryReturnsGormQueryBuilderModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    repository_returns_gorm_query_builder_positive := map[string]int{"repository": 1, "returns": 2, "gorm": 3, "query": 4, "builder": 5}
-    repository_returns_gorm_query_builder_positive["signal"] = len(input) + len(items)
-    repository_positive_0 := db.Where("repository_id = ?", input)
-    _ = repository_positive_0
-    returns_positive_1 := repository_returns_gorm_query_builder_positive["returns"] + len(input)
-    _ = returns_positive_1
-    gorm_positive_2 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_2
-    query_positive_3 := db.Where("query_id = ?", input)
-    _ = query_positive_3
-    builder_positive_4 := strings.TrimSpace(input)
-    _ = builder_positive_4
-    return nil
+
+    q := db.Where("tenant_id = ?", input).Order("created_at DESC")
+    var results []CaseRepositoryReturnsGormQueryBuilderModel
+    q.Find(&results)
+    return q, nil
 }

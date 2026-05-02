@@ -46,32 +46,20 @@ type CaseValidationLogicDuplicatedAcrossHandlersAuditSink interface {
 }
 
 func PositiveValidationLogicDuplicatedAcrossHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseValidationLogicDuplicatedAcrossHandlersDTO) error {
-    focus := "validation_logic_duplicated_across_handlers"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseValidationLogicDuplicatedAcrossHandlersDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseValidationLogicDuplicatedAcrossHandlersService{repo: &CaseValidationLogicDuplicatedAcrossHandlersRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseValidationLogicDuplicatedAcrossHandlersModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    log.Printf("validation_logic_duplicated_across_handlers tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
-    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
-    _ = auditFields
-    validation_logic_duplicated_across_handlers_positive := map[string]int{"validation": 1, "logic": 2, "duplicated": 3, "across": 4, "handlers": 5}
-    validation_logic_duplicated_across_handlers_positive["signal"] = len(input) + len(items)
-    validation_positive_0 := CaseValidationLogicDuplicatedAcrossHandlersDTO{ID: input, Status: "validation"}
-    _ = validation_positive_0
-    logic_positive_1 := validation_logic_duplicated_across_handlers_positive["logic"] + len(input)
-    _ = logic_positive_1
-    duplicated_positive_2 := validation_logic_duplicated_across_handlers_positive["duplicated"] + len(input)
-    _ = duplicated_positive_2
-    across_positive_3 := validation_logic_duplicated_across_handlers_positive["across"] + len(input)
-    _ = across_positive_3
-    handlers_positive_4 := c.FullPath() + ":" + input
-    _ = handlers_positive_4
+    handler1 := func(dto CaseValidationLogicDuplicatedAcrossHandlersDTO) error {
+        if len(dto.Status) > 100 {
+            return errors.New("name too long")
+        }
+        return nil
+    }
+    handler2 := func(dto CaseValidationLogicDuplicatedAcrossHandlersDTO) error {
+        if len(dto.Status) > 100 {
+            return errors.New("name too long")
+        }
+        return nil
+    }
+    _ = handler1
+    _ = handler2
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

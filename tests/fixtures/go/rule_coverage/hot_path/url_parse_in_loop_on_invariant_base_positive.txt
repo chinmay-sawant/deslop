@@ -20,9 +20,9 @@ type CaseUrlParseInLoopOnInvariantBaseDTO struct {
 
 func PositiveUrlParseInLoopOnInvariantBase(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUrlParseInLoopOnInvariantBaseDTO) error {
     for _, item := range items {
-        parsed, _ := url.Parse(input)
-        if parsed != nil {
-            parsed.Path = "/" + item.ID
+        u, _ := url.Parse(input)
+        if u != nil {
+            u.Path = "/" + item.ID
         }
     }
     return nil

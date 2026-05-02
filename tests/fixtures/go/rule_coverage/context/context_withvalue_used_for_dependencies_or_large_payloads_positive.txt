@@ -46,22 +46,9 @@ type CaseContextWithvalueUsedForDependenciesOrLargePayloadsAuditSink interface {
 }
 
 func PositiveContextWithvalueUsedForDependenciesOrLargePayloads(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseContextWithvalueUsedForDependenciesOrLargePayloadsDTO) error {
-    focus := "context_withvalue_used_for_dependencies"
-    _ = focus
-    ctx = context.WithValue(ctx, "repository", db)
-    context_withvalue_used_dependencies_large_positive := map[string]int{"context": 1, "withvalue": 2, "used": 3, "dependencies": 4, "large": 5, "payloads": 6}
-    context_withvalue_used_dependencies_large_positive["signal"] = len(input) + len(items)
-    context_positive_0 := ctx
-    _ = context_positive_0
-    withvalue_positive_1 := context_withvalue_used_dependencies_large_positive["withvalue"] + len(input)
-    _ = withvalue_positive_1
-    used_positive_2 := context_withvalue_used_dependencies_large_positive["used"] + len(input)
-    _ = used_positive_2
-    dependencies_positive_3 := context_withvalue_used_dependencies_large_positive["dependencies"] + len(input)
-    _ = dependencies_positive_3
-    large_positive_4 := context_withvalue_used_dependencies_large_positive["large"] + len(input)
-    _ = large_positive_4
-    payloads_positive_5 := context_withvalue_used_dependencies_large_positive["payloads"] + len(input)
-    _ = payloads_positive_5
+    ctx = context.WithValue(ctx, "db", db)
+    ctx = context.WithValue(ctx, "payload", items)
+    _ = ctx
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

@@ -46,20 +46,8 @@ type CaseDoubleCloseLocalChannelAuditSink interface {
 }
 
 func PositiveDoubleCloseLocalChannel(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDoubleCloseLocalChannelDTO) error {
-    focus := "double_close_local_channel"
-    _ = focus
-    ch := make(chan string)
+    ch := make(chan int)
     close(ch)
     close(ch)
-    double_close_local_channel_positive := map[string]int{"double": 1, "close": 2, "local": 3, "channel": 4}
-    double_close_local_channel_positive["signal"] = len(input) + len(items)
-    double_positive_0 := double_close_local_channel_positive["double"] + len(input)
-    _ = double_positive_0
-    close_positive_1 := double_close_local_channel_positive["close"] + len(input)
-    _ = close_positive_1
-    local_positive_2 := double_close_local_channel_positive["local"] + len(input)
-    _ = local_positive_2
-    channel_positive_3 := double_close_local_channel_positive["channel"] + len(input)
-    _ = channel_positive_3
     return nil
 }

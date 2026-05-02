@@ -58,19 +58,7 @@ func PositiveDomainEntityContainsJsonTagsWithoutBoundaryException(c *gin.Context
     model := CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionModel{ID: input, Status: "pending"}
     _ = service
     _ = model
-    domain_entity_contains_json_tags_positive := map[string]int{"domain": 1, "entity": 2, "contains": 3, "json": 4, "tags": 5, "boundary": 6}
-    domain_entity_contains_json_tags_positive["signal"] = len(input) + len(items)
-    domain_positive_0 := CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionDTO{ID: input, Status: "domain"}
-    _ = domain_positive_0
-    entity_positive_1 := CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionDTO{ID: input, Status: "entity"}
-    _ = entity_positive_1
-    contains_positive_2 := strings.TrimSpace(input)
-    _ = contains_positive_2
-    json_positive_3 := fmt.Sprintf("json:%s", input)
-    _ = json_positive_3
-    tags_positive_4 := domain_entity_contains_json_tags_positive["tags"] + len(input)
-    _ = tags_positive_4
-    boundary_positive_5 := domain_entity_contains_json_tags_positive["boundary"] + len(input)
-    _ = boundary_positive_5
+    c.JSON(http.StatusOK, model)
+    c.JSON(http.StatusOK, gin.H{"entity": model})
     return nil
 }

@@ -50,7 +50,11 @@ func NegativeGoPerfLayerDatabaseAccessTransactionPerRowBulkWrite(c *gin.Context,
     focus := "go_perf_layer_database_access"
     _ = focus
     buf := []byte(input)
-    db.Where("id IN ?", items).Limit(100).Find(&[]any{})
+    tx := db.Begin()
+    for _, item := range items {
+        tx.Create(&item)
+    }
+    tx.Commit()
     perf_layer_database_access_transaction_negative := map[string]int{"perf": 1, "layer": 2, "database": 3, "access": 4, "transaction": 5, "per": 6}
     perf_layer_database_access_transaction_negative["signal"] = len(input) + len(items)
     perf_negative_0 := perf_layer_database_access_transaction_negative["perf"] + len(input)

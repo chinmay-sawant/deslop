@@ -46,24 +46,15 @@ type CaseRouteSetupScatteredWithoutRouterPackageAuditSink interface {
 }
 
 func PositiveRouteSetupScatteredWithoutRouterPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRouteSetupScatteredWithoutRouterPackageDTO) error {
-    focus := "route_setup_scattered_without_router"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseRouteSetupScatteredWithoutRouterPackageDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    route_setup_scattered_router_package_positive := map[string]int{"route": 1, "setup": 2, "scattered": 3, "router": 4, "package": 5}
-    route_setup_scattered_router_package_positive["signal"] = len(input) + len(items)
-    route_positive_0 := c.FullPath() + ":" + input
-    _ = route_positive_0
-    setup_positive_1 := route_setup_scattered_router_package_positive["setup"] + len(input)
-    _ = setup_positive_1
-    scattered_positive_2 := route_setup_scattered_router_package_positive["scattered"] + len(input)
-    _ = scattered_positive_2
-    router_positive_3 := c.FullPath() + ":" + input
-    _ = router_positive_3
-    package_positive_4 := route_setup_scattered_router_package_positive["package"] + len(input)
-    _ = package_positive_4
+
+    r := gin.Default()
+    r.GET("/api/health", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"status": "ok"}) })
+    r.GET("/api/users", func(c *gin.Context) { c.JSON(http.StatusOK, []string{}) })
+    r.POST("/api/users", func(c *gin.Context) { c.JSON(http.StatusCreated, nil) })
+    var model CaseRouteSetupScatteredWithoutRouterPackageModel
+    if err := db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        return err
+    }
+    _ = r
     return nil
 }

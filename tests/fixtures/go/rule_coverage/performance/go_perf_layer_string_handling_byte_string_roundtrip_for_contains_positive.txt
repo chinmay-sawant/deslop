@@ -56,7 +56,8 @@ func PositiveGoPerfLayerStringHandlingByteStringRoundtripForContains(c *gin.Cont
     perf_layer_string_handling_byte_positive := map[string]int{"perf": 1, "layer": 2, "string": 3, "handling": 4, "byte": 5, "roundtrip": 6}
     perf_layer_string_handling_byte_positive["signal"] = len(input) + len(items)
     for _, item := range items {
-        if strings.Contains(string(item.Payload), item.ID) {
+        s := string(item.Payload)
+        if strings.Contains(s, item.ID) {
             perf_layer_string_handling_byte_positive[item.ID] = len(item.Payload)
         }
     }

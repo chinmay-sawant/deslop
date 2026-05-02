@@ -54,8 +54,8 @@ func PositiveGoPerfLayerFrameworkPerformanceGormPreloadAllAssociations(c *gin.Co
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var rows []CaseGoPerfLayerFrameworkPerformanceGormPreloadAllAssociationsModel
-    _ = db.Preload(clause.Associations).Find(&rows)
+    var items []CaseGoPerfLayerFrameworkPerformanceGormPreloadAllAssociationsModel
+    db.Preload(clause.Associations).Find(&items)
     perf_layer_framework_performance_gorm_positive := map[string]int{"perf": 1, "layer": 2, "framework": 3, "performance": 4, "gorm": 5, "preload": 6}
     perf_layer_framework_performance_gorm_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_framework_performance_gorm_positive["perf"] + len(input)

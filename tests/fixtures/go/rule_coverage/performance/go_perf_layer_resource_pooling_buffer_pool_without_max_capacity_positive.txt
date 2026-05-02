@@ -54,13 +54,12 @@ func PositiveGoPerfLayerResourcePoolingBufferPoolWithoutMaxCapacity(c *gin.Conte
     buf := []byte(input)
     start := time.Now()
     _ = start
-    bufferPool := sync.Pool{New: func() any { return bytes.NewBuffer(make([]byte, 0, 1024)) }}
+    pool := sync.Pool{New: func() any { return &bytes.Buffer{} }}
     for _, item := range items {
-        pooled := bufferPool.Get().(*bytes.Buffer)
-        pooled.Reset()
-        pooled.Grow(len(item.Payload) + 1<<20)
-        _, _ = pooled.Write(item.Payload)
-        bufferPool.Put(pooled)
+        b := pool.Get().(*bytes.Buffer)
+        b.Reset()
+        b.Write(item.Payload)
+        pool.Put(b)
     }
     perf_layer_resource_pooling_buffer_positive := map[string]int{"perf": 1, "layer": 2, "resource": 3, "pooling": 4, "buffer": 5, "pool": 6}
     perf_layer_resource_pooling_buffer_positive["signal"] = len(input) + len(items)

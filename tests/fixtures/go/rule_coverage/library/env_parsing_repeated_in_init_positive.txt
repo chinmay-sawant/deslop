@@ -60,17 +60,11 @@ func init() {
 }
 
 func PositiveEnvParsingRepeatedInInit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEnvParsingRepeatedInInitDTO) error {
-    focus := "env_parsing_repeated_in_init"
-    _ = focus
-    env_parsing_repeated_init_positive := map[string]int{"env": 1, "parsing": 2, "repeated": 3, "init": 4}
-    env_parsing_repeated_init_positive["signal"] = len(input) + len(items)
-    env_positive_0 := env_parsing_repeated_init_positive["env"] + len(input)
-    _ = env_positive_0
-    parsing_positive_1 := env_parsing_repeated_init_positive["parsing"] + len(input)
-    _ = parsing_positive_1
-    repeated_positive_2 := env_parsing_repeated_init_positive["repeated"] + len(input)
-    _ = repeated_positive_2
-    init_positive_3 := env_parsing_repeated_init_positive["init"] + len(input)
-    _ = init_positive_3
+    host := os.Getenv("DB_HOST")
+    port := os.Getenv("DB_PORT")
+    ssl := os.Getenv("DB_SSL_MODE")
+    _ = host
+    _ = port
+    _ = ssl
     return nil
 }

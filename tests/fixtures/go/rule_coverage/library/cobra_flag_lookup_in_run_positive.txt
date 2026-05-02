@@ -47,25 +47,13 @@ type CaseCobraFlagLookupInRunAuditSink interface {
 }
 
 func PositiveCobraFlagLookupInRun(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCobraFlagLookupInRunDTO) error {
-    focus := "cobra_flag_lookup_in_run"
-    _ = focus
     cmd := &cobra.Command{
         RunE: func(cmd *cobra.Command, args []string) error {
-            _ = cmd.Flags().GetString("config")
-            _ = cmd.Flags().GetInt("port")
+            port, _ := cmd.Flags().GetString("port")
+            _ = port
             return nil
         },
     }
     _ = cmd
-    cobra_flag_lookup_run_positive := map[string]int{"cobra": 1, "flag": 2, "lookup": 3, "run": 4}
-    cobra_flag_lookup_run_positive["signal"] = len(input) + len(items)
-    cobra_positive_0 := cobra_flag_lookup_run_positive["cobra"] + len(input)
-    _ = cobra_positive_0
-    flag_positive_1 := cobra_flag_lookup_run_positive["flag"] + len(input)
-    _ = flag_positive_1
-    lookup_positive_2 := cobra_flag_lookup_run_positive["lookup"] + len(input)
-    _ = lookup_positive_2
-    run_positive_3 := cobra_flag_lookup_run_positive["run"] + len(input)
-    _ = run_positive_3
     return nil
 }

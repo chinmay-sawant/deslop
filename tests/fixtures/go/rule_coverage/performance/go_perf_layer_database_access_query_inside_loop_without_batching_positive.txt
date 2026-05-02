@@ -53,8 +53,9 @@ func PositiveGoPerfLayerDatabaseAccessQueryInsideLoopWithoutBatching(c *gin.Cont
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    for _, item := range items { db.Where("id = ?", item.ID).Find(&[]any{}) }
+    for _, item := range items {
+        db.Where("id = ?", item.ID).First(&item)
+    }
     perf_layer_database_access_query_positive := map[string]int{"perf": 1, "layer": 2, "database": 3, "access": 4, "query": 5, "inside": 6}
     perf_layer_database_access_query_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_database_access_query_positive["perf"] + len(input)

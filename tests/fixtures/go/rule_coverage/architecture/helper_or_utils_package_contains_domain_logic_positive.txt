@@ -46,30 +46,8 @@ type CaseHelperOrUtilsPackageContainsDomainLogicAuditSink interface {
 }
 
 func PositiveHelperOrUtilsPackageContainsDomainLogic(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHelperOrUtilsPackageContainsDomainLogicDTO) error {
-    focus := "helper_or_utils_package_contains"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseHelperOrUtilsPackageContainsDomainLogicService{repo: &CaseHelperOrUtilsPackageContainsDomainLogicRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseHelperOrUtilsPackageContainsDomainLogicModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    log.Printf("helper_or_utils_package_contains_domain_logic tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
-    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
-    _ = auditFields
-    helper_utils_package_contains_domain_positive := map[string]int{"helper": 1, "utils": 2, "package": 3, "contains": 4, "domain": 5, "logic": 6}
-    helper_utils_package_contains_domain_positive["signal"] = len(input) + len(items)
-    helper_positive_0 := helper_utils_package_contains_domain_positive["helper"] + len(input)
-    _ = helper_positive_0
-    utils_positive_1 := helper_utils_package_contains_domain_positive["utils"] + len(input)
-    _ = utils_positive_1
-    package_positive_2 := helper_utils_package_contains_domain_positive["package"] + len(input)
-    _ = package_positive_2
-    contains_positive_3 := strings.TrimSpace(input)
-    _ = contains_positive_3
-    domain_positive_4 := CaseHelperOrUtilsPackageContainsDomainLogicDTO{ID: input, Status: "domain"}
-    _ = domain_positive_4
-    logic_positive_5 := helper_utils_package_contains_domain_positive["logic"] + len(input)
-    _ = logic_positive_5
-    return nil
+    if input == "confirmed" {
+        return nil
+    }
+    return fmt.Errorf("order status must be confirmed to proceed, got: %s", input)
 }

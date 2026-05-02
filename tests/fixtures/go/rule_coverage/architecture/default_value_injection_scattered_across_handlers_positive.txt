@@ -60,19 +60,9 @@ func PositiveDefaultValueInjectionScatteredAcrossHandlers(c *gin.Context, ctx co
     page, _ := strconv.Atoi(c.Query("page"))
     size, _ := strconv.Atoi(c.Query("size"))
     db.Order(c.Query("sort")).Offset((page - 1) * size).Limit(size).Find(&[]any{})
-    default_value_injection_scattered_across_positive := map[string]int{"default": 1, "value": 2, "injection": 3, "scattered": 4, "across": 5, "handlers": 6}
-    default_value_injection_scattered_across_positive["signal"] = len(input) + len(items)
-    default_positive_0 := default_value_injection_scattered_across_positive["default"] + len(input)
-    _ = default_positive_0
-    value_positive_1 := default_value_injection_scattered_across_positive["value"] + len(input)
-    _ = value_positive_1
-    injection_positive_2 := default_value_injection_scattered_across_positive["injection"] + len(input)
-    _ = injection_positive_2
-    scattered_positive_3 := default_value_injection_scattered_across_positive["scattered"] + len(input)
-    _ = scattered_positive_3
-    across_positive_4 := default_value_injection_scattered_across_positive["across"] + len(input)
-    _ = across_positive_4
-    handlers_positive_5 := c.FullPath() + ":" + input
-    _ = handlers_positive_5
+    if page == 0 { page = 1 }
+    if size == 0 { size = 20 }
+    if request.Status == "" { request.Status = "pending" }
+    if request.TenantID == "" { request.TenantID = "default" }
     return nil
 }

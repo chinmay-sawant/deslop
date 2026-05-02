@@ -21,8 +21,8 @@ type CaseStableValueNormalizationInInnerLoopDTO struct {
 func PositiveStableValueNormalizationInInnerLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStableValueNormalizationInInnerLoopDTO) error {
     for _, left := range items {
         for _, right := range items {
-            normalizedTenant := strings.ToLower(strings.TrimSpace(input))
-            if normalizedTenant == right.TenantID && left.ID != "" {
+            normalized := strings.ToLower(strings.TrimSpace(input))
+            if normalized == right.TenantID && left.ID != "" {
                 c.Set(left.ID, right.Status)
             }
         }

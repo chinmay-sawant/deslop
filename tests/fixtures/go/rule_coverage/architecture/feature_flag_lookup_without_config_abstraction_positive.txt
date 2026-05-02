@@ -64,17 +64,6 @@ func PositiveFeatureFlagLookupWithoutConfigAbstraction(c *gin.Context, ctx conte
     _ = service
     _ = model
     if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
-    feature_flag_lookup_config_abstraction_positive := map[string]int{"feature": 1, "flag": 2, "lookup": 3, "config": 4, "abstraction": 5}
-    feature_flag_lookup_config_abstraction_positive["signal"] = len(input) + len(items)
-    feature_positive_0 := feature_flag_lookup_config_abstraction_positive["feature"] + len(input)
-    _ = feature_positive_0
-    flag_positive_1 := feature_flag_lookup_config_abstraction_positive["flag"] + len(input)
-    _ = flag_positive_1
-    lookup_positive_2 := feature_flag_lookup_config_abstraction_positive["lookup"] + len(input)
-    _ = lookup_positive_2
-    config_positive_3 := feature_flag_lookup_config_abstraction_positive["config"] + len(input)
-    _ = config_positive_3
-    abstraction_positive_4 := feature_flag_lookup_config_abstraction_positive["abstraction"] + len(input)
-    _ = abstraction_positive_4
+    if os.Getenv("DARK_MODE") == "true" { input = input + ":dark" }
     return nil
 }

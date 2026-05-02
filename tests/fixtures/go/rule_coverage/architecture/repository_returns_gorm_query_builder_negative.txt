@@ -46,24 +46,9 @@ type CaseRepositoryReturnsGormQueryBuilderAuditSink interface {
 }
 
 func NegativeRepositoryReturnsGormQueryBuilder(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsGormQueryBuilderDTO) error {
-    focus := "repository_returns_gorm_query_builder"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseRepositoryReturnsGormQueryBuilderRepository{db: db, sql: sqlDB}
     var model CaseRepositoryReturnsGormQueryBuilderModel
-    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
-    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
-    repository_returns_gorm_query_builder_negative := map[string]int{"repository": 1, "returns": 2, "gorm": 3, "query": 4, "builder": 5}
-    repository_returns_gorm_query_builder_negative["signal"] = len(input) + len(items)
-    repository_negative_0 := db.Where("repository_id = ?", input)
-    _ = repository_negative_0
-    returns_negative_1 := repository_returns_gorm_query_builder_negative["returns"] + len(input)
-    _ = returns_negative_1
-    gorm_negative_2 := db.Where("gorm_id = ?", input)
-    _ = gorm_negative_2
-    query_negative_3 := db.Where("query_id = ?", input)
-    _ = query_negative_3
-    builder_negative_4 := strings.TrimSpace(input)
-    _ = builder_negative_4
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        return err
+    }
     return nil
 }

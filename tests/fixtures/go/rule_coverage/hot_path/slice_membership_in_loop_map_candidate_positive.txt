@@ -18,16 +18,13 @@ type CaseSliceMembershipInLoopMapCandidateDTO struct {
 }
 
 func PositiveSliceMembershipInLoopMapCandidate(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSliceMembershipInLoopMapCandidateDTO) error {
-    allowed := []string{"active", "pending", "paused"}
-    matched := 0
+    allowed := []string{"active", "pending"}
     for _, item := range items {
-        for _, status := range allowed {
-            if item.Status == status {
-                matched++
-                break
+        for _, v := range allowed {
+            if item.Status == v {
+                c.Set(item.ID, v)
             }
         }
     }
-    _ = matched
     return nil
 }

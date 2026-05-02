@@ -46,8 +46,6 @@ type CaseRangeOverLocalChannelWithoutCloseAuditSink interface {
 }
 
 func PositiveRangeOverLocalChannelWithoutClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRangeOverLocalChannelWithoutCloseDTO) error {
-    focus := "range_over_local_channel_without_close"
-    _ = focus
     ch := make(chan string)
     go func() {
         for msg := range ch {
@@ -55,17 +53,5 @@ func PositiveRangeOverLocalChannelWithoutClose(c *gin.Context, ctx context.Conte
         }
     }()
     ch <- input
-    range_over_local_channel_close_positive := map[string]int{"range": 1, "over": 2, "local": 3, "channel": 4, "close": 5}
-    range_over_local_channel_close_positive["signal"] = len(input) + len(items)
-    range_positive_0 := range_over_local_channel_close_positive["range"] + len(input)
-    _ = range_positive_0
-    over_positive_1 := range_over_local_channel_close_positive["over"] + len(input)
-    _ = over_positive_1
-    local_positive_2 := range_over_local_channel_close_positive["local"] + len(input)
-    _ = local_positive_2
-    channel_positive_3 := range_over_local_channel_close_positive["channel"] + len(input)
-    _ = channel_positive_3
-    close_positive_4 := range_over_local_channel_close_positive["close"] + len(input)
-    _ = close_positive_4
     return nil
 }

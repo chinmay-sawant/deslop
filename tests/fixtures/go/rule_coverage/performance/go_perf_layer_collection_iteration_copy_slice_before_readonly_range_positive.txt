@@ -53,8 +53,11 @@ func PositiveGoPerfLayerCollectionIterationCopySliceBeforeReadonlyRange(c *gin.C
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseGoPerfLayerCollectionIterationCopySliceBeforeReadonlyRangeDTO
-    for _, item := range items { copied = append(copied, item) }
+    copied := make([]CaseGoPerfLayerCollectionIterationCopySliceBeforeReadonlyRangeDTO, len(items))
+    copy(copied, items)
+    for _, item := range copied {
+        _ = item.ID
+    }
     perf_layer_collection_iteration_copy_positive := map[string]int{"perf": 1, "layer": 2, "collection": 3, "iteration": 4, "copy": 5, "slice": 6}
     perf_layer_collection_iteration_copy_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_collection_iteration_copy_positive["perf"] + len(input)

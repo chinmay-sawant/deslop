@@ -59,19 +59,11 @@ func PositiveErrorCodeLiteralsDuplicatedAcrossHandlers(c *gin.Context, ctx conte
     _ = auditFields
     err := errors.New("sql: no rows in result set for " + input)
     if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
-    error_code_literals_duplicated_across_positive := map[string]int{"error": 1, "code": 2, "literals": 3, "duplicated": 4, "across": 5, "handlers": 6}
-    error_code_literals_duplicated_across_positive["signal"] = len(input) + len(items)
-    error_positive_0 := error_code_literals_duplicated_across_positive["error"] + len(input)
-    _ = error_positive_0
-    code_positive_1 := error_code_literals_duplicated_across_positive["code"] + len(input)
-    _ = code_positive_1
-    literals_positive_2 := error_code_literals_duplicated_across_positive["literals"] + len(input)
-    _ = literals_positive_2
-    duplicated_positive_3 := error_code_literals_duplicated_across_positive["duplicated"] + len(input)
-    _ = duplicated_positive_3
-    across_positive_4 := error_code_literals_duplicated_across_positive["across"] + len(input)
-    _ = across_positive_4
-    handlers_positive_5 := c.FullPath() + ":" + input
-    _ = handlers_positive_5
+    const ErrCodeNotFound = "ERR_NOT_FOUND"
+    const ErrCodeValidation = "ERR_VALIDATION"
+    const ErrCodeForbidden = "ERR_FORBIDDEN"
+    c.JSON(http.StatusBadRequest, gin.H{"code": ErrCodeValidation})
+    _ = ErrCodeNotFound
+    _ = ErrCodeForbidden
     return nil
 }

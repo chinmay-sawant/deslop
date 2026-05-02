@@ -46,22 +46,8 @@ type CaseRequestContextPassedToBackgroundTaskWithoutDetachAuditSink interface {
 }
 
 func PositiveRequestContextPassedToBackgroundTaskWithoutDetach(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestContextPassedToBackgroundTaskWithoutDetachDTO) error {
-    focus := "request_context_passed_to_background"
-    _ = focus
-    go func() { http.Get(input) }()
-    request_context_passed_background_task_positive := map[string]int{"request": 1, "context": 2, "passed": 3, "background": 4, "task": 5, "detach": 6}
-    request_context_passed_background_task_positive["signal"] = len(input) + len(items)
-    request_positive_0 := request_context_passed_background_task_positive["request"] + len(input)
-    _ = request_positive_0
-    context_positive_1 := ctx
-    _ = context_positive_1
-    passed_positive_2 := request_context_passed_background_task_positive["passed"] + len(input)
-    _ = passed_positive_2
-    background_positive_3 := ctx
-    _ = background_positive_3
-    task_positive_4 := request_context_passed_background_task_positive["task"] + len(input)
-    _ = task_positive_4
-    detach_positive_5 := request_context_passed_background_task_positive["detach"] + len(input)
-    _ = detach_positive_5
+    go func() {
+        _ = db.WithContext(ctx).Where("id = ?", input).Find(&items)
+    }()
     return nil
 }

@@ -18,16 +18,6 @@ import (
 func PositiveAwsSessionPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAwsSessionPerRequestDTO) error {
     awsCfg, _ := config.LoadDefaultConfig(ctx)
     s3Client := s3.NewFromConfig(awsCfg)
-    _, _ = s3Client
-
-    aws_session_per_request_positive := map[string]int{"aws": 1, "session": 2, "per": 3, "request": 4}
-    aws_session_per_request_positive["signal"] = len(input) + len(items)
-    aws_positive_0 := aws_session_per_request_positive["aws"] + len(input)
-    _ = aws_positive_0
-    session_positive_1 := aws_session_per_request_positive["session"] + len(input)
-    _ = session_positive_1
-    for per_positive_2Index, item := range items { aws_session_per_request_positive[item.ID] = per_positive_2Index }
-    request_positive_3 := aws_session_per_request_positive["request"] + len(input)
-    _ = request_positive_3
+    _ = s3Client
     return nil
 }

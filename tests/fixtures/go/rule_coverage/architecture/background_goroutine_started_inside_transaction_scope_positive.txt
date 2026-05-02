@@ -47,29 +47,11 @@ type CaseBackgroundGoroutineStartedInsideTransactionScopeAuditSink interface {
 }
 
 func PositiveBackgroundGoroutineStartedInsideTransactionScope(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBackgroundGoroutineStartedInsideTransactionScopeDTO) error {
-    focus := "background_goroutine_started_inside_transaction"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
     tx := db.Begin()
     tx.Create(&CaseBackgroundGoroutineStartedInsideTransactionScopeModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
     go func() {
-        db.Where("status = ?", "queued").Find(&[]CaseBackgroundGoroutineStartedInsideTransactionScopeModel{})
-        time.Sleep(time.Millisecond)
+        tx.Model(&CaseBackgroundGoroutineStartedInsideTransactionScopeModel{}).Where("id = ?", input).Update("status", "processed")
     }()
-    background_goroutine_started_inside_transaction_positive := map[string]int{"background": 1, "goroutine": 2, "started": 3, "inside": 4, "transaction": 5, "scope": 6}
-    background_goroutine_started_inside_transaction_positive["signal"] = len(input) + len(items)
-    background_positive_0 := ctx
-    _ = background_positive_0
-    goroutine_positive_1 := ctx
-    _ = goroutine_positive_1
-    started_positive_2 := background_goroutine_started_inside_transaction_positive["started"] + len(input)
-    _ = started_positive_2
-    inside_positive_3 := background_goroutine_started_inside_transaction_positive["inside"] + len(input)
-    _ = inside_positive_3
-    transaction_positive_4 := background_goroutine_started_inside_transaction_positive["transaction"] + len(input)
-    _ = transaction_positive_4
-    scope_positive_5 := background_goroutine_started_inside_transaction_positive["scope"] + len(input)
-    _ = scope_positive_5
+    tx.Commit()
     return nil
 }

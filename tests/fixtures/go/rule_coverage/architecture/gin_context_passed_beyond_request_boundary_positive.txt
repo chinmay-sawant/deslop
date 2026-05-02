@@ -59,23 +59,10 @@ func PositiveGinContextPassedBeyondRequestBoundary(c *gin.Context, ctx context.C
     model := CaseGinContextPassedBeyondRequestBoundaryModel{ID: input, Status: "pending"}
     _ = service
     _ = model
-    go func() {
-        db.Where("status = ?", "queued").Find(&[]CaseGinContextPassedBeyondRequestBoundaryModel{})
+    go func(ctx *gin.Context) {
+        tenantID := ctx.GetHeader("X-Tenant-ID")
+        db.Where("tenant_id = ?", tenantID).Find(&[]CaseGinContextPassedBeyondRequestBoundaryModel{})
         time.Sleep(time.Millisecond)
-    }()
-    gin_context_passed_beyond_request_positive := map[string]int{"gin": 1, "context": 2, "passed": 3, "beyond": 4, "request": 5, "boundary": 6}
-    gin_context_passed_beyond_request_positive["signal"] = len(input) + len(items)
-    gin_positive_0 := c.FullPath() + ":" + input
-    _ = gin_positive_0
-    context_positive_1 := ctx
-    _ = context_positive_1
-    passed_positive_2 := gin_context_passed_beyond_request_positive["passed"] + len(input)
-    _ = passed_positive_2
-    beyond_positive_3 := gin_context_passed_beyond_request_positive["beyond"] + len(input)
-    _ = beyond_positive_3
-    request_positive_4 := gin_context_passed_beyond_request_positive["request"] + len(input)
-    _ = request_positive_4
-    boundary_positive_5 := gin_context_passed_beyond_request_positive["boundary"] + len(input)
-    _ = boundary_positive_5
+    }(c)
     return nil
 }

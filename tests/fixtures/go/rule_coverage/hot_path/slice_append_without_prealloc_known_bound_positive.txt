@@ -18,7 +18,7 @@ type CaseSliceAppendWithoutPreallocKnownBoundDTO struct {
 }
 
 func PositiveSliceAppendWithoutPreallocKnownBound(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSliceAppendWithoutPreallocKnownBoundDTO) error {
-    ids := []string{}
+    var ids []string
     for _, item := range items {
         ids = append(ids, item.ID)
     }

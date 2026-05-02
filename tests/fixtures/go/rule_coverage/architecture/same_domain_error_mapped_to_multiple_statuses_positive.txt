@@ -47,27 +47,19 @@ type CaseSameDomainErrorMappedToMultipleStatusesAuditSink interface {
 }
 
 func PositiveSameDomainErrorMappedToMultipleStatuses(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSameDomainErrorMappedToMultipleStatusesDTO) error {
-    focus := "same_domain_error_mapped_to"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseSameDomainErrorMappedToMultipleStatusesService{repo: &CaseSameDomainErrorMappedToMultipleStatusesRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseSameDomainErrorMappedToMultipleStatusesModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    err := errors.New("sql: no rows in result set for " + input)
-    if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
-    domain_error_mapped_multiple_statuses_positive := map[string]int{"domain": 1, "error": 2, "mapped": 3, "multiple": 4, "statuses": 5}
-    domain_error_mapped_multiple_statuses_positive["signal"] = len(input) + len(items)
-    domain_positive_0 := CaseSameDomainErrorMappedToMultipleStatusesDTO{ID: input, Status: "domain"}
-    _ = domain_positive_0
-    error_positive_1 := domain_error_mapped_multiple_statuses_positive["error"] + len(input)
-    _ = error_positive_1
-    mapped_positive_2 := domain_error_mapped_multiple_statuses_positive["mapped"] + len(input)
-    _ = mapped_positive_2
-    multiple_positive_3 := domain_error_mapped_multiple_statuses_positive["multiple"] + len(input)
-    _ = multiple_positive_3
-    statuses_positive_4 := domain_error_mapped_multiple_statuses_positive["statuses"] + len(input)
-    _ = statuses_positive_4
+
+    ErrNotFound := errors.New("entity not found")
+    var model CaseSameDomainErrorMappedToMultipleStatusesModel
+    if err := db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return fmt.Errorf("%w: %s", ErrNotFound, input)
+        }
+        return err
+    }
+    if model.Status == "" {
+        c.JSON(http.StatusNotFound, gin.H{"error": ErrNotFound.Error()})
+        return nil
+    }
+    c.JSON(http.StatusInternalServerError, gin.H{"error": ErrNotFound.Error()})
     return nil
 }

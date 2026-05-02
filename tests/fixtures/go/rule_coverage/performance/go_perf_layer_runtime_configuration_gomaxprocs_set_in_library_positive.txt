@@ -54,7 +54,7 @@ func PositiveGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibrary(c *gin.Contex
     buf := []byte(input)
     start := time.Now()
     _ = start
-    runtime.GOMAXPROCS(runtime.NumCPU())
+    runtime.GOMAXPROCS(4)
     perf_layer_runtime_configuration_gomaxprocs_positive := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "gomaxprocs": 5, "set": 6}
     perf_layer_runtime_configuration_gomaxprocs_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_runtime_configuration_gomaxprocs_positive["perf"] + len(input)

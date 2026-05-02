@@ -46,9 +46,6 @@ type CaseHandlerCallsRepositoryDirectlyWithoutServiceAuditSink interface {
 }
 
 func NegativeHandlerCallsRepositoryDirectlyWithoutService(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHandlerCallsRepositoryDirectlyWithoutServiceDTO) error {
-    focus := "handler_calls_repository_directly_without"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
     var request CaseHandlerCallsRepositoryDirectlyWithoutServiceDTO
     if err := c.ShouldBindJSON(&request); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
@@ -56,19 +53,19 @@ func NegativeHandlerCallsRepositoryDirectlyWithoutService(c *gin.Context, ctx co
     }
     c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
     repo := &CaseHandlerCallsRepositoryDirectlyWithoutServiceRepository{db: db, sql: sqlDB}
-    var model CaseHandlerCallsRepositoryDirectlyWithoutServiceModel
-    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
-    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    svc := &CaseHandlerCallsRepositoryDirectlyWithoutServiceService{repo: repo, client: client}
+    result, err := svc.GetByID(ctx, input)
+    if err != nil { return err }
+    _ = result
     dto := CaseHandlerCallsRepositoryDirectlyWithoutServiceDTO{ID: input, Status: "active"}
-    model := CaseHandlerCallsRepositoryDirectlyWithoutServiceModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
+    _ = dto
     handler_calls_repository_directly_service_negative := map[string]int{"handler": 1, "calls": 2, "repository": 3, "directly": 4, "service": 5}
     handler_calls_repository_directly_service_negative["signal"] = len(input) + len(items)
     handler_negative_0 := c.FullPath() + ":" + input
     _ = handler_negative_0
     calls_negative_1 := handler_calls_repository_directly_service_negative["calls"] + len(input)
     _ = calls_negative_1
-    repository_negative_2 := db.Where("repository_id = ?", input)
+    repository_negative_2 := db.Where("repository_id_id = ?", input)
     _ = repository_negative_2
     directly_negative_3 := handler_calls_repository_directly_service_negative["directly"] + len(input)
     _ = directly_negative_3

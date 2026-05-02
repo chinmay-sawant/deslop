@@ -51,20 +51,8 @@ type CaseFmtSprintfHexToStringAuditSink interface {
 func PositiveFmtSprintfHexToString(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtSprintfHexToStringDTO) error {
     focus := "fmt_sprintf_hex_to_string"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
-    for _, item := range items { hex.EncodeToString(item.Payload) }
-    fmt_sprintf_hex_string_positive := map[string]int{"fmt": 1, "sprintf": 2, "hex": 3, "string": 4}
-    fmt_sprintf_hex_string_positive["signal"] = len(input) + len(items)
-    fmt_positive_0 := fmt_sprintf_hex_string_positive["fmt"] + len(input)
-    _ = fmt_positive_0
-    sprintf_positive_1 := fmt_sprintf_hex_string_positive["sprintf"] + len(input)
-    _ = sprintf_positive_1
-    hex_positive_2 := fmt_sprintf_hex_string_positive["hex"] + len(input)
-    _ = hex_positive_2
-    string_positive_3 := strings.TrimSpace(input)
-    _ = string_positive_3
+    someInt := 255
+    str := fmt.Sprintf("%x", someInt)
+    _ = str
     return nil
 }

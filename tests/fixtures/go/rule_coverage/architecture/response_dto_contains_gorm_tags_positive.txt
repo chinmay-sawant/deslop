@@ -47,31 +47,17 @@ type CaseResponseDtoContainsGormTagsAuditSink interface {
 }
 
 func PositiveResponseDtoContainsGormTags(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseResponseDtoContainsGormTagsDTO) error {
-    focus := "response_dto_contains_gorm_tags"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseResponseDtoContainsGormTagsRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseResponseDtoContainsGormTagsModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseResponseDtoContainsGormTagsService{repo: &CaseResponseDtoContainsGormTagsRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseResponseDtoContainsGormTagsModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    err := errors.New("sql: no rows in result set for " + input)
-    if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
-    response_dto_contains_gorm_tags_positive := map[string]int{"response": 1, "dto": 2, "contains": 3, "gorm": 4, "tags": 5}
-    response_dto_contains_gorm_tags_positive["signal"] = len(input) + len(items)
-    response_positive_0 := response_dto_contains_gorm_tags_positive["response"] + len(input)
-    _ = response_positive_0
-    dto_positive_1 := CaseResponseDtoContainsGormTagsDTO{ID: input, Status: "dto"}
-    _ = dto_positive_1
-    contains_positive_2 := strings.TrimSpace(input)
-    _ = contains_positive_2
-    gorm_positive_3 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_3
-    tags_positive_4 := response_dto_contains_gorm_tags_positive["tags"] + len(input)
-    _ = tags_positive_4
+
+    type AccountResponse struct {
+        ID     string `json:"id" gorm:"column:id"`
+        Name   string `json:"name" gorm:"column:name"`
+        Status string `json:"status" gorm:"column:status"`
+    }
+    var model CaseResponseDtoContainsGormTagsModel
+    if err := db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        return err
+    }
+    resp := AccountResponse{ID: model.ID, Name: model.ID, Status: model.Status}
+    c.JSON(http.StatusOK, resp)
     return nil
 }

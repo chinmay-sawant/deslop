@@ -53,6 +53,23 @@ func PositiveGoPerfLayerCollectionIterationMultiplePassesForIndependentCounts(c 
     buf := []byte(input)
     start := time.Now()
     _ = start
+    var countA, countB, countC int
+    for _, x := range items {
+        if x.Amount > 0 {
+            countA++
+        }
+    }
+    for _, x := range items {
+        if x.Status == "active" {
+            countB++
+        }
+    }
+    for _, x := range items {
+        if len(x.Payload) > 0 {
+            countC++
+        }
+    }
+    _ = countA + countB + countC
     perf_layer_collection_iteration_multiple_positive := map[string]int{"perf": 1, "layer": 2, "collection": 3, "iteration": 4, "multiple": 5, "passes": 6}
     perf_layer_collection_iteration_multiple_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_collection_iteration_multiple_positive["perf"] + len(input)

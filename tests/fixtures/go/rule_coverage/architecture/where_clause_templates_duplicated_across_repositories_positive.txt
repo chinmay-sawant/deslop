@@ -47,29 +47,9 @@ type CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesAuditSink interface {
 }
 
 func PositiveWhereClauseTemplatesDuplicatedAcrossRepositories(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesDTO) error {
-    focus := "where_clause_templates_duplicated_across"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    page, _ := strconv.Atoi(c.Query("page"))
-    size, _ := strconv.Atoi(c.Query("size"))
-    db.Order(c.Query("sort")).Offset((page - 1) * size).Limit(size).Find(&[]any{})
-    where_clause_templates_duplicated_across_positive := map[string]int{"where": 1, "clause": 2, "templates": 3, "duplicated": 4, "across": 5, "repositories": 6}
-    where_clause_templates_duplicated_across_positive["signal"] = len(input) + len(items)
-    where_positive_0 := where_clause_templates_duplicated_across_positive["where"] + len(input)
-    _ = where_positive_0
-    clause_positive_1 := where_clause_templates_duplicated_across_positive["clause"] + len(input)
-    _ = clause_positive_1
-    templates_positive_2 := where_clause_templates_duplicated_across_positive["templates"] + len(input)
-    _ = templates_positive_2
-    duplicated_positive_3 := where_clause_templates_duplicated_across_positive["duplicated"] + len(input)
-    _ = duplicated_positive_3
-    across_positive_4 := where_clause_templates_duplicated_across_positive["across"] + len(input)
-    _ = across_positive_4
-    repositories_positive_5 := db.Where("repositories_id = ?", input)
-    _ = repositories_positive_5
+    repoA := db.Where("deleted_at IS NULL")
+    repoB := db.Where("deleted_at IS NULL")
+    _ = repoA.Where("id = ?", input).Find(&items)
+    _ = repoB.Where("id = ?", input).Find(&items)
     return nil
 }

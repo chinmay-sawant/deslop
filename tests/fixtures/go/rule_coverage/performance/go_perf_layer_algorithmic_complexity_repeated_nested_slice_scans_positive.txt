@@ -53,8 +53,13 @@ func PositiveGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScans(c *gin.Con
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScansDTO
-    for _, item := range items { copied = append(copied, item) }
+    for _, a := range items {
+        for _, b := range items {
+            if a.ID == b.ID && a.Amount > b.Amount {
+                _ = a.Amount - b.Amount
+            }
+        }
+    }
     perf_layer_algorithmic_complexity_repeated_positive := map[string]int{"perf": 1, "layer": 2, "algorithmic": 3, "complexity": 4, "repeated": 5, "nested": 6}
     perf_layer_algorithmic_complexity_repeated_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_algorithmic_complexity_repeated_positive["perf"] + len(input)

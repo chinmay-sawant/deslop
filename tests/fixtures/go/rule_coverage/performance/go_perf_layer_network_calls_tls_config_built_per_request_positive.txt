@@ -54,10 +54,10 @@ func PositiveGoPerfLayerNetworkCallsTlsConfigBuiltPerRequest(c *gin.Context, ctx
     buf := []byte(input)
     start := time.Now()
     _ = start
-    requestTLSConfig := &tls.Config{MinVersion: tls.VersionTLS12}
-    requestTransport := &http.Transport{TLSClientConfig: requestTLSConfig}
-    requestClient := &http.Client{Transport: requestTransport}
-    _, _ = requestClient.Get(input)
+    tlsCfg := &tls.Config{MinVersion: tls.VersionTLS12}
+    tr := &http.Transport{TLSClientConfig: tlsCfg}
+    c := &http.Client{Transport: tr}
+    c.Get(input)
     perf_layer_network_calls_tls_positive := map[string]int{"perf": 1, "layer": 2, "network": 3, "calls": 4, "tls": 5, "config": 6}
     perf_layer_network_calls_tls_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_network_calls_tls_positive["perf"] + len(input)

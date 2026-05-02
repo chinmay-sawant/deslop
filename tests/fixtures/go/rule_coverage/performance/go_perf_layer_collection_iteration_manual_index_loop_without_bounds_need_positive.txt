@@ -53,7 +53,9 @@ func PositiveGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeed(c *g
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    for i := 0; i < len(items); i++ {
+        _ = strings.ToLower(items[i].ID)
+    }
     perf_layer_collection_iteration_manual_positive := map[string]int{"perf": 1, "layer": 2, "collection": 3, "iteration": 4, "manual": 5, "index": 6}
     perf_layer_collection_iteration_manual_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_collection_iteration_manual_positive["perf"] + len(input)

@@ -46,22 +46,11 @@ type CaseCacheInterfaceMethodMissingContextAuditSink interface {
 }
 
 func PositiveCacheInterfaceMethodMissingContext(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCacheInterfaceMethodMissingContextDTO) error {
-    focus := "cache_interface_method_missing_context"
-    _ = focus
-    http.Get(input)
-    lookup := func(key string) { _ = context.Background(); _ = key }
-    lookup(input)
-    cache_interface_method_missing_context_positive := map[string]int{"cache": 1, "interface": 2, "method": 3, "missing": 4, "context": 5}
-    cache_interface_method_missing_context_positive["signal"] = len(input) + len(items)
-    cache_positive_0 := cache_interface_method_missing_context_positive["cache"] + len(input)
-    _ = cache_positive_0
-    interface_positive_1 := cache_interface_method_missing_context_positive["interface"] + len(input)
-    _ = interface_positive_1
-    method_positive_2 := cache_interface_method_missing_context_positive["method"] + len(input)
-    _ = method_positive_2
-    missing_positive_3 := cache_interface_method_missing_context_positive["missing"] + len(input)
-    _ = missing_positive_3
-    context_positive_4 := ctx
-    _ = context_positive_4
+    type Cache interface {
+        Get(key string) string
+    }
+    var cch Cache
+    _ = cch
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

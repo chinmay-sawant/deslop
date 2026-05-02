@@ -46,26 +46,18 @@ type CaseGinHandlerUsesActionParamSwitchForManyUseCasesAuditSink interface {
 }
 
 func PositiveGinHandlerUsesActionParamSwitchForManyUseCases(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerUsesActionParamSwitchForManyUseCasesDTO) error {
-    focus := "gin_handler_uses_action_param"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseGinHandlerUsesActionParamSwitchForManyUseCasesDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    gin_handler_uses_action_param_positive := map[string]int{"gin": 1, "handler": 2, "uses": 3, "action": 4, "param": 5, "switch": 6}
-    gin_handler_uses_action_param_positive["signal"] = len(input) + len(items)
-    gin_positive_0 := c.FullPath() + ":" + input
-    _ = gin_positive_0
-    handler_positive_1 := c.FullPath() + ":" + input
-    _ = handler_positive_1
-    uses_positive_2 := gin_handler_uses_action_param_positive["uses"] + len(input)
-    _ = uses_positive_2
-    action_positive_3 := gin_handler_uses_action_param_positive["action"] + len(input)
-    _ = action_positive_3
-    param_positive_4 := gin_handler_uses_action_param_positive["param"] + len(input)
-    _ = param_positive_4
-    switch_positive_5 := gin_handler_uses_action_param_positive["switch"] + len(input)
-    _ = switch_positive_5
+    action := c.Param("action")
+    switch action {
+    case "create":
+        c.JSON(http.StatusOK, gin.H{"action": "create"})
+    case "update":
+        c.JSON(http.StatusOK, gin.H{"action": "update"})
+    case "delete":
+        c.JSON(http.StatusOK, gin.H{"action": "delete"})
+    case "list":
+        c.JSON(http.StatusOK, gin.H{"action": "list"})
+    default:
+        c.JSON(http.StatusBadRequest, gin.H{"error": "unknown action"})
+    }
     return nil
 }

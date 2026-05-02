@@ -46,27 +46,11 @@ type CaseValidatorOutsideValidationPackageAuditSink interface {
 }
 
 func PositiveValidatorOutsideValidationPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseValidatorOutsideValidationPackageDTO) error {
-    focus := "validator_outside_validation_package"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseValidatorOutsideValidationPackageDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseValidatorOutsideValidationPackageService{repo: &CaseValidatorOutsideValidationPackageRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseValidatorOutsideValidationPackageModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    validator_outside_validation_package_positive := map[string]int{"validator": 1, "outside": 2, "validation": 3, "package": 4}
-    validator_outside_validation_package_positive["signal"] = len(input) + len(items)
-    validator_positive_0 := CaseValidatorOutsideValidationPackageDTO{ID: input, Status: "validator"}
-    _ = validator_positive_0
-    outside_positive_1 := validator_outside_validation_package_positive["outside"] + len(input)
-    _ = outside_positive_1
-    validation_positive_2 := CaseValidatorOutsideValidationPackageDTO{ID: input, Status: "validation"}
-    _ = validation_positive_2
-    package_positive_3 := validator_outside_validation_package_positive["package"] + len(input)
-    _ = package_positive_3
-    return nil
+    ValidateStatus := func(s string) error {
+        if len(s) > 100 {
+            return errors.New("status too long")
+        }
+        return nil
+    }
+    return ValidateStatus(input)
 }

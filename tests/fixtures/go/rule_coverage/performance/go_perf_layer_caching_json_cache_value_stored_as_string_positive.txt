@@ -51,23 +51,10 @@ type CaseGoPerfLayerCachingJsonCacheValueStoredAsStringAuditSink interface {
 func PositiveGoPerfLayerCachingJsonCacheValueStoredAsString(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerCachingJsonCacheValueStoredAsStringDTO) error {
     focus := "go_perf_layer_caching_json"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { json.Marshal(item) }
-    perf_layer_caching_json_cache_positive := map[string]int{"perf": 1, "layer": 2, "caching": 3, "json": 4, "cache": 5, "value": 6}
-    perf_layer_caching_json_cache_positive["signal"] = len(input) + len(items)
-    perf_positive_0 := perf_layer_caching_json_cache_positive["perf"] + len(input)
-    _ = perf_positive_0
-    layer_positive_1 := perf_layer_caching_json_cache_positive["layer"] + len(input)
-    _ = layer_positive_1
-    caching_positive_2 := perf_layer_caching_json_cache_positive["caching"] + len(input)
-    _ = caching_positive_2
-    json_positive_3 := fmt.Sprintf("json:%s", input)
-    _ = json_positive_3
-    cache_positive_4 := perf_layer_caching_json_cache_positive["cache"] + len(input)
-    _ = cache_positive_4
-    value_positive_5 := perf_layer_caching_json_cache_positive["value"] + len(input)
-    _ = value_positive_5
+    data, _ := json.Marshal(items)
+    cacheValue := string(data)
+    var decoded []CaseGoPerfLayerCachingJsonCacheValueStoredAsStringDTO
+    json.Unmarshal([]byte(cacheValue), &decoded)
+    _ = decoded
     return nil
 }

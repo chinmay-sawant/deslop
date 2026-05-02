@@ -46,22 +46,8 @@ type CaseSendAfterLocalCloseRiskAuditSink interface {
 }
 
 func PositiveSendAfterLocalCloseRisk(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSendAfterLocalCloseRiskDTO) error {
-    focus := "send_after_local_close_risk"
-    _ = focus
     ch := make(chan string)
     close(ch)
     ch <- input
-    send_after_local_close_risk_positive := map[string]int{"send": 1, "after": 2, "local": 3, "close": 4, "risk": 5}
-    send_after_local_close_risk_positive["signal"] = len(input) + len(items)
-    send_positive_0 := send_after_local_close_risk_positive["send"] + len(input)
-    _ = send_positive_0
-    after_positive_1 := send_after_local_close_risk_positive["after"] + len(input)
-    _ = after_positive_1
-    local_positive_2 := send_after_local_close_risk_positive["local"] + len(input)
-    _ = local_positive_2
-    close_positive_3 := send_after_local_close_risk_positive["close"] + len(input)
-    _ = close_positive_3
-    risk_positive_4 := send_after_local_close_risk_positive["risk"] + len(input)
-    _ = risk_positive_4
     return nil
 }

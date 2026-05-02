@@ -53,7 +53,16 @@ func PositiveGoPerfLayerCollectionIterationRangeOverMapForDeterministicFirst(c *
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
+    m := make(map[string]int)
+    for i, item := range items {
+        m[item.ID] = i
+    }
+    var first string
+    for k := range m {
+        first = k
+        break
+    }
+    _ = first
     perf_layer_collection_iteration_range_positive := map[string]int{"perf": 1, "layer": 2, "collection": 3, "iteration": 4, "range": 5, "over": 6}
     perf_layer_collection_iteration_range_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_collection_iteration_range_positive["perf"] + len(input)

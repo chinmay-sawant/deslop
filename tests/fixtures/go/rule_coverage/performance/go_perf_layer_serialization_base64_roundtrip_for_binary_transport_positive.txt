@@ -55,9 +55,9 @@ func PositiveGoPerfLayerSerializationBase64RoundtripForBinaryTransport(c *gin.Co
     start := time.Now()
     _ = start
     for _, item := range items {
-        encoded := base64.StdEncoding.EncodeToString(item.Payload)
-        decoded, _ := base64.StdEncoding.DecodeString(encoded)
-        _ = decoded
+        enc := base64.StdEncoding.EncodeToString(item.Payload)
+        dec, _ := base64.StdEncoding.DecodeString(enc)
+        _ = dec
     }
     perf_layer_serialization_base64_roundtrip_positive := map[string]int{"perf": 1, "layer": 2, "serialization": 3, "base64": 4, "roundtrip": 5, "binary": 6}
     perf_layer_serialization_base64_roundtrip_positive["signal"] = len(input) + len(items)

@@ -19,16 +19,11 @@ type CaseStringsBuilderWithoutGrowKnownBoundDTO struct {
 }
 
 func PositiveStringsBuilderWithoutGrowKnownBound(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsBuilderWithoutGrowKnownBoundDTO) error {
-    expectedSize := len(input)
+    var sb strings.Builder
     for _, item := range items {
-        expectedSize += len(item.ID) + len(item.Status)
+        sb.WriteString(item.ID)
+        sb.WriteString(item.Status)
     }
-
-    var builder strings.Builder
-    for _, item := range items {
-        builder.WriteString(item.ID)
-        builder.WriteString(item.Status)
-    }
-    c.Set("built_size", builder.Len()+expectedSize)
+    _ = sb.Len()
     return nil
 }

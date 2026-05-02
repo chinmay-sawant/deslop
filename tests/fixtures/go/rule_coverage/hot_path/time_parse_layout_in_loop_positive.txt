@@ -19,9 +19,9 @@ type CaseTimeParseLayoutInLoopDTO struct {
 }
 
 func PositiveTimeParseLayoutInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTimeParseLayoutInLoopDTO) error {
-    const layout = "2006-01-02"
     for _, item := range items {
-        _, _ = time.Parse(layout, item.Status)
+        t, _ := time.Parse(time.RFC3339, item.Status)
+        _ = t
     }
     return nil
 }

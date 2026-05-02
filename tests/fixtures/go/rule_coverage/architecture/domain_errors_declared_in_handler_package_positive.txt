@@ -61,17 +61,10 @@ func PositiveDomainErrorsDeclaredInHandlerPackage(c *gin.Context, ctx context.Co
     _ = model
     err := errors.New("sql: no rows in result set for " + input)
     if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
-    domain_errors_declared_handler_package_positive := map[string]int{"domain": 1, "errors": 2, "declared": 3, "handler": 4, "package": 5}
-    domain_errors_declared_handler_package_positive["signal"] = len(input) + len(items)
-    domain_positive_0 := CaseDomainErrorsDeclaredInHandlerPackageDTO{ID: input, Status: "domain"}
-    _ = domain_positive_0
-    errors_positive_1 := domain_errors_declared_handler_package_positive["errors"] + len(input)
-    _ = errors_positive_1
-    declared_positive_2 := domain_errors_declared_handler_package_positive["declared"] + len(input)
-    _ = declared_positive_2
-    handler_positive_3 := c.FullPath() + ":" + input
-    _ = handler_positive_3
-    package_positive_4 := domain_errors_declared_handler_package_positive["package"] + len(input)
-    _ = package_positive_4
+    var ErrNotFound = errors.New("not found")
+    var ErrInvalidInput = errors.New("invalid input")
+    var ErrForbidden = errors.New("forbidden")
+    if input == "" { return ErrNotFound }
+    if input == "invalid" { return ErrInvalidInput }
     return nil
 }

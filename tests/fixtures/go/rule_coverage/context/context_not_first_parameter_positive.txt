@@ -46,19 +46,9 @@ type CaseContextNotFirstParameterAuditSink interface {
 }
 
 func PositiveContextNotFirstParameter(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseContextNotFirstParameterDTO) error {
-    focus := "context_not_first_parameter"
-    _ = focus
-    useContextLate := func(id string, inner context.Context) { _ = id; _ = inner }
-    useContextLate(input, ctx)
-    context_not_first_parameter_positive := map[string]int{"context": 1, "not": 2, "first": 3, "parameter": 4}
-    context_not_first_parameter_positive["signal"] = len(input) + len(items)
-    context_positive_0 := ctx
-    _ = context_positive_0
-    not_positive_1 := context_not_first_parameter_positive["not"] + len(input)
-    _ = not_positive_1
-    first_positive_2 := context_not_first_parameter_positive["first"] + len(input)
-    _ = first_positive_2
-    parameter_positive_3 := context_not_first_parameter_positive["parameter"] + len(input)
-    _ = parameter_positive_3
+    doSomething := func(id string, ctx context.Context) {
+        _ = db.WithContext(ctx).Where("id = ?", id).Find(&items)
+    }
+    doSomething(input, ctx)
     return nil
 }

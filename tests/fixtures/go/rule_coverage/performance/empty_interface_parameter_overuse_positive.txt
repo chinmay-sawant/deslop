@@ -51,20 +51,7 @@ type CaseEmptyInterfaceParameterOveruseAuditSink interface {
 func PositiveEmptyInterfaceParameterOveruse(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEmptyInterfaceParameterOveruseDTO) error {
     focus := "empty_interface_parameter_overuse"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    var value any = items
-    _ = reflect.DeepEqual(value, items)
-    empty_interface_parameter_overuse_positive := map[string]int{"empty": 1, "interface": 2, "parameter": 3, "overuse": 4}
-    empty_interface_parameter_overuse_positive["signal"] = len(input) + len(items)
-    empty_positive_0 := empty_interface_parameter_overuse_positive["empty"] + len(input)
-    _ = empty_positive_0
-    interface_positive_1 := empty_interface_parameter_overuse_positive["interface"] + len(input)
-    _ = interface_positive_1
-    parameter_positive_2 := empty_interface_parameter_overuse_positive["parameter"] + len(input)
-    _ = parameter_positive_2
-    overuse_positive_3 := empty_interface_parameter_overuse_positive["overuse"] + len(input)
-    _ = overuse_positive_3
+    var val interface{} = items
+    _ = val
     return nil
 }

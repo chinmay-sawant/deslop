@@ -47,29 +47,19 @@ type CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileAuditSink interface 
 }
 
 func PositiveRouteRegistrationTestsDuplicateFullBootstrapPerFile(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileDTO) error {
-    focus := "route_registration_tests_duplicate_full"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    testCase := struct { name string; raw string }{"full stack", input}
-    _ = (*testing.T)(nil)
-    _ = testCase
-    route_registration_tests_duplicate_full_positive := map[string]int{"route": 1, "registration": 2, "tests": 3, "duplicate": 4, "full": 5, "bootstrap": 6}
-    route_registration_tests_duplicate_full_positive["signal"] = len(input) + len(items)
-    route_positive_0 := c.FullPath() + ":" + input
-    _ = route_positive_0
-    registration_positive_1 := route_registration_tests_duplicate_full_positive["registration"] + len(input)
-    _ = registration_positive_1
-    tests_positive_2 := route_registration_tests_duplicate_full_positive["tests"] + len(input)
-    _ = tests_positive_2
-    duplicate_positive_3 := route_registration_tests_duplicate_full_positive["duplicate"] + len(input)
-    _ = duplicate_positive_3
-    full_positive_4 := route_registration_tests_duplicate_full_positive["full"] + len(input)
-    _ = full_positive_4
-    bootstrap_positive_5 := route_registration_tests_duplicate_full_positive["bootstrap"] + len(input)
-    _ = bootstrap_positive_5
+
+    router := gin.Default()
+    repo := &CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileRepository{db: db, sql: sqlDB}
+    svc := &CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileService{repo: repo, client: client}
+    router.GET("/api/users", func(c *gin.Context) {
+        var model CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileModel
+        if err := svc.repo.db.WithContext(ctx).Where("id = ?", c.Query("id")).First(&model).Error; err != nil {
+            c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+            return
+        }
+        c.JSON(http.StatusOK, model)
+    })
+    _ = router
+    _ = svc
     return nil
 }

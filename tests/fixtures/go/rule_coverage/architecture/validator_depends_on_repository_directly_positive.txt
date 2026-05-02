@@ -46,27 +46,14 @@ type CaseValidatorDependsOnRepositoryDirectlyAuditSink interface {
 }
 
 func PositiveValidatorDependsOnRepositoryDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseValidatorDependsOnRepositoryDirectlyDTO) error {
-    focus := "validator_depends_on_repository_directly"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
     repo := &CaseValidatorDependsOnRepositoryDirectlyRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseValidatorDependsOnRepositoryDirectlyModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseValidatorDependsOnRepositoryDirectlyService{repo: &CaseValidatorDependsOnRepositoryDirectlyRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseValidatorDependsOnRepositoryDirectlyModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    validator_depends_repository_directly_positive := map[string]int{"validator": 1, "depends": 2, "repository": 3, "directly": 4}
-    validator_depends_repository_directly_positive["signal"] = len(input) + len(items)
-    validator_positive_0 := CaseValidatorDependsOnRepositoryDirectlyDTO{ID: input, Status: "validator"}
-    _ = validator_positive_0
-    depends_positive_1 := validator_depends_repository_directly_positive["depends"] + len(input)
-    _ = depends_positive_1
-    repository_positive_2 := db.Where("repository_id = ?", input)
-    _ = repository_positive_2
-    directly_positive_3 := validator_depends_repository_directly_positive["directly"] + len(input)
-    _ = directly_positive_3
-    return nil
+    validateUnique := func(ctx context.Context, name string) error {
+        var existing CaseValidatorDependsOnRepositoryDirectlyModel
+        err := repo.db.Where("status = ?", name).First(&existing).Error
+        if err == nil {
+            return errors.New("already exists")
+        }
+        return nil
+    }
+    return validateUnique(ctx, input)
 }

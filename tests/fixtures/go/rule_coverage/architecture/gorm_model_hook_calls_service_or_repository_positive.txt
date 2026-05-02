@@ -46,31 +46,20 @@ type CaseGormModelHookCallsServiceOrRepositoryAuditSink interface {
 }
 
 func PositiveGormModelHookCallsServiceOrRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormModelHookCallsServiceOrRepositoryDTO) error {
-    focus := "gorm_model_hook_calls_service"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseGormModelHookCallsServiceOrRepositoryRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormModelHookCallsServiceOrRepositoryModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseGormModelHookCallsServiceOrRepositoryService{repo: &CaseGormModelHookCallsServiceOrRepositoryRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseGormModelHookCallsServiceOrRepositoryModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    gorm_model_hook_calls_service_positive := map[string]int{"gorm": 1, "model": 2, "hook": 3, "calls": 4, "service": 5, "repository": 6}
-    gorm_model_hook_calls_service_positive["signal"] = len(input) + len(items)
-    gorm_positive_0 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_0
-    model_positive_1 := CaseGormModelHookCallsServiceOrRepositoryDTO{ID: input, Status: "model"}
-    _ = model_positive_1
-    hook_positive_2 := gorm_model_hook_calls_service_positive["hook"] + len(input)
-    _ = hook_positive_2
-    calls_positive_3 := gorm_model_hook_calls_service_positive["calls"] + len(input)
-    _ = calls_positive_3
-    service_positive_4 := CaseGormModelHookCallsServiceOrRepositoryDTO{ID: input, Status: "service"}
-    _ = service_positive_4
-    repository_positive_5 := db.Where("repository_id = ?", input)
-    _ = repository_positive_5
+    var model CaseGormModelHookCallsServiceOrRepositoryModel
+    db.Where("id = ?", input).First(&model)
+    c.JSON(http.StatusOK, gin.H{"data": model})
     return nil
+}
+
+func (m *CaseGormModelHookCallsServiceOrRepositoryModel) AfterCreate(tx *gorm.DB) error {
+    svc := &CaseGormModelHookCallsServiceOrRepositoryService{
+        repo: &CaseGormModelHookCallsServiceOrRepositoryRepository{db: tx, sql: nil},
+        client: &http.Client{},
+    }
+    ctx := context.Background()
+    return svc.repo.db.WithContext(ctx).Table("audit_logs").Create(map[string]interface{}{
+        "entity_id": m.ID,
+        "action":    "created",
+    }).Error
 }

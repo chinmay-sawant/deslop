@@ -47,36 +47,10 @@ type CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsAuditSink interface {
 }
 
 func NegativeResponseDtoUsesOmitemptyOnRequiredContractFields(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsDTO) error {
-    focus := "response_dto_uses_omitempty_on"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsDTO
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return nil
-    }
-    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
-    repo := &CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsRepository{db: db, sql: sqlDB}
+
     var model CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsModel
-    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
-    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
-    dto := CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsDTO{ID: input, Status: "active"}
-    model := CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
-    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
-    response_dto_uses_omitempty_required_negative := map[string]int{"response": 1, "dto": 2, "uses": 3, "omitempty": 4, "required": 5, "contract": 6}
-    response_dto_uses_omitempty_required_negative["signal"] = len(input) + len(items)
-    response_negative_0 := response_dto_uses_omitempty_required_negative["response"] + len(input)
-    _ = response_negative_0
-    dto_negative_1 := CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsDTO{ID: input, Status: "dto"}
-    _ = dto_negative_1
-    uses_negative_2 := response_dto_uses_omitempty_required_negative["uses"] + len(input)
-    _ = uses_negative_2
-    omitempty_negative_3 := response_dto_uses_omitempty_required_negative["omitempty"] + len(input)
-    _ = omitempty_negative_3
-    required_negative_4 := response_dto_uses_omitempty_required_negative["required"] + len(input)
-    _ = required_negative_4
-    contract_negative_5 := response_dto_uses_omitempty_required_negative["contract"] + len(input)
-    _ = contract_negative_5
+    if err := db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        return err
+    }
     return nil
 }

@@ -46,25 +46,14 @@ type CaseTransactionObjectCrossesMoreThanOneLayerBoundaryAuditSink interface {
 }
 
 func PositiveTransactionObjectCrossesMoreThanOneLayerBoundary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTransactionObjectCrossesMoreThanOneLayerBoundaryDTO) error {
-    focus := "transaction_object_crosses_more_than"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
     tx := db.Begin()
-    tx.Create(&CaseTransactionObjectCrossesMoreThanOneLayerBoundaryModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
-    transaction_object_crosses_more_than_positive := map[string]int{"transaction": 1, "object": 2, "crosses": 3, "more": 4, "than": 5, "one": 6}
-    transaction_object_crosses_more_than_positive["signal"] = len(input) + len(items)
-    transaction_positive_0 := transaction_object_crosses_more_than_positive["transaction"] + len(input)
-    _ = transaction_positive_0
-    object_positive_1 := transaction_object_crosses_more_than_positive["object"] + len(input)
-    _ = object_positive_1
-    crosses_positive_2 := transaction_object_crosses_more_than_positive["crosses"] + len(input)
-    _ = crosses_positive_2
-    more_positive_3 := transaction_object_crosses_more_than_positive["more"] + len(input)
-    _ = more_positive_3
-    than_positive_4 := transaction_object_crosses_more_than_positive["than"] + len(input)
-    _ = than_positive_4
-    one_positive_5 := transaction_object_crosses_more_than_positive["one"] + len(input)
-    _ = one_positive_5
+    handlerFunc := func(tx *gorm.DB) {
+        serviceFunc := func(tx *gorm.DB) {
+            _ = tx.Where("id = ?", input).Find(&items)
+        }
+        serviceFunc(tx)
+    }
+    handlerFunc(tx)
+    _ = tx.Commit().Error
     return nil
 }

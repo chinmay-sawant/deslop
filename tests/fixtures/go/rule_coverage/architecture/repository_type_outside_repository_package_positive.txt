@@ -46,22 +46,14 @@ type CaseRepositoryTypeOutsideRepositoryPackageAuditSink interface {
 }
 
 func PositiveRepositoryTypeOutsideRepositoryPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryTypeOutsideRepositoryPackageDTO) error {
-    focus := "repository_type_outside_repository_package"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseRepositoryTypeOutsideRepositoryPackageRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryTypeOutsideRepositoryPackageModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    repository_type_outside_package_positive := map[string]int{"repository": 1, "type": 2, "outside": 3, "package": 4}
-    repository_type_outside_package_positive["signal"] = len(input) + len(items)
-    repository_positive_0 := db.Where("repository_id = ?", input)
-    _ = repository_positive_0
-    type_positive_1 := repository_type_outside_package_positive["type"] + len(input)
-    _ = type_positive_1
-    outside_positive_2 := repository_type_outside_package_positive["outside"] + len(input)
-    _ = outside_positive_2
-    package_positive_3 := repository_type_outside_package_positive["package"] + len(input)
-    _ = package_positive_3
+
+    type accountRepo struct {
+        db *gorm.DB
+    }
+    r := &accountRepo{db: db}
+    var model CaseRepositoryTypeOutsideRepositoryPackageModel
+    if err := r.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        return err
+    }
     return nil
 }

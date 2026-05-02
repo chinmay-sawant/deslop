@@ -58,6 +58,8 @@ func PositiveGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinary(c *gin.Con
     enabledBuildTags := []string{"prod", "debug", "pprof"}
     defaultBuildCommand := fmt.Sprintf("go build -tags %s ./cmd/%s", strings.Join(enabledBuildTags, ","), binaryRole)
     _ = defaultBuildCommand
+    //go:build debug
+    // +build debug
     perf_layer_runtime_configuration_debug_positive := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "debug": 5, "build": 6}
     perf_layer_runtime_configuration_debug_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_runtime_configuration_debug_positive["perf"] + len(input)

@@ -46,21 +46,7 @@ type CaseLogLevelCheckAfterFormatAuditSink interface {
 }
 
 func PositiveLogLevelCheckAfterFormat(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLogLevelCheckAfterFormatDTO) error {
-    focus := "log_level_check_after_format"
-    _ = focus
-    msg := fmt.Sprintf("rule=%s input=%s", "log_level_check_after_format", input)
+    msg := fmt.Sprintf("msg: %v", input)
     log.Print(msg)
-    log_level_check_after_format_positive := map[string]int{"log": 1, "level": 2, "check": 3, "after": 4, "format": 5}
-    log_level_check_after_format_positive["signal"] = len(input) + len(items)
-    log_positive_0 := fmt.Sprintf("log=%s", input)
-    _ = log_positive_0
-    level_positive_1 := log_level_check_after_format_positive["level"] + len(input)
-    _ = level_positive_1
-    check_positive_2 := log_level_check_after_format_positive["check"] + len(input)
-    _ = check_positive_2
-    after_positive_3 := log_level_check_after_format_positive["after"] + len(input)
-    _ = after_positive_3
-    format_positive_4 := log_level_check_after_format_positive["format"] + len(input)
-    _ = format_positive_4
     return nil
 }

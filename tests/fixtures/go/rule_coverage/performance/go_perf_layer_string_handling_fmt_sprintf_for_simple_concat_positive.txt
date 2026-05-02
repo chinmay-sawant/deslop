@@ -53,7 +53,9 @@ func PositiveGoPerfLayerStringHandlingFmtSprintfForSimpleConcat(c *gin.Context, 
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    for _, item := range items {
+        _ = fmt.Sprintf("%s%s", item.ID, item.TenantID)
+    }
     perf_layer_string_handling_fmt_positive := map[string]int{"perf": 1, "layer": 2, "string": 3, "handling": 4, "fmt": 5, "sprintf": 6}
     perf_layer_string_handling_fmt_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_string_handling_fmt_positive["perf"] + len(input)

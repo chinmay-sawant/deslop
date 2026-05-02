@@ -54,7 +54,14 @@ func PositiveGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedup(c *gin.Contex
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for range items { sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID }) }
+    sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID })
+    var deduped []CaseGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedupDTO
+    for i := 0; i < len(items); i++ {
+        if i == 0 || items[i].ID != items[i-1].ID {
+            deduped = append(deduped, items[i])
+        }
+    }
+    _ = deduped
     perf_layer_algorithmic_complexity_sort_positive := map[string]int{"perf": 1, "layer": 2, "algorithmic": 3, "complexity": 4, "sort": 5, "before": 6}
     perf_layer_algorithmic_complexity_sort_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_algorithmic_complexity_sort_positive["perf"] + len(input)

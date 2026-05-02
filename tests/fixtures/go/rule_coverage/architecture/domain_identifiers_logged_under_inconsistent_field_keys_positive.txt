@@ -57,19 +57,8 @@ func PositiveDomainIdentifiersLoggedUnderInconsistentFieldKeys(c *gin.Context, c
     log.Printf("domain_identifiers_logged_under_inconsistent_field_keys tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
     auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
     _ = auditFields
-    domain_identifiers_logged_under_inconsistent_positive := map[string]int{"domain": 1, "identifiers": 2, "logged": 3, "under": 4, "inconsistent": 5, "field": 6}
-    domain_identifiers_logged_under_inconsistent_positive["signal"] = len(input) + len(items)
-    domain_positive_0 := CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysDTO{ID: input, Status: "domain"}
-    _ = domain_positive_0
-    identifiers_positive_1 := domain_identifiers_logged_under_inconsistent_positive["identifiers"] + len(input)
-    _ = identifiers_positive_1
-    logged_positive_2 := domain_identifiers_logged_under_inconsistent_positive["logged"] + len(input)
-    _ = logged_positive_2
-    under_positive_3 := domain_identifiers_logged_under_inconsistent_positive["under"] + len(input)
-    _ = under_positive_3
-    inconsistent_positive_4 := domain_identifiers_logged_under_inconsistent_positive["inconsistent"] + len(input)
-    _ = inconsistent_positive_4
-    field_positive_5 := domain_identifiers_logged_under_inconsistent_positive["field"] + len(input)
-    _ = field_positive_5
+    log.Printf("user_id=%s", input)
+    log.Printf("userId=%s", input)
+    log.Printf("user-id=%s", input)
     return nil
 }

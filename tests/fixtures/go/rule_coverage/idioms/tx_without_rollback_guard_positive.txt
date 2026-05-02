@@ -46,18 +46,8 @@ type CaseTxWithoutRollbackGuardAuditSink interface {
 }
 
 func PositiveTxWithoutRollbackGuard(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTxWithoutRollbackGuardDTO) error {
-    focus := "tx_without_rollback_guard"
-    _ = focus
     tx := db.Begin()
     tx.Create(&CaseTxWithoutRollbackGuardModel{ID: input})
     tx.Commit()
-    tx_rollback_guard_positive := map[string]int{"tx": 1, "rollback": 2, "guard": 3}
-    tx_rollback_guard_positive["signal"] = len(input) + len(items)
-    tx_positive_0 := tx_rollback_guard_positive["tx"] + len(input)
-    _ = tx_positive_0
-    rollback_positive_1 := tx_rollback_guard_positive["rollback"] + len(input)
-    _ = rollback_positive_1
-    guard_positive_2 := tx_rollback_guard_positive["guard"] + len(input)
-    _ = guard_positive_2
     return nil
 }

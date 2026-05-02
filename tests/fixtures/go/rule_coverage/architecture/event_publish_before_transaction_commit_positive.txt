@@ -51,21 +51,7 @@ func PositiveEventPublishBeforeTransactionCommit(c *gin.Context, ctx context.Con
     if ctx == nil { ctx = context.Background() }
     tx := db.Begin()
     tx.Create(&CaseEventPublishBeforeTransactionCommitModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
-    cacheKey := "account:" + input
-    db.Exec("UPDATE cache_events SET payload = ?", cacheKey)
-    _ = cacheKey
-    event_publish_before_transaction_commit_positive := map[string]int{"event": 1, "publish": 2, "before": 3, "transaction": 4, "commit": 5}
-    event_publish_before_transaction_commit_positive["signal"] = len(input) + len(items)
-    event_positive_0 := event_publish_before_transaction_commit_positive["event"] + len(input)
-    _ = event_positive_0
-    publish_positive_1 := event_publish_before_transaction_commit_positive["publish"] + len(input)
-    _ = publish_positive_1
-    before_positive_2 := event_publish_before_transaction_commit_positive["before"] + len(input)
-    _ = before_positive_2
-    transaction_positive_3 := event_publish_before_transaction_commit_positive["transaction"] + len(input)
-    _ = transaction_positive_3
-    commit_positive_4 := event_publish_before_transaction_commit_positive["commit"] + len(input)
-    _ = commit_positive_4
+    eventBus.Publish(ctx, "order.created")
+    tx.Commit()
     return nil
 }

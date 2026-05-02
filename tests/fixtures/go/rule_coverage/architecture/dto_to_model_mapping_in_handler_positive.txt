@@ -58,15 +58,7 @@ func PositiveDtoToModelMappingInHandler(c *gin.Context, ctx context.Context, db 
     model := CaseDtoToModelMappingInHandlerModel{ID: input, Status: "pending"}
     _ = service
     _ = model
-    dto_model_mapping_handler_positive := map[string]int{"dto": 1, "model": 2, "mapping": 3, "handler": 4}
-    dto_model_mapping_handler_positive["signal"] = len(input) + len(items)
-    dto_positive_0 := CaseDtoToModelMappingInHandlerDTO{ID: input, Status: "dto"}
-    _ = dto_positive_0
-    model_positive_1 := CaseDtoToModelMappingInHandlerDTO{ID: input, Status: "model"}
-    _ = model_positive_1
-    mapping_positive_2 := dto_model_mapping_handler_positive["mapping"] + len(input)
-    _ = mapping_positive_2
-    handler_positive_3 := c.FullPath() + ":" + input
-    _ = handler_positive_3
+    mappedModel := CaseDtoToModelMappingInHandlerModel{ID: request.ID, Status: request.Status}
+    db.Create(&mappedModel)
     return nil
 }

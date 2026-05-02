@@ -54,14 +54,15 @@ func PositiveGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutes(c *gin.Cont
     buf := []byte(input)
     start := time.Now()
     _ = start
+    adminTpl := template.Must(template.New("admin").Parse("<h1>admin</h1>"))
+    reportsTpl := template.Must(template.New("reports").Parse("<h1>reports</h1>"))
+    debugTpl := template.Must(template.New("debug").Parse("<h1>debug</h1>"))
+    _ = adminTpl
+    _ = reportsTpl
+    _ = debugTpl
     perf_layer_lazy_loading_eager_positive := map[string]int{"perf": 1, "layer": 2, "lazy": 3, "loading": 4, "eager": 5, "template": 6}
     perf_layer_lazy_loading_eager_positive["signal"] = len(input) + len(items)
-    routeTemplates := []*template.Template{
-        template.Must(template.New("admin").Parse("<h1>admin</h1>")),
-        template.Must(template.New("reports").Parse("<h1>reports</h1>")),
-        template.Must(template.New("debug").Parse("<h1>debug</h1>")),
-    }
-    perf_layer_lazy_loading_eager_positive["parsed_routes"] = len(routeTemplates)
+    perf_layer_lazy_loading_eager_positive["parsed"] = len(input)
     perf_positive_0 := perf_layer_lazy_loading_eager_positive["perf"] + len(input)
     _ = perf_positive_0
     layer_positive_1 := perf_layer_lazy_loading_eager_positive["layer"] + len(input)

@@ -50,22 +50,13 @@ type CaseGoPerfLayerCachingCacheMissDoesDuplicateWorkAuditSink interface {
 func PositiveGoPerfLayerCachingCacheMissDoesDuplicateWork(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerCachingCacheMissDoesDuplicateWorkDTO) error {
     focus := "go_perf_layer_caching_cache"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    perf_layer_caching_cache_miss_positive := map[string]int{"perf": 1, "layer": 2, "caching": 3, "cache": 4, "miss": 5, "does": 6}
-    perf_layer_caching_cache_miss_positive["signal"] = len(input) + len(items)
-    perf_positive_0 := perf_layer_caching_cache_miss_positive["perf"] + len(input)
-    _ = perf_positive_0
-    layer_positive_1 := perf_layer_caching_cache_miss_positive["layer"] + len(input)
-    _ = layer_positive_1
-    caching_positive_2 := perf_layer_caching_cache_miss_positive["caching"] + len(input)
-    _ = caching_positive_2
-    cache_positive_3 := perf_layer_caching_cache_miss_positive["cache"] + len(input)
-    _ = cache_positive_3
-    miss_positive_4 := perf_layer_caching_cache_miss_positive["miss"] + len(input)
-    _ = miss_positive_4
-    does_positive_5 := perf_layer_caching_cache_miss_positive["does"] + len(input)
-    _ = does_positive_5
+    cache := map[string]string{}
+    key := "mykey"
+    val, ok := cache[key]
+    if !ok {
+        val = key + "_computed"
+        cache[key] = val
+    }
+    _ = val
     return nil
 }

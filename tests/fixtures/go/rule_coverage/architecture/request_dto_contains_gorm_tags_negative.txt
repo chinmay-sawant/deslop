@@ -46,27 +46,9 @@ type CaseRequestDtoContainsGormTagsAuditSink interface {
 }
 
 func NegativeRequestDtoContainsGormTags(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestDtoContainsGormTagsDTO) error {
-    focus := "request_dto_contains_gorm_tags"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseRequestDtoContainsGormTagsRepository{db: db, sql: sqlDB}
     var model CaseRequestDtoContainsGormTagsModel
-    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
-    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
-    dto := CaseRequestDtoContainsGormTagsDTO{ID: input, Status: "active"}
-    model := CaseRequestDtoContainsGormTagsModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
-    request_dto_contains_gorm_tags_negative := map[string]int{"request": 1, "dto": 2, "contains": 3, "gorm": 4, "tags": 5}
-    request_dto_contains_gorm_tags_negative["signal"] = len(input) + len(items)
-    request_negative_0 := request_dto_contains_gorm_tags_negative["request"] + len(input)
-    _ = request_negative_0
-    dto_negative_1 := CaseRequestDtoContainsGormTagsDTO{ID: input, Status: "dto"}
-    _ = dto_negative_1
-    contains_negative_2 := strings.TrimSpace(input)
-    _ = contains_negative_2
-    gorm_negative_3 := db.Where("gorm_id = ?", input)
-    _ = gorm_negative_3
-    tags_negative_4 := request_dto_contains_gorm_tags_negative["tags"] + len(input)
-    _ = tags_negative_4
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        return err
+    }
     return nil
 }

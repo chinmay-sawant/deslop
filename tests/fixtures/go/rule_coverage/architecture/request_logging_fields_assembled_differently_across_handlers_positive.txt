@@ -46,29 +46,13 @@ type CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersAuditSink interfa
 }
 
 func PositiveRequestLoggingFieldsAssembledDifferentlyAcrossHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersDTO) error {
-    focus := "request_logging_fields_assembled_differently"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    log.Printf("request_logging_fields_assembled_differently_across_handlers tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
-    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
-    _ = auditFields
-    request_logging_fields_assembled_differently_positive := map[string]int{"request": 1, "logging": 2, "fields": 3, "assembled": 4, "differently": 5, "across": 6}
-    request_logging_fields_assembled_differently_positive["signal"] = len(input) + len(items)
-    request_positive_0 := request_logging_fields_assembled_differently_positive["request"] + len(input)
-    _ = request_positive_0
-    logging_positive_1 := fmt.Sprintf("logging=%s", input)
-    _ = logging_positive_1
-    fields_positive_2 := request_logging_fields_assembled_differently_positive["fields"] + len(input)
-    _ = fields_positive_2
-    assembled_positive_3 := request_logging_fields_assembled_differently_positive["assembled"] + len(input)
-    _ = assembled_positive_3
-    differently_positive_4 := request_logging_fields_assembled_differently_positive["differently"] + len(input)
-    _ = differently_positive_4
-    across_positive_5 := request_logging_fields_assembled_differently_positive["across"] + len(input)
-    _ = across_positive_5
+
+    log.Printf("user_id=%s action=view_resource", input)
+    var model CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersModel
+    if err := db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        log.Printf("err=%s resource_id=%s", err, input)
+        return err
+    }
+    log.Printf("account=%s status=%s", model.ID, model.Status)
     return nil
 }

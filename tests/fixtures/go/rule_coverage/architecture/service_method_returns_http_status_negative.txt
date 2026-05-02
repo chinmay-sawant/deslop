@@ -47,30 +47,9 @@ type CaseServiceMethodReturnsHttpStatusAuditSink interface {
 }
 
 func NegativeServiceMethodReturnsHttpStatus(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceMethodReturnsHttpStatusDTO) error {
-    focus := "service_method_returns_http_status"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseServiceMethodReturnsHttpStatusDTO
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return nil
+    model := CaseServiceMethodReturnsHttpStatusModel{ID: input, Status: "active"}
+    if err := db.WithContext(ctx).Save(&model).Error; err != nil {
+        return fmt.Errorf("save failed: %w", err)
     }
-    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
-    dto := CaseServiceMethodReturnsHttpStatusDTO{ID: input, Status: "active"}
-    model := CaseServiceMethodReturnsHttpStatusModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
-    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
-    service_method_returns_http_status_negative := map[string]int{"service": 1, "method": 2, "returns": 3, "http": 4, "status": 5}
-    service_method_returns_http_status_negative["signal"] = len(input) + len(items)
-    service_negative_0 := CaseServiceMethodReturnsHttpStatusDTO{ID: input, Status: "service"}
-    _ = service_negative_0
-    method_negative_1 := service_method_returns_http_status_negative["method"] + len(input)
-    _ = method_negative_1
-    returns_negative_2 := service_method_returns_http_status_negative["returns"] + len(input)
-    _ = returns_negative_2
-    http_negative_3 := service_method_returns_http_status_negative["http"] + len(input)
-    _ = http_negative_3
-    status_negative_4 := service_method_returns_http_status_negative["status"] + len(input)
-    _ = status_negative_4
     return nil
 }

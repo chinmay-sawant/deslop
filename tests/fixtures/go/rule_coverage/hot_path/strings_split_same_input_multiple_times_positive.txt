@@ -20,10 +20,8 @@ type CaseStringsSplitSameInputMultipleTimesDTO struct {
 
 func PositiveStringsSplitSameInputMultipleTimes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsSplitSameInputMultipleTimesDTO) error {
     parts := strings.Split(input, ",")
-    fields := strings.Fields(input)
-    pairs := strings.SplitN(input, "=", 2)
+    fields := strings.Split(input, ":")
     _ = parts
     _ = fields
-    _ = pairs
     return nil
 }

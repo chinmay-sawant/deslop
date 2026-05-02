@@ -48,24 +48,9 @@ type CaseGoroutineDerivedContextUnmanagedAuditSink interface {
 }
 
 func PositiveGoroutineDerivedContextUnmanaged(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoroutineDerivedContextUnmanagedDTO) error {
-    focus := "goroutine_derived_context_unmanaged"
-    _ = focus
-    out := map[string]int{}
-    var mu sync.Mutex
-    var wg sync.WaitGroup
-    child, _ := context.WithTimeout(ctx, time.Second)
-    go func() { <-child.Done() }()
-    wg.Wait()
-    _ = out
-    goroutine_derived_context_unmanaged_positive := map[string]int{"goroutine": 1, "derived": 2, "context": 3, "unmanaged": 4}
-    goroutine_derived_context_unmanaged_positive["signal"] = len(input) + len(items)
-    goroutine_positive_0 := ctx
-    _ = goroutine_positive_0
-    derived_positive_1 := goroutine_derived_context_unmanaged_positive["derived"] + len(input)
-    _ = derived_positive_1
-    context_positive_2 := ctx
-    _ = context_positive_2
-    unmanaged_positive_3 := goroutine_derived_context_unmanaged_positive["unmanaged"] + len(input)
-    _ = unmanaged_positive_3
+    go func() {
+        http.Get(input)
+    }()
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

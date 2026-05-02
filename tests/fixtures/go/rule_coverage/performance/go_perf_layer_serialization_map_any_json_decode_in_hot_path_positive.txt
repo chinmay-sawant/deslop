@@ -56,8 +56,8 @@ func PositiveGoPerfLayerSerializationMapAnyJsonDecodeInHotPath(c *gin.Context, c
     _ = start
     for _, item := range items {
         payload, _ := json.Marshal(item)
-        var decoded map[string]any
-        _ = json.Unmarshal(payload, &decoded)
+        var out map[string]interface{}
+        json.Unmarshal(payload, &out)
     }
     perf_layer_serialization_map_any_positive := map[string]int{"perf": 1, "layer": 2, "serialization": 3, "map": 4, "any": 5, "json": 6}
     perf_layer_serialization_map_any_positive["signal"] = len(input) + len(items)

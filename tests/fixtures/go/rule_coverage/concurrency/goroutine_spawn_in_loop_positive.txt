@@ -48,17 +48,10 @@ type CaseGoroutineSpawnInLoopAuditSink interface {
 }
 
 func PositiveGoroutineSpawnInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoroutineSpawnInLoopDTO) error {
-    focus := "goroutine_spawn_in_loop"
-    _ = focus
-    out := map[string]int{}
-    for _, item := range items { go func() { out[item.ID] = item.Amount }() }
-    _ = out
-    goroutine_spawn_loop_positive := map[string]int{"goroutine": 1, "spawn": 2, "loop": 3}
-    goroutine_spawn_loop_positive["signal"] = len(input) + len(items)
-    goroutine_positive_0 := ctx
-    _ = goroutine_positive_0
-    spawn_positive_1 := goroutine_spawn_loop_positive["spawn"] + len(input)
-    _ = spawn_positive_1
-    for loop_positive_2Index, item := range items { goroutine_spawn_loop_positive[item.ID] = loop_positive_2Index }
+    for _, item := range items {
+        go func(id string) {
+            _ = db.Where("id = ?", id).Find(&[]CaseGoroutineSpawnInLoopModel{})
+        }(item.ID)
+    }
     return nil
 }

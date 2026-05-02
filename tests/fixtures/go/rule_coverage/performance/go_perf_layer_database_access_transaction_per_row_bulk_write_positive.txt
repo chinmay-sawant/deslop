@@ -50,22 +50,10 @@ type CaseGoPerfLayerDatabaseAccessTransactionPerRowBulkWriteAuditSink interface 
 func PositiveGoPerfLayerDatabaseAccessTransactionPerRowBulkWrite(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerDatabaseAccessTransactionPerRowBulkWriteDTO) error {
     focus := "go_perf_layer_database_access"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { db.Where("id = ?", item.ID).Find(&[]any{}) }
-    perf_layer_database_access_transaction_positive := map[string]int{"perf": 1, "layer": 2, "database": 3, "access": 4, "transaction": 5, "per": 6}
-    perf_layer_database_access_transaction_positive["signal"] = len(input) + len(items)
-    perf_positive_0 := perf_layer_database_access_transaction_positive["perf"] + len(input)
-    _ = perf_positive_0
-    layer_positive_1 := perf_layer_database_access_transaction_positive["layer"] + len(input)
-    _ = layer_positive_1
-    database_positive_2 := db.Where("database_id = ?", input)
-    _ = database_positive_2
-    access_positive_3 := perf_layer_database_access_transaction_positive["access"] + len(input)
-    _ = access_positive_3
-    transaction_positive_4 := perf_layer_database_access_transaction_positive["transaction"] + len(input)
-    _ = transaction_positive_4
-    for per_positive_5Index, item := range items { perf_layer_database_access_transaction_positive[item.ID] = per_positive_5Index }
+    for _, item := range items {
+        tx := db.Begin()
+        tx.Create(&item)
+        tx.Commit()
+    }
     return nil
 }

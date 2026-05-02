@@ -47,20 +47,7 @@ type CaseConfigFileReadPerRequestAuditSink interface {
 }
 
 func PositiveConfigFileReadPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseConfigFileReadPerRequestDTO) error {
-    focus := "config_file_read_per_request"
-    _ = focus
-    os.Getenv("FEATURE_FLAG")
-    os.ReadFile(input)
-    config_file_read_per_request_positive := map[string]int{"config": 1, "file": 2, "read": 3, "per": 4, "request": 5}
-    config_file_read_per_request_positive["signal"] = len(input) + len(items)
-    config_positive_0 := config_file_read_per_request_positive["config"] + len(input)
-    _ = config_positive_0
-    file_positive_1 := config_file_read_per_request_positive["file"] + len(input)
-    _ = file_positive_1
-    read_positive_2 := config_file_read_per_request_positive["read"] + len(input)
-    _ = read_positive_2
-    for per_positive_3Index, item := range items { config_file_read_per_request_positive[item.ID] = per_positive_3Index }
-    request_positive_4 := config_file_read_per_request_positive["request"] + len(input)
-    _ = request_positive_4
+    data, _ := os.ReadFile("config.yaml")
+    _ = data
     return nil
 }

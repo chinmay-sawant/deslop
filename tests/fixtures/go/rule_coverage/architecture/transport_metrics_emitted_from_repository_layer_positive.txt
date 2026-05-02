@@ -46,33 +46,9 @@ type CaseTransportMetricsEmittedFromRepositoryLayerAuditSink interface {
 }
 
 func PositiveTransportMetricsEmittedFromRepositoryLayer(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTransportMetricsEmittedFromRepositoryLayerDTO) error {
-    focus := "transport_metrics_emitted_from_repository"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseTransportMetricsEmittedFromRepositoryLayerDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    repo := &CaseTransportMetricsEmittedFromRepositoryLayerRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseTransportMetricsEmittedFromRepositoryLayerModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    log.Printf("transport_metrics_emitted_from_repository_layer tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
-    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
-    _ = auditFields
-    transport_metrics_emitted_from_repository_positive := map[string]int{"transport": 1, "metrics": 2, "emitted": 3, "from": 4, "repository": 5, "layer": 6}
-    transport_metrics_emitted_from_repository_positive["signal"] = len(input) + len(items)
-    transport_positive_0 := c.FullPath() + ":" + input
-    _ = transport_positive_0
-    metrics_positive_1 := fmt.Sprintf("metrics=%s", input)
-    _ = metrics_positive_1
-    emitted_positive_2 := transport_metrics_emitted_from_repository_positive["emitted"] + len(input)
-    _ = emitted_positive_2
-    from_positive_3 := transport_metrics_emitted_from_repository_positive["from"] + len(input)
-    _ = from_positive_3
-    repository_positive_4 := db.Where("repository_id = ?", input)
-    _ = repository_positive_4
-    layer_positive_5 := transport_metrics_emitted_from_repository_positive["layer"] + len(input)
-    _ = layer_positive_5
+    metricsRecordHTTPRequest := func(method, path string, status int, duration float64) {}
+    var model CaseTransportMetricsEmittedFromRepositoryLayerModel
+    _ = db.Where("id = ?", input).First(&model)
+    metricsRecordHTTPRequest("GET", "/items", 200, 0.5)
     return nil
 }

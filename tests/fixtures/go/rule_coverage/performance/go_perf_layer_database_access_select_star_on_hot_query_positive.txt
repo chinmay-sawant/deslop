@@ -53,7 +53,7 @@ func PositiveGoPerfLayerDatabaseAccessSelectStarOnHotQuery(c *gin.Context, ctx c
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { db.Where("id = ?", item.ID).Find(&[]any{}) }
+    db.Raw("SELECT * FROM orders").Find(&[]CaseGoPerfLayerDatabaseAccessSelectStarOnHotQueryModel{})
     perf_layer_database_access_select_positive := map[string]int{"perf": 1, "layer": 2, "database": 3, "access": 4, "select": 5, "star": 6}
     perf_layer_database_access_select_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_database_access_select_positive["perf"] + len(input)

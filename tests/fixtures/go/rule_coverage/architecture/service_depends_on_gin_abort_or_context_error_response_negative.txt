@@ -47,32 +47,10 @@ type CaseServiceDependsOnGinAbortOrContextErrorResponseAuditSink interface {
 }
 
 func NegativeServiceDependsOnGinAbortOrContextErrorResponse(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceDependsOnGinAbortOrContextErrorResponseDTO) error {
-    focus := "service_depends_on_gin_abort"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseServiceDependsOnGinAbortOrContextErrorResponseDTO
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return nil
+
+    model := CaseServiceDependsOnGinAbortOrContextErrorResponseModel{ID: input, Status: "active"}
+    if err := db.WithContext(ctx).Save(&model).Error; err != nil {
+        return fmt.Errorf("save failed: %w", err)
     }
-    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
-    dto := CaseServiceDependsOnGinAbortOrContextErrorResponseDTO{ID: input, Status: "active"}
-    model := CaseServiceDependsOnGinAbortOrContextErrorResponseModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
-    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
-    service_depends_gin_abort_context_negative := map[string]int{"service": 1, "depends": 2, "gin": 3, "abort": 4, "context": 5, "error": 6}
-    service_depends_gin_abort_context_negative["signal"] = len(input) + len(items)
-    service_negative_0 := CaseServiceDependsOnGinAbortOrContextErrorResponseDTO{ID: input, Status: "service"}
-    _ = service_negative_0
-    depends_negative_1 := service_depends_gin_abort_context_negative["depends"] + len(input)
-    _ = depends_negative_1
-    gin_negative_2 := c.FullPath() + ":" + input
-    _ = gin_negative_2
-    abort_negative_3 := service_depends_gin_abort_context_negative["abort"] + len(input)
-    _ = abort_negative_3
-    context_negative_4 := ctx
-    _ = context_negative_4
-    error_negative_5 := service_depends_gin_abort_context_negative["error"] + len(input)
-    _ = error_negative_5
     return nil
 }

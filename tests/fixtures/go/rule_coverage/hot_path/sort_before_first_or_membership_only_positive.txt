@@ -49,23 +49,8 @@ type CaseSortBeforeFirstOrMembershipOnlyAuditSink interface {
 }
 
 func PositiveSortBeforeFirstOrMembershipOnly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSortBeforeFirstOrMembershipOnlyDTO) error {
-    focus := "sort_before_first_or_membership"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for range items { sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID }) }
-    sort_before_first_membership_only_positive := map[string]int{"sort": 1, "before": 2, "first": 3, "membership": 4, "only": 5}
-    sort_before_first_membership_only_positive["signal"] = len(input) + len(items)
-    sort_positive_0 := sort_before_first_membership_only_positive["sort"] + len(input)
-    _ = sort_positive_0
-    before_positive_1 := sort_before_first_membership_only_positive["before"] + len(input)
-    _ = before_positive_1
-    first_positive_2 := sort_before_first_membership_only_positive["first"] + len(input)
-    _ = first_positive_2
-    membership_positive_3 := sort_before_first_membership_only_positive["membership"] + len(input)
-    _ = membership_positive_3
-    only_positive_4 := sort_before_first_membership_only_positive["only"] + len(input)
-    _ = only_positive_4
+    sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID })
+    first := items[0]
+    _ = first
     return nil
 }

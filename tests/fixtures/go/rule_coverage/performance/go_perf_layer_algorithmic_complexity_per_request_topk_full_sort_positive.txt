@@ -54,8 +54,10 @@ func PositiveGoPerfLayerAlgorithmicComplexityPerRequestTopkFullSort(c *gin.Conte
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for range items { sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID }) }
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    k := 10
+    sort.Slice(items, func(i, j int) bool { return items[i].Amount > items[j].Amount })
+    topK := items[:k]
+    _ = topK
     perf_layer_algorithmic_complexity_per_positive := map[string]int{"perf": 1, "layer": 2, "algorithmic": 3, "complexity": 4, "per": 5, "request": 6}
     perf_layer_algorithmic_complexity_per_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_algorithmic_complexity_per_positive["perf"] + len(input)

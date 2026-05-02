@@ -50,23 +50,9 @@ type CaseGoPerfLayerCachingUnboundedCacheMapAuditSink interface {
 func PositiveGoPerfLayerCachingUnboundedCacheMap(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerCachingUnboundedCacheMapDTO) error {
     focus := "go_perf_layer_caching_unbounded"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
-    perf_layer_caching_unbounded_cache_positive := map[string]int{"perf": 1, "layer": 2, "caching": 3, "unbounded": 4, "cache": 5, "map": 6}
-    perf_layer_caching_unbounded_cache_positive["signal"] = len(input) + len(items)
-    perf_positive_0 := perf_layer_caching_unbounded_cache_positive["perf"] + len(input)
-    _ = perf_positive_0
-    layer_positive_1 := perf_layer_caching_unbounded_cache_positive["layer"] + len(input)
-    _ = layer_positive_1
-    caching_positive_2 := perf_layer_caching_unbounded_cache_positive["caching"] + len(input)
-    _ = caching_positive_2
-    unbounded_positive_3 := perf_layer_caching_unbounded_cache_positive["unbounded"] + len(input)
-    _ = unbounded_positive_3
-    cache_positive_4 := perf_layer_caching_unbounded_cache_positive["cache"] + len(input)
-    _ = cache_positive_4
-    map_positive_5 := perf_layer_caching_unbounded_cache_positive["map"] + len(input)
-    _ = map_positive_5
+    var cache map[string]CaseGoPerfLayerCachingUnboundedCacheMapDTO
+    cache = make(map[string]CaseGoPerfLayerCachingUnboundedCacheMapDTO)
+    cache["key1"] = items[0]
+    _ = cache
     return nil
 }

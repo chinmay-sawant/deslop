@@ -50,21 +50,8 @@ type CaseFmtSprintfSingleStringPassthroughAuditSink interface {
 func PositiveFmtSprintfSingleStringPassthrough(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtSprintfSingleStringPassthroughDTO) error {
     focus := "fmt_sprintf_single_string_passthrough"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
-    fmt_sprintf_single_string_passthrough_positive := map[string]int{"fmt": 1, "sprintf": 2, "single": 3, "string": 4, "passthrough": 5}
-    fmt_sprintf_single_string_passthrough_positive["signal"] = len(input) + len(items)
-    fmt_positive_0 := fmt_sprintf_single_string_passthrough_positive["fmt"] + len(input)
-    _ = fmt_positive_0
-    sprintf_positive_1 := fmt_sprintf_single_string_passthrough_positive["sprintf"] + len(input)
-    _ = sprintf_positive_1
-    single_positive_2 := fmt_sprintf_single_string_passthrough_positive["single"] + len(input)
-    _ = single_positive_2
-    string_positive_3 := strings.TrimSpace(input)
-    _ = string_positive_3
-    passthrough_positive_4 := fmt_sprintf_single_string_passthrough_positive["passthrough"] + len(input)
-    _ = passthrough_positive_4
+    someString := "hello"
+    str := fmt.Sprintf("%s", someString)
+    _ = str
     return nil
 }

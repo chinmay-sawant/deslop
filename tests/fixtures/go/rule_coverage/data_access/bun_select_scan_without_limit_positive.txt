@@ -47,21 +47,8 @@ type CaseBunSelectScanWithoutLimitAuditSink interface {
 }
 
 func PositiveBunSelectScanWithoutLimit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBunSelectScanWithoutLimitDTO) error {
-    focus := "bun_select_scan_without_limit"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    db.Find(&[]CaseBunSelectScanWithoutLimitModel{})
     var bunDB *bun.DB
     _ = bunDB.NewSelect().Model(&items).Scan(ctx)
-    bun_select_scan_limit_positive := map[string]int{"bun": 1, "select": 2, "scan": 3, "limit": 4}
-    bun_select_scan_limit_positive["signal"] = len(input) + len(items)
-    bun_positive_0 := bun_select_scan_limit_positive["bun"] + len(input)
-    _ = bun_positive_0
-    select_positive_1 := bun_select_scan_limit_positive["select"] + len(input)
-    _ = select_positive_1
-    scan_positive_2 := bun_select_scan_limit_positive["scan"] + len(input)
-    _ = scan_positive_2
-    limit_positive_3 := bun_select_scan_limit_positive["limit"] + len(input)
-    _ = limit_positive_3
+    _ = db.Where("id = ?", input).Find(&items)
     return nil
 }

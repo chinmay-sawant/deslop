@@ -50,21 +50,8 @@ func PositiveExternalHttpCallInsideTransactionScope(c *gin.Context, ctx context.
     _ = focus
     if ctx == nil { ctx = context.Background() }
     tx := db.Begin()
+    http.Get("https://example.com/api")
     tx.Create(&CaseExternalHttpCallInsideTransactionScopeModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
-    external_http_call_inside_transaction_positive := map[string]int{"external": 1, "http": 2, "call": 3, "inside": 4, "transaction": 5, "scope": 6}
-    external_http_call_inside_transaction_positive["signal"] = len(input) + len(items)
-    external_positive_0 := external_http_call_inside_transaction_positive["external"] + len(input)
-    _ = external_positive_0
-    http_positive_1 := external_http_call_inside_transaction_positive["http"] + len(input)
-    _ = http_positive_1
-    call_positive_2 := external_http_call_inside_transaction_positive["call"] + len(input)
-    _ = call_positive_2
-    inside_positive_3 := external_http_call_inside_transaction_positive["inside"] + len(input)
-    _ = inside_positive_3
-    transaction_positive_4 := external_http_call_inside_transaction_positive["transaction"] + len(input)
-    _ = transaction_positive_4
-    scope_positive_5 := external_http_call_inside_transaction_positive["scope"] + len(input)
-    _ = scope_positive_5
+    tx.Commit()
     return nil
 }

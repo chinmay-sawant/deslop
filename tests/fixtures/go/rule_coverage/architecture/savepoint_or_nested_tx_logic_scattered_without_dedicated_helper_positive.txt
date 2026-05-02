@@ -46,33 +46,16 @@ type CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperAuditSink interf
 }
 
 func PositiveSavepointOrNestedTxLogicScatteredWithoutDedicatedHelper(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperDTO) error {
-    focus := "savepoint_or_nested_tx_logic"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperService{repo: &CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
+
     tx := db.Begin()
-    tx.Create(&CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
-    log.Printf("savepoint_or_nested_tx_logic_scattered_without_dedicated_helper tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
-    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
-    _ = auditFields
-    savepoint_nested_tx_logic_scattered_positive := map[string]int{"savepoint": 1, "nested": 2, "tx": 3, "logic": 4, "scattered": 5, "dedicated": 6}
-    savepoint_nested_tx_logic_scattered_positive["signal"] = len(input) + len(items)
-    savepoint_positive_0 := savepoint_nested_tx_logic_scattered_positive["savepoint"] + len(input)
-    _ = savepoint_positive_0
-    nested_positive_1 := savepoint_nested_tx_logic_scattered_positive["nested"] + len(input)
-    _ = nested_positive_1
-    tx_positive_2 := savepoint_nested_tx_logic_scattered_positive["tx"] + len(input)
-    _ = tx_positive_2
-    logic_positive_3 := savepoint_nested_tx_logic_scattered_positive["logic"] + len(input)
-    _ = logic_positive_3
-    scattered_positive_4 := savepoint_nested_tx_logic_scattered_positive["scattered"] + len(input)
-    _ = scattered_positive_4
-    dedicated_positive_5 := savepoint_nested_tx_logic_scattered_positive["dedicated"] + len(input)
-    _ = dedicated_positive_5
+    tx.SavePoint("sp1")
+    tx.WithContext(ctx).Create(&CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperModel{ID: input})
+    if input == "" {
+        tx.RollbackTo("sp1")
+    }
+    tx.SavePoint("sp2")
+    tx.WithContext(ctx).Model(&CaseSavepointOrNestedTxLogicScatteredWithoutDedicatedHelperModel{}).Where("id = ?", input).Update("status", "processed")
+    tx.RollbackTo("sp2")
+    tx.Commit()
     return nil
 }

@@ -46,26 +46,14 @@ type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckAuditSink interface 
 }
 
 func NegativeRepositorySingleRecordWriteWithoutRowsAffectedCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckDTO) error {
-    focus := "repository_single_record_write_without"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckRepository{db: db, sql: sqlDB}
-    var model CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckModel
-    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
-    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
-    repository_single_record_write_rows_negative := map[string]int{"repository": 1, "single": 2, "record": 3, "write": 4, "rows": 5, "affected": 6}
-    repository_single_record_write_rows_negative["signal"] = len(input) + len(items)
-    repository_negative_0 := db.Where("repository_id = ?", input)
-    _ = repository_negative_0
-    single_negative_1 := repository_single_record_write_rows_negative["single"] + len(input)
-    _ = single_negative_1
-    record_negative_2 := repository_single_record_write_rows_negative["record"] + len(input)
-    _ = record_negative_2
-    write_negative_3 := repository_single_record_write_rows_negative["write"] + len(input)
-    _ = write_negative_3
-    rows_negative_4 := repository_single_record_write_rows_negative["rows"] + len(input)
-    _ = rows_negative_4
-    affected_negative_5 := repository_single_record_write_rows_negative["affected"] + len(input)
-    _ = affected_negative_5
+
+    record := CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckModel{ID: input, Status: "active"}
+    result := db.WithContext(ctx).Create(&record)
+    if result.Error != nil {
+        return result.Error
+    }
+    if result.RowsAffected == 0 {
+        return fmt.Errorf("no rows affected")
+    }
     return nil
 }

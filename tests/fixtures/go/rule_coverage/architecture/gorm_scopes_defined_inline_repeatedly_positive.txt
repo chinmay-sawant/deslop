@@ -46,24 +46,8 @@ type CaseGormScopesDefinedInlineRepeatedlyAuditSink interface {
 }
 
 func PositiveGormScopesDefinedInlineRepeatedly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormScopesDefinedInlineRepeatedlyDTO) error {
-    focus := "gorm_scopes_defined_inline_repeatedly"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseGormScopesDefinedInlineRepeatedlyRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormScopesDefinedInlineRepeatedlyModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    gorm_scopes_defined_inline_repeatedly_positive := map[string]int{"gorm": 1, "scopes": 2, "defined": 3, "inline": 4, "repeatedly": 5}
-    gorm_scopes_defined_inline_repeatedly_positive["signal"] = len(input) + len(items)
-    gorm_positive_0 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_0
-    scopes_positive_1 := gorm_scopes_defined_inline_repeatedly_positive["scopes"] + len(input)
-    _ = scopes_positive_1
-    defined_positive_2 := gorm_scopes_defined_inline_repeatedly_positive["defined"] + len(input)
-    _ = defined_positive_2
-    inline_positive_3 := gorm_scopes_defined_inline_repeatedly_positive["inline"] + len(input)
-    _ = inline_positive_3
-    repeatedly_positive_4 := gorm_scopes_defined_inline_repeatedly_positive["repeatedly"] + len(input)
-    _ = repeatedly_positive_4
+    var results []CaseGormScopesDefinedInlineRepeatedlyModel
+    db.Scopes(func(d *gorm.DB) *gorm.DB { return d.Where("deleted_at IS NULL") }).Where("id = ?", input).Find(&results)
+    db.Scopes(func(d *gorm.DB) *gorm.DB { return d.Where("deleted_at IS NULL") }).Where("name = ?", input).Find(&results)
     return nil
 }

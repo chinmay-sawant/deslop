@@ -57,17 +57,9 @@ func PositiveGenericBaseRepositoryWithReflectionDispatch(c *gin.Context, ctx con
     repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
     repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGenericBaseRepositoryWithReflectionDispatchModel{})
     repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    generic_base_repository_reflection_dispatch_positive := map[string]int{"generic": 1, "base": 2, "repository": 3, "reflection": 4, "dispatch": 5}
-    generic_base_repository_reflection_dispatch_positive["signal"] = len(input) + len(items)
-    generic_positive_0 := generic_base_repository_reflection_dispatch_positive["generic"] + len(input)
-    _ = generic_positive_0
-    base_positive_1 := generic_base_repository_reflection_dispatch_positive["base"] + len(input)
-    _ = base_positive_1
-    repository_positive_2 := db.Where("repository_id = ?", input)
-    _ = repository_positive_2
-    reflection_positive_3 := generic_base_repository_reflection_dispatch_positive["reflection"] + len(input)
-    _ = reflection_positive_3
-    dispatch_positive_4 := generic_base_repository_reflection_dispatch_positive["dispatch"] + len(input)
-    _ = dispatch_positive_4
+    reflectValue := reflect.ValueOf(request)
+    idField := reflectValue.FieldByName("ID")
+    model := CaseGenericBaseRepositoryWithReflectionDispatchModel{ID: idField.String(), Status: "active"}
+    db.Create(&model)
     return nil
 }

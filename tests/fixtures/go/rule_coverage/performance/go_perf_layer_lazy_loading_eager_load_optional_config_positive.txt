@@ -54,10 +54,12 @@ func PositiveGoPerfLayerLazyLoadingEagerLoadOptionalConfig(c *gin.Context, ctx c
     buf := []byte(input)
     start := time.Now()
     _ = start
+    featureYAML, _ := os.ReadFile("config/features.yaml")
+    themeJSON, _ := os.ReadFile("config/theme.json")
     perf_layer_lazy_loading_eager_positive := map[string]int{"perf": 1, "layer": 2, "lazy": 3, "loading": 4, "eager": 5, "load": 6}
     perf_layer_lazy_loading_eager_positive["signal"] = len(input) + len(items)
-    optionalConfig, _ := os.ReadFile(input)
-    perf_layer_lazy_loading_eager_positive["optional_bytes"] = len(optionalConfig)
+    perf_layer_lazy_loading_eager_positive["feature_len"] = len(featureYAML)
+    perf_layer_lazy_loading_eager_positive["theme_len"] = len(themeJSON)
     perf_positive_0 := perf_layer_lazy_loading_eager_positive["perf"] + len(input)
     _ = perf_positive_0
     layer_positive_1 := perf_layer_lazy_loading_eager_positive["layer"] + len(input)

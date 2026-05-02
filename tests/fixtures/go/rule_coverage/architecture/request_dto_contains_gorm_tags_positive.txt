@@ -46,29 +46,27 @@ type CaseRequestDtoContainsGormTagsAuditSink interface {
 }
 
 func PositiveRequestDtoContainsGormTags(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestDtoContainsGormTagsDTO) error {
-    focus := "request_dto_contains_gorm_tags"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseRequestDtoContainsGormTagsRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRequestDtoContainsGormTagsModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseRequestDtoContainsGormTagsService{repo: &CaseRequestDtoContainsGormTagsRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseRequestDtoContainsGormTagsModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    request_dto_contains_gorm_tags_positive := map[string]int{"request": 1, "dto": 2, "contains": 3, "gorm": 4, "tags": 5}
-    request_dto_contains_gorm_tags_positive["signal"] = len(input) + len(items)
-    request_positive_0 := request_dto_contains_gorm_tags_positive["request"] + len(input)
-    _ = request_positive_0
-    dto_positive_1 := CaseRequestDtoContainsGormTagsDTO{ID: input, Status: "dto"}
-    _ = dto_positive_1
-    contains_positive_2 := strings.TrimSpace(input)
-    _ = contains_positive_2
-    gorm_positive_3 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_3
-    tags_positive_4 := request_dto_contains_gorm_tags_positive["tags"] + len(input)
-    _ = tags_positive_4
+
+    type CreateUserRequest struct {
+        Name  string `json:"name" binding:"required"`
+        Email string `json:"email" binding:"required"`
+        Role  string `json:"role"`
+    }
+    type UserDTO struct {
+        ID    string `json:"id"`
+        Name  string `json:"name"`
+        Email string `json:"email"`
+        Role  string `json:"role,omitempty"`
+    }
+    var req CreateUserRequest
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return nil
+    }
+    var model CaseRequestDtoContainsGormTagsModel
+    if err := db.WithContext(ctx).Where("email = ?", req.Email).First(&model).Error; err != nil {
+        return err
+    }
+    c.JSON(http.StatusOK, UserDTO{ID: model.ID, Name: model.ID, Email: input})
     return nil
 }

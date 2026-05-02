@@ -58,17 +58,12 @@ func PositiveCustomValidatorRegistrationInsideHandler(c *gin.Context, ctx contex
     model := CaseCustomValidatorRegistrationInsideHandlerModel{ID: input, Status: "pending"}
     _ = service
     _ = model
-    custom_validator_registration_inside_handler_positive := map[string]int{"custom": 1, "validator": 2, "registration": 3, "inside": 4, "handler": 5}
-    custom_validator_registration_inside_handler_positive["signal"] = len(input) + len(items)
-    custom_positive_0 := custom_validator_registration_inside_handler_positive["custom"] + len(input)
-    _ = custom_positive_0
-    validator_positive_1 := CaseCustomValidatorRegistrationInsideHandlerDTO{ID: input, Status: "validator"}
-    _ = validator_positive_1
-    registration_positive_2 := custom_validator_registration_inside_handler_positive["registration"] + len(input)
-    _ = registration_positive_2
-    inside_positive_3 := custom_validator_registration_inside_handler_positive["inside"] + len(input)
-    _ = inside_positive_3
-    handler_positive_4 := c.FullPath() + ":" + input
-    _ = handler_positive_4
+    validator.New()
+    v := validator.New()
+    v.RegisterValidation("custom_status", func(fl validator.FieldLevel) bool {
+        return fl.Field().String() == "active" || fl.Field().String() == "inactive"
+    })
+    request.Status = "pending"
+    _ = request
     return nil
 }

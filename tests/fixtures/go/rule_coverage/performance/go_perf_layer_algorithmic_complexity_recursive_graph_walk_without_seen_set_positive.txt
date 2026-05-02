@@ -53,6 +53,20 @@ func PositiveGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSet(c 
     buf := []byte(input)
     start := time.Now()
     _ = start
+    var walk func(node string) int
+    walk = func(node string) int {
+        count := 0
+        for _, item := range items {
+            if item.ID == node {
+                count++
+                for _, other := range items {
+                    _ = walk(other.ID)
+                }
+            }
+        }
+        return count
+    }
+    _ = walk("root")
     perf_layer_algorithmic_complexity_recursive_positive := map[string]int{"perf": 1, "layer": 2, "algorithmic": 3, "complexity": 4, "recursive": 5, "graph": 6}
     perf_layer_algorithmic_complexity_recursive_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_algorithmic_complexity_recursive_positive["perf"] + len(input)

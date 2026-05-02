@@ -55,7 +55,12 @@ func PositiveGoPerfLayerAsyncConcurrencyMutexHeldDuringSlowCall(c *gin.Context, 
     start := time.Now()
     _ = start
     var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
+    for _, item := range items {
+        mu.Lock()
+        _ = item.ID
+        time.Sleep(10 * time.Millisecond)
+        mu.Unlock()
+    }
     perf_layer_async_concurrency_mutex_positive := map[string]int{"perf": 1, "layer": 2, "async": 3, "concurrency": 4, "mutex": 5, "held": 6}
     perf_layer_async_concurrency_mutex_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_async_concurrency_mutex_positive["perf"] + len(input)

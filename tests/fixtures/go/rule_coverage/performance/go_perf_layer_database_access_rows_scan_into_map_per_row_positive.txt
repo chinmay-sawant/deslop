@@ -53,8 +53,12 @@ func PositiveGoPerfLayerDatabaseAccessRowsScanIntoMapPerRow(c *gin.Context, ctx 
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
-    for _, item := range items { db.Where("id = ?", item.ID).Find(&[]any{}) }
+    rows, _ := sqlDB.QueryContext(ctx, "SELECT id, tenant_id, status FROM items")
+    for rows.Next() {
+        row := make(map[string]interface{})
+        _, _ = rows.Scan(&row)
+    }
+    _ = rows
     perf_layer_database_access_rows_positive := map[string]int{"perf": 1, "layer": 2, "database": 3, "access": 4, "rows": 5, "scan": 6}
     perf_layer_database_access_rows_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_database_access_rows_positive["perf"] + len(input)

@@ -46,27 +46,8 @@ type CaseGormChainBuiltInServiceAuditSink interface {
 }
 
 func PositiveGormChainBuiltInService(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormChainBuiltInServiceDTO) error {
-    focus := "gorm_chain_built_in_service"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseGormChainBuiltInServiceRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormChainBuiltInServiceModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseGormChainBuiltInServiceService{repo: &CaseGormChainBuiltInServiceRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseGormChainBuiltInServiceModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    gorm_chain_built_service_positive := map[string]int{"gorm": 1, "chain": 2, "built": 3, "service": 4}
-    gorm_chain_built_service_positive["signal"] = len(input) + len(items)
-    gorm_positive_0 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_0
-    chain_positive_1 := gorm_chain_built_service_positive["chain"] + len(input)
-    _ = chain_positive_1
-    built_positive_2 := gorm_chain_built_service_positive["built"] + len(input)
-    _ = built_positive_2
-    service_positive_3 := CaseGormChainBuiltInServiceDTO{ID: input, Status: "service"}
-    _ = service_positive_3
+    var result []CaseGormChainBuiltInServiceModel
+    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Items").Order("created_at DESC").Find(&result)
+    c.JSON(http.StatusOK, gin.H{"data": result})
     return nil
 }

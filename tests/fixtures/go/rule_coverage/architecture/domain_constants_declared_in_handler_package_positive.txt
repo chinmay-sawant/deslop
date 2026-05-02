@@ -61,17 +61,11 @@ func PositiveDomainConstantsDeclaredInHandlerPackage(c *gin.Context, ctx context
     _ = model
     err := errors.New("sql: no rows in result set for " + input)
     if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
-    domain_constants_declared_handler_package_positive := map[string]int{"domain": 1, "constants": 2, "declared": 3, "handler": 4, "package": 5}
-    domain_constants_declared_handler_package_positive["signal"] = len(input) + len(items)
-    domain_positive_0 := CaseDomainConstantsDeclaredInHandlerPackageDTO{ID: input, Status: "domain"}
-    _ = domain_positive_0
-    constants_positive_1 := domain_constants_declared_handler_package_positive["constants"] + len(input)
-    _ = constants_positive_1
-    declared_positive_2 := domain_constants_declared_handler_package_positive["declared"] + len(input)
-    _ = declared_positive_2
-    handler_positive_3 := c.FullPath() + ":" + input
-    _ = handler_positive_3
-    package_positive_4 := domain_constants_declared_handler_package_positive["package"] + len(input)
-    _ = package_positive_4
+    const StatusPending = "pending"
+    const StatusActive = "active"
+    const RoleAdmin = "admin"
+    model.Status = StatusPending
+    request.Status = StatusActive
+    _ = RoleAdmin
     return nil
 }

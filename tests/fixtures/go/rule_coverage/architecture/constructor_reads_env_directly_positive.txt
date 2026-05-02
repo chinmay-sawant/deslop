@@ -47,19 +47,11 @@ type CaseConstructorReadsEnvDirectlyAuditSink interface {
 }
 
 func PositiveConstructorReadsEnvDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseConstructorReadsEnvDirectlyDTO) error {
-    focus := "constructor_reads_env_directly"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
-    constructor_reads_env_directly_positive := map[string]int{"constructor": 1, "reads": 2, "env": 3, "directly": 4}
-    constructor_reads_env_directly_positive["signal"] = len(input) + len(items)
-    constructor_positive_0 := constructor_reads_env_directly_positive["constructor"] + len(input)
-    _ = constructor_positive_0
-    reads_positive_1 := constructor_reads_env_directly_positive["reads"] + len(input)
-    _ = reads_positive_1
-    env_positive_2 := constructor_reads_env_directly_positive["env"] + len(input)
-    _ = env_positive_2
-    directly_positive_3 := constructor_reads_env_directly_positive["directly"] + len(input)
-    _ = directly_positive_3
+    dbURL := os.Getenv("DATABASE_URL")
+    redisURL := os.Getenv("REDIS_URL")
+    if dbURL == "" {
+        dbURL = "postgres://localhost:5432/mydb"
+    }
+    _, _ = dbURL, redisURL
     return nil
 }

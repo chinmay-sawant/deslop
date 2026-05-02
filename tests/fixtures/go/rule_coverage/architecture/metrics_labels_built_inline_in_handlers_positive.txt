@@ -46,27 +46,8 @@ type CaseMetricsLabelsBuiltInlineInHandlersAuditSink interface {
 }
 
 func PositiveMetricsLabelsBuiltInlineInHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMetricsLabelsBuiltInlineInHandlersDTO) error {
-    focus := "metrics_labels_built_inline_in"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseMetricsLabelsBuiltInlineInHandlersDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    log.Printf("metrics_labels_built_inline_in_handlers tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
-    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
-    _ = auditFields
-    metrics_labels_built_inline_handlers_positive := map[string]int{"metrics": 1, "labels": 2, "built": 3, "inline": 4, "handlers": 5}
-    metrics_labels_built_inline_handlers_positive["signal"] = len(input) + len(items)
-    metrics_positive_0 := fmt.Sprintf("metrics=%s", input)
-    _ = metrics_positive_0
-    labels_positive_1 := metrics_labels_built_inline_handlers_positive["labels"] + len(input)
-    _ = labels_positive_1
-    built_positive_2 := metrics_labels_built_inline_handlers_positive["built"] + len(input)
-    _ = built_positive_2
-    inline_positive_3 := metrics_labels_built_inline_handlers_positive["inline"] + len(input)
-    _ = inline_positive_3
-    handlers_positive_4 := c.FullPath() + ":" + input
-    _ = handlers_positive_4
+    handlerLabel := fmt.Sprintf("handler=%s", c.FullPath())
+    statusLabel := fmt.Sprintf("status=%d", http.StatusOK)
+    _, _ = handlerLabel, statusLabel
     return nil
 }

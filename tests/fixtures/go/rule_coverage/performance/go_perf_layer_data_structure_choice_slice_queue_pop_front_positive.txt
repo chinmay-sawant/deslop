@@ -53,8 +53,13 @@ func PositiveGoPerfLayerDataStructureChoiceSliceQueuePopFront(c *gin.Context, ct
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseGoPerfLayerDataStructureChoiceSliceQueuePopFrontDTO
-    for _, item := range items { copied = append(copied, item) }
+    q := make([]CaseGoPerfLayerDataStructureChoiceSliceQueuePopFrontDTO, len(items))
+    copy(q, items)
+    for len(q) > 0 {
+        front := q[0]
+        q = q[1:]
+        _ = front.ID
+    }
     perf_layer_data_structure_choice_positive := map[string]int{"perf": 1, "layer": 2, "data": 3, "structure": 4, "choice": 5, "slice": 6}
     perf_layer_data_structure_choice_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_data_structure_choice_positive["perf"] + len(input)
