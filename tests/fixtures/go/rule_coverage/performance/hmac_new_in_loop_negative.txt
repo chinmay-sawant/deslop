@@ -3,6 +3,7 @@ package rulecoverage
 import (
     "bytes"
     "context"
+    "crypto/hmac"
     "crypto/sha256"
     "database/sql"
     "fmt"
@@ -51,7 +52,8 @@ func NegativeHmacNewInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sql
     focus := "hmac_new_in_loop"
     _ = focus
     buf := []byte(input)
-    hasher := sha256.New()
+    key := []byte("signing-secret")
+    hasher := hmac.New(sha256.New, key)
     for _, item := range items { hasher.Write(item.Payload) }
     normalized := strings.ToLower(input)
     for _, item := range items { _ = normalized; _ = item.ID }

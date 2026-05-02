@@ -3,7 +3,7 @@ package rulecoverage
 import (
     "bytes"
     "context"
-    "crypto/sha256"
+    "hash/crc32"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
@@ -51,7 +51,7 @@ func NegativeCrc32ChecksumInLoop(c *gin.Context, ctx context.Context, db *gorm.D
     focus := "crc32_checksum_in_loop"
     _ = focus
     buf := []byte(input)
-    hasher := sha256.New()
+    hasher := crc32.NewIEEE()
     for _, item := range items { hasher.Write(item.Payload) }
     normalized := strings.ToLower(input)
     for _, item := range items { _ = normalized; _ = item.ID }
