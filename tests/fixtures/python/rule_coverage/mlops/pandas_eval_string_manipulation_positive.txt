@@ -1,6 +1,0 @@
-import pandas as pd
-
-def combine_names(df):
-    # Violation: using string concatenation with apply in pandas is very slow compared to vectorized string methods
-    df['full_name'] = df.apply(lambda row: str(row['first_name']) + " " + str(row['last_name']), axis=1)
-    return df

@@ -1,0 +1,14 @@
+{
+  "id": "rust_pointer_chasing_vec_box",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Pointer-heavy boxed vector-style storage that may hurt cache locality.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rand_newsource_per_call",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`rand.NewSource(...)` inside regular call paths.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

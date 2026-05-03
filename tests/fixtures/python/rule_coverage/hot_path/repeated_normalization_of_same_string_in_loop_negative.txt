@@ -1,8 +1,0 @@
-def find_matches(items, target):
-    # Correct: normalize the target string once outside the loop
-    target_normalized = target.lower()
-    matches = []
-    for item in items:
-        if item.lower() == target_normalized:
-            matches.append(item)
-    return matches

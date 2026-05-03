@@ -1,4 +1,0 @@
-def is_valid_token(token):
-    # Violation: constant set or dict literal rebuilt on every function call
-    valid_tokens = {"ALPHA", "BETA", "GAMMA", "DELTA", "EPSILON"}
-    return token in valid_tokens

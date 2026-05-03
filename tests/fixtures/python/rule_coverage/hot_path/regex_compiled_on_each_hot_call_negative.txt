@@ -1,7 +1,0 @@
-import re
-
-# Correct: explicitly compile the regex once and reuse the compiled object's match method
-EMAIL_RE = re.compile(r"[^@]+@[^@]+\.[^@]+")
-
-def is_valid_email(email):
-    return bool(EMAIL_RE.match(email))

@@ -1,0 +1,14 @@
+{
+  "id": "rust_manifest_build_dependency_used_at_runtime",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag build-dependencies imported from runtime code or runtime dependencies used only by `build.rs`.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

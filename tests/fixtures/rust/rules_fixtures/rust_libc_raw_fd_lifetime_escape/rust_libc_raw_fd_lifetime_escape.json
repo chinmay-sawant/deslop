@@ -1,0 +1,14 @@
+{
+  "id": "rust_libc_raw_fd_lifetime_escape",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `as_raw_fd()` results stored, returned, or moved into long-lived structs while the owning file/socket may drop.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

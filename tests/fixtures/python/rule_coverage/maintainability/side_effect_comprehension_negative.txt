@@ -1,5 +1,0 @@
-def notify_users(users):
-    # Correct: use a standard for-loop when performing actions with side effects
-    for user in users:
-        if user.is_active:
-            user.send_email()

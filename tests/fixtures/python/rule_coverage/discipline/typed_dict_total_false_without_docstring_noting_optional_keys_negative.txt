@@ -1,9 +1,0 @@
-from typing import TypedDict
-
-class UserConfig(TypedDict, total=False):
-    """
-    Configuration for user requests.
-    All keys are optional.
-    """
-    timeout: int
-    retries: int

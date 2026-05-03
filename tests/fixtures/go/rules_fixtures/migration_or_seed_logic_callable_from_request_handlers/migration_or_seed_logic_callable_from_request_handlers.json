@@ -1,0 +1,14 @@
+{
+  "id": "migration_or_seed_logic_callable_from_request_handlers",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request handlers that can trigger migration or seed workflows.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

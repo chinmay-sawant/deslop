@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_profiling_benchmarking_criterion_benchmark_includes_setup",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag Criterion benchmarks that include setup in the measured closure instead of setup/measurement separation.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,5 +1,0 @@
-def process_db_results(rows):
-    for row in rows:
-        do_work(row)
-    # Correct: emit the aggregate metric once outside the data processing loop
-    metrics.increment("rows_processed", len(rows))

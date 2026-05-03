@@ -1,0 +1,14 @@
+{
+  "id": "rust_ignore_override_pattern_unwraps_user_input",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `OverrideBuilder::add(...)` or glob override construction from user input followed by `unwrap` or `expect`.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

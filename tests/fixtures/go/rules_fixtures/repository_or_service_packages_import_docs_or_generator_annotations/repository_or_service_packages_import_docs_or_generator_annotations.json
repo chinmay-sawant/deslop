@@ -1,0 +1,14 @@
+{
+  "id": "repository_or_service_packages_import_docs_or_generator_annotations",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Core business packages that depend on documentation-only tooling or generator-specific concerns.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

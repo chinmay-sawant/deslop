@@ -1,8 +1,0 @@
-from subprocess import Popen, PIPE
-
-def get_large_output():
-    # Violation: using PIPE for stdout without communicate() may deadlock if output is large
-    p = Popen(["cat", "large_file.txt"], stdout=PIPE)
-    p.wait()
-    output = p.stdout.read()
-    return output

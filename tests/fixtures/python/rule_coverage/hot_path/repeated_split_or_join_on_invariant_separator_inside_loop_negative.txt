@@ -1,7 +1,0 @@
-def format_records(base_parts, records):
-    formatted = []
-    # Correct: compute the invariant prefix once outside the loop
-    prefix = "-".join(base_parts)
-    for record in records:
-        formatted.append(f"{prefix}-{record.id}")
-    return formatted

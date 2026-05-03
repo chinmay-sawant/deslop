@@ -1,7 +1,0 @@
-from collections import namedtuple
-
-User = namedtuple("User", ["id", "name", "email"])
-
-def print_user(u):
-    # Violation: using integer indexes to access namedtuple fields defeats their entire purpose of readability
-    print(f"{u[1]} can be reached at {u[2]}")

@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-def large_slice_copy_created_each_iteration_for_sliding_window_negative():
-    values = list(range(120))
-    totals = []
-    for i in range(0, 70, 10):
-        totals.append(sum(values[i + j] for j in range(40)))
-    return totals

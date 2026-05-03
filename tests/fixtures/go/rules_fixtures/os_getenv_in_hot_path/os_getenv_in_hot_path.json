@@ -1,0 +1,14 @@
+{
+  "id": "os_getenv_in_hot_path",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`os.Getenv(\"KEY\")` inside handler functions or loops",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

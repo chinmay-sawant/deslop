@@ -1,4 +1,0 @@
-def send_notification(user, message):
-    print(f"Sending {message} to {user}")
-    # Violation: explicitly returning None at the end of a function is redundant
-    return None

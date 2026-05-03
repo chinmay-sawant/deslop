@@ -1,0 +1,14 @@
+{
+  "id": "race_on_shared_map",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "map reads/writes from multiple goroutines without mutex or `sync.Map` protection (detect goroutine launches + shared map access patterns)",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

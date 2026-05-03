@@ -1,0 +1,14 @@
+{
+  "id": "redis_large_value_without_compression",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`rdb.Set(ctx, key, largePayload, ...)` where `largePayload` is the result of `json.Marshal` on a large struct or slice, without visible compression",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

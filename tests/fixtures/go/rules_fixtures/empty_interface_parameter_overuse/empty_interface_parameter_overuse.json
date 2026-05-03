@@ -1,0 +1,14 @@
+{
+  "id": "empty_interface_parameter_overuse",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "exported functions with `any` or `interface{}` parameters when concrete types would suffice",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

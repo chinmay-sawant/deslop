@@ -1,0 +1,15 @@
+{
+  "id": "rust_lock_across_await",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "experimental",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override",
+    "rust_async_experimental"
+  ],
+  "description": "A lock appears to be held across an .await boundary.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,5 +1,0 @@
-def validate(item: dict[str, str]) -> bool:
-    if "name" not in item:
-        errors = ["missing:name"]
-        return len(errors) == 0
-    return True

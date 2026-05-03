@@ -1,4 +1,0 @@
-def process_batch(items):
-    # Violation: silently dropping duplicate items masks upstream bugs and destroys data integrity
-    unique_items = list(set(items))
-    return execute_batch(unique_items)

@@ -1,9 +1,0 @@
-from flask import Flask, request
-
-app = Flask(__name__)
-
-@app.route("/process", methods=["POST"])
-def process():
-    # Correct: access the parsed JSON data once and reuse it
-    data = request.json
-    return "ok"

@@ -1,0 +1,14 @@
+{
+  "id": "cross_package_internal_import",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Local Python packages reaching into another package's internal or private modules.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

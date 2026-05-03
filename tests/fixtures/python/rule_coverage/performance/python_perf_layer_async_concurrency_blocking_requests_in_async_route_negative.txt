@@ -1,6 +1,0 @@
-import asyncio
-
-
-async def route_handler() -> dict[str, object]:
-    await asyncio.sleep(0.01)
-    return {"status": 200}

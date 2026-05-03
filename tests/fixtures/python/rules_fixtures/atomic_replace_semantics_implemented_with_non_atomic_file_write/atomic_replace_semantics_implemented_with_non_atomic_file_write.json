@@ -1,0 +1,14 @@
+{
+  "id": "atomic_replace_semantics_implemented_with_non_atomic_file_write",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that intends atomic replacement but uses non-atomic file writes.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_data_structure_choice_set_rebuilt_for_each_lookup_batch",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag sets rebuilt inside loops instead of once per lookup batch.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

@@ -1,6 +1,0 @@
-def map_values(keys, mapping):
-    results = []
-    for key in keys:
-        # Correct: use .get() for handling potential missing keys more efficiently in a loop
-        results.append(mapping.get(key))
-    return results

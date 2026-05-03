@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def recursive_traversal_risk_positive(node):
-    total = node.value
-    for child in node.children:
-        total += recursive_traversal_risk_positive(child)
-    return total

@@ -1,5 +1,0 @@
-class Status:
-    def mark_complete(self):
-        # Violation: method mutates state and emits a user-facing representation (violates CQS)
-        self.completed = True
-        return f"Task completed at {time.ctime()}"

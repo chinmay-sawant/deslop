@@ -1,0 +1,14 @@
+{
+  "id": "pydantic_settings_model_does_not_forbid_extra_fields",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Pydantic Settings model does not set model_config = ConfigDict(extra='forbid'), allowing silent typos.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

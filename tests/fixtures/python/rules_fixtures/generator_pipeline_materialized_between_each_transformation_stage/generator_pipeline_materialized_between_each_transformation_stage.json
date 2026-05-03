@@ -1,0 +1,14 @@
+{
+  "id": "generator_pipeline_materialized_between_each_transformation_stage",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag pipelines that repeatedly materialize intermediate lists between stages.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

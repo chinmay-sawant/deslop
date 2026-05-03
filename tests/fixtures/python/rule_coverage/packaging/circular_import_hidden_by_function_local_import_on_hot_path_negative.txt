@@ -1,5 +1,0 @@
-# Correct: refactor the module structure to break the circular dependency, allowing normal top-level imports
-from .core_algorithms import calculate_score
-
-def compute_hot_loop_metric(data):
-    return calculate_score(data)

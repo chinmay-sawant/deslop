@@ -1,7 +1,0 @@
-def filter_events(events):
-    valid_events = []
-    for event in events:
-        # Violation: membership test against a list or tuple literal inside a loop (rebuilds tuple, O(N) search)
-        if event.type in ("click", "scroll", "keypress", "focus"):
-            valid_events.append(event)
-    return valid_events

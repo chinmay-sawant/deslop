@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-OPTIONAL_MODEL = [index for index in range(20_000)]
-
-
-def python_perf_layer_lazy_loading_optional_model_loaded_at_startup_positive(enabled):
-    if not enabled:
-        return 0
-    return len(OPTIONAL_MODEL)

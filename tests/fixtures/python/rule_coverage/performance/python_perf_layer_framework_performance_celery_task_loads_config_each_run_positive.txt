@@ -1,7 +1,0 @@
-import json
-
-
-def celery_task(path: str) -> str:
-    with open(path, "r", encoding="utf-8") as handle:
-        config = json.load(handle)
-    return config["queue"]

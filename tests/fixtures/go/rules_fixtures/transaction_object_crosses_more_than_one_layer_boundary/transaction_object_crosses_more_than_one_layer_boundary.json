@@ -1,0 +1,14 @@
+{
+  "id": "transaction_object_crosses_more_than_one_layer_boundary",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Transaction handles passed through multiple layers as ordinary arguments.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

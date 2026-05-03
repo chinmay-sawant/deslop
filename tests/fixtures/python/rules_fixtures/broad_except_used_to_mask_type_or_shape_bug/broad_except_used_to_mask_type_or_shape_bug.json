@@ -1,0 +1,14 @@
+{
+  "id": "broad_except_used_to_mask_type_or_shape_bug",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag broad exception handling that conceals structural bugs in the input or code.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

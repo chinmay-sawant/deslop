@@ -1,8 +1,0 @@
-import pandas as pd
-
-def merge_chunks(chunks):
-    master_df = pd.DataFrame()
-    for chunk in chunks:
-        # Violation: using pd.concat in a loop forces a complete copy of the dataframe each iteration
-        master_df = pd.concat([master_df, chunk])
-    return master_df

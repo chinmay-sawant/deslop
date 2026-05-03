@@ -1,8 +1,0 @@
-# Correct: probe for optional dependencies once at the module level
-try:
-    import orjson as json
-except ImportError:
-    import json
-
-def serialize_data(data):
-    return json.dumps(data)

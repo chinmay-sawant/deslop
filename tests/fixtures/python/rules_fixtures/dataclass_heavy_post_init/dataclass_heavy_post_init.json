@@ -1,0 +1,14 @@
+{
+  "id": "dataclass_heavy_post_init",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Dataclass __post_init__ methods that perform I/O, subprocess, network, or heavyweight client setup.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

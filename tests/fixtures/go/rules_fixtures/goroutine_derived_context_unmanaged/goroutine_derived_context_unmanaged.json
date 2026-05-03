@@ -1,0 +1,14 @@
+{
+  "id": "goroutine_derived_context_unmanaged",
+  "language": "go",
+  "family": "concurrency",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.",
+  "binding_location": "src/heuristics/go/concurrency.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_constructor_many_flags",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Constructor-like APIs that use multiple boolean flags.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_oversized_module_file",
+  "language": "rust",
+  "family": "module_surface",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Rust module files that grow too large and mix too many responsibilities.",
+  "binding_location": "src/heuristics/rust/module_surface.rs"
+}

@@ -1,5 +1,0 @@
-# Correct: only consume the publicly exported API contract from external packages
-from shared_auth import create_secure_hash
-
-def register_user(pwd):
-    return create_secure_hash(pwd)

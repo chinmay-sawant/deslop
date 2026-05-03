@@ -1,0 +1,14 @@
+{
+  "id": "sync_mutex_for_readonly_config",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`mu.RLock(); v := config.X; mu.RUnlock()` for read-mostly config that changes rarely",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

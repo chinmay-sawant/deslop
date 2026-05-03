@@ -1,7 +1,0 @@
-class BusinessError(Exception):
-    def __init__(self, message, code):
-        super().__init__(message)
-        # Violation: identity encoded as a string code instead of a distinct class
-        self.code = code
-
-raise BusinessError("Not found", "ERR_404")

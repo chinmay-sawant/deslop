@@ -1,5 +1,0 @@
-import hashlib
-
-def hash_password(password):
-    # Violation: insecure hash algorithm (MD5) used for security-sensitive purpose
-    return hashlib.md5(password.encode()).hexdigest()

@@ -1,0 +1,14 @@
+{
+  "id": "repeated_body_rewind_for_multiple_decoders",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin handlers that read, rewind, and decode the same request body multiple times.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

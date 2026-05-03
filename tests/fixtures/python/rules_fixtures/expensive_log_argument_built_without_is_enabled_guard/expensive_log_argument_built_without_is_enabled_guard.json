@@ -1,0 +1,14 @@
+{
+  "id": "expensive_log_argument_built_without_is_enabled_guard",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag log calls that eagerly build costly payloads without first checking the log level.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

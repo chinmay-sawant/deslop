@@ -1,7 +1,0 @@
-def data_generator():
-    resource = acquire_resource()
-    try:
-        yield "data"
-    finally:
-        # Violation: exception during generator cleanup (close()) not handled
-        resource.release()

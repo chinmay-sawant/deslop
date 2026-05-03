@@ -1,0 +1,14 @@
+{
+  "id": "concurrent_futures_executor_not_shut_down",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "ThreadPoolExecutor or ProcessPoolExecutor created without shutdown() or a context manager, leaking threads.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

@@ -1,7 +1,0 @@
-from django.shortcuts import render
-from .models import User
-
-def user_list_view(request):
-    # Correct: use slicing to limit the number of records returned in a view
-    users = User.objects.all()[:100]
-    return render(request, 'users.html', {'users': users})

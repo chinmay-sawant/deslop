@@ -1,0 +1,14 @@
+{
+  "id": "binary_read_for_single_field",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`binary.Read(r, order, &singleField)` for reading a single integer",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

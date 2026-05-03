@@ -1,8 +1,0 @@
-# config_loader.py
-import os
-import sys
-
-# Violation: performing heavy/stateful operations at import time (side effects)
-print("Initializing config...")
-GLOBAL_CONFIG = load_remote_config(os.environ["CONFIG_URL"])
-sys.path.append(GLOBAL_CONFIG["plugin_dir"])

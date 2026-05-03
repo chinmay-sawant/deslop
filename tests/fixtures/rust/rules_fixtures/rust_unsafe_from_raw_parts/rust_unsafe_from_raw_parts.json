@@ -1,0 +1,14 @@
+{
+  "id": "rust_unsafe_from_raw_parts",
+  "language": "rust",
+  "family": "unsafe_soundness",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Unsafe raw slice construction that depends on lifetime and length invariants.",
+  "binding_location": "src/heuristics/rust/unsafe_soundness.rs"
+}

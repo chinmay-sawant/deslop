@@ -1,6 +1,0 @@
-import pytest
-
-# Violation: pytest.parametrize used with only a single test case
-@pytest.mark.parametrize("input_val", [10])
-def test_threshold(input_val):
-    assert input_val > 5

@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-import weakref
-
-
-def read_name(ref: "weakref.ReferenceType[object]") -> str:
-    return ref().name

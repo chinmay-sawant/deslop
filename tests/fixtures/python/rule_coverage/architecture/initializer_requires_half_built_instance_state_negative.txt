@@ -1,9 +1,0 @@
-class DatabaseConnector:
-    def __init__(self, url):
-        # Correct: attributes are set before any logic runs
-        self.url = url
-        self.connected = False
-        self.setup()
-
-    def setup(self):
-        print(f"Connecting to {self.url}")

@@ -1,9 +1,0 @@
-# Correct: define a constant set outside the loop for O(1) membership testing
-VALID_EVENT_TYPES = {"click", "scroll", "keypress", "focus"}
-
-def filter_events(events):
-    valid_events = []
-    for event in events:
-        if event.type in VALID_EVENT_TYPES:
-            valid_events.append(event)
-    return valid_events

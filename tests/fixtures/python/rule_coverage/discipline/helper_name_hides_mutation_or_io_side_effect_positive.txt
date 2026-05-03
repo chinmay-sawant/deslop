@@ -1,6 +1,0 @@
-def get_user_settings(user_id):
-    # Violation: helper name 'get_...' hides a mutation side effect
-    settings = db.fetch_settings(user_id)
-    settings["last_accessed"] = time.time()
-    db.save(settings)
-    return settings

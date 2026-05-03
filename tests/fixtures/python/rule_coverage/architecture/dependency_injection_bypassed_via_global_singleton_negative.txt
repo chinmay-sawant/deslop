@@ -1,5 +1,0 @@
-def create_user(name, db):
-    # Correct: dependencies are injected as arguments
-    user = User(name=name)
-    db.session.add(user)
-    db.session.commit()

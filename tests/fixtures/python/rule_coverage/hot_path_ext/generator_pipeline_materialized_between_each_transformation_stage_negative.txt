@@ -1,6 +1,0 @@
-from __future__ import annotations
-
-def generator_pipeline_materialized_between_each_transformation_stage_negative():
-    numbers = [1, 2, 3, 4]
-    pipeline = (str(n + 1) for n in (x * 2 for x in numbers))
-    return list(pipeline)

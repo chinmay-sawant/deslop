@@ -1,6 +1,0 @@
-from collections import namedtuple
-
-# Violation: namedtuple used where a dataclass better fits (lacks type safety and mutability control)
-User = namedtuple("User", ["id", "name", "email"])
-
-u = User(1, "Alice", "alice@example.com")

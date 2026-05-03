@@ -1,3 +1,0 @@
-def liveness_probe():
-    # Correct: return a static 200 OK for liveness; use a separate readiness probe for dependency checks
-    return "alive"

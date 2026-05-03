@@ -1,0 +1,15 @@
+{
+  "id": "rust_async_recreate_future_in_select",
+  "language": "rust",
+  "family": "async_patterns",
+  "default_severity": "contextual",
+  "status": "experimental",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override",
+    "rust_async_experimental"
+  ],
+  "description": "A select! loop may recreate futures instead of reusing long-lived ones.",
+  "binding_location": "src/heuristics/rust/async_patterns.rs"
+}

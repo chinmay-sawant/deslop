@@ -1,0 +1,14 @@
+{
+  "id": "bytes_split_two_index_zero_cut",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.Split(...)[0]` when only the first segment is needed.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

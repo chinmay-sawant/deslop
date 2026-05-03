@@ -1,6 +1,0 @@
-import asyncio
-
-
-async def wait_done(flag) -> None:
-    while not flag.done:
-        await asyncio.sleep(0)

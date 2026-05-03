@@ -1,0 +1,14 @@
+{
+  "id": "service_constructor_accepts_untyped_config_map",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Services configured by `map[string]any` or similar untyped blobs.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

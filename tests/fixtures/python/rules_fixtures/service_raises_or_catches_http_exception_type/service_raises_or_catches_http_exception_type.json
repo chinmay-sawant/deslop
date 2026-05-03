@@ -1,0 +1,14 @@
+{
+  "id": "service_raises_or_catches_http_exception_type",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Service-layer function raises or catches HTTP exception types that belong to the transport layer.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

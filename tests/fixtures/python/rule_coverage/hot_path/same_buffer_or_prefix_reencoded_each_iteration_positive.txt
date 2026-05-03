@@ -1,5 +1,0 @@
-def write_stream(stream, prefix, items):
-    for item in items:
-        # Violation: re-encoding the same prefix string to bytes inside a loop
-        data = prefix.encode('utf-8') + item.encode('utf-8')
-        stream.write(data)

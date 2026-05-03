@@ -1,0 +1,14 @@
+{
+  "id": "query_path_and_body_merge_performed_in_handler",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that merge several request sources inline instead of normalizing inputs before service calls.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "third_party_exception_type_leaks_across_architecture_boundary",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag public or upper-layer APIs that expose low-level library exception types instead of stable local contracts.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

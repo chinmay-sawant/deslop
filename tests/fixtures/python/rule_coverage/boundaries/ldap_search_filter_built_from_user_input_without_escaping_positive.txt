@@ -1,4 +1,0 @@
-def find_user(username):
-    # Violation: LDAP search filter built from user input without escaping
-    search_filter = f"(uid={username})"
-    ldap_connection.search(search_base, search_filter)

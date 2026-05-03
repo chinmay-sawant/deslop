@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_network_calls_tls_context_built_per_request",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Network calls. Flag SSLContext or certificate bundle loading per request instead of process-level reuse.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

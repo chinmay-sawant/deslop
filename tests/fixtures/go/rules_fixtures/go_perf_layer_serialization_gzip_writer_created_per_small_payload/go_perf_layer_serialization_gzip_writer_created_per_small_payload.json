@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_serialization_gzip_writer_created_per_small_payload",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag gzip writers created for tiny payloads where compression overhead can dominate.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,5 +1,0 @@
-def process_user_list(users):
-    # Violation: public API mutates the input argument in-place without signal
-    for user in users:
-        user["processed"] = True
-    # Caller might not expect their 'users' list to be modified

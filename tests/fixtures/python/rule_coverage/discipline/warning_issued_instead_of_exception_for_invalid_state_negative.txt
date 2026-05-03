@@ -1,5 +1,0 @@
-def process_data(data):
-    if not data:
-        # Correct: raise a specific exception when the application reaches an invalid state
-        raise ValueError("Cannot process empty data")
-    # ...

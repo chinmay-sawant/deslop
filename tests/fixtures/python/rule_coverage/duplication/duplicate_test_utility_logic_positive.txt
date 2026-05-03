@@ -1,8 +1,0 @@
-# test_auth.py
-def create_mock_user(name):
-    return {"id": random.randint(1, 100), "name": name, "roles": []}
-
-# test_billing.py
-# Violation: duplicate test utility logic repeated across test files
-def create_mock_user(name):
-    return {"id": random.randint(1, 100), "name": name, "roles": []}

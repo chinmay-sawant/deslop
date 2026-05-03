@@ -1,8 +1,0 @@
-def process_user_list(users):
-    # Correct: public API returns a new list with the modifications
-    processed_users = []
-    for user in users:
-        new_user = user.copy()
-        new_user["processed"] = True
-        processed_users.append(new_user)
-    return processed_users

@@ -1,0 +1,14 @@
+{
+  "id": "public_any_type_leak",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public functions or model fields that expose Any, object, or similarly wide contracts.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

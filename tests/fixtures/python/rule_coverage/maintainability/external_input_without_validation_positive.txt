@@ -1,3 +1,0 @@
-def create_user(request_data):
-    # Violation: external input is used without any validation or sanitization
-    db.execute(f"INSERT INTO users (email, name) VALUES ('{request_data['email']}', '{request_data['name']}')")

@@ -1,6 +1,0 @@
-from __future__ import annotations
-
-def repeated_string_format_invariant_template_negative():
-    rows = [10, 11, 12]
-    prefix = "tenant=acme|id="
-    return [f"{prefix}{row}" for row in rows]

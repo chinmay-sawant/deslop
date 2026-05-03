@@ -1,0 +1,14 @@
+{
+  "id": "repeated_pure_helper_call_on_same_input_without_local_cache",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag hot loops that recompute the same pure helper result for identical inputs in one scope.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

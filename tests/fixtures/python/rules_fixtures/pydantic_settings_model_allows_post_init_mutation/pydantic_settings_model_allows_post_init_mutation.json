@@ -1,0 +1,14 @@
+{
+  "id": "pydantic_settings_model_allows_post_init_mutation",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Pydantic Settings model does not set frozen=True, allowing accidental mutation of config values.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

@@ -1,4 +1,0 @@
-from __future__ import annotations
-
-def quadratic_string_building_via_plus_equals_negative(tokens):
-    return ",".join(tokens)

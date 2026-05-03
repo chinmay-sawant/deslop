@@ -1,7 +1,0 @@
-import asyncio
-
-async def fetch_and_update(state, lock):
-    # Correct: perform slow async network IO outside the lock, only locking for the fast state mutation
-    data = await fetch_remote_data()
-    async with lock:
-        state.update(data)

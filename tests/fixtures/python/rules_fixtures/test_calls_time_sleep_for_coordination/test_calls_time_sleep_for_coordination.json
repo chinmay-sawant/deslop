@@ -1,0 +1,14 @@
+{
+  "id": "test_calls_time_sleep_for_coordination",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test calls time.sleep to coordinate with async or threaded code instead of events or monkeypatching.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

@@ -1,5 +1,0 @@
-class UserService:
-    def get_user(self, id):
-        user = self.repo.get(id)
-        # Correct: service returns a domain object/dict
-        return {"id": user.id, "name": user.name}

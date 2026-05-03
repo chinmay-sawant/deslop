@@ -1,8 +1,0 @@
-def merge_records(records):
-    # Correct: assert or explicitly validate uniqueness assumptions before executing destructive merge operations
-    merged_map = {}
-    for record in records:
-        if record.id in merged_map:
-            raise ValueError(f"Duplicate record ID found: {record.id}")
-        merged_map[record.id] = record
-    return merged_map

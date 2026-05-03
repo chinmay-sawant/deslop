@@ -1,6 +1,0 @@
-import logging
-
-def process_transaction(tx):
-    # Correct: log only the essential identifiers needed to trace the object
-    logging.debug(f"Processing transaction ID: {tx.id}")
-    tx.commit()

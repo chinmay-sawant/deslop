@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_parallelism_for_trivial_per_item_work",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag parallel iteration over simple string predicates or metadata checks when there is no expensive per-item work and the input is below a conservative threshold.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

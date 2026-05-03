@@ -1,5 +1,0 @@
-def process_external_webhook(payload: dict):
-    # Direct access to external payload shape without a boundary/adapter
-    user_id = payload["data"]["user"]["id"]
-    email = payload["data"]["user"]["email_address"]
-    # ... business logic

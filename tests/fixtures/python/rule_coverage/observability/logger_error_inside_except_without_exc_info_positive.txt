@@ -1,8 +1,0 @@
-import logging
-
-def connect_db():
-    try:
-        db.connect()
-    except Exception as e:
-        # Violation: logging an exception using .error() loses the vital stack trace needed for debugging
-        logging.error(f"Connection failed: {e}")

@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag context.WithTimeout creation inside tight retry loops when an outer deadline would suffice.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

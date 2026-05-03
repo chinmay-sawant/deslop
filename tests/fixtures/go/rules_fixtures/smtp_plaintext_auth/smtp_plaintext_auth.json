@@ -1,0 +1,14 @@
+{
+  "id": "smtp_plaintext_auth",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`smtp.PlainAuth` used without TLS (`smtp.SendMail` to non-TLS endpoints)",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

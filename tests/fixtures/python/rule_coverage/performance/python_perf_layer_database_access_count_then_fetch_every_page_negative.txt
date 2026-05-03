@@ -1,3 +1,0 @@
-def export_all(cursor, page_size: int) -> list[tuple[int, str]]:
-    cursor.execute("SELECT id, name FROM users ORDER BY id LIMIT %s", (page_size,))
-    return cursor.fetchall()

@@ -1,6 +1,0 @@
-from jinja2 import Template
-
-def render_greeting(user_input):
-    # Violation: server-side template injection (SSTI) via user input in template source
-    template_str = f"Hello {user_input}!"
-    return Template(template_str).render()

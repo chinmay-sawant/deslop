@@ -1,5 +1,0 @@
-def liveness_probe():
-    # Violation: executing full, complex workflows for a simple liveness probe risks cascading failures
-    s3.upload_file("dummy.txt", "health-bucket")
-    s3.delete_file("dummy.txt", "health-bucket")
-    return "alive"

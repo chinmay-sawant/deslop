@@ -1,0 +1,14 @@
+{
+  "id": "pkg_resources_used_for_runtime_version_lookup",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "pkg_resources.get_distribution used at runtime; use importlib.metadata.version() instead.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

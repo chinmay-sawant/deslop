@@ -1,0 +1,14 @@
+{
+  "id": "cookie_without_httponly",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`http.Cookie{...}` for session/auth cookies without `HttpOnly: true`",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

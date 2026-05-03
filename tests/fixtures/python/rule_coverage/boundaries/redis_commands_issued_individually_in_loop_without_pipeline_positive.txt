@@ -1,8 +1,0 @@
-import redis
-
-r = redis.Redis()
-
-def save_items(items):
-    # Violation: redis commands issued individually in a loop instead of using a pipeline
-    for key, value in items.items():
-        r.set(key, value)

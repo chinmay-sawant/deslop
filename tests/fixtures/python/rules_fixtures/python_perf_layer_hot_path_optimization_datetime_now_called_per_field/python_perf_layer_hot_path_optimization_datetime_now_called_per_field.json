@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_hot_path_optimization_datetime_now_called_per_field",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Hot path optimization. Flag repeated datetime.now calls per record when one timestamp can be reused.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

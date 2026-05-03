@@ -1,7 +1,0 @@
-import pandas as pd
-import numpy as np
-import sklearn
-import torch
-
-def calculate_average(numbers):
-    return sum(numbers) / len(numbers)

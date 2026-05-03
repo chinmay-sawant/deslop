@@ -1,2 +1,0 @@
-def push_all(values: list[int], sink: list[int]) -> None:
-    [sink.append(v * 2) for v in values]

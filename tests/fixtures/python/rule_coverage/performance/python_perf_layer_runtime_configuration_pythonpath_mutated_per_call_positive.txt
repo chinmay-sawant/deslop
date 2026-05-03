@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-import sys
-
-
-def python_perf_layer_runtime_configuration_pythonpath_mutated_per_call_positive(plugin_dir):
-    sys.path.insert(0, plugin_dir)
-    return sys.path[0]

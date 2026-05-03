@@ -1,6 +1,0 @@
-# Violation: using a wildcard star import in a production module pollutes the namespace and hides dependencies
-from src.utils.math_helpers import *
-from src.models.user import *
-
-def calculate():
-    return process_user_data(compute_value(10))

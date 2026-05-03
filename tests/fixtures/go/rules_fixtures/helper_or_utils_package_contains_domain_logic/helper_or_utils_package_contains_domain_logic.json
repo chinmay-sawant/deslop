@@ -1,0 +1,14 @@
+{
+  "id": "helper_or_utils_package_contains_domain_logic",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Generic `helper`, `common`, or `utils` packages that host concrete domain decisions.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

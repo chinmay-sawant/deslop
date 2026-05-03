@@ -1,0 +1,14 @@
+{
+  "id": "test_makes_real_outbound_http_call_without_mock_or_vcr",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test makes a real outbound HTTP request without mocking or a VCR cassette.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

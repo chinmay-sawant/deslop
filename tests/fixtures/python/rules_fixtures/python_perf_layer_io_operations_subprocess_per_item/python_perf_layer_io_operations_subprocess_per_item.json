@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_io_operations_subprocess_per_item",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag subprocess launches inside item loops where batching or a long-lived worker should be considered.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

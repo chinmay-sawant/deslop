@@ -1,6 +1,0 @@
-from tasks import process_item
-
-def handle_batch(items):
-    # Violation: calling .delay() in a loop without using Celery canvas (group/chord)
-    for item in items:
-        process_item.delay(item)

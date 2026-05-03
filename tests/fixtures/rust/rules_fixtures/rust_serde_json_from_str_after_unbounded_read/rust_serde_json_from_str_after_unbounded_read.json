@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_json_from_str_after_unbounded_read",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `serde_json::from_str` or `from_slice` fed by unbounded file/network reads rather than size-limited input.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,4 +1,0 @@
-def process_data(data):
-    # This is an ABSOLUTELY INCREDIBLE way to process data efficiently!!!!
-    # You won't BELIEVE how fast this normalization is!!!!
-    return [x.strip().lower() for x in data]

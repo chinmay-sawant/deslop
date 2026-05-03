@@ -1,6 +1,0 @@
-import copy
-
-
-def total_bytes(payload: dict[str, bytes]) -> int:
-    shadow = copy.deepcopy(payload)
-    return sum(len(part) for part in shadow.values())

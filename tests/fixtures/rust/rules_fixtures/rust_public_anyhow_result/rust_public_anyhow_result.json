@@ -1,0 +1,14 @@
+{
+  "id": "rust_public_anyhow_result",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public library-facing APIs that return anyhow-style Result types instead of a clearer domain error.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

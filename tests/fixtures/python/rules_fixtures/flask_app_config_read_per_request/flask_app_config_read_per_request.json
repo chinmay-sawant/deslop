@@ -1,0 +1,14 @@
+{
+  "id": "flask_app_config_read_per_request",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flask views repeatedly read app.config on request paths instead of consuming bootstrapped settings.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

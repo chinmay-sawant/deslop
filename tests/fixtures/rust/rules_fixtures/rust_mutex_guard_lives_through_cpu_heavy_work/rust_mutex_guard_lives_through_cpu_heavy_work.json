@@ -1,0 +1,14 @@
+{
+  "id": "rust_mutex_guard_lives_through_cpu_heavy_work",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag lock guards that remain live across sorting, parsing, serialization, filesystem I/O, or large loops.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

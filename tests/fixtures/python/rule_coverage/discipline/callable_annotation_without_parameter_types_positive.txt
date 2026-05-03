@@ -1,5 +1,0 @@
-from typing import Callable
-
-def execute_callback(cb: Callable):
-    # Violation: Callable annotation without parameter types
-    return cb(1, 2)

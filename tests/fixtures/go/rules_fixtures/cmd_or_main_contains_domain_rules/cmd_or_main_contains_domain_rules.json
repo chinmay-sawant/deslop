@@ -1,0 +1,14 @@
+{
+  "id": "cmd_or_main_contains_domain_rules",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`main` or `cmd` packages that contain business-rule branches instead of wiring and startup concerns.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

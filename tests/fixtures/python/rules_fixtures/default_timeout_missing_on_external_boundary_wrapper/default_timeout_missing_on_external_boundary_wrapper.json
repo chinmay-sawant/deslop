@@ -1,0 +1,14 @@
+{
+  "id": "default_timeout_missing_on_external_boundary_wrapper",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag wrappers around external boundaries that omit a timeout policy.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

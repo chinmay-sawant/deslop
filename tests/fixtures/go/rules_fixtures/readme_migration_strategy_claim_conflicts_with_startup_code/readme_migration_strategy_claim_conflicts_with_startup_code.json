@@ -1,0 +1,14 @@
+{
+  "id": "readme_migration_strategy_claim_conflicts_with_startup_code",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "README migration guidance that claims explicit migration tooling while startup code still uses `AutoMigrate` without a matching migration path.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

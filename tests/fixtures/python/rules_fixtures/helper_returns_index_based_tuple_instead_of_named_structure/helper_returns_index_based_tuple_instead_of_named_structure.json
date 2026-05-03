@@ -1,0 +1,14 @@
+{
+  "id": "helper_returns_index_based_tuple_instead_of_named_structure",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag helper returns that require callers to remember tuple positions by convention.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

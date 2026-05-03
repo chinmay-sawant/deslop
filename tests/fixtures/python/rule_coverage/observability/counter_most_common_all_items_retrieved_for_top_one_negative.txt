@@ -1,6 +1,0 @@
-from collections import Counter
-
-def get_most_frequent_word(words):
-    counts = Counter(words)
-    # Correct: pass '1' to most_common() to use heapq.nlargest for O(N) performance
-    return counts.most_common(1)[0][0]

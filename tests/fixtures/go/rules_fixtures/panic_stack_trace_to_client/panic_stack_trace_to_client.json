@@ -1,0 +1,14 @@
+{
+  "id": "panic_stack_trace_to_client",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`recover()` in HTTP middleware that sends the panic message/stack to the response writer",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

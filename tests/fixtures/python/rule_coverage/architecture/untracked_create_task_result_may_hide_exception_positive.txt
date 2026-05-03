@@ -1,6 +1,0 @@
-import asyncio
-
-async def process():
-    # Violation: untracked create_task result may hide exceptions
-    asyncio.create_task(background_work())
-    print("Background work started")

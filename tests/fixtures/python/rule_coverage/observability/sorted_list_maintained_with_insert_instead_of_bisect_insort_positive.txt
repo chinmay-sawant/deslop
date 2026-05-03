@@ -1,4 +1,0 @@
-def add_to_rankings(rankings_list, new_score):
-    # Violation: maintaining a sorted list by appending and re-sorting the whole thing is O(N log N)
-    rankings_list.append(new_score)
-    rankings_list.sort()

@@ -1,5 +1,0 @@
-@app.task
-def process_task(item):
-    # Correct: task updates a persistent store
-    db.results.add(item)
-    db.commit()

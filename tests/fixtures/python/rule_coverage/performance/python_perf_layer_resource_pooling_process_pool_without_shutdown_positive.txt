@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-from concurrent.futures import ProcessPoolExecutor
-
-
-def python_perf_layer_resource_pooling_process_pool_without_shutdown_positive(nums):
-    pool = ProcessPoolExecutor(max_workers=2)
-    return list(pool.map(abs, nums))

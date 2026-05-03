@@ -1,0 +1,14 @@
+{
+  "id": "rust_thiserror_transparent_on_contextual_variant",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `#[error(transparent)]` variants that also carry context-like fields or lose higher-level operation details.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

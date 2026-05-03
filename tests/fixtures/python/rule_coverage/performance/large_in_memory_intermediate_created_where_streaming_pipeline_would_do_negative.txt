@@ -1,2 +1,0 @@
-def parse_positive_numbers(lines: list[str]) -> list[int]:
-    return [n for n in (int(line.strip()) for line in lines) if n > 0]

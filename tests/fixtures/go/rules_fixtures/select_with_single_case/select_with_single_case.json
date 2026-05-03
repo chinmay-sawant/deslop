@@ -1,0 +1,14 @@
+{
+  "id": "select_with_single_case",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`select { case v := <-ch: ... }` with only one case and no default",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,7 +1,0 @@
-from .models import User
-
-def has_users():
-    # Violation: using .count() > 0 to check for existence (exists() is faster)
-    if User.objects.filter(is_active=True).count() > 0:
-        return True
-    return False

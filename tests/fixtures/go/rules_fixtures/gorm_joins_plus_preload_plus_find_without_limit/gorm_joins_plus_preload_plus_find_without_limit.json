@@ -1,0 +1,14 @@
+{
+  "id": "gorm_joins_plus_preload_plus_find_without_limit",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "GORM chains combining Joins, Preload, and unbounded Find on request paths.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

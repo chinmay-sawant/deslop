@@ -1,6 +1,0 @@
-import pytest
-
-def test_calculation():
-    result = 1.0 / 3.0
-    # Correct: use pytest.approx for floating point comparisons
-    assert result == pytest.approx(0.3333333333333333)

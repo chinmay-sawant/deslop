@@ -1,0 +1,14 @@
+{
+  "id": "rust_clap_closed_set_manual_string_match",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag CLI string arguments that are manually matched against a fixed set instead of using `ValueEnum` or `value_parser`.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

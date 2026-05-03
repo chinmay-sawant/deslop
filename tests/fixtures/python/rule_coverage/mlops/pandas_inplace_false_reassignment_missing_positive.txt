@@ -1,7 +1,0 @@
-import pandas as pd
-
-def clean_data(df):
-    # Violation: calling a pandas modification method without assigning it or using inplace=True does nothing
-    df.drop(columns=['unnecessary_column'])
-    df.fillna(0)
-    return df

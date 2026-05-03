@@ -1,0 +1,14 @@
+{
+  "id": "validation_logic_duplicated_across_handlers",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated required-field or enum-validation blocks across multiple handler files.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

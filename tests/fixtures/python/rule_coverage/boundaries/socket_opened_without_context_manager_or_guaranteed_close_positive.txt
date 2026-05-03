@@ -1,8 +1,0 @@
-import socket
-
-def send_data(message):
-    # Violation: socket opened without context manager or guaranteed close
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(("localhost", 8000))
-    s.sendall(message.encode())
-    # s is never closed

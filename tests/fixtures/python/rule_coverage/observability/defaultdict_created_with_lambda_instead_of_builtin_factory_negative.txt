@@ -1,8 +1,0 @@
-from collections import defaultdict
-
-def group_items(items):
-    # Correct: pass the built-in type (e.g., list, int, set) directly as the factory function
-    grouped = defaultdict(list)
-    for item in items:
-        grouped[item.type].append(item)
-    return grouped

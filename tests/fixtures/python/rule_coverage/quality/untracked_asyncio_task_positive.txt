@@ -1,6 +1,0 @@
-import asyncio
-
-async def handle_request():
-    # Violation: fire-and-forget asyncio tasks without keeping a strong reference can be garbage collected mid-execution
-    asyncio.create_task(background_work())
-    return "Started"

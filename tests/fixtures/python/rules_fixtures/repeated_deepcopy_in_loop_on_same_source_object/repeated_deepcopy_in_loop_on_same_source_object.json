@@ -1,0 +1,14 @@
+{
+  "id": "repeated_deepcopy_in_loop_on_same_source_object",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "copy.deepcopy called on the same large object on every iteration of a loop.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

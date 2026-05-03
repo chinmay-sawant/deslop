@@ -1,0 +1,14 @@
+{
+  "id": "pyproject_missing_requires_python",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "pyproject metadata missing an explicit Python runtime requirement.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

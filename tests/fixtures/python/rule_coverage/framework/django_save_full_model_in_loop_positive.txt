@@ -1,7 +1,0 @@
-from .models import User
-
-def activate_users(users):
-    # Violation: saving the full model in a loop (multiple queries, overhead of full object save)
-    for user in users:
-        user.is_active = True
-        user.save()

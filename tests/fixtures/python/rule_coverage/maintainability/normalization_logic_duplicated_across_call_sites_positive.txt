@@ -1,8 +1,0 @@
-def register_user(username):
-    # Violation: inline string normalization duplicated across functions
-    clean_name = username.strip().lower().replace(" ", "_")
-    db.save(clean_name)
-
-def search_user(username):
-    clean_name = username.strip().lower().replace(" ", "_")
-    return db.find(clean_name)

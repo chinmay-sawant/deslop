@@ -1,0 +1,14 @@
+{
+  "id": "event_publish_before_transaction_commit",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Event or message publication before durable commit is confirmed.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

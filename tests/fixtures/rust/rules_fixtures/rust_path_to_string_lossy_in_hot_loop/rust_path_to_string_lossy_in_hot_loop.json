@@ -1,0 +1,14 @@
+{
+  "id": "rust_path_to_string_lossy_in_hot_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `to_string_lossy`, `display().to_string`, or path formatting inside repository/file traversal loops.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

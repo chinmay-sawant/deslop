@@ -1,0 +1,14 @@
+{
+  "id": "view_or_handler_constructs_orm_query_directly",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "View or route handler builds an ORM query rather than delegating to a repository or service.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

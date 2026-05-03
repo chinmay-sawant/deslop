@@ -1,7 +1,0 @@
-# module: api_handlers.py
-def handle_user_request(request_body):
-    data = parse_request(request_body)
-    save_user(data)
-    return render_success_page(data)
-
-# Correct: separate vertical slices into distinct architectural layers (Transport, Logic, Persistence, View)

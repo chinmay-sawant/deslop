@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_runtime_configuration_reflection_config_loaded_per_call",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Build and runtime configuration. Flag reflection-based config decoding performed per operation instead of at startup.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

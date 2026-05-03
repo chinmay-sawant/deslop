@@ -1,0 +1,14 @@
+{
+  "id": "builtin_reduction_candidate",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Loop shapes that look like obvious sum, any, or all candidates.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "pydantic_settings_model_missing_env_prefix_isolation",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Pydantic BaseSettings model does not define env_prefix, mixing its env vars with system environment.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

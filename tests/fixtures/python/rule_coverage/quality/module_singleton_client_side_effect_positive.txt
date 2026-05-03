@@ -1,7 +1,0 @@
-import redis
-
-# Violation: initializing a singleton connection at the module level fails immediately if the DB is down at startup
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
-
-def set_value(k, v):
-    redis_client.set(k, v)

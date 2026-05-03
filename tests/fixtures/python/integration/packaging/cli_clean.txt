@@ -1,6 +1,0 @@
-def main() -> None:
-    return None
-
-
-def public_api(payload: dict[str, str]) -> dict[str, str]:
-    return payload

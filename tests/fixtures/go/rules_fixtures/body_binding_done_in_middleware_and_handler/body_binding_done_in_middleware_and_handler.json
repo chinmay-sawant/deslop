@@ -1,0 +1,14 @@
+{
+  "id": "body_binding_done_in_middleware_and_handler",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Endpoints where middleware parses the body and the handler also owns body binding.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

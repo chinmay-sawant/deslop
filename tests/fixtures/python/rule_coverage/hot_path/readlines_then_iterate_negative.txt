@@ -1,7 +1,0 @@
-def parse_config(filepath):
-    # Correct: iterate directly over the file object to stream lines
-    with open(filepath, "r") as f:
-        for line in f:
-            if line.startswith("#"):
-                continue
-            print(line)

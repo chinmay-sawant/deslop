@@ -1,6 +1,0 @@
-def risky_operation():
-    try:
-        perform_task()
-    except:
-        # Violation: bare except clause catches SystemExit and KeyboardInterrupt
-        print("An error occurred")

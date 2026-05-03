@@ -1,5 +1,0 @@
-import numpy as np
-
-def calculate_similarity(emb1, emb2):
-    # Violation: silently calculating dot product without validating dimension match first
-    return np.dot(emb1, emb2)

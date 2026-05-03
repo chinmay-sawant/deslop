@@ -1,6 +1,0 @@
-from __future__ import annotations
-
-def per_item_copy_of_large_config_or_context_object_negative():
-    config = {"region": "us", "timeout": 30, "retries": 5, "feature_x": True}
-    jobs = [1, 2, 3]
-    return [{"job_id": job, "config": config} for job in jobs]

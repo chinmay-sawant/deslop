@@ -1,9 +1,0 @@
-class Catalog:
-    def __init__(self):
-        self._items = []
-
-    def add(self, value):
-        self._items.append(value)
-
-    def items(self):
-        return self._items

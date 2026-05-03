@@ -1,0 +1,14 @@
+{
+  "id": "generic_base_repository_with_reflection_dispatch",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Catch-all repositories that depend on reflection-heavy generic CRUD instead of bounded repository APIs.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,5 +1,0 @@
-def process():
-    # Correct: file managed using a context manager
-    with open("config.yaml", "r") as f:
-        data = f.read()
-    return data

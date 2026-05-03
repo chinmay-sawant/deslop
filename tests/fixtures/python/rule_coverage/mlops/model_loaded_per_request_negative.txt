@@ -1,8 +1,0 @@
-import torch
-
-# Correct: load the model once into memory at application startup
-GLOBAL_MODEL = torch.load("model_weights.pth")
-GLOBAL_MODEL.eval()
-
-def predict(input_data):
-    return GLOBAL_MODEL(input_data)

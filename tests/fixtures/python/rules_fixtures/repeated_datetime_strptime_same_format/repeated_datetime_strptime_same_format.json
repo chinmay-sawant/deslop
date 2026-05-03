@@ -1,0 +1,14 @@
+{
+  "id": "repeated_datetime_strptime_same_format",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "datetime.strptime(...) is repeated with the same format string instead of reusing a parsed shape or preprocessing once.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

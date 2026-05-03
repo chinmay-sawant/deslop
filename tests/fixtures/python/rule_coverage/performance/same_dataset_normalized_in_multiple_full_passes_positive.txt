@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def same_dataset_normalized_in_multiple_full_passes_positive(rows):
-    names = [row["name"].strip() for row in rows]
-    lowered = [name.lower() for name in names]
-    cleaned = [name.replace("-", "_") for name in lowered]
-    return cleaned

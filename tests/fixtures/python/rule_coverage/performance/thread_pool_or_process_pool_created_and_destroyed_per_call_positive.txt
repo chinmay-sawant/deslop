@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-from concurrent.futures import ThreadPoolExecutor
-
-
-def thread_pool_or_process_pool_created_and_destroyed_per_call_positive(items: list[int]) -> list[int]:
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        return list(pool.map(lambda n: n * n, items))

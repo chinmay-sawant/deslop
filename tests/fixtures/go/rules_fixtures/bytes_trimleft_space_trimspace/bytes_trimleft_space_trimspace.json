@@ -1,0 +1,14 @@
+{
+  "id": "bytes_trimleft_space_trimspace",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.TrimLeft(..., whitespace)` instead of `bytes.TrimSpace(...)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

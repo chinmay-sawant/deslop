@@ -1,0 +1,14 @@
+{
+  "id": "middleware_creates_http_client_per_request",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Middleware creates HTTP clients per request instead of reusing app-scoped clients.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

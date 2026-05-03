@@ -1,0 +1,14 @@
+{
+  "id": "asyncio_sleep_zero_busy_wait_pattern",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "asyncio.sleep(0) used in a tight loop as a busy-wait yield pattern instead of a proper event-driven wait.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

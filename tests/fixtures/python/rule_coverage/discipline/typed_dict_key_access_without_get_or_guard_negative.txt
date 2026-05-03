@@ -1,9 +1,0 @@
-from typing import TypedDict
-
-class UserData(TypedDict, total=False):
-    username: str
-    age: int
-
-def get_age(data: UserData):
-    # Correct: use .get() for optional keys in a TypedDict
-    return data.get("age", 0)

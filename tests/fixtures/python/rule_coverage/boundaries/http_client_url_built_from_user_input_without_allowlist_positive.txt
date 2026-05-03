@@ -1,6 +1,0 @@
-import requests
-
-def fetch_external_data(user_domain):
-    # Violation: URL built from user input without an allowlist check
-    url = f"https://{user_domain}/metadata"
-    return requests.get(url).json()

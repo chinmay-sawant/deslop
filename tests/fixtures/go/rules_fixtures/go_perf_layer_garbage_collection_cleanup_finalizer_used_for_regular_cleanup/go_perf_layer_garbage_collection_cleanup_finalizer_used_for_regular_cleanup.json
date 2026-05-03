@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_garbage_collection_cleanup_finalizer_used_for_regular_cleanup",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag runtime.SetFinalizer use for ordinary resource cleanup instead of explicit Close ownership.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

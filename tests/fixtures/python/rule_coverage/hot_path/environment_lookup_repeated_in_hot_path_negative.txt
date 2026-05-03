@@ -1,8 +1,0 @@
-import os
-
-# Correct: cache environment variables at the module level for optimal performance
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
-
-def log_event(msg):
-    if LOG_LEVEL == "DEBUG":
-        print(f"DEBUG: {msg}")

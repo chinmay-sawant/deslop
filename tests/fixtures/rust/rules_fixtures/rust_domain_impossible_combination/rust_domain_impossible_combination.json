@@ -1,0 +1,14 @@
+{
+  "id": "rust_domain_impossible_combination",
+  "language": "rust",
+  "family": "domain_modeling",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "A boolean toggle is mixed with optional credentials, creating invalid-state combinations.",
+  "binding_location": "src/heuristics/rust/domain_modeling.rs"
+}

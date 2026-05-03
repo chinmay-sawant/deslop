@@ -1,9 +1,0 @@
-def normalize_name(name):
-    # Correct: transformation logic is extracted into a single helper function
-    return name.strip().lower().replace("_", " ")
-
-def process_user_data(raw_data):
-    return {"name": normalize_name(raw_data["name"])}
-
-def process_admin_data(raw_data):
-    return {"admin_name": normalize_name(raw_data["full_name"])}

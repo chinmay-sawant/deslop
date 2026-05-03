@@ -1,6 +1,0 @@
-from typing import cast
-
-def process_node(node):
-    # Violation: cast applied without a preceding type narrowing guard (instanceof)
-    user_node = cast(UserNode, node)
-    return user_node.username

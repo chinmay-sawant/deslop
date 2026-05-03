@@ -1,0 +1,14 @@
+{
+  "id": "prometheus_unregistered_metric",
+  "language": "go",
+  "family": "library",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "metrics created with `prometheus.NewCounter`/`NewHistogram` that are never registered with `prometheus.MustRegister` or `promauto`",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "cache_method_uses_context_background",
+  "language": "go",
+  "family": "context",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

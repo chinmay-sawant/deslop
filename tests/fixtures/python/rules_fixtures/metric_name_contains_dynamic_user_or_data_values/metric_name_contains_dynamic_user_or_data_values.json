@@ -1,0 +1,14 @@
+{
+  "id": "metric_name_contains_dynamic_user_or_data_values",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag dynamic metric names that explode the series count.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

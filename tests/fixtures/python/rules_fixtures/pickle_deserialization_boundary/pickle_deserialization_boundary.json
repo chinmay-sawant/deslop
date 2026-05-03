@@ -1,0 +1,14 @@
+{
+  "id": "pickle_deserialization_boundary",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "pickle.load(s) or dill.load(s) style deserialization in production code.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

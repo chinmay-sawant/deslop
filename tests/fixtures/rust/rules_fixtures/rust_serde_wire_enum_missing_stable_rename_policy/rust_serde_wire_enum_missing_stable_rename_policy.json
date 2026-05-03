@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_wire_enum_missing_stable_rename_policy",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag public wire-facing enums that derive `Serialize` or `Deserialize` without `rename_all` or explicit renames.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

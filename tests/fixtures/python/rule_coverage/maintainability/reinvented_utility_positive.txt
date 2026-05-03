@@ -1,7 +1,0 @@
-def flatten_list_of_lists(nested_lists):
-    # Violation: reinventing a utility that is already available in the standard library
-    flat = []
-    for sublist in nested_lists:
-        for item in sublist:
-            flat.append(item)
-    return flat

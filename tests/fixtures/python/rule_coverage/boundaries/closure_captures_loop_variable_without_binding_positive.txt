@@ -1,6 +1,0 @@
-def create_callbacks():
-    callbacks = []
-    for i in range(5):
-        # Violation: closure captures loop variable 'i' without binding, all callables will use the final value
-        callbacks.append(lambda: i)
-    return callbacks

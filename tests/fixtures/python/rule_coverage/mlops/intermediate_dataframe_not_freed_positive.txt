@@ -1,8 +1,0 @@
-import pandas as pd
-
-def process_large_data(filepath):
-    df_raw = pd.read_csv(filepath)
-    df_clean = clean_data(df_raw)
-    df_final = aggregate_data(df_clean)
-    # Violation: intermediate massive DataFrames are not freed, leading to memory bloat
-    return df_final

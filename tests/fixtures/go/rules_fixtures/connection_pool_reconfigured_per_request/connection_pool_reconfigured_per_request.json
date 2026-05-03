@@ -1,0 +1,14 @@
+{
+  "id": "connection_pool_reconfigured_per_request",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "DB pool sizing or lifetime settings changed on request paths.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

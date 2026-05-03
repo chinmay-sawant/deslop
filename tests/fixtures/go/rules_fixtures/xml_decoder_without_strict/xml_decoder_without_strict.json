@@ -1,0 +1,14 @@
+{
+  "id": "xml_decoder_without_strict",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

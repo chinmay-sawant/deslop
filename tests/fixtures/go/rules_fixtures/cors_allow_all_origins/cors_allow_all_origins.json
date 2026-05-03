@@ -1,0 +1,14 @@
+{
+  "id": "cors_allow_all_origins",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`Access-Control-Allow-Origin: *` combined with `Access-Control-Allow-Credentials: true`, or CORS middleware configured with `AllowAllOrigins: true` in Gin/Echo/Chi",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

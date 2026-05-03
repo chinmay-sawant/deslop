@@ -1,5 +1,0 @@
-class UserRepository:
-    def create_user(self, email: str):
-        # Correct: repository accepts primitive domain data
-        user = User(email=email)
-        self.session.add(user)

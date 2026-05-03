@@ -1,6 +1,0 @@
-class Catalog:
-    def __init__(self, items):
-        self._items = tuple(items)
-
-    def items(self):
-        return self._items

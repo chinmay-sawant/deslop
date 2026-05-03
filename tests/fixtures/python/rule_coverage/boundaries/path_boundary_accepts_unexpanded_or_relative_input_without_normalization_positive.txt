@@ -1,5 +1,0 @@
-import os
-
-def list_files(user_path):
-    # Violation: path boundary accepts relative or unexpanded input without normalization
-    return os.listdir(user_path)

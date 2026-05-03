@@ -1,0 +1,14 @@
+{
+  "id": "background_task_exception_unobserved",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Background task bindings with no obvious await, callback, supervisor, or observation path.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

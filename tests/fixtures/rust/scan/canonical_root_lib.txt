@@ -1,5 +1,0 @@
-use crate::config::render::normalize as normalize_fn;
-
-pub fn run() {
-    normalize_fn();
-}

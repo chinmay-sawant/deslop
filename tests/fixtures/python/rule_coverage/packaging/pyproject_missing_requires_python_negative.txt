@@ -1,7 +1,0 @@
-# pyproject.toml
-[project]
-name = "my_awesome_library"
-version = "1.0.0"
-description = "A great tool"
-# Correct: always declare the supported python version constraint explicitly
-requires-python = ">=3.9"

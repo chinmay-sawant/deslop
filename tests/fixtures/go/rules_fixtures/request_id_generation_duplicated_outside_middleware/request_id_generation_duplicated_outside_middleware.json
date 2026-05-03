@@ -1,0 +1,14 @@
+{
+  "id": "request_id_generation_duplicated_outside_middleware",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated request-id creation logic spread across handlers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

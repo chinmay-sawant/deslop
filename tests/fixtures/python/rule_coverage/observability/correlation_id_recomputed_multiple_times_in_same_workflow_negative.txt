@@ -1,9 +1,0 @@
-import uuid
-import logging
-
-def process_job(job_data):
-    # Correct: generate a correlation ID once and pass it along (or use contextvars)
-    correlation_id = uuid.uuid4()
-    logging.info(f"[{correlation_id}] Starting job processing")
-    do_work(job_data, correlation_id)
-    logging.info(f"[{correlation_id}] Job finished successfully")

@@ -1,4 +1,0 @@
-def process_payment(amount):
-    # Violation: assert used for runtime input validation (may be optimized away with -O)
-    assert amount > 0
-    return f"Processing ${amount}"

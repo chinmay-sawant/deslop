@@ -1,0 +1,14 @@
+{
+  "id": "same_domain_error_mapped_to_multiple_statuses",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same error type being converted to different HTTP status codes in the same module.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,5 +1,0 @@
-import numpy as np
-
-def calculate_sum(arr):
-    # Violation: calling tolist() in a hot path creates a massive Python list overhead before reducing
-    return sum(arr.tolist())

@@ -1,8 +1,0 @@
-@app.get("/config")
-def get_config():
-    # Violation: large dictionary literal defined inside the handler function
-    return {
-        "feature_a": {"enabled": True, "timeout": 30, "retries": 3, "buffer": 1024},
-        "feature_b": {"enabled": False, "timeout": 60, "retries": 1, "buffer": 2048},
-        # ... many more keys ...
-    }

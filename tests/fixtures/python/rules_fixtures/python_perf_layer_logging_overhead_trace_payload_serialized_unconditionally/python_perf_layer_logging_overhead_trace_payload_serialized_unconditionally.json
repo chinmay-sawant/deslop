@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_logging_overhead_trace_payload_serialized_unconditionally",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Logging overhead. Flag trace or log payload serialization even when tracing is disabled.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

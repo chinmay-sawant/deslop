@@ -1,0 +1,14 @@
+{
+  "id": "uuid_hash_formatting_only_for_logs",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "UUID or hash formatting observed inside loops only for log output.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

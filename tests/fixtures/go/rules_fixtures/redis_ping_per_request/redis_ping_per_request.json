@@ -1,0 +1,14 @@
+{
+  "id": "redis_ping_per_request",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Per-request Redis ping checks instead of startup or explicit health-probe validation.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

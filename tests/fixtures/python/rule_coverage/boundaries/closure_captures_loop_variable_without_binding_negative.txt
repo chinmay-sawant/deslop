@@ -1,6 +1,0 @@
-def create_callbacks():
-    callbacks = []
-    for i in range(5):
-        # Correct: loop variable 'i' is bound at definition time using a default argument
-        callbacks.append(lambda val=i: val)
-    return callbacks

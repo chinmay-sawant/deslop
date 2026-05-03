@@ -1,7 +1,0 @@
-import asyncio
-
-
-async def update_shared(lock: asyncio.Lock, store: dict[str, str]) -> None:
-    await asyncio.sleep(0.02)
-    async with lock:
-        store["status"] = "done"

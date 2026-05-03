@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_runtime_configuration_debug_assertions_expected_in_bench",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Build and runtime configuration. Flag benchmark or performance docs that mix debug-assertion builds with release numbers.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

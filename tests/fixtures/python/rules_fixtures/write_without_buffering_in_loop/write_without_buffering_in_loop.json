@@ -1,0 +1,14 @@
+{
+  "id": "write_without_buffering_in_loop",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated writes inside loops with no visible buffering or batching.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

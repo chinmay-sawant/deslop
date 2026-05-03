@@ -1,6 +1,0 @@
-def check_availability(item):
-    is_missing = not item.is_available
-    # Violation: negated boolean reassigned and then inverted again (confusing logic)
-    if not is_missing:
-        return "Available"
-    return "Unavailable"

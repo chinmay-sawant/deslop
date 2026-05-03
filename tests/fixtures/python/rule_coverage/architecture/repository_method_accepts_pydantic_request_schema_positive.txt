@@ -1,5 +1,0 @@
-class UserRepository:
-    def create_user(self, request: UserCreateSchema):
-        # Violation: repository method depends on a Pydantic request schema (web layer)
-        user = User(email=request.email)
-        self.session.add(user)

@@ -1,0 +1,14 @@
+{
+  "id": "distributed_trace_span_created_without_parent_context_propagation",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "OpenTelemetry or custom trace span created without extracting the parent context from the incoming request.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

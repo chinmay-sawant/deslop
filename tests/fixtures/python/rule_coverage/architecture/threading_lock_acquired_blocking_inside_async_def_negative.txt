@@ -1,8 +1,0 @@
-import asyncio
-
-async_lock = asyncio.Lock()
-
-async def critical_section():
-    # Correct: using an async-compatible lock
-    async with async_lock:
-        await perform_work()

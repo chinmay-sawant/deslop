@@ -1,4 +1,0 @@
-def health_check():
-    # Correct: perform a lightning-fast, zero-cost query just to verify the connection is alive
-    db.execute("SELECT 1")
-    return {"status": "ok"}

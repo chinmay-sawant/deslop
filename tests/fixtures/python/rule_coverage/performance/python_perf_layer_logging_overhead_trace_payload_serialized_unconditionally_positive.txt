@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-import json
-
-
-def python_perf_layer_logging_overhead_trace_payload_serialized_unconditionally_positive(logger, payload):
-    trace = json.dumps(payload, sort_keys=True)
-    if logger.isEnabledFor(10):
-        logger.debug("trace=%s", trace)

@@ -1,3 +1,0 @@
-def read_first_line(path: str) -> str:
-    handle = open(path, "r", encoding="utf-8")
-    return handle.readline().strip()

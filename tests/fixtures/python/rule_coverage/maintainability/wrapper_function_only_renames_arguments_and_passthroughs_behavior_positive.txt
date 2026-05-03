@@ -1,5 +1,0 @@
-import requests
-
-# Violation: a wrapper function that only renames arguments and passes them through without adding value
-def fetch_url_data(url_string, timeout_seconds=10):
-    return requests.get(url_string, timeout=timeout_seconds)

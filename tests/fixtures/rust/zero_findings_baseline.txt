@@ -1,7 +1,0 @@
-pub fn perimeter(sides: u32, length: f64) -> f64 {
-    sides as f64 * length
-}
-
-pub fn area(width: f64, height: f64) -> f64 {
-    width * height
-}

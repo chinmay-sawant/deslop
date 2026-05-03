@@ -1,0 +1,14 @@
+{
+  "id": "tight_module_coupling",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Modules that depend on a large number of repository-local Python modules.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

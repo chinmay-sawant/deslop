@@ -1,6 +1,0 @@
-import pandas as pd
-
-def double_column(df):
-    # Correct: use direct vectorized operations on pandas Series objects
-    df['doubled'] = df['value'] * 2
-    return df

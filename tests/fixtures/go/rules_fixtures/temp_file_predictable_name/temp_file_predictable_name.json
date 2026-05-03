@@ -1,0 +1,14 @@
+{
+  "id": "temp_file_predictable_name",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`os.Create(\"/tmp/myapp-data.txt\")` or `os.OpenFile(\"/tmp/\" + fixedName, ...)` with predictable filenames",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-def repeated_len_in_loop_negative(items):
-    size = len(items)
-    last_index_hits = 0
-    for index in range(size):
-        if index == size - 1:
-            last_index_hits += 1
-    return last_index_hits

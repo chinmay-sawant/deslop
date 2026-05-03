@@ -1,5 +1,0 @@
-import heapq
-
-def get_top_scores(scores):
-    # Correct: use heapq.nlargest for an O(N + K log N) highly optimized extraction
-    return heapq.nlargest(5, scores)

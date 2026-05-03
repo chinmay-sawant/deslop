@@ -1,0 +1,14 @@
+{
+  "id": "toctou_file_check_then_open",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`os.Stat(path)` or file existence check followed by `os.Open(path)` or `os.Create(path)` without atomic operations",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

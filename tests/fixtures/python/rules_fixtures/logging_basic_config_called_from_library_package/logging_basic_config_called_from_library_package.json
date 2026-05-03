@@ -1,0 +1,14 @@
+{
+  "id": "logging_basic_config_called_from_library_package",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Library module calls logging.basicConfig or addHandler at import time, overriding application log config.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

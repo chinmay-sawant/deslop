@@ -1,3 +1,0 @@
-def active_recent(df):
-    mask = (df["active"]) & (df["score"] > 50) & (df["region"] == "us")
-    return df[mask]

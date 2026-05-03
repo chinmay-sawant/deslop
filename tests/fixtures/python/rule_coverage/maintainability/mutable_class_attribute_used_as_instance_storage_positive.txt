@@ -1,6 +1,0 @@
-class Session:
-    # Violation: defining a mutable object as a class attribute causes it to be shared across all instances
-    data = {}
-    
-    def set(self, key, value):
-        self.data[key] = value

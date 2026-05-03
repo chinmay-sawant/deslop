@@ -1,0 +1,14 @@
+{
+  "id": "grpc_unary_interceptor_per_rpc",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "interceptor/middleware construction inside RPC handler methods instead of at server setup",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

@@ -1,6 +1,0 @@
-def test_sut_call():
-    # Violation: test wraps SUT in try-except, hiding the real traceback on failure
-    try:
-        sut.perform_action()
-    except Exception:
-        pytest.fail("Action failed unexpectedly")

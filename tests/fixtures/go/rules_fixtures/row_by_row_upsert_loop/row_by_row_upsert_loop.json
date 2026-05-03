@@ -1,0 +1,14 @@
+{
+  "id": "row_by_row_upsert_loop",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Upsert-style writes executed row by row inside loops instead of batched.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

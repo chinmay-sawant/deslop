@@ -1,0 +1,14 @@
+{
+  "id": "gin_handler_binds_directly_into_model",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that bind request bodies directly into GORM or persistence structs.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

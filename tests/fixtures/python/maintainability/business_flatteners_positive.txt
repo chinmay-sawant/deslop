@@ -1,8 +1,0 @@
-import itertools
-
-def flatten_batches(batches):
-    output = []
-    for batch in batches:
-        for item in batch:
-            output.append(item)
-    return output

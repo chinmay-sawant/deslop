@@ -1,0 +1,14 @@
+{
+  "id": "exception_silenced_in_cleanup_or_finally_block",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Exception or return statement inside a finally block silences an in-flight exception from the try body.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

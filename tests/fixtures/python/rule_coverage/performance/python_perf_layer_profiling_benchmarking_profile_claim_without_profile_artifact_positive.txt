@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-import time
-
-
-def python_perf_layer_profiling_benchmarking_profile_claim_without_profile_artifact_positive(work):
-    start = time.perf_counter()
-    work()
-    return {"profiled": True, "seconds": time.perf_counter() - start}

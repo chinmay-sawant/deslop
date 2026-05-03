@@ -1,9 +1,0 @@
-# constants.py
-API_V1_PATH = "/api/v1/resource"
-
-# api.py
-from .constants import API_V1_PATH
-
-# client.py
-# Correct: repeated literal is extracted into a shared constant
-from .constants import API_V1_PATH

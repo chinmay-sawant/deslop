@@ -1,3 +1,0 @@
-def total_amount(df):
-    df["amount"] = df["amount"].astype("object")
-    return df["amount"].sum()

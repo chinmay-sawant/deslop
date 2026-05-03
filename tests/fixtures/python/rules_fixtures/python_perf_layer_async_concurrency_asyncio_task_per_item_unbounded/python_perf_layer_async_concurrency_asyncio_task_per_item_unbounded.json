@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_async_concurrency_asyncio_task_per_item_unbounded",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag unbounded create_task fanout without a semaphore, queue, or batch limit.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

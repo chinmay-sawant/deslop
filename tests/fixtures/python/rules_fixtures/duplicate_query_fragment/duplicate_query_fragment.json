@@ -1,0 +1,14 @@
+{
+  "id": "duplicate_query_fragment",
+  "language": "python",
+  "family": "duplication",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repository repeats the same SQL-like query fragment across multiple files.",
+  "binding_location": "src/heuristics/python/duplication.rs"
+}

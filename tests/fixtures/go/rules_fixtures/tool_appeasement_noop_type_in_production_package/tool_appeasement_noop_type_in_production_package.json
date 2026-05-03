@@ -1,0 +1,14 @@
+{
+  "id": "tool_appeasement_noop_type_in_production_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Production no-op or dummy types that appear to exist mainly to satisfy tooling instead of runtime behavior.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

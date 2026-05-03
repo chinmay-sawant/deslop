@@ -1,9 +1,0 @@
-from pydantic import BaseModel
-
-class User(BaseModel):
-    id: int
-    name: str
-
-def load_user(json_data: str):
-    # Correct: use model_validate_json() for direct validation from a JSON string
-    return User.model_validate_json(json_data)

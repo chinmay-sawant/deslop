@@ -1,6 +1,0 @@
-@app.post("/logs")
-def write_log(message: str):
-    # Violation: view function performs direct file system IO
-    with open("app_logs.txt", "a") as f:
-        f.write(message + "\n")
-    return {"status": "ok"}

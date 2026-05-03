@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_framework_performance_django_queryset_evaluated_in_template_loop",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag Django QuerySets evaluated repeatedly from templates or per-row template helpers.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

@@ -1,4 +1,0 @@
-def process_list(items):
-    # Correct: use Python's built-in enumerate for clean, fast indexed iteration
-    for i, value in enumerate(items):
-        print(f"Index {i} has value {value}")

@@ -1,5 +1,0 @@
-def process_positive(numbers):
-    # Correct: filter and process in a single iteration without intermediate allocations
-    for n in numbers:
-        if n > 0:
-            print(n)

@@ -1,0 +1,14 @@
+{
+  "id": "grpc_large_message_without_streaming",
+  "language": "go",
+  "family": "library",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "unary RPC handlers returning or receiving messages > 4MB (inferred from large slice/struct serialization patterns)",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

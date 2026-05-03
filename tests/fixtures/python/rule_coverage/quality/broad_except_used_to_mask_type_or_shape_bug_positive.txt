@@ -1,7 +1,0 @@
-def process_payload(payload):
-    try:
-        # Violation: using a broad Exception catch masks TypeError/KeyError bugs in the code itself
-        value = payload["count"] + 10
-        return value
-    except Exception:
-        return 0

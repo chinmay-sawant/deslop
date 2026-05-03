@@ -1,6 +1,0 @@
-from dataclasses import dataclass
-
-@dataclass
-class UserProfile:
-    # Violation: mutable default (list) without default_factory
-    tags: list = []

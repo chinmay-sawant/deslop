@@ -1,4 +1,0 @@
-def process_event(event_type):
-    # Violation: chaining boolean equality checks on the same variable is verbose and error-prone
-    if event_type == "login" or event_type == "logout" or event_type == "signup":
-        handle_auth_event(event_type)

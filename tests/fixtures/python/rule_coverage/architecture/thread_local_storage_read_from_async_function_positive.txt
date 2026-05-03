@@ -1,7 +1,0 @@
-import threading
-
-local = threading.local()
-
-async def get_request_id():
-    # Violation: reading thread-local storage from an async function
-    return getattr(local, 'request_id', None)

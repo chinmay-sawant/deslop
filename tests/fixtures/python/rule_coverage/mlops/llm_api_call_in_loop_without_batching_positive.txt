@@ -1,9 +1,0 @@
-import openai
-
-def generate_summaries(prompts):
-    results = []
-    # Violation: making an individual LLM API call per prompt in a loop (slow, unbatched)
-    for prompt in prompts:
-        resp = openai.Completion.create(model="text-davinci-003", prompt=prompt)
-        results.append(resp.choices[0].text)
-    return results

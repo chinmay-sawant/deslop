@@ -1,6 +1,0 @@
-import requests
-
-
-async def fetch_user(user_id: int) -> dict[str, object]:
-    response = requests.get(f"https://api.example.com/users/{user_id}", timeout=3)
-    return response.json()

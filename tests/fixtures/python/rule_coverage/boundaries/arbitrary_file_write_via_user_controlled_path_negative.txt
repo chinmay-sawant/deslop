@@ -1,7 +1,0 @@
-import os
-
-def save_report(filename, content):
-    # Correct: path sanitized to prevent directory traversal
-    safe_filename = os.path.basename(filename)
-    with open(os.path.join("/tmp/reports/", safe_filename), "w") as f:
-        f.write(content)

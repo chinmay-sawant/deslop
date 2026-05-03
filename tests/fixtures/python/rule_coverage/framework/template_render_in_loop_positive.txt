@@ -1,8 +1,0 @@
-from flask import render_template_string
-
-def generate_report(items):
-    html = ""
-    for item in items:
-        # Violation: rendering templates in a loop instead of passing the full list to a single template
-        html += render_template_string("<p>{{ name }}</p>", name=item.name)
-    return html

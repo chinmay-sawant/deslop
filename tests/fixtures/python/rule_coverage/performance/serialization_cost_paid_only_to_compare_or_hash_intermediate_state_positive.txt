@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-import json
-
-
-def serialization_cost_paid_only_to_compare_or_hash_intermediate_state_positive(state):
-    return hash(json.dumps(state, sort_keys=True))

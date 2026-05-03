@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_collection_iteration_pandas_iterrows_for_numeric_transform",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag pandas iterrows loops for numeric transformations that can be vectorized or applied in batches.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

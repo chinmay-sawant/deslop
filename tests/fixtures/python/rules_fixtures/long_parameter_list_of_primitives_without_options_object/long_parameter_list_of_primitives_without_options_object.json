@@ -1,0 +1,14 @@
+{
+  "id": "long_parameter_list_of_primitives_without_options_object",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions whose many primitive parameters obscure meaning and encourage call-site mistakes.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

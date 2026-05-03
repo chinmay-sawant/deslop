@@ -1,9 +1,0 @@
-from celery import Celery
-# Correct: tasks import only domain logic/services
-from my_domain.services import process_data
-
-celery_app = Celery('tasks')
-
-@celery_app.task
-def background_task(data_id):
-    process_data(data_id)

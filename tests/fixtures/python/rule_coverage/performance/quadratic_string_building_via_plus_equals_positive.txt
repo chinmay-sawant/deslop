@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def quadratic_string_building_via_plus_equals_positive(tokens):
-    built = ""
-    for token in tokens:
-        built += token + ","
-    return built

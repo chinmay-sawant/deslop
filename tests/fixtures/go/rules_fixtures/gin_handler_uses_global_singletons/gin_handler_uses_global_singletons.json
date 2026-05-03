@@ -1,0 +1,14 @@
+{
+  "id": "gin_handler_uses_global_singletons",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that reach for global DB, logger, cache, or config variables instead of injected dependencies.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

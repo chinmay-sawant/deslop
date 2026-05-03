@@ -1,7 +1,0 @@
-import json
-
-def broadcast_message(clients, msg):
-    for client in clients:
-        # Violation: calling json.dumps() on the same object inside a loop (wasteful serialization)
-        payload = json.dumps(msg)
-        client.send(payload)

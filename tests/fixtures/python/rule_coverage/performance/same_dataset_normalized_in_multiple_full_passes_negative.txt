@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-def same_dataset_normalized_in_multiple_full_passes_negative(rows):
-    cleaned = []
-    for row in rows:
-        name = row["name"].strip().lower().replace("-", "_")
-        cleaned.append(name)
-    return cleaned

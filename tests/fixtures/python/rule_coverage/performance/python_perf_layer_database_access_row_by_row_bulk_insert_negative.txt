@@ -1,2 +1,0 @@
-def insert_users(session, rows: list[dict[str, object]]) -> None:
-    session.bulk_insert_mappings("User", rows)

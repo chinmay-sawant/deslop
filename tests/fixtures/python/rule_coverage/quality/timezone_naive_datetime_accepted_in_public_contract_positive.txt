@@ -1,5 +1,0 @@
-import datetime
-
-# Violation: accepting timezone-naive datetimes in a public API creates severe bugs during daylight saving time or global deployments
-def schedule_job(run_at: datetime.datetime):
-    save_to_database(run_at.isoformat())

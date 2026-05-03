@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_default_masks_parse_error",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag broad `unwrap_or_default`, `Default::default`, or `#[serde(default)]` use around configuration fields that look required for correctness.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

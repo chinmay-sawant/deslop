@@ -1,0 +1,14 @@
+{
+  "id": "public_api_missing_type_hints",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public Python functions that omit complete parameter or return annotations.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

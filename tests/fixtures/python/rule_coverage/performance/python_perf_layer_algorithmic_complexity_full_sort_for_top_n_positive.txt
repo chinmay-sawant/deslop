@@ -1,2 +1,0 @@
-def top_n(scores: list[int], n: int) -> list[int]:
-    return sorted(scores, reverse=True)[:n]

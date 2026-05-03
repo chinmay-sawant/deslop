@@ -1,0 +1,14 @@
+{
+  "id": "exception_logged_and_then_re_raised_redundantly",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Exception logged at ERROR level and then re-raised, producing duplicate error log entries.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

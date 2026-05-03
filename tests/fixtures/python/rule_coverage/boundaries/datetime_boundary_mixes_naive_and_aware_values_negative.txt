@@ -1,7 +1,0 @@
-from datetime import datetime, timezone
-
-def check_expiry(expiry_date):
-    # Correct: both datetime values are aware (using UTC)
-    if datetime.now(timezone.utc) > expiry_date:
-        return True
-    return False

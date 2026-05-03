@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-from defusedxml.ElementTree import fromstring
-
-
-def parse_document(xml_text: str):
-    return fromstring(xml_text)

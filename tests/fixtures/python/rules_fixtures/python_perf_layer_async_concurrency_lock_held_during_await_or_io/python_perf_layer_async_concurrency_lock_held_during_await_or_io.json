@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_async_concurrency_lock_held_during_await_or_io",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag locks held while awaiting, doing network I/O, or touching disk.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

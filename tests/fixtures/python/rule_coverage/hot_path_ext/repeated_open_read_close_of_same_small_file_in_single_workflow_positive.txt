@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-def repeated_open_read_close_of_same_small_file_in_single_workflow_positive():
-    path = "meta.txt"
-    with open(path, "r", encoding="utf-8") as handle:
-        first = handle.read().strip()
-    with open(path, "r", encoding="utf-8") as handle:
-        second = handle.read().strip()
-    return first == second

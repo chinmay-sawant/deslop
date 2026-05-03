@@ -1,5 +1,0 @@
-def read_data(filepath):
-    # Correct: use a context manager to ensure the file is closed automatically
-    with open(filepath, "r") as f:
-        data = f.read()
-    return data

@@ -1,4 +1,0 @@
-# pyproject.toml
-[project.scripts]
-# Violation: exposing a CLI entrypoint that does not map to a real module or function causes installation crashes
-my_tool = "my_package.missing_module:main"

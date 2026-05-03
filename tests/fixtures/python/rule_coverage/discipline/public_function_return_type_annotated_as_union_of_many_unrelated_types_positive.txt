@@ -1,7 +1,0 @@
-from typing import Union, List
-
-# Violation: public function return type annotated as a union of many unrelated types
-def get_resource(id: str) -> Union[int, str, List[float], dict, None]:
-    if id == "count": return 1
-    if id == "name": return "resource"
-    return None

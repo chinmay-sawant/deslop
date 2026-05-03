@@ -1,3 +1,0 @@
-def process(order_id: int, user_id: int) -> str:
-    debug = f"failed order={order_id} user={user_id} context={order_id * user_id}"
-    return f"ok:{order_id}:{len(debug)}"

@@ -1,0 +1,14 @@
+{
+  "id": "recursive_walk_over_untrusted_input_lacks_depth_limit",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag recursion over caller-provided structures with no depth guard.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

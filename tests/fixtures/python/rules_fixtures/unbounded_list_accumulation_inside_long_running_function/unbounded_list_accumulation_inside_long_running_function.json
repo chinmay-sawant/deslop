@@ -1,0 +1,14 @@
+{
+  "id": "unbounded_list_accumulation_inside_long_running_function",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "List grows unboundedly inside a long-running function or loop without a cap or periodic flush.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

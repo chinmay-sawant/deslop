@@ -1,8 +1,0 @@
-import numpy as np
-
-def stack_matrices(matrices):
-    result = matrices[0]
-    for mat in matrices[1:]:
-        # Violation: using np.vstack inside a loop causes quadratic memory copying
-        result = np.vstack([result, mat])
-    return result

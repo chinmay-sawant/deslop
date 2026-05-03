@@ -1,8 +1,0 @@
-ACTIVE_USER_WHERE = "status = 'active' AND deleted = 0"
-
-def get_active_users():
-    # Correct: common query fragment is extracted into a reusable constant
-    return db.query(f"SELECT * FROM users WHERE {ACTIVE_USER_WHERE}")
-
-def count_active_users():
-    return db.query(f"SELECT COUNT(*) FROM users WHERE {ACTIVE_USER_WHERE}")

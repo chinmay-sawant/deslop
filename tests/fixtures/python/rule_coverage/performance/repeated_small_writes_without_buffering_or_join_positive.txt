@@ -1,6 +1,0 @@
-from __future__ import annotations
-
-def repeated_small_writes_without_buffering_or_join_positive(path, chunks):
-    with open(path, "w", encoding="utf-8") as handle:
-        for chunk in chunks:
-            handle.write(chunk)

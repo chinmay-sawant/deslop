@@ -1,5 +1,0 @@
-# Correct: test uses the public API of the production module
-from app.crypto import hash_data
-
-def test_hash():
-    assert hash_data("data") is not None

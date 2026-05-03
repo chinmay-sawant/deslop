@@ -1,7 +1,0 @@
-# library_core.py
-import click
-import requests
-
-# Violation: a core library module imports CLI-specific dependencies, bloating the dependency tree for API-only users
-def execute_request():
-    pass

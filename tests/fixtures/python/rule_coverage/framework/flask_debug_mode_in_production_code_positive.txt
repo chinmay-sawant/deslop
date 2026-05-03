@@ -1,7 +1,0 @@
-from flask import Flask
-
-app = Flask(__name__)
-
-# Violation: Flask debug mode hardcoded to True in production-level code
-if __name__ == "__main__":
-    app.run(debug=True)

@@ -1,0 +1,14 @@
+{
+  "id": "constructor_reads_env_directly",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Constructors that call `os.Getenv` instead of receiving normalized config.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

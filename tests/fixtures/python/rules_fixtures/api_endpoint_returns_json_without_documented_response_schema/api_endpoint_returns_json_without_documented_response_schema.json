@@ -1,0 +1,14 @@
+{
+  "id": "api_endpoint_returns_json_without_documented_response_schema",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "API endpoint returns JSON without a Pydantic response_model or documented response schema.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

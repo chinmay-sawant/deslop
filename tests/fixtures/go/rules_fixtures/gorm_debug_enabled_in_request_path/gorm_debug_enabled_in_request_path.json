@@ -1,0 +1,14 @@
+{
+  "id": "gorm_debug_enabled_in_request_path",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "GORM debug logging enabled on request paths.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

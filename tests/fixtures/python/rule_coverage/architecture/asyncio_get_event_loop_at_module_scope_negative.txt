@@ -1,9 +1,0 @@
-import asyncio
-
-async def start_app():
-    # Safe: getting the event loop inside an async context or function
-    loop = asyncio.get_running_loop()
-    await loop.create_server(...)
-
-if __name__ == "__main__":
-    asyncio.run(start_app())

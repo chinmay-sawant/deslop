@@ -1,6 +1,0 @@
--- SQL View definition (Positive Scenario)
-CREATE VIEW active_users AS
-SELECT id, name,
-  -- Violation: business logic (calculating premium status) inside a DB view
-  CASE WHEN subscription_end > NOW() AND login_count > 50 THEN 1 ELSE 0 END as is_premium
-FROM users;

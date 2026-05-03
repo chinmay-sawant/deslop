@@ -1,0 +1,14 @@
+{
+  "id": "rust_file_open_in_loop_without_buffered_reader",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag opening and reading files inside loops without `BufReader`, batching, or reuse.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

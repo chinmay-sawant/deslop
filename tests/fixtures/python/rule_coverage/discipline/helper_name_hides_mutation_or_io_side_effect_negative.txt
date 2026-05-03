@@ -1,6 +1,0 @@
-def update_and_fetch_user_settings(user_id):
-    # Correct: name explicitly signals that mutation/IO occurs
-    settings = db.fetch_settings(user_id)
-    settings["last_accessed"] = time.time()
-    db.save(settings)
-    return settings

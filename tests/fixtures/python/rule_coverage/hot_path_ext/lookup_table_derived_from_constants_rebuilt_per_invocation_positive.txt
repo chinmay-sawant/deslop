@@ -1,5 +1,0 @@
-from __future__ import annotations
-
-def lookup_table_derived_from_constants_rebuilt_per_invocation_positive(code: str = "A"):
-    lookup = {"A": "active", "I": "inactive", "S": "suspended"}
-    return lookup.get(code, "unknown")

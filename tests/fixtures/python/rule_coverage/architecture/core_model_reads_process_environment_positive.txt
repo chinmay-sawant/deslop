@@ -1,7 +1,0 @@
-import os
-
-class User:
-    def __init__(self, username):
-        self.username = username
-        # Violation: core model reading process environment directly
-        self.debug_mode = os.environ.get("DEBUG") == "true"

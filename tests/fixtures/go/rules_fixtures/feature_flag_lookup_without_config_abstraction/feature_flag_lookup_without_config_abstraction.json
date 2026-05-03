@@ -1,0 +1,14 @@
+{
+  "id": "feature_flag_lookup_without_config_abstraction",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers or services that query feature flags directly without a focused flag interface.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,5 +1,0 @@
-import json
-
-def load_user_data(serialized_data):
-    # Correct: use safe serialization formats like JSON
-    return json.loads(serialized_data)

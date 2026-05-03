@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-def repeated_dict_get_same_key_no_cache_positive():
-    profile = {"name": "Mina", "region": "us-east"}
-    message = []
-    for _ in range(2):
-        message.append(profile.get("region", "unknown").upper())
-        message.append(profile.get("region", "unknown").lower())
-    return message

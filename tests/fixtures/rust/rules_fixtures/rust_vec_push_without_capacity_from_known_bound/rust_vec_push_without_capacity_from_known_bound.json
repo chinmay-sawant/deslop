@@ -1,0 +1,14 @@
+{
+  "id": "rust_vec_push_without_capacity_from_known_bound",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `Vec::new()` followed by pushes inside a loop over a known bounded iterator without `with_capacity`.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

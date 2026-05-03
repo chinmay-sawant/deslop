@@ -1,0 +1,14 @@
+{
+  "id": "rsa_key_size_too_small",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`rsa.GenerateKey(rand, bits)` where `bits` is literally `< 2048`",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

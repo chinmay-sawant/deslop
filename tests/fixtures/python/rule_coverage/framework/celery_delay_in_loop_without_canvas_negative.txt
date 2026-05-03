@@ -1,7 +1,0 @@
-from celery import group
-from tasks import process_item
-
-def handle_batch(items):
-    # Correct: use a group to batch tasks together efficiently
-    job = group(process_item.s(item) for item in items)
-    job.apply_async()

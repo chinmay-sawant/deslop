@@ -1,0 +1,14 @@
+{
+  "id": "service_tests_import_gin",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Service-level tests that depend on Gin when the service contract is supposed to be transport-neutral.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

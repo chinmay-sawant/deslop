@@ -1,5 +1,0 @@
-# module: tests/test_helpers.py
-
-def mock_database_connection():
-    # Correct: strictly isolate testing infrastructure outside of the deployable src/ directory
-    return FakeDatabase()

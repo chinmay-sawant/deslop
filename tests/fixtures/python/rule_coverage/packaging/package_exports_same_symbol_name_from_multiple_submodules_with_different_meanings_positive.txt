@@ -1,6 +1,0 @@
-# my_package/__init__.py
-# Violation: exporting two different classes with the exact same name causes the second to silently overwrite the first
-from .database import Client
-from .api import Client
-
-__all__ = ["Client"]

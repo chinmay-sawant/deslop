@@ -1,6 +1,0 @@
-def get_unique_tags(articles):
-    tags = set()
-    for a in articles:
-        tags.update(a.tags)
-    # Correct: explicitly sort the set when returning it as a list to ensure stable API contracts
-    return sorted(list(tags))

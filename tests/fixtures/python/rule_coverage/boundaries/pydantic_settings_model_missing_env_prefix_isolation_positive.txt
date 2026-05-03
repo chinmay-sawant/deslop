@@ -1,6 +1,0 @@
-from pydantic_settings import BaseSettings
-
-class AppSettings(BaseSettings):
-    # Violation: missing env prefix isolation (may clash with other environment variables)
-    api_key: str
-    db_url: str

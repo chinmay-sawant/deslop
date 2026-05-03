@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_error_handling_cost_multierror_append_for_success_path",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag multi-error aggregators allocated on success-heavy paths before any error exists.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

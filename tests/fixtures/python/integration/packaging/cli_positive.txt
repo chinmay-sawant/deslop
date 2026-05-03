@@ -1,5 +1,0 @@
-from typing import Any
-
-
-def public_api(payload: Any) -> Any:
-    return payload

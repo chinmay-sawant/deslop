@@ -1,0 +1,14 @@
+{
+  "id": "expect_in_non_test_code",
+  "language": "rust",
+  "family": "hygiene",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "expect() used in non-test Rust code.",
+  "binding_location": "src/heuristics/rust/evaluate.rs"
+}

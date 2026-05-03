@@ -1,0 +1,14 @@
+{
+  "id": "duration_nanoseconds_zero_check",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Duration zero checks written as `d.Nanoseconds() == 0` instead of `d == 0`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

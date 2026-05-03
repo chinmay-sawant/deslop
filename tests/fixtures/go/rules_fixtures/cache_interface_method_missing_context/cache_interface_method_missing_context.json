@@ -1,0 +1,14 @@
+{
+  "id": "cache_interface_method_missing_context",
+  "language": "go",
+  "family": "context",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Cache-oriented interfaces whose IO-style methods omit context.Context.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

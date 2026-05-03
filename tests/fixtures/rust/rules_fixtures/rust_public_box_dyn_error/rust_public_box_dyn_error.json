@@ -1,0 +1,14 @@
+{
+  "id": "rust_public_box_dyn_error",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public APIs that expose Box<dyn Error> rather than a clearer error surface.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "ticker_without_stop",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "time.NewTicker(...) is created without an observed Stop() call.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

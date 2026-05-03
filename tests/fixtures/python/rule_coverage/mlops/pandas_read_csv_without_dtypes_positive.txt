@@ -1,5 +1,0 @@
-import pandas as pd
-
-def load_data(filepath):
-    # Violation: reading large CSVs without specifying dtypes forces pandas to infer types, causing memory bloat
-    return pd.read_csv(filepath)

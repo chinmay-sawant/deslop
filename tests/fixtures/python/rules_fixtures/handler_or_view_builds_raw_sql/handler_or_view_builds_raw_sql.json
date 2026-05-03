@@ -1,0 +1,14 @@
+{
+  "id": "handler_or_view_builds_raw_sql",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Route handler or view constructs a raw SQL string instead of delegating to a repository layer.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

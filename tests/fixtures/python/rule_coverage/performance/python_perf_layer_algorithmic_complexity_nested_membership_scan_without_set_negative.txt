@@ -1,3 +1,0 @@
-def join_known(users: list[str], allowed: list[str]) -> list[str]:
-    allowed_set = set(allowed)
-    return [user for user in users if user in allowed_set]

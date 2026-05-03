@@ -1,0 +1,14 @@
+{
+  "id": "repeated_locale_or_codec_lookup_in_loop",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Locale or codec lookups repeat inside loops instead of being cached once.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "eager_constructor_collaborators",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Constructors that instantiate several collaborators eagerly inside __init__.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

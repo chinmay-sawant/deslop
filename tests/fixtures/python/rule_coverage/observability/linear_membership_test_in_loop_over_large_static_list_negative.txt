@@ -1,9 +1,0 @@
-# Correct: convert the list to a set for O(1) constant time membership lookups
-FORBIDDEN_WORDS = {"spam", "buy", "crypto", "click", "free", "viagra"}
-
-def filter_messages(messages):
-    clean = []
-    for msg in messages:
-        if not any(word in FORBIDDEN_WORDS for word in msg.split()):
-            clean.append(msg)
-    return clean

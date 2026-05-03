@@ -1,7 +1,0 @@
-import pandas as pd
-
-def process_massive_file(filepath):
-    # Violation: loading an entire massive dataset into RAM at once instead of streaming it
-    df = pd.read_csv(filepath)
-    for index, row in df.iterrows():
-        send_to_database(row)

@@ -1,0 +1,14 @@
+{
+  "id": "request_dto_outside_transport_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request binding structs that live in repositories or service packages instead of transport-facing packages.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

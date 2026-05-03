@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_collection_iteration_multiple_passes_over_same_slice",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag independent passes over the same slice where aggregation can be fused.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

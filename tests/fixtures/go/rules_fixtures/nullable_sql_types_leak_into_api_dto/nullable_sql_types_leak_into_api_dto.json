@@ -1,0 +1,14 @@
+{
+  "id": "nullable_sql_types_leak_into_api_dto",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Response or request DTOs that expose `sql.Null*` types instead of boundary-friendly contract types.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

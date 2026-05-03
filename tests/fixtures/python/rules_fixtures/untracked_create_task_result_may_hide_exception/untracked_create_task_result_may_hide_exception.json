@@ -1,0 +1,14 @@
+{
+  "id": "untracked_create_task_result_may_hide_exception",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "asyncio.create_task result discarded without storing a reference; exceptions raised in the task are silenced.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

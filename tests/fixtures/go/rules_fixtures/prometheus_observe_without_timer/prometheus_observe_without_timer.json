@@ -1,0 +1,14 @@
+{
+  "id": "prometheus_observe_without_timer",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "manual `time.Since(start).Seconds()` + `histogram.Observe(duration)` patterns when `prometheus.NewTimer` would be safer",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

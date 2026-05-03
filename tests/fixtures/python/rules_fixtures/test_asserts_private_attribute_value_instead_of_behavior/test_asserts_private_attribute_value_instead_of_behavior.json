@@ -1,0 +1,14 @@
+{
+  "id": "test_asserts_private_attribute_value_instead_of_behavior",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test asserts the value of a private attribute (_name) instead of observable public behavior.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

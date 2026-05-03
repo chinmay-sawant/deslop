@@ -1,0 +1,14 @@
+{
+  "id": "rust_toml_parse_in_hot_path",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `toml::from_str`, `toml::from_slice`, or `str::parse::<toml::Value>()` inside request paths, scan loops, or repeated functions.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

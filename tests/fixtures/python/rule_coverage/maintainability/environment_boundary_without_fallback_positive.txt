@@ -1,7 +1,0 @@
-import os
-
-def get_server_config():
-    # Violation: reading environment variables without providing a fallback or default value
-    host = os.environ["SERVER_HOST"]
-    port = int(os.environ["SERVER_PORT"])
-    return host, port

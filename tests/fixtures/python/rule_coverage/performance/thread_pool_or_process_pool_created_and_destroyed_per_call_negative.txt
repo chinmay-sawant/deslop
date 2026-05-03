@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-from concurrent.futures import Executor
-
-
-def thread_pool_or_process_pool_created_and_destroyed_per_call_negative(
-    items: list[int], pool: Executor
-) -> list[int]:
-    return list(pool.map(lambda n: n * n, items))

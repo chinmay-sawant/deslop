@@ -1,6 +1,0 @@
-from typing import Any
-
-# Violation: exposing Any in a public API contract completely subverts type checking for consumers
-def parse_generic_payload(payload: str) -> Any:
-    import json
-    return json.loads(payload)

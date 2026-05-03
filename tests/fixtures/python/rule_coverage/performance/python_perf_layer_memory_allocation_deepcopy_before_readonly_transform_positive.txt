@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-from copy import deepcopy
-
-
-def python_perf_layer_memory_allocation_deepcopy_before_readonly_transform_positive(data):
-    duplicate = deepcopy(data)
-    return [item["id"] for item in duplicate]

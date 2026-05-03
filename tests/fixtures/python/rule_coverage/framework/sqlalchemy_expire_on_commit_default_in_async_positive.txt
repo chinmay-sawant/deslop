@@ -1,6 +1,0 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-
-async def get_session():
-    # Violation: AsyncSession used with default expire_on_commit=True (requires additional awaits)
-    session = AsyncSession(bind=engine)
-    return session

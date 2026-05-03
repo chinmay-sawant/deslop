@@ -1,9 +1,0 @@
-from collections import deque
-
-
-def process_fifo(items: list[int]) -> list[int]:
-    queue = deque(items)
-    seen: list[int] = []
-    while queue:
-        seen.append(queue.popleft())
-    return seen

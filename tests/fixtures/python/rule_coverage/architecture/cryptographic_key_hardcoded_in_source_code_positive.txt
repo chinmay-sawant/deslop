@@ -1,6 +1,0 @@
-# Violation: hardcoded cryptographic key
-SECRET_KEY = "super-secret-password-12345"
-
-def encrypt_data(data):
-    cipher = AES.new(SECRET_KEY, AES.MODE_EAX)
-    return cipher.encrypt(data)

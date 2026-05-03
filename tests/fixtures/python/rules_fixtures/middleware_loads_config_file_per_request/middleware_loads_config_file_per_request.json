@@ -1,0 +1,14 @@
+{
+  "id": "middleware_loads_config_file_per_request",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Middleware loads config files on request paths instead of using startup configuration.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

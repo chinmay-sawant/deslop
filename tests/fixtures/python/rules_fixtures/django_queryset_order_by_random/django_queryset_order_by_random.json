@@ -1,0 +1,14 @@
+{
+  "id": "django_queryset_order_by_random",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Django querysets use order_by(\\\"?\\\") or equivalent random ordering on request paths.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "bufio_scanner_small_buffer_for_large_lines",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bufio.NewScanner(r)` without `scanner.Buffer()` when processing files with lines > 64KB",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

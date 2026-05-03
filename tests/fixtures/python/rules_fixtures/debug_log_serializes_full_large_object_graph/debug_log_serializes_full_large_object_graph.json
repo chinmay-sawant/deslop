@@ -1,0 +1,14 @@
+{
+  "id": "debug_log_serializes_full_large_object_graph",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag debug logging that walks and serializes large object graphs.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

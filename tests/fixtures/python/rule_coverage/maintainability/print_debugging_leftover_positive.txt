@@ -1,6 +1,0 @@
-def calculate_pricing(base, tax):
-    # Violation: leaving print statements used for debugging in production code
-    print(f"base: {base}, tax: {tax}")
-    total = base + tax
-    print(f"total: {total}")
-    return total

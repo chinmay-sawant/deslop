@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_heavy_clone_per_item",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated `.clone()` of config, source text, rule catalogs, AST summaries, or large state inside parallel closures.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

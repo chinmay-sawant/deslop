@@ -1,0 +1,14 @@
+{
+  "id": "initializer_requires_half_built_instance_state",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag methods that depend on object fields being patched in after construction before the object becomes usable.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

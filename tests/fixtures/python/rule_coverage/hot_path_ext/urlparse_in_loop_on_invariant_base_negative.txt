@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def urlparse_in_loop_on_invariant_base_negative():
-    from urllib.parse import urlparse
-    paths = ["/a", "/b", "/c"]
-    parsed = urlparse("https://api.example.com/root")
-    return [parsed.netloc for _ in paths]

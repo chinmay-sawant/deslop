@@ -1,7 +1,0 @@
-@app.get("/users/{id}")
-def get_user(id: int):
-    # Violation: building the entire dependency graph inside a hot function (request handler)
-    container = DependencyContainer()
-    container.wire(modules=[__name__])
-    user_service = container.user_service()
-    return user_service.get_user(id)

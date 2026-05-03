@@ -1,5 +1,0 @@
-def active_recent(df):
-    df = df[df["active"]]
-    df = df[df["score"] > 50]
-    df = df[df["region"] == "us"]
-    return df

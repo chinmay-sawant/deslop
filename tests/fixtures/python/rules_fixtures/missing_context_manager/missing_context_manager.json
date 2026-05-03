@@ -1,0 +1,14 @@
+{
+  "id": "missing_context_manager",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Resource management (files, network connections) inside non-test Python functions that omits with-statement context managers.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

@@ -1,6 +1,0 @@
-import logging
-
-def process_transaction(tx):
-    # Violation: blindly dumping an entire large object graph into logs wastes storage and risks logging PII
-    logging.debug(f"Processing transaction: {vars(tx)}")
-    tx.commit()

@@ -1,0 +1,14 @@
+{
+  "id": "route_param_name_and_dto_field_name_drift_without_mapping_helper",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated manual renaming between route params and DTO fields that lacks a shared mapper.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "package_root_reexports_large_dependency_tree_by_default",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag root packages that re-export many heavy submodules automatically.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

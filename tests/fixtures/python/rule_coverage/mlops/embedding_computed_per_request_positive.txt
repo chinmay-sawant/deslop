@@ -1,5 +1,0 @@
-def find_similar(query_text, documents, embedder):
-    # Violation: recomputing the embedding for the same documents on every request
-    query_emb = embedder.encode(query_text)
-    doc_embs = [embedder.encode(doc) for doc in documents]
-    return cosine_similarity(query_emb, doc_embs)

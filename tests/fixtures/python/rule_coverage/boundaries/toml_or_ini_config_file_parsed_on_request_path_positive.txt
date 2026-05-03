@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-import tomllib
-
-
-def handle_request() -> str:
-    with open("settings.toml", "rb") as fp:
-        config = tomllib.load(fp)
-    return config["mode"]

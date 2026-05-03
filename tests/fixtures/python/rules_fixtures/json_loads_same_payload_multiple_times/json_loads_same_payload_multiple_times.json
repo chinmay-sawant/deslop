@@ -1,0 +1,14 @@
+{
+  "id": "json_loads_same_payload_multiple_times",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same JSON payload is decoded multiple times inside one function instead of caching the parsed value.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

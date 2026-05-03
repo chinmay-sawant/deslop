@@ -1,8 +1,0 @@
-import requests
-
-@app.get("/data")
-def get_external_data():
-    resp = requests.get("https://api.external.com/data", timeout=5)
-    # Correct: check the response status before attempting to parse the body
-    resp.raise_for_status()
-    return resp.json()

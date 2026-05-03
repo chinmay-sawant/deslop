@@ -1,5 +1,0 @@
-from __future__ import annotations
-
-def any_or_all_wraps_list_comprehension_instead_of_generator_positive():
-    readings = [8, 11, 6, 4]
-    return any([value > 10 for value in readings])

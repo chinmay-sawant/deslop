@@ -1,6 +1,0 @@
-from functools import lru_cache
-
-
-@lru_cache(maxsize=1)
-def get_feature_flags() -> dict[str, bool]:
-    return {"beta": True, "audit": False}

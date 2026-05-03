@@ -1,7 +1,0 @@
-def main(customer):
-    repo = Repository()
-    cache = Cache()
-    client = Client()
-    if customer.is_premium:
-        return {"data": customer, "status": 200}
-    return {"data": customer, "status": 202}

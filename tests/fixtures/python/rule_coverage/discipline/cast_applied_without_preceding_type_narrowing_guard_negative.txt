@@ -1,5 +1,0 @@
-def process_node(node):
-    # Correct: type narrowing guard precedes any type-specific logic
-    if isinstance(node, UserNode):
-        return node.username
-    raise ValueError("Invalid node type")

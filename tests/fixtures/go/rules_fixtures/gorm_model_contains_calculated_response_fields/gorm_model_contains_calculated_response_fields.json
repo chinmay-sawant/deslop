@@ -1,0 +1,14 @@
+{
+  "id": "gorm_model_contains_calculated_response_fields",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Persistence structs that carry API-only derived presentation fields.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

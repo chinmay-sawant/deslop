@@ -1,0 +1,14 @@
+{
+  "id": "generator_consumed_twice_without_recreation",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Same generator object iterated a second time after it has already been exhausted.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

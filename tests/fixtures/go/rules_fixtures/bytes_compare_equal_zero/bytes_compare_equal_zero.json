@@ -1,0 +1,14 @@
+{
+  "id": "bytes_compare_equal_zero",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.Compare(...) == 0` instead of `bytes.Equal(...)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

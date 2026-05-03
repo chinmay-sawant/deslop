@@ -1,5 +1,0 @@
-import bisect
-
-def add_to_rankings(rankings_list, new_score):
-    # Correct: use bisect.insort to maintain order efficiently in O(N) time with O(log N) comparisons
-    bisect.insort(rankings_list, new_score)

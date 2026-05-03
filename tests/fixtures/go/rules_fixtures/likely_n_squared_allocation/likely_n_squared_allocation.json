@@ -1,0 +1,15 @@
+{
+  "id": "likely_n_squared_allocation",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "experimental",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override",
+    "go_semantic_experimental"
+  ],
+  "description": "Opt-in deeper semantic signal for allocations that also sit inside nested loop structure.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

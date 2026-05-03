@@ -1,5 +1,0 @@
-# Correct: initialize heavy observability clients once during application startup
-tracer = initialize_heavy_telemetry_client()
-
-def handle_request(req):
-    return tracer.trace(req)

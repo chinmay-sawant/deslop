@@ -1,5 +1,0 @@
-def process_order(order):
-    # Violation: comment required to explain opaque branching logic
-    # Check if the order is ready for immediate shipping
-    if order.status == 2 and order.payment_cleared and not order.is_backordered:
-        ship_order(order)

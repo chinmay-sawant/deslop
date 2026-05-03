@@ -1,0 +1,14 @@
+{
+  "id": "goroutine_spawn_in_loop",
+  "language": "go",
+  "family": "concurrency",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Raw go statements launched from inside loops without obvious WaitGroup coordination.",
+  "binding_location": "src/heuristics/go/concurrency.rs"
+}

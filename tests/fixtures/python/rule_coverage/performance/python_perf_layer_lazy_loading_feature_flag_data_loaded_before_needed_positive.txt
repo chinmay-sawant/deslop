@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-import json
-
-
-def python_perf_layer_lazy_loading_feature_flag_data_loaded_before_needed_positive(flag_name, raw_blob):
-    flags = json.loads(raw_blob)
-    return bool(flags.get(flag_name, False))

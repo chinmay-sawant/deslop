@@ -1,9 +1,0 @@
-from typing import Protocol
-
-class Drawable(Protocol):
-    def draw(self): ...
-
-def render(obj):
-    # Violation: protocol used in isinstance without @runtime_checkable
-    if isinstance(obj, Drawable):
-        obj.draw()

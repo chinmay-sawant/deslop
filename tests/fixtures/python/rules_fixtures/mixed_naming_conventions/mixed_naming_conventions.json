@@ -1,0 +1,14 @@
+{
+  "id": "mixed_naming_conventions",
+  "language": "python",
+  "family": "ai_smells",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "File mixes snake_case and camelCase function naming conventions.",
+  "binding_location": "src/heuristics/python/ai_smells.rs"
+}

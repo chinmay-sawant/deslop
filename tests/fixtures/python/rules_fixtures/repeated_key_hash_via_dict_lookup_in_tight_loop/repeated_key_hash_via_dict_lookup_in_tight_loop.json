@@ -1,0 +1,14 @@
+{
+  "id": "repeated_key_hash_via_dict_lookup_in_tight_loop",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Same dict key looked up repeatedly inside a loop; cache the value in a local variable.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

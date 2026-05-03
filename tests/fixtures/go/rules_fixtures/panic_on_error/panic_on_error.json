@@ -1,0 +1,14 @@
+{
+  "id": "panic_on_error",
+  "language": "go",
+  "family": "errors",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "err != nil branches that jump straight to panic or log.Fatal style exits.",
+  "binding_location": "src/heuristics/go/errors.rs"
+}

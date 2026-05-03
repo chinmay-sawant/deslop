@@ -1,4 +1,0 @@
-async def handle_user_registered(event):
-    # Violation: synchronous/blocking DB call in an async event handler
-    db_sync.session.add(User(event.id))
-    db_sync.session.commit()

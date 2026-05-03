@@ -1,6 +1,0 @@
-@app.get("/search")
-def search(q: str):
-    # Violation: view/handler building raw SQL instead of using a repository
-    query = f"SELECT * FROM products WHERE name LIKE '%{q}%' AND is_active = 1"
-    results = db.execute(query)
-    return results

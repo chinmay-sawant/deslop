@@ -1,9 +1,0 @@
-def upload_data(client, data):
-    # Violation: duplicated cleanup paths instead of using a context manager or 'finally'
-    client.connect()
-    try:
-        client.upload(data)
-        client.disconnect()
-    except Exception:
-        client.disconnect()
-        raise

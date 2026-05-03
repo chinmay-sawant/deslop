@@ -1,0 +1,14 @@
+{
+  "id": "dynamodb_scan_in_handler",
+  "language": "go",
+  "family": "library",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`dynamodb.Scan` in request handler functions",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

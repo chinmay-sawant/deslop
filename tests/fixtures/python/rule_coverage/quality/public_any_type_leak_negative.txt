@@ -1,6 +1,0 @@
-from typing import Dict, Union
-
-# Correct: always define exact structural shapes for data crossing public API boundaries
-def parse_generic_payload(payload: str) -> Dict[str, Union[str, int, float]]:
-    import json
-    return json.loads(payload)

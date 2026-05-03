@@ -1,0 +1,14 @@
+{
+  "id": "base_class_exists_only_to_share_data_fields_not_behavior",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag base classes that provide only data containers with no meaningful shared behavior.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

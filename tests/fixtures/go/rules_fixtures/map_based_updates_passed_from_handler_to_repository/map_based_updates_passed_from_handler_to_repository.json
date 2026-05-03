@@ -1,0 +1,14 @@
+{
+  "id": "map_based_updates_passed_from_handler_to_repository",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Update maps built from request payloads and passed through layers without typed ownership.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

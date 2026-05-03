@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_io_operations_path_exists_before_open_race",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag exists/stat checks immediately followed by open when exception handling can avoid duplicate syscalls.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

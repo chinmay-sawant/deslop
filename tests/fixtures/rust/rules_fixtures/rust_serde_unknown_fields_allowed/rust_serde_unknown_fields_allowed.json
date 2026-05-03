@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_unknown_fields_allowed",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Strict-looking config or request structs that deserialize without deny_unknown_fields.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

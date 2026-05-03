@@ -1,8 +1,0 @@
-def process_user_data(raw_data):
-    # Violation: duplicate transformation pipeline logic repeated
-    clean_name = raw_data["name"].strip().lower().replace("_", " ")
-    return {"name": clean_name}
-
-def process_admin_data(raw_data):
-    clean_name = raw_data["full_name"].strip().lower().replace("_", " ")
-    return {"admin_name": clean_name}

@@ -1,6 +1,0 @@
-def insert_users(session, rows: list[dict[str, object]]) -> None:
-    for row in rows:
-        session.execute(
-            "INSERT INTO users(id, name) VALUES (:id, :name)",
-            row,
-        )

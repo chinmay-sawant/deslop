@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-from datetime import datetime
-
-
-def python_perf_layer_hot_path_optimization_datetime_now_called_per_field_negative(user_id):
-    now = datetime.now()
-    return {"id": user_id, "year": now.year, "month": now.month, "day": now.day}

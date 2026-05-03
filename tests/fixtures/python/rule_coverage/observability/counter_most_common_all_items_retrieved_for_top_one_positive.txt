@@ -1,6 +1,0 @@
-from collections import Counter
-
-def get_most_frequent_word(words):
-    counts = Counter(words)
-    # Violation: retrieving all elements just to index the first one is inefficient (O(N log N) sort)
-    return counts.most_common()[0][0]

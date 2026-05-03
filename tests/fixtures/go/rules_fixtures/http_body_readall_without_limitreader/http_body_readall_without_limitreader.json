@@ -1,0 +1,14 @@
+{
+  "id": "http_body_readall_without_limitreader",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`io.ReadAll(req.Body)` in HTTP handlers without `io.LimitReader`",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

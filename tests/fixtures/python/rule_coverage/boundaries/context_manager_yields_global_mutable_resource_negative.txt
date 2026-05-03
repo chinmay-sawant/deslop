@@ -1,8 +1,0 @@
-from contextlib import contextmanager
-
-@contextmanager
-def use_resource():
-    # Correct: context manager yields a new, isolated resource instance
-    resource = {"state": "ready"}
-    yield resource
-    resource["state"] = "closed"

@@ -1,0 +1,14 @@
+{
+  "id": "cast_applied_without_preceding_type_narrowing_guard",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "typing.cast applied to a value without a preceding isinstance or type narrowing check.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

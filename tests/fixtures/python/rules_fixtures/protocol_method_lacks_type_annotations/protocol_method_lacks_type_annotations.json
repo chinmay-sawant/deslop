@@ -1,0 +1,14 @@
+{
+  "id": "protocol_method_lacks_type_annotations",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Method in a Protocol class body lacks parameter or return type annotations.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

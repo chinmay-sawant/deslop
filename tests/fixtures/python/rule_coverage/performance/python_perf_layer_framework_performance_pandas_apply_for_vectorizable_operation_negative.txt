@@ -1,3 +1,0 @@
-def normalize(df):
-    df["pct"] = df["used"] / df["total"]
-    return df

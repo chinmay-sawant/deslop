@@ -1,5 +1,0 @@
-class User:
-    def notify(self):
-        # Violation: domain object performing direct external IO
-        import httpx
-        httpx.post("https://notify.service.com", json={"user": self.id})

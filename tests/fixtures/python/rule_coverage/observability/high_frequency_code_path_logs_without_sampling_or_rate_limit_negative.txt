@@ -1,8 +1,0 @@
-import logging
-
-def ingest_event_stream(events):
-    for i, event in enumerate(events):
-        process(event)
-        # Correct: sample the logs or output a periodic heartbeat instead
-        if i % 10000 == 0:
-            logging.info(f"Ingestion heartbeat: Processed {i} events so far.")

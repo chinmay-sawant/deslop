@@ -1,0 +1,14 @@
+{
+  "id": "pandas_read_csv_without_dtypes",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "pd.read_csv(...) calls omit dtype hints, forcing extra inference work.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

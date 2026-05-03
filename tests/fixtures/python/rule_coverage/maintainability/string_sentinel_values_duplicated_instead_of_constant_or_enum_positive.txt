@@ -1,6 +1,0 @@
-def process_task(task):
-    # Violation: using raw string literals as sentinel values across the codebase
-    if task.status == "PENDING":
-        start_task(task)
-    elif task.status == "IN_PROGRESS":
-        monitor_task(task)

@@ -1,7 +1,0 @@
-from multiprocessing import Pool
-
-def process():
-    # Correct: pool managed via context manager
-    with Pool(5) as p:
-        results = p.map(work, data)
-    return results

@@ -1,9 +1,0 @@
-import re
-
-def validate_input(user_input):
-    # Correct: use a simple, non-recursive regex pattern
-    pattern = re.compile(r"^a+$")
-    # Also consider adding a length limit to the input
-    if len(user_input) > 1000:
-        return False
-    return pattern.match(user_input)

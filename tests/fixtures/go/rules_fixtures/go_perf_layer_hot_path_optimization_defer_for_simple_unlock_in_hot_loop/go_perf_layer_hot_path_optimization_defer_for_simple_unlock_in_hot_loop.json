@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_hot_path_optimization_defer_for_simple_unlock_in_hot_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Hot path optimization. Flag defer used for simple unlock/close work inside very hot loops.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

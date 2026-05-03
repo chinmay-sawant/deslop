@@ -1,0 +1,14 @@
+{
+  "id": "prometheus_or_statsd_metric_emitted_inside_db_result_loop",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Prometheus counter or statsd metric emitted on every DB row in a result loop instead of once after.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

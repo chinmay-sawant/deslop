@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def expensive_sort_key_recomputed_without_preprojection_negative():
-    records = ["alice 9", "bob 3", "carol 7"]
-    projected = [(row, int(row.split()[1])) for row in records]
-    projected.sort(key=lambda item: item[1])
-    return [projected[0][0] for _ in range(2)]

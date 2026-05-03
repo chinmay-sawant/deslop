@@ -1,0 +1,14 @@
+{
+  "id": "missing_context_propagation",
+  "language": "go",
+  "family": "context",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

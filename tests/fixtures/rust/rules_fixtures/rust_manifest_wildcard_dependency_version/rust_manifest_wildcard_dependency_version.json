@@ -1,0 +1,14 @@
+{
+  "id": "rust_manifest_wildcard_dependency_version",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `*` dependency versions or unconstrained git/path dependencies outside local workspace development.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,9 +1,0 @@
-from pathlib import Path
-
-def process_files(base_dir, filenames):
-    # Correct: construct the base Path object once outside the loop
-    base_path = Path(base_dir)
-    results = []
-    for filename in filenames:
-        results.append(str(base_path / filename))
-    return results

@@ -1,5 +1,0 @@
-def test_create_user():
-    # Violation: integration test writes state to a shared DB without cleanup
-    user = db.create_user(name="test")
-    assert user.id is not None
-    # If the test fails here, the user record remains in the DB

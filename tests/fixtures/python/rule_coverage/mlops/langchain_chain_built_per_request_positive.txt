@@ -1,7 +1,0 @@
-from langchain import LLMChain, PromptTemplate
-
-def handle_request(user_input):
-    # Violation: re-instantiating a complex LangChain object per request is highly inefficient
-    prompt = PromptTemplate(template="Translate {text}", input_variables=["text"])
-    chain = LLMChain(llm=my_llm, prompt=prompt)
-    return chain.run(text=user_input)

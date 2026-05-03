@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_network_calls_tls_config_built_per_request",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Network calls. Flag TLS configuration construction per request instead of reusing immutable configs.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

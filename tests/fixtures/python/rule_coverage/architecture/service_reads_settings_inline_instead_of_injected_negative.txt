@@ -1,8 +1,0 @@
-class CacheService:
-    def __init__(self, host, port):
-        # Correct: settings are injected into the service
-        self.host = host
-        self.port = port
-
-    def get_client(self):
-        return Redis(host=self.host, port=self.port)

@@ -1,0 +1,14 @@
+{
+  "id": "rust_domain_float_for_money",
+  "language": "rust",
+  "family": "domain_modeling",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Floating-point storage is used for money-like values.",
+  "binding_location": "src/heuristics/rust/domain_modeling.rs"
+}

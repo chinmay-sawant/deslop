@@ -1,0 +1,14 @@
+{
+  "id": "same_struct_used_for_bind_persist_and_respond",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "A single struct type reused for request binding, database persistence, and API response serialization.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

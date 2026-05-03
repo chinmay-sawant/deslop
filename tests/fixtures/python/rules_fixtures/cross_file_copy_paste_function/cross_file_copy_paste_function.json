@@ -1,0 +1,14 @@
+{
+  "id": "cross_file_copy_paste_function",
+  "language": "python",
+  "family": "duplication",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Highly similar non-test function bodies repeated across multiple Python files.",
+  "binding_location": "src/heuristics/python/duplication.rs"
+}

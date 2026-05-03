@@ -1,7 +1,0 @@
-def parse_file(path):
-    # Correct: refactored into smaller functions to avoid nesting
-    try:
-        data = read_data(path)
-        return parse_data(data)
-    except (FileNotFoundError, OSError, ParseError) as e:
-        handle_error(e)

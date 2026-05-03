@@ -1,0 +1,14 @@
+{
+  "id": "json_roundtrip_used_for_object_copy",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that serializes and deserializes objects only to make a copy.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

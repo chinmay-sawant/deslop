@@ -1,4 +1,0 @@
-async def handle_user_registered(event):
-    # Correct: using async database driver in async context
-    async with db_async.begin() as session:
-        await session.add(User(event.id))

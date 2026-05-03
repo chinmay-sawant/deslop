@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_framework_performance_celery_task_loads_config_each_run",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag Celery tasks loading settings, models, or clients on every invocation without reuse.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

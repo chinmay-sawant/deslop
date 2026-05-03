@@ -1,7 +1,0 @@
-import asyncio
-
-# Dangerous: getting the event loop at module scope
-loop = asyncio.get_event_loop()
-
-async def start_app():
-    await loop.create_server(...)

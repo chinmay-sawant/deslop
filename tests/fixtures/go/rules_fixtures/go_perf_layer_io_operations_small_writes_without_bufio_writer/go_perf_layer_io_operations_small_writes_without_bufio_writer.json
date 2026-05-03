@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_io_operations_small_writes_without_bufio_writer",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag many Write calls to files or network connections without bufio buffering.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

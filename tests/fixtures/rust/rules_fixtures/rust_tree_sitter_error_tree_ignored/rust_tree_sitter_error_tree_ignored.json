@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_error_tree_ignored",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag parser pipelines that use the root node without checking `tree.root_node().has_error()` or equivalent syntax-error evidence.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

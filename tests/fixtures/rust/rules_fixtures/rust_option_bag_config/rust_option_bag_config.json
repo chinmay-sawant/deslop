@@ -1,0 +1,14 @@
+{
+  "id": "rust_option_bag_config",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Config-like structs with many Option fields and no obvious validation path.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

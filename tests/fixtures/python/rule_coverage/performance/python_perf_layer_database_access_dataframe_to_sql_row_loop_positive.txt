@@ -1,6 +1,0 @@
-def write_frame(df, cursor) -> None:
-    for _, row in df.iterrows():
-        cursor.execute(
-            "INSERT INTO sales(id, amount) VALUES (%s, %s)",
-            (row["id"], row["amount"]),
-        )

@@ -1,0 +1,14 @@
+{
+  "id": "automigrate_or_schema_probe_in_request_path",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "AutoMigrate or schema probes running on request paths instead of startup.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

@@ -1,5 +1,0 @@
-from typing import Any
-
-# Violation: using 'Any' for a public API signature destroys all IDE autocomplete, type checking, and documentation
-def process_payload(payload: Any) -> Any:
-    return payload.get("data", [])

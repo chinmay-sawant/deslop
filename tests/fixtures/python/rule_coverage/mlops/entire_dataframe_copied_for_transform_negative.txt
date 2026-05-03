@@ -1,3 +1,0 @@
-def apply_transformation(df):
-    # Correct: modify the DataFrame in place or use functional assign() for better memory efficiency
-    return df.assign(normalized=df["value"] / 100.0)

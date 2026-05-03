@@ -1,3 +1,0 @@
-def initialize_service(host: str = "localhost", port: int = 8080):
-    # Correct: use explicit, named arguments with type hints and defaults for public APIs
-    setup_connection(host, port)

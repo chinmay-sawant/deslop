@@ -1,8 +1,0 @@
-from collections import OrderedDict
-
-def create_payload():
-    # Violation: using OrderedDict just to preserve insertion order in modern Python wastes memory and CPU
-    payload = OrderedDict()
-    payload["first"] = 1
-    payload["second"] = 2
-    return payload

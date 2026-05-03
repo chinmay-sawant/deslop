@@ -1,0 +1,14 @@
+{
+  "id": "rust_iterator_chain_allocates_intermediate_strings",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag iterator chains that map every item through `format!`, `to_string`, or JSON conversion before a simple predicate or grouping.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

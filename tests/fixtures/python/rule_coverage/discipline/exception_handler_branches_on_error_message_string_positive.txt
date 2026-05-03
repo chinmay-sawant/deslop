@@ -1,5 +1,0 @@
-def handle_database_error(e):
-    # Violation: exception handler branches on error message string (fragile)
-    if "unique constraint" in str(e).lower():
-        return "Duplicate entry"
-    return "Unknown error"

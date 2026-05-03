@@ -1,7 +1,0 @@
-import json
-
-def handle_message(payload):
-    # Violation: parsing the same JSON payload multiple times (expensive CPU operation)
-    if json.loads(payload).get("type") == "update":
-        data = json.loads(payload).get("data")
-        print(data)

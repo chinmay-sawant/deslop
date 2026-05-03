@@ -1,4 +1,0 @@
-def save_text(filename, text):
-    # Correct: explicit encoding is specified
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(text)

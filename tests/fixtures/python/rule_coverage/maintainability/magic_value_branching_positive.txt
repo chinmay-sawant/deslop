@@ -1,8 +1,0 @@
-def process_payment(status_code):
-    # Violation: branching on undocumented magic integers or strings
-    if status_code == 1:
-        complete_payment()
-    elif status_code == 2:
-        refund_payment()
-    elif status_code == 3:
-        fail_payment()

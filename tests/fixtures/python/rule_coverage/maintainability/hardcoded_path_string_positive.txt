@@ -1,4 +1,0 @@
-def read_application_logs():
-    # Violation: hardcoding absolute file paths limits portability across environments
-    with open("/var/log/myapp/application.log", "r") as f:
-        return f.readlines()

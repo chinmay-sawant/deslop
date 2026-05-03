@@ -1,6 +1,0 @@
-from transformers import AutoTokenizer
-
-def tokenize_input(text):
-    # Violation: loading a large tokenizer from disk/network on every single request
-    tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
-    return tokenizer(text)

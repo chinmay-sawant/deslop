@@ -1,1 +1,0 @@
-REPORT_STATUS_TEMPLATE = "SELECT id, status FROM reports WHERE status = '{status}' ORDER BY created_at"

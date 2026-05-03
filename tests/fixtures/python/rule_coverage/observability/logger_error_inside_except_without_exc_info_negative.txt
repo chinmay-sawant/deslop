@@ -1,8 +1,0 @@
-import logging
-
-def connect_db():
-    try:
-        db.connect()
-    except Exception:
-        # Correct: use .exception() inside except blocks to automatically append the full stack traceback
-        logging.exception("Connection failed")

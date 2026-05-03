@@ -1,5 +1,0 @@
-# Correct: enforce cross-cutting policies at the architectural boundary (middleware/decorators), keeping business logic pure
-@require_authorization
-@rate_limit(requests=100)
-def get_user_profile(user_id):
-    return db.query("SELECT * FROM users WHERE id = ?", user_id)

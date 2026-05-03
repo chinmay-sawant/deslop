@@ -1,8 +1,0 @@
-from my_app.settings import config
-
-class CacheService:
-    def get_client(self):
-        # Violation: service reading settings inline instead of using injection
-        host = config.REDIS_HOST
-        port = config.REDIS_PORT
-        return Redis(host=host, port=port)

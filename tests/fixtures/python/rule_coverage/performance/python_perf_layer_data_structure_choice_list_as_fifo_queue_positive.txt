@@ -1,5 +1,0 @@
-def drain(queue: list[int]) -> list[int]:
-    out: list[int] = []
-    while queue:
-        out.append(queue.pop(0))
-    return out

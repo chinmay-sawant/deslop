@@ -1,0 +1,14 @@
+{
+  "id": "typeddict_unchecked_access",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Direct indexing of optional TypedDict keys without an obvious guard path.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

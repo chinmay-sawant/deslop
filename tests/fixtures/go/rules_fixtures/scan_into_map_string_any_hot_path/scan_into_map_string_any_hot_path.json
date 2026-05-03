@@ -1,0 +1,14 @@
+{
+  "id": "scan_into_map_string_any_hot_path",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Rows scanned into map[string]any instead of typed structs on hot paths.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

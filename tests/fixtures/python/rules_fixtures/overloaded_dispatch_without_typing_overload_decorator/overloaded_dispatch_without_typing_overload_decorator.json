@@ -1,0 +1,14 @@
+{
+  "id": "overloaded_dispatch_without_typing_overload_decorator",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Function branches on isinstance to dispatch overloads but does not use @typing.overload decorators.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

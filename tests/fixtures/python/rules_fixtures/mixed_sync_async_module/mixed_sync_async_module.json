@@ -1,0 +1,14 @@
+{
+  "id": "mixed_sync_async_module",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Modules that expose public sync and async entry points together.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

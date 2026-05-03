@@ -1,0 +1,14 @@
+{
+  "id": "response_json_dumps_then_response_object",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers manually json.dumps(...) payloads and then wrap them in framework Response objects.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

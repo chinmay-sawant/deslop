@@ -1,9 +1,0 @@
-def sync_users(users):
-    failures = []
-    for u in users:
-        try:
-            update_db(u)
-        except Exception:
-            failures.append(u)
-    # Violation: returning a static {"success": True} shape hides the fact that partial failures occurred
-    return {"success": True, "count": len(users)}

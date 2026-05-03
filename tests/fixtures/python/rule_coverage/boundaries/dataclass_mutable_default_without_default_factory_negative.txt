@@ -1,6 +1,0 @@
-from dataclasses import dataclass, field
-
-@dataclass
-class UserProfile:
-    # Correct: mutable default specified via default_factory
-    tags: list = field(default_factory=list)

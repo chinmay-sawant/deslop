@@ -1,6 +1,0 @@
-# Violation: mixing multiple distinct actions (Command) and data fetching (Query) in the same function
-def get_user_and_send_password_reset(user_id):
-    user = db.query("SELECT * FROM users WHERE id = ?", user_id)
-    if user:
-        email_client.send(user.email, "Reset your password")
-    return user

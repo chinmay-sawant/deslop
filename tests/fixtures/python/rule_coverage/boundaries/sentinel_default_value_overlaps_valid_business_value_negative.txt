@@ -1,9 +1,0 @@
-NOT_FOUND = object()
-
-def find_user_index(user_list, target_name):
-    # Correct: use a unique object as a sentinel to avoid overlapping with valid values
-    result = NOT_FOUND
-    for i, name in enumerate(user_list):
-        if name == target_name:
-            result = i
-    return result

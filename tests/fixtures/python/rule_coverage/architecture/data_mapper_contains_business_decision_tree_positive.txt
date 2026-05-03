@@ -1,9 +1,0 @@
-class UserMapper:
-    def to_dto(self, user):
-        # Violation: data mapper contains business decision tree logic
-        if user.is_active and user.last_login > 30:
-            status = "DORMANT"
-        else:
-            status = "ACTIVE"
-        
-        return UserDTO(id=user.id, status=status)

@@ -1,0 +1,14 @@
+{
+  "id": "context_key_uses_exported_or_builtin_type",
+  "language": "go",
+  "family": "context",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "context.WithValue keys or exported key declarations that use built-in scalar types instead of unexported key types.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

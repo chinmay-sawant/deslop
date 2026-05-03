@@ -1,5 +1,0 @@
-import logging
-
-def log_config(settings: AppSettings):
-    # Violation: sensitive config key (api_key) included in debug level log dump
-    logging.debug(f"Current settings: {settings.model_dump()}")

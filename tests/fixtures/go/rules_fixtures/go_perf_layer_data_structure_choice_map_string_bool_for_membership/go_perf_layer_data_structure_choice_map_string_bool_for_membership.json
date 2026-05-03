@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_data_structure_choice_map_string_bool_for_membership",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag map[string]bool membership sets where map[string]struct{} avoids unnecessary value storage.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

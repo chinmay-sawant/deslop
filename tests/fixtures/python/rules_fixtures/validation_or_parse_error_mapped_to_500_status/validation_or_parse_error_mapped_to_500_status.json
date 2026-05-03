@@ -1,0 +1,14 @@
+{
+  "id": "validation_or_parse_error_mapped_to_500_status",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "ValueError or ValidationError caught and mapped to HTTP 500 instead of a 4xx client-error status.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

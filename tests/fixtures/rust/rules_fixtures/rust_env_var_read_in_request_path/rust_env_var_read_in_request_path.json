@@ -1,0 +1,14 @@
+{
+  "id": "rust_env_var_read_in_request_path",
+  "language": "rust",
+  "family": "runtime_boundary",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Rust request handlers reading environment configuration on the hot request path.",
+  "binding_location": "src/heuristics/rust/runtime_boundary.rs"
+}

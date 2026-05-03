@@ -1,2 +1,0 @@
-def get_token(config: dict[str, str]) -> str:
-    return config["token"]

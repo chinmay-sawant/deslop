@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_hot_path_optimization_reflection_on_hot_path",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Hot path optimization. Flag reflect-based field access in hot loops where typed access is available.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

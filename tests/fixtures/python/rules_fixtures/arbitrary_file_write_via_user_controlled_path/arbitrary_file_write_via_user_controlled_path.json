@@ -1,0 +1,14 @@
+{
+  "id": "arbitrary_file_write_via_user_controlled_path",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "File write operation uses a path derived from user input without containment check.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-def repeated_file_open_for_same_resource_within_single_operation_positive(path):
-    with open(path, "r", encoding="utf-8") as handle:
-        first = handle.read()
-    with open(path, "r", encoding="utf-8") as handle:
-        second = handle.read()
-    return first == second

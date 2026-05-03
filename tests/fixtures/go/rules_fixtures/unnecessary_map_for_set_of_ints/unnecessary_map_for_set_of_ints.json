@@ -1,0 +1,14 @@
+{
+  "id": "unnecessary_map_for_set_of_ints",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`map[int]bool` or `map[int]struct{}` used as a set for small dense integer ranges",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

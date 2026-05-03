@@ -1,6 +1,0 @@
-from unittest.mock import patch
-
-def test_complex_flow():
-    # Correct: use a setup method or a dictionary-based patch for multiple mocks
-    with patch.multiple("app", db=DEFAULT, api=DEFAULT, cache=DEFAULT):
-        assert True

@@ -1,6 +1,0 @@
-from __future__ import annotations
-
-def repeated_datetime_strptime_same_format_negative():
-    from datetime import date
-    raw_dates = ["2026-01-01", "2026-01-02", "2026-01-03"]
-    return [date.fromisoformat(raw) for raw in raw_dates]

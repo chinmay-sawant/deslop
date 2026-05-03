@@ -1,0 +1,14 @@
+{
+  "id": "storage_write_returns_driver_specific_object",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag write helpers that return raw driver, session, or cursor objects instead of stable application data.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

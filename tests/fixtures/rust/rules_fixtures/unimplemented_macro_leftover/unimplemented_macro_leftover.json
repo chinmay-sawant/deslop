@@ -1,0 +1,14 @@
+{
+  "id": "unimplemented_macro_leftover",
+  "language": "rust",
+  "family": "hygiene",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "unimplemented!() left in non-test Rust code.",
+  "binding_location": "src/heuristics/rust/evaluate.rs"
+}

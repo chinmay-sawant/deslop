@@ -1,6 +1,0 @@
-def find_item(items, target):
-    # Correct: use a simple boolean flag or early return for control flow
-    for item in items:
-        if item == target:
-            return True
-    return False

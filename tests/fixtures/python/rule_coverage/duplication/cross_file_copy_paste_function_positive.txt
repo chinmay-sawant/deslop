@@ -1,8 +1,0 @@
-# file_a.py
-def calculate_discount(price):
-    return price * 0.9
-
-# file_b.py
-# Violation: cross-file copy-paste of a function logic
-def calculate_discount(price):
-    return price * 0.9

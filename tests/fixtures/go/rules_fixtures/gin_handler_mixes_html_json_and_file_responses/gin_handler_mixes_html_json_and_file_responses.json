@@ -1,0 +1,14 @@
+{
+  "id": "gin_handler_mixes_html_json_and_file_responses",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that serve fundamentally different transport modes from one function.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

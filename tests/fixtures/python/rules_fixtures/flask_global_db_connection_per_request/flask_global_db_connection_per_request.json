@@ -1,0 +1,14 @@
+{
+  "id": "flask_global_db_connection_per_request",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flask views create database connections per request instead of using pooled or app-scoped access.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

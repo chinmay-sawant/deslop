@@ -1,6 +1,0 @@
-import pytest
-
-# Correct: use parametrize for multiple test cases
-@pytest.mark.parametrize("input_val", [10, 20, 30])
-def test_threshold(input_val):
-    assert input_val > 5

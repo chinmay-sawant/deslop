@@ -1,8 +1,0 @@
-import pandas as pd
-
-def calculate_totals(df):
-    total = 0
-    # Violation: using iterrows() is notoriously slow because it boxes each row into a pandas Series
-    for index, row in df.iterrows():
-        total += row['sales']
-    return total

@@ -1,0 +1,14 @@
+{
+  "id": "rust_anyhow_error_string_matching",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag branching on `err.to_string()`, `format!(\"{err}\")`, or message substrings instead of typed errors or downcasts.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

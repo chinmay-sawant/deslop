@@ -1,6 +1,0 @@
-import json
-
-def get_large_report():
-    # Violation: buffering a massive result set into memory before serializing can trigger OOM kills
-    data = db.query_millions_of_rows()
-    return json.dumps(data)

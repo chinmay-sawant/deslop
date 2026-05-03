@@ -1,8 +1,0 @@
-def save_user(user):
-    # Violation: transaction block missing rollback on exception (database remains in inconsistent state)
-    db.begin()
-    try:
-        db.insert(user)
-        db.commit()
-    except Exception:
-        print("Save failed")

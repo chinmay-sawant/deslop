@@ -1,7 +1,0 @@
-def find_matches(items, target):
-    matches = []
-    for item in items:
-        # Violation: repeated normalization of the same target string inside a loop
-        if item.lower() == target.lower():
-            matches.append(item)
-    return matches

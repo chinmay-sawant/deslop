@@ -1,6 +1,0 @@
-def encode_dataset(documents, tokenizer):
-    encoded = []
-    for doc in documents:
-        # Violation: calling encode individually in a loop is extremely slow for modern tokenizers
-        encoded.append(tokenizer.encode(doc))
-    return encoded

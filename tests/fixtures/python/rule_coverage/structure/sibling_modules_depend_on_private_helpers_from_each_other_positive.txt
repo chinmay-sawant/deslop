@@ -1,9 +1,0 @@
-# module_a.py
-def _private_helper(): pass
-
-# module_b.py
-# Violation: a sibling module reaching across boundaries to import an explicitly private helper function
-from module_a import _private_helper
-
-def do_work():
-    _private_helper()

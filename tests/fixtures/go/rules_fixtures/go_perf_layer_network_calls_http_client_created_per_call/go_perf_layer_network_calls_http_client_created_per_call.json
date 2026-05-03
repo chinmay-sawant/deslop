@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_network_calls_http_client_created_per_call",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Network calls. Flag http.Client construction per call instead of reusing clients and transports.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,2 +1,0 @@
-def has_positive(values: list[int]) -> bool:
-    return any(v > 0 for v in values)

@@ -1,3 +1,0 @@
-# my_package/__init__.py
-# Violation: using a star import at the package root exposes all internal dependencies and pollutes the namespace
-from .complex_submodule import *

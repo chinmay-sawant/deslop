@@ -1,8 +1,0 @@
-from collections import deque
-
-def process_queue(items):
-    # Correct: use a deque which provides O(1) performance for popping from the left side
-    queue = deque(items)
-    while queue:
-        item = queue.popleft()
-        do_work(item)

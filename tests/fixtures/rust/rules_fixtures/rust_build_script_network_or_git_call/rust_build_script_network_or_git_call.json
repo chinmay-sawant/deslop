@@ -1,0 +1,14 @@
+{
+  "id": "rust_build_script_network_or_git_call",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag build scripts that invoke network, git, curl, package managers, or shell commands that make builds non-hermetic.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

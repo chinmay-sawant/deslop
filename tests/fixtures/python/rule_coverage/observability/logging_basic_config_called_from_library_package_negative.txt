@@ -1,8 +1,0 @@
-import logging
-
-# Correct: reusable libraries should use NullHandler to let the calling application dictate log formatting
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
-
-def perform_library_action():
-    logger.info("Library action executed")

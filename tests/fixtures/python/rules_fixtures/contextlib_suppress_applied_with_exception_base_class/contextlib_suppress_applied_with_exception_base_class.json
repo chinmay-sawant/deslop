@@ -1,0 +1,14 @@
+{
+  "id": "contextlib_suppress_applied_with_exception_base_class",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "contextlib.suppress used with Exception or BaseException, silently swallowing unexpected errors.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

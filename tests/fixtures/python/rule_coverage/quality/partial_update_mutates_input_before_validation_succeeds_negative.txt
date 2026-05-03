@@ -1,5 +1,0 @@
-def update_user_email(user, new_email):
-    # Correct: validate inputs fully before applying state mutations to ensure transactional integrity
-    validate_email_format(new_email)
-    user.email = new_email
-    user.save()

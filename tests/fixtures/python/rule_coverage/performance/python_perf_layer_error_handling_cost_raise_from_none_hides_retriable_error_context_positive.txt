@@ -1,5 +1,0 @@
-def get_status(client) -> str:
-    try:
-        return client.check()
-    except TimeoutError:
-        raise RuntimeError("service unavailable") from None

@@ -1,9 +1,0 @@
-import pytest
-from freezegun import freeze_time
-from datetime import datetime
-
-@pytest.fixture
-def current_time():
-    # Correct: use a library like freezegun to ensure deterministic time in tests
-    with freeze_time("2024-01-01"):
-        return datetime.now()

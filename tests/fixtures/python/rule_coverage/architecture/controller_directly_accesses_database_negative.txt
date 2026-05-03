@@ -1,9 +1,0 @@
-from fastapi import FastAPI, Depends
-from .services import UserService
-
-app = FastAPI()
-
-@app.get("/users/{user_id}")
-def get_user(user_id: int, service: UserService = Depends()):
-    # Correct: controller calls a service layer
-    return service.get_user_by_id(user_id)

@@ -1,7 +1,0 @@
-def fetch_data():
-    try:
-        return make_network_request()
-    # Correct: catch only the specific exceptions that the code knows how to handle
-    except (ConnectionError, TimeoutError) as e:
-        print(f"Network failure: {e}")
-        return None

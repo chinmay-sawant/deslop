@@ -1,7 +1,0 @@
-# auth.py
-from dotenv import load_dotenv
-load_dotenv() # Violation: load_dotenv() called multiple times across modules
-
-# database.py
-from dotenv import load_dotenv
-load_dotenv()

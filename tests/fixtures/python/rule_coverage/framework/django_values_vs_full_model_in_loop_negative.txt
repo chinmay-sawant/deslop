@@ -1,6 +1,0 @@
-from .models import User
-
-def list_usernames():
-    # Correct: use .values_list() to fetch only the required fields as primitives
-    for username in User.objects.values_list('username', flat=True):
-        print(username)

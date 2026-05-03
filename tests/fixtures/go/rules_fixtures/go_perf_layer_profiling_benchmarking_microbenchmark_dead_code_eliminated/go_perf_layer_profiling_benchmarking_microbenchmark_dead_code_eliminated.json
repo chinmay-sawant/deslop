@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_profiling_benchmarking_microbenchmark_dead_code_eliminated",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag benchmarks that do not consume results and may let the compiler remove work.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

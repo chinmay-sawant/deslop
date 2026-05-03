@@ -1,0 +1,14 @@
+{
+  "id": "package_level_mutable_config_used_by_handlers_services",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Mutable package globals used as live config in request paths.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

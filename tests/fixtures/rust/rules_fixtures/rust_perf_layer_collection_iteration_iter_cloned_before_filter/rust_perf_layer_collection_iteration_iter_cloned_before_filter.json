@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_collection_iteration_iter_cloned_before_filter",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag iter().cloned() before filters that could borrow until ownership is needed.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

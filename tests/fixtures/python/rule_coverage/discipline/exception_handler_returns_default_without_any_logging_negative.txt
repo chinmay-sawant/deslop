@@ -1,9 +1,0 @@
-import logging
-
-def get_user_count():
-    try:
-        return db.count_users()
-    except Exception as e:
-        # Correct: log the exception before returning a fallback value
-        logging.error(f"Failed to count users: {e}")
-        return 0

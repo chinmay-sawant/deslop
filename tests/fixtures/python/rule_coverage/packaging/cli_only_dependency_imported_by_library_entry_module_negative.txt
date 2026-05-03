@@ -1,8 +1,0 @@
-# cli_runner.py
-import click
-from library_core import execute_request
-
-# Correct: isolate CLI frameworks and heavy dependencies into dedicated entrypoint modules
-@click.command()
-def run():
-    execute_request()

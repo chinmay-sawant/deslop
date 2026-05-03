@@ -1,9 +1,0 @@
-def get_config_values():
-    # Violation: repeatedly opening and closing the same file in a single function (IO bottleneck)
-    with open("config.ini", "r") as f:
-        host = parse_host(f.read())
-    
-    with open("config.ini", "r") as f:
-        port = parse_port(f.read())
-        
-    return host, port

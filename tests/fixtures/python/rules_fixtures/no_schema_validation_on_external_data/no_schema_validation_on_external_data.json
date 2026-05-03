@@ -1,0 +1,14 @@
+{
+  "id": "no_schema_validation_on_external_data",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "External JSON or tabular data is parsed without visible schema validation.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

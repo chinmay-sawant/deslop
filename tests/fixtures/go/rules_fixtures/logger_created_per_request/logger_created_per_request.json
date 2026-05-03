@@ -1,0 +1,14 @@
+{
+  "id": "logger_created_per_request",
+  "language": "go",
+  "family": "library",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`zap.NewProduction()` or `logrus.New()` inside handler functions",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

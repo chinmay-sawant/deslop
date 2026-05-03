@@ -1,4 +1,0 @@
-def test_calculation():
-    result = 1.0 / 3.0
-    # Violation: test compares float with equality operator (precision issues)
-    assert result == 0.3333333333333333

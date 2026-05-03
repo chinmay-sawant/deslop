@@ -1,4 +1,0 @@
-import json
-
-def parse_user(payload):
-    return json.loads(payload)

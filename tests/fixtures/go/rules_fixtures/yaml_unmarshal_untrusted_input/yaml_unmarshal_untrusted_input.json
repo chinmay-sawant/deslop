@@ -1,0 +1,14 @@
+{
+  "id": "yaml_unmarshal_untrusted_input",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`yaml.Unmarshal(untrustedInput, &target)` using `gopkg.in/yaml.v2` without size limits",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

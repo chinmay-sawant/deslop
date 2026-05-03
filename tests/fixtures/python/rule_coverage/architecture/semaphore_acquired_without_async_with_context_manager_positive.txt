@@ -1,9 +1,0 @@
-import asyncio
-
-async def worker(sem):
-    # Violation: semaphore acquired without async with context manager
-    await sem.acquire()
-    try:
-        await perform_task()
-    finally:
-        sem.release()

@@ -1,7 +1,0 @@
-from typing import TypeVar
-
-# Correct: TypeVar is bounded to a specific class to provide better type safety
-T = TypeVar("T", bound="BaseUser")
-
-def process_user(user: T) -> T:
-    return user

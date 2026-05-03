@@ -1,7 +1,0 @@
-from sqlalchemy.orm import Session
-
-def get_user_data():
-    # Violation: SQLAlchemy session manually created but never closed (resource leak)
-    session = Session(bind=engine)
-    user = session.query(User).first()
-    return user.data

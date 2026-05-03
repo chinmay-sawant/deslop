@@ -1,0 +1,14 @@
+{
+  "id": "torch_no_grad_missing_in_inference",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Torch inference paths show no visible no_grad() or inference_mode() guard.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

@@ -1,3 +1,0 @@
-def parse_user_payload(payload_string):
-    # Violation: using eval() to parse strings poses a severe remote code execution vulnerability
-    return eval(payload_string)

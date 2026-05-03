@@ -1,7 +1,0 @@
-from fastapi.responses import JSONResponse
-
-class UserService:
-    def get_user(self, id):
-        user = self.repo.get(id)
-        # Violation: domain service returning a transport-specific Response object
-        return JSONResponse(content={"id": user.id, "name": user.name})

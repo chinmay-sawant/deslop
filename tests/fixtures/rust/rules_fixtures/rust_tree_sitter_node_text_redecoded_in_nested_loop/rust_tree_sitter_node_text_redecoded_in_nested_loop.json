@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_node_text_redecoded_in_nested_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated `node.utf8_text(source)` or source slicing for the same node inside nested traversal loops.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

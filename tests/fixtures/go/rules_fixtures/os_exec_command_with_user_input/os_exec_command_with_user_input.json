@@ -1,0 +1,14 @@
+{
+  "id": "os_exec_command_with_user_input",
+  "language": "go",
+  "family": "security",
+  "default_severity": "error",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`exec.Command(userInput)` or `exec.Command(\"sh\", \"-c\", variable)` where the command string appears to come from a function parameter or request binding",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

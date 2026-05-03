@@ -1,3 +1,0 @@
-def send_chunks(chunks: list[bytes], sink) -> None:
-    for chunk in chunks:
-        sink.write(chunk)

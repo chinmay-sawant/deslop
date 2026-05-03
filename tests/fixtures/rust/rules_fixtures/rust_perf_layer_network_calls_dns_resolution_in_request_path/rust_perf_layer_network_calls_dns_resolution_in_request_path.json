@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_network_calls_dns_resolution_in_request_path",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Network calls. Flag DNS or endpoint resolution in request paths without cache or resolver ownership.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

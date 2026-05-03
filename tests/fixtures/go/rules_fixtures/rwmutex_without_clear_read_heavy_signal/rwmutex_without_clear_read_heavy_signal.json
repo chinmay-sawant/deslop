@@ -1,0 +1,14 @@
+{
+  "id": "rwmutex_without_clear_read_heavy_signal",
+  "language": "go",
+  "family": "concurrency",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "sync.RWMutex usage without a clear read-heavy access pattern.",
+  "binding_location": "src/heuristics/go/concurrency.rs"
+}

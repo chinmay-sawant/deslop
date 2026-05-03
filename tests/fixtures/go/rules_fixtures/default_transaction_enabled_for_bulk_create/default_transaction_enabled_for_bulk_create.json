@@ -1,0 +1,14 @@
+{
+  "id": "default_transaction_enabled_for_bulk_create",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Bulk creates performed with GORM default transaction enabled \u2014 SkipDefaultTransaction improves throughput.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

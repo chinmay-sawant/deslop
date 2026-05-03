@@ -1,0 +1,14 @@
+{
+  "id": "health_or_readiness_handlers_reach_into_business_repositories_directly",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Health endpoints that depend on full business repositories instead of focused probes.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

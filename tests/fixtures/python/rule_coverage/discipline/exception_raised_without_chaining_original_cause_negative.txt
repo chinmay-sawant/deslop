@@ -1,6 +1,0 @@
-def process_data(data):
-    try:
-        validate(data)
-    except KeyError as e:
-        # Correct: use 'from e' to chain the exception and preserve the traceback
-        raise ValueError("Invalid data format") from e

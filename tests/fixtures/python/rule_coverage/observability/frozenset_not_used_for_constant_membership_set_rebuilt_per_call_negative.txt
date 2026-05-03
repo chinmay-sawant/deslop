@@ -1,5 +1,0 @@
-# Correct: allocate the static set once at module load time (frozenset acts as a clear constant)
-VALID_STATUSES = frozenset(["active", "pending", "suspended"])
-
-def is_valid_status(status):
-    return status in VALID_STATUSES

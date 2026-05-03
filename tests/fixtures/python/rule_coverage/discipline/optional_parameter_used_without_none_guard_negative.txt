@@ -1,7 +1,0 @@
-from typing import Optional
-
-def get_username(user: Optional[User]):
-    # Correct: check if the optional parameter is None before accessing attributes
-    if user is None:
-        return "Guest"
-    return user.name

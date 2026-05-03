@@ -1,7 +1,0 @@
-import json
-
-def broadcast_message(clients, msg):
-    # Correct: serialize the object once before the loop and reuse the payload
-    payload = json.dumps(msg)
-    for client in clients:
-        client.send(payload)

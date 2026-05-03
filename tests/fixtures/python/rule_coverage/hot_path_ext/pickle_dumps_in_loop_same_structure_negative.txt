@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def pickle_dumps_in_loop_same_structure_negative():
-    import pickle
-    template = {"kind": "event", "ok": True}
-    blob = pickle.dumps(template)
-    return [blob, blob, blob]

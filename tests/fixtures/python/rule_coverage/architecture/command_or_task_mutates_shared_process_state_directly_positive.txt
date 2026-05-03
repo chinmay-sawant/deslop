@@ -1,7 +1,0 @@
-# global state
-shared_results = []
-
-@app.task
-def process_task(item):
-    # Violation: task mutates shared process state directly
-    shared_results.append(item)

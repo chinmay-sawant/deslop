@@ -1,9 +1,0 @@
-# my_package/__init__.py
-
-def light_utility():
-    return "fast"
-    
-def data_science_utility():
-    # Correct: use lazy or isolated imports for heavy dependencies so they don't penalize normal users
-    import pandas as pd
-    return pd.DataFrame()

@@ -1,7 +1,0 @@
-import re
-
-
-def parse_log(line: str) -> bool:
-    has_date = re.search(r"\d{4}-\d{2}-\d{2}", line) is not None
-    has_level = re.search(r"\b(INFO|WARN|ERROR)\b", line) is not None
-    return has_date and has_level

@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_profiling_benchmarking_benchmark_missing_black_box",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag microbenchmarks that do not use black_box or otherwise consume results.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

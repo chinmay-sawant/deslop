@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def nested_list_search_map_candidate_negative():
-    users = [{"id": 10, "name": "Ana"}, {"id": 11, "name": "Bo"}]
-    target_ids = [11, 10]
-    index = {user["id"]: user["name"] for user in users}
-    return [index[target] for target in target_ids]

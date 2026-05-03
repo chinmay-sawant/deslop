@@ -1,7 +1,0 @@
-from sqlalchemy.orm import Session
-
-def bulk_insert(session: Session, items):
-    # Correct: add all items to the session and commit once at the end of the loop
-    for item in items:
-        session.add(item)
-    session.commit()

@@ -1,0 +1,14 @@
+{
+  "id": "mutable_class_attribute_used_as_instance_storage",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag class attributes that accidentally store per-instance mutable state.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

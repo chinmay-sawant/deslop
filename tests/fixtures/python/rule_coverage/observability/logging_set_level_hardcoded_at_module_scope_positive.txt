@@ -1,8 +1,0 @@
-import logging
-
-logger = logging.getLogger(__name__)
-# Violation: hardcoding log levels in source code requires code changes to debug production issues
-logger.setLevel(logging.INFO)
-
-def run():
-    logger.debug("This is hidden until code is modified")

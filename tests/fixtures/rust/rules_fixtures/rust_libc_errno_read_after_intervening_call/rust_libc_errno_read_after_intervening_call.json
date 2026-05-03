@@ -1,0 +1,14 @@
+{
+  "id": "rust_libc_errno_read_after_intervening_call",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag errno access after another call that could overwrite the original failure cause.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

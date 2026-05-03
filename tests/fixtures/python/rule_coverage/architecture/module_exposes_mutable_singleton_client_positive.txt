@@ -1,9 +1,0 @@
-# Violation: module exposes a mutable singleton client
-redis_client = None
-
-def init_redis(host):
-    global redis_client
-    redis_client = Redis(host=host)
-
-def get_data():
-    return redis_client.get("key")

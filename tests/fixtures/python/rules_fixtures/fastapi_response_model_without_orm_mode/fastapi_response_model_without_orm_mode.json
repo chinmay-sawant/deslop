@@ -1,0 +1,14 @@
+{
+  "id": "fastapi_response_model_without_orm_mode",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "FastAPI response models use ORM conversion paths without visible ORM compatibility configuration.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

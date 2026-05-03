@@ -1,3 +1,0 @@
-def send_notification(user, message):
-    # Correct: Python functions implicitly return None, so no explicit return is needed here
-    print(f"Sending {message} to {user}")

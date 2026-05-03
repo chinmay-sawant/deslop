@@ -1,8 +1,0 @@
-def bulk_create_users(users_data):
-    # Violation: ambiguous contract for partial failures. If one fails, the client doesn't know which ones succeeded.
-    for data in users_data:
-        try:
-            db.create(data)
-        except Exception:
-            pass
-    return {"status": "success"}

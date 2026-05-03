@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-BUFFER_POOL = []
-
-
-def python_perf_layer_resource_pooling_large_buffer_pool_without_cap_positive(size):
-    BUFFER_POOL.append(bytearray(size))
-    return len(BUFFER_POOL)

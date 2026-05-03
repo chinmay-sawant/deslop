@@ -1,0 +1,14 @@
+{
+  "id": "typed_dict_total_false_without_docstring_noting_optional_keys",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "TypedDict(total=False) class has no docstring indicating which keys are optional.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "feature_logic_embedded_in_process_entrypoint",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag CLI, worker, or service entrypoints that own business branching instead of delegating to focused application services.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

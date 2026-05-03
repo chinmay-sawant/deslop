@@ -1,6 +1,0 @@
-from typing import List
-
-# Violation: generic class (List) used without type parameter application
-def process_items(items: List):
-    for item in items:
-        print(item)

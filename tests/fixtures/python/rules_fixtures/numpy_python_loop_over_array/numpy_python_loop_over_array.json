@@ -1,0 +1,14 @@
+{
+  "id": "numpy_python_loop_over_array",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Python loops iterate directly over arrays where vectorized NumPy operations would be clearer and faster.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

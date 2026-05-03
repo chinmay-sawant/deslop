@@ -1,5 +1,0 @@
-from .models import User
-
-def mark_verified(user_ids):
-    # Correct: update all records in a single database query
-    User.objects.filter(id__in=user_ids).update(verified=True)

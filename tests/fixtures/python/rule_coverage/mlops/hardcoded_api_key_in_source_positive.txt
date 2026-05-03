@@ -1,5 +1,0 @@
-import openai
-
-def setup_client():
-    # Violation: hardcoding an API key directly in the source code
-    openai.api_key = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"

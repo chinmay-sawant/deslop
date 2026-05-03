@@ -1,0 +1,14 @@
+{
+  "id": "dumprequest_or_dumpresponse_in_hot_path",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request-path handlers that dump full HTTP requests or responses with httputil.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

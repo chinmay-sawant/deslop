@@ -1,0 +1,14 @@
+{
+  "id": "name_responsibility_mismatch",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Read-style, transformation-style, or utility-style names that still perform mutation or own multiple infrastructure concerns.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

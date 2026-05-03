@@ -1,0 +1,14 @@
+{
+  "id": "fmt_hot_path",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "fmt formatting calls such as Sprintf inside loops.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "grpc_context_not_propagated",
+  "language": "go",
+  "family": "library",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "gRPC handler methods that create new `context.Background()` instead of using the stream/request context",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

@@ -1,7 +1,0 @@
-import pytest
-from datetime import datetime
-
-@pytest.fixture
-def current_time():
-    # Violation: test fixture calls datetime.now() without freezing (flaky tests)
-    return datetime.now()

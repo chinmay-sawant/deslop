@@ -1,9 +1,0 @@
-from typing import TypedDict
-
-class UserData(TypedDict, total=False):
-    username: str
-    age: int
-
-def get_age(data: UserData):
-    # Violation: typed dict key access without .get() or a guard, but key is optional (total=False)
-    return data["age"]

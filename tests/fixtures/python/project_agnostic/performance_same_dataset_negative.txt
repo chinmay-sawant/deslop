@@ -1,8 +1,0 @@
-def normalize(items, others):
-    left = []
-    right = []
-    for item in items:
-        left.append(item.strip())
-    for other in others:
-        right.append(other.lower())
-    return left, right

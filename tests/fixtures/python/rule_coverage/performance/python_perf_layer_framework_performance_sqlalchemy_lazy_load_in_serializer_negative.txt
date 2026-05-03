@@ -1,5 +1,0 @@
-def serialize(posts):
-    return [
-        {"title": post.title, "author": post.author_name}
-        for post in posts
-    ]

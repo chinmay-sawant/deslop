@@ -1,0 +1,14 @@
+{
+  "id": "busy_waiting",
+  "language": "go",
+  "family": "context",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "select { default: ... } inside loops, which often spins instead of blocking.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

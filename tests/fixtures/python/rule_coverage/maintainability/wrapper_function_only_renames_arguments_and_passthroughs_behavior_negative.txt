@@ -1,6 +1,0 @@
-import requests
-
-# Correct: just call the underlying function directly if the wrapper adds no behavior
-def process():
-    response = requests.get("https://api.example.com/data", timeout=10)
-    return response.json()

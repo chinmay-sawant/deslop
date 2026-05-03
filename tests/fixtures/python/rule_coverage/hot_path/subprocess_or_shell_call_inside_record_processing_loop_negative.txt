@@ -1,6 +1,0 @@
-import subprocess
-
-def process_images(image_files):
-    # Correct: use batch processing or a single subprocess call with all arguments to minimize OS forks
-    args = ["mogrify", "-resize", "800x600"] + image_files
-    subprocess.run(args)

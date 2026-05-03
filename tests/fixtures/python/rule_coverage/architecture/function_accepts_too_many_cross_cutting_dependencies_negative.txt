@@ -1,5 +1,0 @@
-# Correct: dependencies are bundled or provided via a context/container
-def process_order(order, context: AppContext):
-    context.logger.info("Processing order")
-    context.db.save(order)
-    context.metrics.increment("order_processed")

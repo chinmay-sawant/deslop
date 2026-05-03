@@ -1,7 +1,0 @@
-import numpy as np
-
-def calculate_similarity(emb1, emb2):
-    # Correct: explicitly validate that embedding dimensions match before performing operations
-    if len(emb1) != len(emb2):
-        raise ValueError(f"Dimension mismatch: {len(emb1)} != {len(emb2)}")
-    return np.dot(emb1, emb2)

@@ -1,7 +1,0 @@
-
-import httpx
-
-async def sync_reports(url):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        return response.json()

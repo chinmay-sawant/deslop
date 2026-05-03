@@ -1,0 +1,14 @@
+{
+  "id": "pandas_copy_in_loop",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "DataFrames are copied inside loops, amplifying memory churn.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

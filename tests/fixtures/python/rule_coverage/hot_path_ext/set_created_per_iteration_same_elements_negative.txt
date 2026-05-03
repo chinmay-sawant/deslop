@@ -1,6 +1,0 @@
-from __future__ import annotations
-
-def set_created_per_iteration_same_elements_negative():
-    events = ["create", "update", "delete"]
-    allowed = {"create", "update", "delete"}
-    return sum(1 for event in events if event in allowed)

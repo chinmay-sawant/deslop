@@ -1,7 +1,0 @@
-def parse_log(filepath):
-    with open(filepath, "r") as f:
-        # Violation: using read().splitlines() loads the entire file into memory and splits it at once
-        lines = f.read().splitlines()
-        for line in lines:
-            if "ERROR" in line:
-                print(line)

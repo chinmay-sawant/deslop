@@ -1,9 +1,0 @@
-def generate_data():
-    yield 1
-    yield 2
-    yield 3
-
-def process():
-    # Correct: iterate directly over the generator to process items lazily and save memory
-    for x in generate_data():
-        print(x)

@@ -1,0 +1,14 @@
+{
+  "id": "high_frequency_code_path_logs_without_sampling_or_rate_limit",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "logger.info or logger.debug called inside a loop without a sampling guard, risking log flood.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "type_assertion_without_comma_ok",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`v := i.(T)` without the comma-ok form in non-panic-safe code",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

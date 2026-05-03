@@ -1,5 +1,0 @@
-# __init__.py
-# Violation: implicitly exporting private implementation details in a public package init
-from .core import PublicClass, _internal_helper, _secret_cache
-
-__all__ = ["PublicClass", "_internal_helper", "_secret_cache"]

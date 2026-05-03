@@ -1,4 +1,0 @@
-def pop_smallest(values: list[int]) -> int:
-    values.append(3)
-    values.sort()
-    return values.pop(0)

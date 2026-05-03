@@ -1,8 +1,0 @@
-import torch
-
-def generate_prediction(model, data):
-    model.eval()
-    # Correct: always wrap inference code in torch.no_grad() to save massive amounts of GPU memory
-    with torch.no_grad():
-        output = model(data)
-    return output

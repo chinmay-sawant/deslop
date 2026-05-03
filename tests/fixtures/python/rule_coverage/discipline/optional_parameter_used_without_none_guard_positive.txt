@@ -1,5 +1,0 @@
-from typing import Optional
-
-def get_username(user: Optional[User]):
-    # Violation: optional parameter used without a None guard
-    return user.name

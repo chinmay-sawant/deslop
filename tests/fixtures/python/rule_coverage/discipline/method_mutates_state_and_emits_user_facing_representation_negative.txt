@@ -1,8 +1,0 @@
-class Status:
-    def mark_complete(self):
-        # Correct: method only mutates state (Command)
-        self.completed = True
-
-    def get_summary(self):
-        # Separate method for returning the representation (Query)
-        return "Task is complete" if self.completed else "Task is pending"

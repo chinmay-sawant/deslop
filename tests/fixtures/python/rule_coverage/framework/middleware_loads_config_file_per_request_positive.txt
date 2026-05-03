@@ -1,9 +1,0 @@
-import json
-
-class ConfigMiddleware:
-    def process_request(self, request):
-        # Violation: loading a configuration file from disk inside a middleware (slows every request)
-        with open("middleware_config.json") as f:
-            config = json.load(f)
-        if config["maintenance_mode"]:
-            return HttpResponse(status=503)

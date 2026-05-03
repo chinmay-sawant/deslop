@@ -1,9 +1,0 @@
-import asyncio
-
-async def fetch_user(id):
-    return {"id": id}
-
-async def process():
-    # Correct: coroutine is awaited
-    user = await fetch_user(123)
-    print(f"Fetched user: {user}")

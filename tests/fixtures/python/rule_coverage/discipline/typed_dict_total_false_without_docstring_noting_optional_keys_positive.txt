@@ -1,6 +1,0 @@
-from typing import TypedDict
-
-# Violation: TypedDict with total=False but missing a docstring explaining which keys are optional
-class UserConfig(TypedDict, total=False):
-    timeout: int
-    retries: int

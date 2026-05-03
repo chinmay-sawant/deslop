@@ -1,0 +1,14 @@
+{
+  "id": "linear_search_helper_called_from_nested_loops",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag nested loops that call helpers performing linear scans on each iteration.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

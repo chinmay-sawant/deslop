@@ -1,0 +1,14 @@
+{
+  "id": "duplicated_cleanup_paths_instead_of_context_manager",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag repeated cleanup logic that should be centralized with a context manager or helper.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

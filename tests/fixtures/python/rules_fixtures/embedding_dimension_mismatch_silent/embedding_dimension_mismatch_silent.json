@@ -1,0 +1,14 @@
+{
+  "id": "embedding_dimension_mismatch_silent",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Embeddings are compared without visible dimension validation before similarity math.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

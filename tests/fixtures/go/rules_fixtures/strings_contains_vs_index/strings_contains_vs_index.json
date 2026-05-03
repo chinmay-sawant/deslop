@@ -1,0 +1,14 @@
+{
+  "id": "strings_contains_vs_index",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`strings.Index(s, sub) != -1` or `strings.Index(s, sub) >= 0` patterns",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

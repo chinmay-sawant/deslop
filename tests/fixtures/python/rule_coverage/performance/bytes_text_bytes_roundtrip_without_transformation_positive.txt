@@ -1,3 +1,0 @@
-def echo_payload(data: bytes) -> bytes:
-    text = data.decode("utf-8")
-    return text.encode("utf-8")

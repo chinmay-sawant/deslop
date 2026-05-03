@@ -1,5 +1,0 @@
-from __future__ import annotations
-
-def sum_max_min_wrap_list_comprehension_instead_of_generator_negative():
-    values = [1, 2, 3, 4]
-    return sum(value * value for value in values)

@@ -1,7 +1,0 @@
-# main.py
-# Violation: relying on implicit import side-effects to configure an application is a massive anti-pattern
-import app.plugins.register_all
-import app.config.setup_logging
-
-def start():
-    print("Running...")

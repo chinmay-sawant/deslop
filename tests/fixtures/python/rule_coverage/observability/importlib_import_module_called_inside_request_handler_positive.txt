@@ -1,6 +1,0 @@
-import importlib
-
-def handle_api_request(plugin_name):
-    # Violation: invoking importlib dynamically inside a hot request handler adds massive IO latency
-    plugin = importlib.import_module(f"plugins.{plugin_name}")
-    return plugin.execute()

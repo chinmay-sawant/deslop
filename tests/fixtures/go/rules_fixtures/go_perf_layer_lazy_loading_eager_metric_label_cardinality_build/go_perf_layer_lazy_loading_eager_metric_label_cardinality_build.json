@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_lazy_loading_eager_metric_label_cardinality_build",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Lazy loading. Flag eager construction of high-cardinality metric labels before the metric is emitted.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

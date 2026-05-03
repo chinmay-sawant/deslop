@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_data_structure_choice_linked_list_for_cache_iteration",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag container/list use in cache iteration paths where slices or maps would improve locality.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

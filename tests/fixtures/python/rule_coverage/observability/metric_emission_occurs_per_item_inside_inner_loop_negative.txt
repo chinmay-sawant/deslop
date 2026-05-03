@@ -1,5 +1,0 @@
-def process_batch(records):
-    for record in records:
-        do_work(record)
-    # Correct: aggregate metrics outside the loop and emit them as a single bulk operation
-    statsd.increment("records_processed", len(records))

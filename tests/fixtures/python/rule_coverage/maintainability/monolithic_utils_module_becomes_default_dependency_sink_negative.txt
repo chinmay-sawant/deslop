@@ -1,9 +1,0 @@
-# app/main.py
-# Correct: import focused utilities from granular, domain-specific modules
-from app.core.date_helpers import parse_date
-from app.core.crypto import calculate_md5
-from app.db.connection import init_db_connection
-
-def process():
-    parse_date("2023-01-01")
-    calculate_md5("data")

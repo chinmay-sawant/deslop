@@ -1,7 +1,0 @@
-import sqlalchemy
-
-def handle_database_error(e):
-    # Correct: use specific exception types or error codes provided by the library
-    if isinstance(e, sqlalchemy.exc.IntegrityError):
-        return "Duplicate entry"
-    return "Unknown error"

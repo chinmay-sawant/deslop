@@ -1,7 +1,0 @@
-if __name__ == "__main__":
-    # Violation: feature logic embedded directly in process entrypoint
-    data = load_raw_data()
-    processed = [x.upper() for x in data if x.startswith("A")]
-    with open("output.txt", "w") as f:
-        f.write("\n".join(processed))
-    print("Done")

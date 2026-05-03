@@ -1,0 +1,14 @@
+{
+  "id": "debug_endpoint_in_production",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`net/http/pprof` import or `http.Handle(\"/debug/pprof/\", ...)` registration without access control",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

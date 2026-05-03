@@ -1,5 +1,0 @@
-import pandas as pd
-
-def join_user_data(users_df, orders_df):
-    # Violation: merging without the 'validate' argument can lead to accidental cartesian explosions (many-to-many)
-    return pd.merge(users_df, orders_df, on="user_id")

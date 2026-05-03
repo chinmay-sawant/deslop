@@ -1,9 +1,0 @@
-import json
-
-def process_records(records):
-    # Correct: instantiate the JSONEncoder once outside the loop and reuse it
-    encoder = json.JSONEncoder()
-    results = []
-    for record in records:
-        results.append(encoder.encode(record))
-    return results

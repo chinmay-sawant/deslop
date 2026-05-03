@@ -1,0 +1,14 @@
+{
+  "id": "network_boundary_without_timeout",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request, sync, or job-style Python functions that call HTTP boundaries with no obvious timeout or retry policy.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

@@ -1,9 +1,0 @@
-import logging
-
-logger = logging.getLogger(__name__)
-
-def handle_websocket_message(msg):
-    logger.info(f"Received: {msg}")
-    # Violation: explicitly flushing synchronous log handlers in a fast/async path creates severe IO blocks
-    for handler in logger.handlers:
-        handler.flush()

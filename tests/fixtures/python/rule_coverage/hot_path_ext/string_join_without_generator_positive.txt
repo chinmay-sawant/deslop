@@ -1,5 +1,0 @@
-from __future__ import annotations
-
-def string_join_without_generator_positive():
-    values = [1, 2, 3]
-    return ",".join([str(value) for value in values])

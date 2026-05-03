@@ -1,8 +1,0 @@
-import pandas as pd
-
-def process_iterations(df, multipliers):
-    results = []
-    # Correct: use assign() to create modified DataFrames functionally without explicit full copies
-    for m in multipliers:
-        results.append(df.assign(value=df['value'] * m))
-    return results

@@ -1,5 +1,0 @@
-class UserService:
-    def register(self, request: Request):
-        # Violation: service method accepts a transport-specific Request object
-        email = request.json().get("email")
-        return self.repo.save(email)

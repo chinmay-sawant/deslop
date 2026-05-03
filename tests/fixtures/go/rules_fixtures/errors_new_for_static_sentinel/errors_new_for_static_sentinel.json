@@ -1,0 +1,14 @@
+{
+  "id": "errors_new_for_static_sentinel",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`errors.New(\"some error\")` called repeatedly in hot paths instead of a package-level sentinel",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

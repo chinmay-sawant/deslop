@@ -1,7 +1,0 @@
-import json
-
-
-def publish_event(event):
-    cached = json.dumps(event)
-    log_payload = json.dumps(event)
-    return cached, log_payload

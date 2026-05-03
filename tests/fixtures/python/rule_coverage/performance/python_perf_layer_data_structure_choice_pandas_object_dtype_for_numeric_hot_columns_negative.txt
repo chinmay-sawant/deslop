@@ -1,3 +1,0 @@
-def total_amount(df):
-    df["amount"] = df["amount"].astype("float64")
-    return df["amount"].sum()

@@ -1,5 +1,0 @@
-from .models import User
-
-def cleanup_inactive_users(user_ids):
-    # Correct: use filter and delete() to remove multiple objects efficiently
-    User.objects.filter(id__in=user_ids).delete()

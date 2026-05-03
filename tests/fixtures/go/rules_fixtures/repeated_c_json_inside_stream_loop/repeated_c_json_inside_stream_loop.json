@@ -1,0 +1,14 @@
+{
+  "id": "repeated_c_json_inside_stream_loop",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin handlers that call c.JSON(...) or c.PureJSON(...) from inside loops.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

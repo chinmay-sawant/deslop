@@ -1,9 +1,0 @@
-import asyncio
-
-# Unbounded queue in a producer-consumer path can lead to OOM
-queue = asyncio.Queue()
-
-async def producer():
-    while True:
-        item = await produce_item()
-        await queue.put(item)

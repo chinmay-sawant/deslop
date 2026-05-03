@@ -1,8 +1,0 @@
-import wandb
-
-def train_model(epochs, batches):
-    for epoch in range(epochs):
-        for step, batch in enumerate(batches):
-            loss = compute_loss(batch)
-            # Violation: logging to remote trackers on every single micro-step causes severe network bottlenecks
-            wandb.log({"loss": loss, "step": step})

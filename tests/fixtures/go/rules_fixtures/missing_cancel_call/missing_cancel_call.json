@@ -1,0 +1,14 @@
+{
+  "id": "missing_cancel_call",
+  "language": "go",
+  "family": "context",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Derived contexts where deslop cannot find a local cancel() or defer cancel() call.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

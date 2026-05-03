@@ -1,8 +1,0 @@
-def view_profile(request):
-    # Violation: manually extracting header context in every business function creates tight coupling to transport layers
-    trace_id = request.headers.get("X-Trace-Id")
-    logger.info(f"[{trace_id}] Viewing profile")
-
-def edit_profile(request):
-    trace_id = request.headers.get("X-Trace-Id")
-    logger.info(f"[{trace_id}] Editing profile")

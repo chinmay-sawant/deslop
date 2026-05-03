@@ -1,0 +1,14 @@
+{
+  "id": "rust_toml_value_config_boundary",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag application config parsed into `toml::Value` and queried dynamically instead of deserializing into a typed config struct.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

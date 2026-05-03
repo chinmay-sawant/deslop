@@ -1,0 +1,14 @@
+{
+  "id": "ldap_search_filter_built_from_user_input_without_escaping",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "LDAP search filter string built from user-controlled input without ldap3 or python-ldap escaping.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

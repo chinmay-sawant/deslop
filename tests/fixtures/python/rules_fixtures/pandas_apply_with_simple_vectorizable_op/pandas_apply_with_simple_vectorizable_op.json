@@ -1,0 +1,14 @@
+{
+  "id": "pandas_apply_with_simple_vectorizable_op",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Simple DataFrame transforms are routed through apply(lambda) instead of vectorized operations.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

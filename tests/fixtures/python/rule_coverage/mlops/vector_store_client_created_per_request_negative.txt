@@ -1,8 +1,0 @@
-from pinecone import Pinecone
-
-# Correct: create database clients once globally to reuse connection pools
-GLOBAL_PC = Pinecone(api_key="xxx")
-GLOBAL_INDEX = GLOBAL_PC.Index("my-index")
-
-def query_vector_db(query_embedding):
-    return GLOBAL_INDEX.query(vector=query_embedding, top_k=5)

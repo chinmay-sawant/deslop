@@ -1,7 +1,0 @@
-from my_app.config import settings
-
-class PaymentService:
-    def __init__(self):
-        # Violation: constructor reads global config inline
-        self.api_key = settings.STRIPE_API_KEY
-        self.timeout = settings.DEFAULT_TIMEOUT

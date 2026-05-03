@@ -1,7 +1,0 @@
-def count_errors(path: str) -> int:
-    total = 0
-    with open(path, "r", encoding="utf-8") as handle:
-        for line in handle:
-            if "ERROR" in line:
-                total += 1
-    return total

@@ -1,0 +1,14 @@
+{
+  "id": "iterator_materialized_to_list_before_single_pass_loop",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag iterators converted to lists in hot paths when only one pass is needed.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

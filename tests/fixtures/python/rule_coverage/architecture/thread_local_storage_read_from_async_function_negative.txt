@@ -1,7 +1,0 @@
-import contextvars
-
-request_id_var = contextvars.ContextVar('request_id')
-
-async def get_request_id():
-    # Correct: using contextvars for async-safe local storage
-    return request_id_var.get(None)

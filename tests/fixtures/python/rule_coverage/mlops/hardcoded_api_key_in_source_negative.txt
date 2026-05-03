@@ -1,6 +1,0 @@
-import openai
-import os
-
-def setup_client():
-    # Correct: load API keys securely from environment variables
-    openai.api_key = os.environ.get("OPENAI_API_KEY")

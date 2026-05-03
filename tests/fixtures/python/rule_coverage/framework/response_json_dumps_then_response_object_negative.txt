@@ -1,8 +1,0 @@
-from flask import Flask, jsonify
-
-app = Flask(__name__)
-
-@app.route("/api")
-def api():
-    # Correct: use the built-in jsonify() helper for cleaner and more robust responses
-    return jsonify({"status": "ok"})

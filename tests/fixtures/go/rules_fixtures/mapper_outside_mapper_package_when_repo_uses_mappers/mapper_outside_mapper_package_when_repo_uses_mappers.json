@@ -1,0 +1,14 @@
+{
+  "id": "mapper_outside_mapper_package_when_repo_uses_mappers",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Mapper functions scattered across handlers and services when the repo already has a dedicated mapping package.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

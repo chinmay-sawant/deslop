@@ -1,0 +1,14 @@
+{
+  "id": "multiple_regex_passes_over_same_text_without_precompiled_plan",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that re-runs several overlapping regex passes on the same text.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

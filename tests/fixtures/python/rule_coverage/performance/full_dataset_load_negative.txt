@@ -1,3 +1,0 @@
-def iter_ids(cursor):
-    for row in cursor:
-        yield row[0]

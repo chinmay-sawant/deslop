@@ -1,0 +1,14 @@
+{
+  "id": "obvious_commentary",
+  "language": "python",
+  "family": "ai_smells",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Comments that narrate obvious implementation steps instead of explaining intent.",
+  "binding_location": "src/heuristics/python/ai_smells.rs"
+}

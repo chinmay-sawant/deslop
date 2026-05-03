@@ -1,4 +1,0 @@
-def process_list(items):
-    # Violation: using range(len()) combined with indexing is non-idiomatic and slower than enumerate
-    for i in range(len(items)):
-        print(f"Index {i} has value {items[i]}")

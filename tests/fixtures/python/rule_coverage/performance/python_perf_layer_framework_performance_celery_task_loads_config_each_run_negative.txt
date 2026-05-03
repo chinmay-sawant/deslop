@@ -1,5 +1,0 @@
-CONFIG = {"queue": "critical"}
-
-
-def celery_task() -> str:
-    return CONFIG["queue"]

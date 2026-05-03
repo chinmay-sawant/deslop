@@ -1,9 +1,0 @@
-# Correct: cleanly separate synchronous and asynchronous architectural boundaries into distinct interfaces
-class ISyncProcessor:
-    def run(self): pass
-
-class IAsyncProcessor:
-    async def run_async(self): pass
-
-class AsyncProcessor(IAsyncProcessor):
-    async def run_async(self): pass

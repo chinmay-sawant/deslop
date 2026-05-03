@@ -1,7 +1,0 @@
-import os
-
-def get_server_config():
-    # Correct: use os.getenv() to provide safe defaults when environment variables are missing
-    host = os.getenv("SERVER_HOST", "localhost")
-    port = int(os.getenv("SERVER_PORT", "8080"))
-    return host, port

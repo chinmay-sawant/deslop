@@ -1,6 +1,0 @@
-from typing import Protocol
-
-class Reader(Protocol):
-    # Correct: protocol method has full type annotations
-    def read(self, amount: int) -> bytes:
-        ...

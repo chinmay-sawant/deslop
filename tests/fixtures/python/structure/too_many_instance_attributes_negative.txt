@@ -1,7 +1,0 @@
-class SessionView:
-    def __init__(self):
-        self.title = "demo"
-        self.rows = []
-
-    def render(self):
-        return self.rows

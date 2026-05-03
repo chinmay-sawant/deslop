@@ -1,3 +1,0 @@
-def write_frame(df, cursor) -> None:
-    rows = list(df[["id", "amount"]].itertuples(index=False, name=None))
-    cursor.executemany("INSERT INTO sales(id, amount) VALUES (%s, %s)", rows)

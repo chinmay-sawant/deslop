@@ -1,0 +1,14 @@
+{
+  "id": "repeated_list_index_lookup",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same list index lookup is performed repeatedly instead of caching the accessed value.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

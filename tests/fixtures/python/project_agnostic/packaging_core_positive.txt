@@ -1,8 +1,0 @@
-def run_plugins(items):
-    import pkg.alpha
-    plugin_names = []
-    for item in items:
-        for name in pkgutil.iter_modules():
-            plugin_names.append(name)
-            print(name)
-    return items

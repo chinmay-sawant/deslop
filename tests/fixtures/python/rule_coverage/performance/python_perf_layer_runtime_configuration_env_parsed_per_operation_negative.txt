@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-import os
-
-TIMEOUT_MS = int(os.getenv("SERVICE_TIMEOUT_MS", "1000"))
-
-
-def python_perf_layer_runtime_configuration_env_parsed_per_operation_negative(keys):
-    return [(key, TIMEOUT_MS) for key in keys]

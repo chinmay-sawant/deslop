@@ -1,0 +1,14 @@
+{
+  "id": "integration_test_writes_state_without_cleanup",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Integration test creates database rows or files without a teardown or transactional rollback.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

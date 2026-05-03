@@ -1,6 +1,0 @@
-def process_order(order, is_refund):
-    # Violation: boolean flag parameter controls unrelated behaviors
-    if is_refund:
-        issue_refund(order)
-    else:
-        ship_order(order)

@@ -1,6 +1,0 @@
-from __future__ import annotations
-
-def repeated_casefold_or_lower_calls_before_multiple_comparisons_negative():
-    role = "Admin "
-    normalized = role.strip().lower()
-    return normalized in {"admin", "owner", "auditor"}

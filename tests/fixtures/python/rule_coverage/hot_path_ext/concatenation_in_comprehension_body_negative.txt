@@ -1,5 +1,0 @@
-from __future__ import annotations
-
-def concatenation_in_comprehension_body_negative():
-    tags = ["alpha", "beta", "gamma"]
-    return [f"{tag}:{len(tag)}" for tag in tags]

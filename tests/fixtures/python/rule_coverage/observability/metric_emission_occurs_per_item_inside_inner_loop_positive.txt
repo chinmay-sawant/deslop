@@ -1,5 +1,0 @@
-def process_batch(records):
-    for record in records:
-        do_work(record)
-        # Violation: firing metric emissions per item in a hot loop kills network/IO performance
-        statsd.increment("records_processed")

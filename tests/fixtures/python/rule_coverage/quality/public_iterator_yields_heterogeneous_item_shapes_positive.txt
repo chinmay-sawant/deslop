@@ -1,6 +1,0 @@
-def walk_tree(node):
-    # Violation: yielding different data shapes (strings vs dicts) from the same iterator forces consumers to use type-checking spaghetti
-    if node.is_leaf:
-        yield node.name
-    else:
-        yield {"folder": node.name, "children_count": len(node.children)}

@@ -1,5 +1,0 @@
-def has_key(mapping, key):
-    # Correct: check membership directly on the dictionary for O(1) performance
-    if key in mapping:
-        return True
-    return False

@@ -1,7 +1,0 @@
-import aiohttp
-
-# Correct: group async functions in dedicated async modules to enforce clear architectural boundaries
-async def fetch_data(url):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            return await resp.json()

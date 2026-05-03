@@ -1,4 +1,0 @@
-class UserService:
-    def register(self, email: str):
-        # Correct: service accepts domain data (primitives)
-        return self.repo.save(email)

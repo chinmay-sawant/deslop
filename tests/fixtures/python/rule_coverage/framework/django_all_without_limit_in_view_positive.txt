@@ -1,7 +1,0 @@
-from django.shortcuts import render
-from .models import User
-
-def user_list_view(request):
-    # Violation: calling .all() without a limit in a view (can lead to OOM/slow responses)
-    users = User.objects.all()
-    return render(request, 'users.html', {'users': users})

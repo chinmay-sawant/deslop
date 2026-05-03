@@ -1,0 +1,14 @@
+{
+  "id": "duplicate_upstream_calls_same_url_same_handler",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Same upstream URL called multiple times in one handler.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

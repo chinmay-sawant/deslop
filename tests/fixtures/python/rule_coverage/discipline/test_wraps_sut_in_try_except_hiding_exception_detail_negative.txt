@@ -1,3 +1,0 @@
-def test_sut_call():
-    # Correct: let the exception bubble up naturally so the full traceback is visible on failure
-    sut.perform_action()

@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-import logging
-
-LOGGER = logging.getLogger("service.requests")
-
-
-def python_perf_layer_logging_overhead_logger_created_per_request_negative(request_id):
-    LOGGER.info("handled request %s", request_id)

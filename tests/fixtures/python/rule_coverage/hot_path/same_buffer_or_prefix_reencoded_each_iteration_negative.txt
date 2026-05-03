@@ -1,6 +1,0 @@
-def write_stream(stream, prefix, items):
-    # Correct: encode the invariant prefix once outside the loop
-    prefix_bytes = prefix.encode('utf-8')
-    for item in items:
-        data = prefix_bytes + item.encode('utf-8')
-        stream.write(data)

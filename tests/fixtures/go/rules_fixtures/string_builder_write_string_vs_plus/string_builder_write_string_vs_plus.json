@@ -1,0 +1,14 @@
+{
+  "id": "string_builder_write_string_vs_plus",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`builder.WriteString(a + b)` where `a` and `b` are separate bindings",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

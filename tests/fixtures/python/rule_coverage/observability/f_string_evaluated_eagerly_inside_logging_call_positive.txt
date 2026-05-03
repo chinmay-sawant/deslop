@@ -1,7 +1,0 @@
-import logging
-
-logger = logging.getLogger(__name__)
-
-def handle_request(user):
-    # Violation: using f-strings in logging statements forces eager evaluation of the string before the log level is checked
-    logger.debug(f"Request handled for user {user.id}")

@@ -1,8 +1,0 @@
-import csv
-
-def write_data(filename, rows):
-    # Correct: let the operating system handle buffering efficiently; no per-row flush
-    with open(filename, 'w') as f:
-        writer = csv.writer(f)
-        for row in rows:
-            writer.writerow(row)

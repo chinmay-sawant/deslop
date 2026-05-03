@@ -1,0 +1,14 @@
+{
+  "id": "rust_manifest_duplicate_direct_dependency_versions",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag the same crate required at multiple direct versions across workspace members.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

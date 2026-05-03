@@ -1,0 +1,14 @@
+{
+  "id": "custom_exception_encodes_identity_as_string_code_attribute",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Custom exception stores its error identity as a plain string code attribute instead of sub-classing.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

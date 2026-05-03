@@ -1,7 +1,0 @@
-# Correct: dependency graph is built once during startup
-container = DependencyContainer()
-container.wire(modules=[__name__])
-
-@app.get("/users/{id}")
-def get_user(id: int, user_service = Depends(Provide[Container.user_service])):
-    return user_service.get_user(id)

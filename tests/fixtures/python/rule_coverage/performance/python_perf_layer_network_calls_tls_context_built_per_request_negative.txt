@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-import ssl
-
-TLS_CONTEXT = ssl.create_default_context()
-
-
-def python_perf_layer_network_calls_tls_context_built_per_request_negative(hosts):
-    return [(host, TLS_CONTEXT.minimum_version) for host in hosts]

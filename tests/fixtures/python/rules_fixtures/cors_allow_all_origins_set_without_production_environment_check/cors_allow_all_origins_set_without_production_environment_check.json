@@ -1,0 +1,14 @@
+{
+  "id": "cors_allow_all_origins_set_without_production_environment_check",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "CORS configuration allows all origins (*) without a conditional check for the production environment.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

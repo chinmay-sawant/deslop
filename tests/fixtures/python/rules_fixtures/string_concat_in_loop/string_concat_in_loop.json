@@ -1,0 +1,14 @@
+{
+  "id": "string_concat_in_loop",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated string concatenation inside loops can create O(n^2) growth and extra allocations.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

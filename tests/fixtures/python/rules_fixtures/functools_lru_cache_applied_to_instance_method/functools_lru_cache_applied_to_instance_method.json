@@ -1,0 +1,14 @@
+{
+  "id": "functools_lru_cache_applied_to_instance_method",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "@functools.lru_cache applied to an instance method, holding a reference to self and preventing GC.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

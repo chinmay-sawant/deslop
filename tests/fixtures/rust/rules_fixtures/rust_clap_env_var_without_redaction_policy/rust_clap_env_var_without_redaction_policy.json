@@ -1,0 +1,14 @@
+{
+  "id": "rust_clap_env_var_without_redaction_policy",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

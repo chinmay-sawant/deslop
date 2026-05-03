@@ -1,7 +1,0 @@
-def get_items():
-    return [1, 2, 3]
-
-# Correct: using a list or recreating the generator for multiple passes
-items = get_items()
-first_pass = list(items)
-second_pass = list(items)

@@ -1,8 +1,0 @@
-import warnings
-
-def process_data(data):
-    if not data:
-        # Violation: warning issued instead of an exception for an invalid/impossible state
-        warnings.warn("Processing empty data")
-        return
-    # ... logic continues and likely fails later

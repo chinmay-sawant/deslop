@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-def xml_parse_same_payload_multiple_times_positive():
-    import xml.etree.ElementTree as ET
-    payload = "<root><item>1</item></root>"
-    values = []
-    for _ in range(3):
-        values.append(ET.fromstring(payload).findtext("item"))
-    return values

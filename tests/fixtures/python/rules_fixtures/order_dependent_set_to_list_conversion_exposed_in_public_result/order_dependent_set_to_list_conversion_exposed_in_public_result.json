@@ -1,0 +1,14 @@
+{
+  "id": "order_dependent_set_to_list_conversion_exposed_in_public_result",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag public outputs that rely on unstable set iteration order.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

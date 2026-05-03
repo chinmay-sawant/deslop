@@ -1,0 +1,14 @@
+{
+  "id": "route_registration_contains_business_logic",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Router setup files that build queries, mutate models, or execute business actions while registering routes.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

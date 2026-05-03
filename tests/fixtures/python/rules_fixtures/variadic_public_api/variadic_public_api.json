@@ -1,0 +1,14 @@
+{
+  "id": "variadic_public_api",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public Python functions that expose *args or **kwargs instead of a clearer interface.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

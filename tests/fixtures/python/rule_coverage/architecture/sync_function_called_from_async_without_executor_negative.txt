@@ -1,6 +1,0 @@
-import asyncio
-
-async def process_data():
-    # Correct: running a synchronous blocking function in a separate thread
-    await asyncio.to_thread(time.sleep, 5)
-    return "Done"

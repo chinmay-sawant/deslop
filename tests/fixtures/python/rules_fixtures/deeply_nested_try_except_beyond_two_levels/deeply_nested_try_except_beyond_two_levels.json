@@ -1,0 +1,14 @@
+{
+  "id": "deeply_nested_try_except_beyond_two_levels",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "try/except blocks nested more than two levels deep, obscuring error propagation.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "file_upload_validation_mixed_with_storage_write",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Functions that validate upload metadata and also persist the upload in the same boundary step.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

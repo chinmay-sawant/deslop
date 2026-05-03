@@ -1,9 +1,0 @@
-from .models import User
-
-def import_users(user_data):
-    # Correct: use bulk_create to insert multiple objects in a single query
-    users = [
-        User(username=data["username"], email=data["email"])
-        for data in user_data
-    ]
-    User.objects.bulk_create(users)

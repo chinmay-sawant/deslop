@@ -1,8 +1,0 @@
-from __future__ import annotations
-
-def repeated_string_format_invariant_template_positive():
-    rows = [10, 11, 12]
-    labels = []
-    for row in rows:
-        labels.append("tenant={tenant}|id={id}".format(tenant="acme", id=row))
-    return labels

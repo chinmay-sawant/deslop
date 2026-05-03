@@ -1,0 +1,14 @@
+{
+  "id": "clear_map_go121",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`for k := range m { delete(m, k) }` in Go 1.21+ codebases",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

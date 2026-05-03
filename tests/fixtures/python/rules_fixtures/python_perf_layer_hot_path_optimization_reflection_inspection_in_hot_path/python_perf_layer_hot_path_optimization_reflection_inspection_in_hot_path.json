@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Hot path optimization. Flag inspect/signature/reflection work in hot paths.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

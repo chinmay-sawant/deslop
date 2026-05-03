@@ -1,9 +1,0 @@
-CACHE: dict[str, dict[str, object]] = {}
-
-
-def get_settings(account: str) -> dict[str, object]:
-    cached = CACHE.get(account)
-    if cached is None:
-        cached = {"plan": "pro", "account": account}
-        CACHE[account] = cached
-    return cached

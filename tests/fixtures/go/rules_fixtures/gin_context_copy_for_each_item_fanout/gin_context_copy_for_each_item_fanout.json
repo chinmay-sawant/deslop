@@ -1,0 +1,14 @@
+{
+  "id": "gin_context_copy_for_each_item_fanout",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin handlers that call c.Copy() once per loop iteration before goroutine fanout.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

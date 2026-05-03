@@ -1,0 +1,14 @@
+{
+  "id": "rust_notify_without_shutdown_contract",
+  "language": "rust",
+  "family": "runtime_ownership",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Notify/wait coordination that lacks any visible shutdown or cancellation branch.",
+  "binding_location": "src/heuristics/rust/runtime_ownership.rs"
+}

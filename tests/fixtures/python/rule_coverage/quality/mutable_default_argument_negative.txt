@@ -1,6 +1,0 @@
-# Correct: use None as a sentinel and instantiate a fresh mutable collection inside the function body
-def append_to_list(item, target_list=None):
-    if target_list is None:
-        target_list = []
-    target_list.append(item)
-    return target_list

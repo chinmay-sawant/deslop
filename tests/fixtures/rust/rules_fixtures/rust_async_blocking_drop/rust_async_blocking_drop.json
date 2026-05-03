@@ -1,0 +1,15 @@
+{
+  "id": "rust_async_blocking_drop",
+  "language": "rust",
+  "family": "async_patterns",
+  "default_severity": "contextual",
+  "status": "experimental",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override",
+    "rust_async_experimental"
+  ],
+  "description": "A Drop implementation does blocking work that can surface in async contexts.",
+  "binding_location": "src/heuristics/rust/async_patterns.rs"
+}

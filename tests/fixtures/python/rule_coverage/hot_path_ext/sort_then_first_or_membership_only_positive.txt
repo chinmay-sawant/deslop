@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def sort_then_first_or_membership_only_positive():
-    names = ["zoe", "amy", "li"]
-    first_alpha = sorted(names)[0]
-    contains_amy = "amy" in sorted(names)
-    return first_alpha, contains_amy

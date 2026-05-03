@@ -1,8 +1,0 @@
-import torch
-
-def run_inference(model, input_tensor):
-    # Correct: always set model.eval() before running inference
-    model.eval()
-    with torch.no_grad():
-        output = model(input_tensor)
-    return output

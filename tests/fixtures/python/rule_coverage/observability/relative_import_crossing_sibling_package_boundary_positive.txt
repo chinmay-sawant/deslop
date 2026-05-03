@@ -1,5 +1,0 @@
-# module: my_app/billing/processor.py
-
-# Violation: using relative imports to reach across sibling package boundaries creates brittle code
-from ..users.models import UserModel
-from ..users.utils import get_status

@@ -1,0 +1,14 @@
+{
+  "id": "compression_hashing_or_encoding_performed_before_cheap_reject_checks",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag expensive transforms performed before simple guard checks that could skip the work.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

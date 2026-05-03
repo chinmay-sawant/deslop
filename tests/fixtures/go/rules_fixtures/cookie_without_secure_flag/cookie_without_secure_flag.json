@@ -1,0 +1,14 @@
+{
+  "id": "cookie_without_secure_flag",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`http.Cookie{...}` literals without `Secure: true` for session or authentication cookies",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

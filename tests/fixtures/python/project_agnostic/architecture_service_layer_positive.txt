@@ -1,9 +1,0 @@
-import os
-
-GLOBAL_CLIENT = Client()
-app.run()
-
-
-class ServiceConfig:
-    def __init__(self):
-        self.token = os.getenv("API_TOKEN")

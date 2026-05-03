@@ -1,0 +1,14 @@
+{
+  "id": "django_delete_single_in_loop",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Django code deletes individual models inside loops instead of using set-based queryset deletion.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

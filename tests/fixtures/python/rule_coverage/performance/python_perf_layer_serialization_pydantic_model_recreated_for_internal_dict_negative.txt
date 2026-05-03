@@ -1,4 +1,0 @@
-from __future__ import annotations
-
-def python_perf_layer_serialization_pydantic_model_recreated_for_internal_dict_negative(rows):
-    return [{"item_id": row["item_id"], "score": row["score"]} for row in rows]

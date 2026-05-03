@@ -1,0 +1,14 @@
+{
+  "id": "rust_collect_then_single_iteration",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `.collect::<Vec<_>>()` immediately followed by one `for` loop, `.iter().any`, `.iter().find`, or `.len()` where streaming would avoid allocation.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

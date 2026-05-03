@@ -1,0 +1,14 @@
+{
+  "id": "python_public_api_any_contract",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public Python APIs that expose Any in parameter or return contracts.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "flask_debug_mode_in_production_code",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flask code enables debug=True in application runtime paths.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

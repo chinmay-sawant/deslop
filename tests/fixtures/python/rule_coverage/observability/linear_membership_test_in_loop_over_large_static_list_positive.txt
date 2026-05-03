@@ -1,9 +1,0 @@
-FORBIDDEN_WORDS = ["spam", "buy", "crypto", "click", "free", "viagra"]
-
-def filter_messages(messages):
-    clean = []
-    for msg in messages:
-        # Violation: performing an O(N) membership test against a list inside a loop is very slow
-        if not any(word in FORBIDDEN_WORDS for word in msg.split()):
-            clean.append(msg)
-    return clean

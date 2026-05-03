@@ -1,9 +1,0 @@
-from __future__ import annotations
-
-def invariant_template_or_prefix_string_reformatted_inside_loop_positive():
-    rows = ["x1", "x2", "x3"]
-    rendered = []
-    for row in rows:
-        prefix = "[tenant:acme]"
-        rendered.append(f"{prefix} {row}")
-    return rendered

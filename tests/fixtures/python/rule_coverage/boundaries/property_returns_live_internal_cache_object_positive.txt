@@ -1,8 +1,0 @@
-class DataManager:
-    def __init__(self):
-        self._cache = {}
-
-    @property
-    def cache(self):
-        # Violation: property returns a live reference to an internal mutable cache object
-        return self._cache

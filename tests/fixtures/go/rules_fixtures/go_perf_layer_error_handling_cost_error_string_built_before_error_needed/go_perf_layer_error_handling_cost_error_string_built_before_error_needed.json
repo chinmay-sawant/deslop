@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_error_handling_cost_error_string_built_before_error_needed",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag error message formatting before the code knows an error will be returned.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

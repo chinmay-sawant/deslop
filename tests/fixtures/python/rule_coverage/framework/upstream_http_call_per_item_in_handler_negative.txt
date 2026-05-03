@@ -1,7 +1,0 @@
-import requests
-
-@app.get("/details")
-def get_details(ids: List[str]):
-    # Correct: use a batch endpoint for upstream services whenever possible
-    resp = requests.post("https://api.service/batch-get", json={"ids": ids}, timeout=5)
-    return resp.json()

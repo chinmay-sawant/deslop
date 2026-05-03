@@ -1,0 +1,14 @@
+{
+  "id": "table_driven_tests_mix_multiple_domains_in_one_cases_slice",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Oversized case tables that mix unrelated behaviors into one monolithic test.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "json_number_vs_float64_decode",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`json.Unmarshal` into `map[string]any` for numeric data without `UseNumber()`",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

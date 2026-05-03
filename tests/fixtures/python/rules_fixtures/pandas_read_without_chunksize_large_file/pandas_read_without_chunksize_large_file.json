@@ -1,0 +1,14 @@
+{
+  "id": "pandas_read_without_chunksize_large_file",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Data-loading functions read large tabular files without chunksize or nrows limits.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

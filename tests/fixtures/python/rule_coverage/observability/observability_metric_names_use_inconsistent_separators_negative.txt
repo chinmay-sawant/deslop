@@ -1,5 +1,0 @@
-def run_jobs():
-    # Correct: standardize on a single metric separator convention (e.g., snake_case) organization-wide
-    statsd.increment("api_requests_total")
-    statsd.increment("db_queries_total")
-    statsd.increment("cache_misses_total")

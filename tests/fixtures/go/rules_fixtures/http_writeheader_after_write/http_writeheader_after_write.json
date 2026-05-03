@@ -1,0 +1,14 @@
+{
+  "id": "http_writeheader_after_write",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that write the response body before calling WriteHeader(...).",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

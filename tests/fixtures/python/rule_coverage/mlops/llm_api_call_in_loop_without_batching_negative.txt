@@ -1,6 +1,0 @@
-import openai
-
-def generate_summaries(prompts):
-    # Correct: pass the entire list of prompts in a single batched API call
-    resp = openai.Completion.create(model="text-davinci-003", prompt=prompts)
-    return [choice.text for choice in resp.choices]

@@ -1,6 +1,0 @@
-def filter_ids(ids: list[int], blocked: list[int]) -> list[int]:
-    kept: list[int] = []
-    for item in ids:
-        if item not in blocked:
-            kept.append(item)
-    return kept

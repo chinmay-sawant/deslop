@@ -1,0 +1,14 @@
+{
+  "id": "sqlmodel_unbounded_select_in_handler",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers execute SQLModel select().all() paths without visible limits or pagination.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

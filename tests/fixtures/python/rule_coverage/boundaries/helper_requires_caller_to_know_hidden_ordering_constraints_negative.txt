@@ -1,9 +1,0 @@
-class DataClient:
-    def __init__(self):
-        self._connected = False
-
-    def fetch(self):
-        # Correct: helper manages internal state/constraints automatically
-        if not self._connected:
-            self._connected = True
-        return "data"

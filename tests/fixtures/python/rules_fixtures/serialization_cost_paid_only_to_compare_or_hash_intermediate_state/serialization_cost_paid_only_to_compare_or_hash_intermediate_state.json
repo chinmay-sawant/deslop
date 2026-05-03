@@ -1,0 +1,14 @@
+{
+  "id": "serialization_cost_paid_only_to_compare_or_hash_intermediate_state",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag serialization used only for equality, cache key, or hashing comparisons.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

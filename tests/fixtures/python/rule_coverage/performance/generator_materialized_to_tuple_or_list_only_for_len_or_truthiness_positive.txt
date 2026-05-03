@@ -1,2 +1,0 @@
-def has_even(values: list[int]) -> bool:
-    return len([v for v in values if v % 2 == 0]) > 0

@@ -1,0 +1,14 @@
+{
+  "id": "response_envelope_shaping_duplicated_across_handlers",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated success-response envelope formatting that should live in a renderer or transport helper.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

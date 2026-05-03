@@ -1,6 +1,0 @@
-def merge_records(records):
-    # Violation: blindly assuming the input list contains unique IDs; duplicates will silently overwrite data
-    merged_map = {}
-    for record in records:
-        merged_map[record.id] = record
-    return merged_map

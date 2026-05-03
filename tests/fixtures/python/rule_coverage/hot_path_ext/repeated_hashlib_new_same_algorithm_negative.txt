@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def repeated_hashlib_new_same_algorithm_negative():
-    import hashlib
-    values = ["a", "b", "c"]
-    factory = hashlib.sha256
-    return [factory(value.encode("utf-8")).hexdigest() for value in values]

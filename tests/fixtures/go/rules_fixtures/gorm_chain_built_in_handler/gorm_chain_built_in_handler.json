@@ -1,0 +1,14 @@
+{
+  "id": "gorm_chain_built_in_handler",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that construct `Where`, `Joins`, `Scopes`, or `Order` chains directly.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

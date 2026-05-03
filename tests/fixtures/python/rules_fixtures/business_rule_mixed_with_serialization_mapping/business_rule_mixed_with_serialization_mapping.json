@@ -1,0 +1,14 @@
+{
+  "id": "business_rule_mixed_with_serialization_mapping",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions that both enforce domain rules and convert to wire or storage payloads in the same block.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

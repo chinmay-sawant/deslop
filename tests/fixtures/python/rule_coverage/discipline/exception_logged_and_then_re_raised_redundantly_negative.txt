@@ -1,6 +1,0 @@
-def process():
-    try:
-        call_service()
-    except Exception:
-        # Correct: either log and handle, or just re-raise
-        raise

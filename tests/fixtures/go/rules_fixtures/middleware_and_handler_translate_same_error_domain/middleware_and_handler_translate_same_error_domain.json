@@ -1,0 +1,14 @@
+{
+  "id": "middleware_and_handler_translate_same_error_domain",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Double translation layers where middleware and handlers both map the same error family to responses.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

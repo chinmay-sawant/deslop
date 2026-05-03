@@ -1,6 +1,0 @@
-import hashlib
-
-
-def accept(payload: bytes) -> bool:
-    digest = hashlib.sha256(payload).hexdigest()
-    return payload.startswith(b"MSG:") and len(digest) == 64

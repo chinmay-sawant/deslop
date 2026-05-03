@@ -1,0 +1,14 @@
+{
+  "id": "duplicate_struct_tag_key",
+  "language": "go",
+  "family": "consistency",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Struct field tags that repeat the same key more than once.",
+  "binding_location": "src/heuristics/go/consistency.rs"
+}

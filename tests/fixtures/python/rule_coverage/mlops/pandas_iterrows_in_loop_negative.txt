@@ -1,5 +1,0 @@
-import pandas as pd
-
-def calculate_totals(df):
-    # Correct: use built-in vectorized aggregation functions which run in C
-    return df['sales'].sum()

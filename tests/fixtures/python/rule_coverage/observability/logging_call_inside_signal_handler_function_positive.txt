@@ -1,9 +1,0 @@
-import logging
-import signal
-
-def sigint_handler(signum, frame):
-    # Violation: using standard logging inside a signal handler is dangerous due to reentrancy locks
-    logging.info("Received SIGINT, shutting down...")
-    exit(1)
-
-signal.signal(signal.SIGINT, sigint_handler)

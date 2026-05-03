@@ -1,9 +1,0 @@
-import boto3
-
-class UserService:
-    def upload_data(self, data):
-        # Violation: third-party exception leaking across boundary
-        try:
-            self.s3.put_object(Body=data)
-        except boto3.exceptions.S3UploadError as e:
-            raise e

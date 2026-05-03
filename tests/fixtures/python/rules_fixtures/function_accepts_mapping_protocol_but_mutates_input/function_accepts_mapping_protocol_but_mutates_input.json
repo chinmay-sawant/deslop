@@ -1,0 +1,14 @@
+{
+  "id": "function_accepts_mapping_protocol_but_mutates_input",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions that advertise broad mapping or sequence inputs and then mutate the received object in place.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

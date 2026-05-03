@@ -1,9 +1,0 @@
-import re
-
-class AuthMiddleware:
-    def process_request(self, request):
-        # Violation: compiling a regex pattern inside a middleware method called per request
-        pattern = re.compile(r"^/api/v[1-2]/public/.*")
-        if pattern.match(request.path):
-            return None
-        return check_auth(request)

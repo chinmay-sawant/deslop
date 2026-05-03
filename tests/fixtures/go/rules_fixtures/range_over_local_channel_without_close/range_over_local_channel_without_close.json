@@ -1,0 +1,14 @@
+{
+  "id": "range_over_local_channel_without_close",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Functions that range over a locally owned channel without an observed close path.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

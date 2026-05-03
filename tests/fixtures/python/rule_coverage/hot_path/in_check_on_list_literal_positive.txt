@@ -1,5 +1,0 @@
-def check_value(val):
-    # Violation: using 'in' with a list literal creates a list and does an O(N) linear search
-    if val in ["admin", "root", "superuser"]:
-        return True
-    return False

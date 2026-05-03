@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def python_perf_layer_memory_allocation_list_append_without_generator_stream_positive(values):
-    squares = []
-    for value in values:
-        squares.append(value * value)
-    return sum(squares)

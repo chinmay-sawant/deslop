@@ -1,3 +1,0 @@
-def add_tax(df):
-    df["gross"] = df["net"] * 1.18
-    return df

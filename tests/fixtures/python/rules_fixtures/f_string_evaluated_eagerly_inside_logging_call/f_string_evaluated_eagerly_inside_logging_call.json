@@ -1,0 +1,14 @@
+{
+  "id": "f_string_evaluated_eagerly_inside_logging_call",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "f-string passed directly to logger.debug/info/warning, eagerly evaluating even when the level is disabled.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

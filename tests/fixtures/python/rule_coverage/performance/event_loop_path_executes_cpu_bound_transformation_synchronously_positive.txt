@@ -1,2 +1,0 @@
-async def expensive_score(limit: int) -> int:
-    return sum(i * i for i in range(limit))

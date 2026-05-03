@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_profiling_benchmarking_profile_claim_without_profile_artifact",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag optimization comments or docs without profile, benchmark, or trace evidence.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

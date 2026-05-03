@@ -1,8 +1,0 @@
-import json
-
-# Violation: performing disk IO and config loading at module import time makes tests impossible to mock
-with open("/etc/config.json") as f:
-    SYSTEM_CONFIG = json.load(f)
-
-def get_config():
-    return SYSTEM_CONFIG

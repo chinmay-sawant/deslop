@@ -1,6 +1,0 @@
-from contextlib import suppress
-
-def safe_delete(path):
-    # Violation: contextlib.suppress applied with Exception base class (swallows everything)
-    with suppress(Exception):
-        os.remove(path)

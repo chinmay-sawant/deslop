@@ -1,7 +1,0 @@
-def process_stream(items):
-    data = []
-    for item in items:
-        data.append(item)
-    # Correct: sort the collection once after all items have been added
-    data.sort()
-    return data

@@ -1,5 +1,0 @@
-# Correct: place imports at the top level of the module so they are executed only once
-import hashlib
-
-def compute_hash(data):
-    return hashlib.md5(data.encode()).hexdigest()

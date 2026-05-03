@@ -1,9 +1,0 @@
-import logging
-
-def process_user(user_data):
-    try:
-        db.save(user_data)
-    except Exception as e:
-        # Violation: catching an exception and only logging it locally, completely hiding it from Sentry/Datadog
-        logging.error(f"Save failed: {e}")
-        return False

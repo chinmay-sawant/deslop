@@ -1,5 +1,0 @@
-from typing import Mapping
-
-def update_config(settings: Mapping):
-    # Violation: function accepts a read-only Mapping protocol but attempts to mutate it
-    settings["updated_at"] = "now"

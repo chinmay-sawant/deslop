@@ -1,0 +1,14 @@
+{
+  "id": "rust_clone_heavy_state_in_loop",
+  "language": "rust",
+  "family": "runtime_boundary",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Likely heavy state cloned repeatedly inside loops in Rust application code.",
+  "binding_location": "src/heuristics/rust/runtime_boundary.rs"
+}

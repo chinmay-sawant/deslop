@@ -1,9 +1,0 @@
-from dataclasses import dataclass
-
-@dataclass
-class ServiceClient:
-    api_key: str
-    
-    def __post_init__(self):
-        # Violation: performing heavy network IO or db connections inside a dataclass init blocks instantiation
-        self.connection = establish_network_connection(self.api_key)

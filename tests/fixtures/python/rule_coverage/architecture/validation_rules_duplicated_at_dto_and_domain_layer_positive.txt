@@ -1,8 +1,0 @@
-class UserDTO(BaseModel):
-    name: str = Field(max_length=50) # Duplicated validation
-
-class User:
-    def __init__(self, name):
-        if len(name) > 50: # Violation: validation rules duplicated at DTO and domain layer
-            raise ValueError("Name too long")
-        self.name = name

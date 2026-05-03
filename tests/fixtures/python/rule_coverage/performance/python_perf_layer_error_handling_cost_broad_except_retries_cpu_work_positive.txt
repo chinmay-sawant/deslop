@@ -1,6 +1,0 @@
-def read_value(client) -> str:
-    try:
-        return client.fetch()
-    except Exception:
-        checksum = sum(i * i for i in range(50_000))
-        return f"retry:{checksum}"

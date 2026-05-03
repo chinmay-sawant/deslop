@@ -1,0 +1,14 @@
+{
+  "id": "helper_module_accumulates_unrelated_cross_domain_utilities",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag helper modules that mix string, filesystem, caching, parsing, and process logic in one place.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

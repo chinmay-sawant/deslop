@@ -1,0 +1,14 @@
+{
+  "id": "redundant_return_none",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Explicit return None in simple code paths where Python would already return None implicitly.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

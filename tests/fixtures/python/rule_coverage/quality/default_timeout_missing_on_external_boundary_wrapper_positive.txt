@@ -1,5 +1,0 @@
-import requests
-
-def fetch_external_data(url):
-    # Violation: executing external network calls without a timeout can hang the entire application indefinitely
-    return requests.get(url).json()

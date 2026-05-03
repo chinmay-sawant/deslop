@@ -1,0 +1,14 @@
+{
+  "id": "abstract_contracts_and_heavy_concrete_implementations_live_in_same_file",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag files that mix contracts with large concrete implementations and grow unstable dependencies.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

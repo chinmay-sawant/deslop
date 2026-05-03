@@ -1,6 +1,0 @@
-from __future__ import annotations
-
-def python_perf_layer_io_operations_read_entire_file_for_line_processing_positive(path):
-    with open(path, "r", encoding="utf-8") as handle:
-        lines = handle.readlines()
-    return sum(1 for line in lines if line.strip())

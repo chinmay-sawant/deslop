@@ -1,0 +1,14 @@
+{
+  "id": "dict_items_or_keys_materialized_in_loop",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "dict.items(), keys(), or values() are repeatedly materialized inside loops.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

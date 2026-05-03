@@ -1,0 +1,14 @@
+{
+  "id": "sync_and_async_contracts_mixed_on_same_interface_family",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag interface families that mix sync and async methods without a clear separation.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

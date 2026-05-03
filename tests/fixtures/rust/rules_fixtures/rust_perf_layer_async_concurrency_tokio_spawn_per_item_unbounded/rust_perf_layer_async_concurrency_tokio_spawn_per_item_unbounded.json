@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_async_concurrency_tokio_spawn_per_item_unbounded",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag unbounded tokio::spawn per item without JoinSet, semaphore, or bounded queue ownership.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

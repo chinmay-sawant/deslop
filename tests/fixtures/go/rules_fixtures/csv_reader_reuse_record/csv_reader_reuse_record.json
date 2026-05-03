@@ -1,0 +1,14 @@
+{
+  "id": "csv_reader_reuse_record",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`csv.NewReader(r)` without `ReuseRecord = true` when records are processed one at a time and not stored",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_aos_hot_path",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated struct-field dereferences inside a loop that may indicate an array-of-structs hot path.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

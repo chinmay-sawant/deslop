@@ -1,0 +1,14 @@
+{
+  "id": "log_printf_for_production",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`log.Printf` (stdlib) usage in web service handler code",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

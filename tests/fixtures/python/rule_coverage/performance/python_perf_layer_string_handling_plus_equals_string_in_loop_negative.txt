@@ -1,4 +1,0 @@
-from __future__ import annotations
-
-def python_perf_layer_string_handling_plus_equals_string_in_loop_negative(parts):
-    return "".join(parts)

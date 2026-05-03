@@ -1,0 +1,14 @@
+{
+  "id": "path_resolve_or_expanduser_in_loop",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Path resolution helpers such as resolve() or expanduser() run inside loops on invariant inputs.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

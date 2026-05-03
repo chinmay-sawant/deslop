@@ -1,0 +1,14 @@
+{
+  "id": "websocket_without_origin_check",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}` or missing `CheckOrigin`",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_ignore_follow_links_without_cycle_or_root_policy",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `.follow_links(true)` without visible cycle, root containment, or same-filesystem policy.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,7 +1,0 @@
-import numpy as np
-
-def process_floats():
-    # Violation: creating an int array and assigning floats to it causes silent implicit downcasting
-    arr = np.zeros(5, dtype=int)
-    arr[0] = 1.99  # becomes 1
-    return arr

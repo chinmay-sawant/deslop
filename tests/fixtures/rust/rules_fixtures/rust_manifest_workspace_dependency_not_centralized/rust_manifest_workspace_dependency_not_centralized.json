@@ -1,0 +1,14 @@
+{
+  "id": "rust_manifest_workspace_dependency_not_centralized",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag multi-crate workspaces that repeat dependency versions instead of using `[workspace.dependencies]`.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

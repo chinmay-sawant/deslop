@@ -1,8 +1,0 @@
-class Config:
-    @property
-    def database_url(self):
-        # Violation: config values validated lazily on first use
-        val = os.getenv("DATABASE_URL")
-        if not val:
-            raise ValueError("DATABASE_URL not set")
-        return val

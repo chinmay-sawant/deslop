@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_hot_path_optimization_dynamic_dispatch_in_deep_loop",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Hot path optimization. Flag trait-object dynamic dispatch inside deep loops where generics or enum dispatch may fit.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

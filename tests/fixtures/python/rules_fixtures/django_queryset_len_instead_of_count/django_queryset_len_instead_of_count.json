@@ -1,0 +1,14 @@
+{
+  "id": "django_queryset_len_instead_of_count",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "len(queryset) is used where queryset.count() would avoid loading every row.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

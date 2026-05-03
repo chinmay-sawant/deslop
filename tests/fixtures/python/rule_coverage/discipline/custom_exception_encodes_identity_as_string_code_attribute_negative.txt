@@ -1,5 +1,0 @@
-class NotFoundError(Exception):
-    # Correct: use distinct exception classes for different error identities
-    pass
-
-raise NotFoundError("User not found")

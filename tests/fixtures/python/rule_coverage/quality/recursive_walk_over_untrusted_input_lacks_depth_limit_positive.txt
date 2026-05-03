@@ -1,7 +1,0 @@
-def parse_json_payload(data):
-    # Violation: recursively traversing untrusted data without a depth limit allows trivial denial-of-service (DoS) via stack overflows
-    for key, value in data.items():
-        if isinstance(value, dict):
-            parse_json_payload(value)
-        else:
-            process_leaf(key, value)

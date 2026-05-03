@@ -1,0 +1,14 @@
+{
+  "id": "panic_for_expected_errors",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`panic()` used for expected error conditions like invalid input or missing config",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

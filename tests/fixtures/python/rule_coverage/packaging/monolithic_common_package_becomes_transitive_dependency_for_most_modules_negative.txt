@@ -1,7 +1,0 @@
-# src/feature_a.py
-# Correct: import precisely what you need from highly cohesive, single-purpose packages
-from src.database.connection import DatabaseConnection
-from src.utils.formatting import format_string
-
-def do_work():
-    return DatabaseConnection()

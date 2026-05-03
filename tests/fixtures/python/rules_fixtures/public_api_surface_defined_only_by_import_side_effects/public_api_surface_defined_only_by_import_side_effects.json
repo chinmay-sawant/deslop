@@ -1,0 +1,14 @@
+{
+  "id": "public_api_surface_defined_only_by_import_side_effects",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag packages whose public surface is created indirectly by import order.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

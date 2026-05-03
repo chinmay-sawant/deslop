@@ -1,0 +1,14 @@
+{
+  "id": "rust_pub_use_glob_surface",
+  "language": "rust",
+  "family": "module_surface",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public glob re-exports that flatten the crate surface.",
+  "binding_location": "src/heuristics/rust/module_surface.rs"
+}

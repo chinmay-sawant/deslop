@@ -1,7 +1,0 @@
-def checkout_cart():
-    # Correct: use a unified, single vocabulary for an operation to allow easy correlation between logs, metrics, and traces
-    OPERATION = "checkout.process_payment"
-    logger.info(f"Executing {OPERATION}")
-    statsd.increment(OPERATION)
-    with tracer.start_as_current_span(OPERATION):
-        pass

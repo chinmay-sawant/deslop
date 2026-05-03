@@ -1,5 +1,0 @@
-def get_minimum_value(items):
-    if not items:
-        return None
-    # Correct: use the built-in min() function for an O(N) single-pass scan
-    return min(items)

@@ -1,8 +1,0 @@
-import os
-
-def load_default_config():
-    # Violation: using __file__ paths breaks when the package is installed as an egg or frozen binary
-    base_dir = os.path.dirname(__file__)
-    config_path = os.path.join(base_dir, "default_config.json")
-    with open(config_path, "r") as f:
-        return f.read()

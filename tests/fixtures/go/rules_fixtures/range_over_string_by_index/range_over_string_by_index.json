@@ -1,0 +1,14 @@
+{
+  "id": "range_over_string_by_index",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

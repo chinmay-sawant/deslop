@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_resource_pooling_process_pool_without_shutdown",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Resource pooling. Flag ProcessPoolExecutor ownership without shutdown or bounded queue behavior.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

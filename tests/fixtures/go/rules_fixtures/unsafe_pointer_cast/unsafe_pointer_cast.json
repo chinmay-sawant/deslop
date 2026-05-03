@@ -1,0 +1,14 @@
+{
+  "id": "unsafe_pointer_cast",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

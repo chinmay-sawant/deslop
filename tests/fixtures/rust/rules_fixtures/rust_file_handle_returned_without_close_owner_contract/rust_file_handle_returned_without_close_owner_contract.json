@@ -1,0 +1,14 @@
+{
+  "id": "rust_file_handle_returned_without_close_owner_contract",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag functions that return raw file handles, descriptors, or paths tied to temporary resources without documenting ownership.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

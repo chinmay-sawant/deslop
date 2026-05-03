@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_database_access_transaction_per_row_bulk_write",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Database access. Flag bulk writes that open and commit one transaction per row.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

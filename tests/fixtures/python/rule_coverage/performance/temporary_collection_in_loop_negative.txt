@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def temporary_collection_in_loop_negative(values):
-    total = 0
-    for value in values:
-        total += value * 3
-    return total

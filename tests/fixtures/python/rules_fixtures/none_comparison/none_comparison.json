@@ -1,0 +1,14 @@
+{
+  "id": "none_comparison",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "== None or != None checks instead of is None or is not None.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

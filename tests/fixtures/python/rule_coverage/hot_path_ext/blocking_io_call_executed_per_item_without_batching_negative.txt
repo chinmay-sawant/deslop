@@ -1,7 +1,0 @@
-from __future__ import annotations
-
-def blocking_io_call_executed_per_item_without_batching_negative():
-    import time
-    item_ids = [101, 102, 103]
-    time.sleep(0.01)
-    return [{"id": item_id, "status": "ok"} for item_id in item_ids]

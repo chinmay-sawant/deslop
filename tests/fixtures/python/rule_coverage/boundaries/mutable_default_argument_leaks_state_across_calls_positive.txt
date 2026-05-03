@@ -1,4 +1,0 @@
-def add_to_history(event, history=[]):
-    # Violation: mutable default argument leaks state across calls
-    history.append(event)
-    return history

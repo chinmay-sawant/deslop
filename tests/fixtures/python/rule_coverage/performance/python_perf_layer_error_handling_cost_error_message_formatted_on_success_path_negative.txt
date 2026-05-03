@@ -1,5 +1,0 @@
-def process(order_id: int, user_id: int) -> str:
-    try:
-        return f"ok:{order_id}:{user_id}"
-    except ValueError as exc:
-        raise RuntimeError(f"failed order={order_id} user={user_id}") from exc

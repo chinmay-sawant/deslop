@@ -1,0 +1,14 @@
+{
+  "id": "wandb_mlflow_log_in_tight_loop",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "wandb or mlflow metrics are logged in inner loops instead of batched or reported at coarser boundaries.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

@@ -1,5 +1,0 @@
-def check_value(val):
-    # Correct: use a set literal for O(1) membership testing
-    if val in {"admin", "root", "superuser"}:
-        return True
-    return False

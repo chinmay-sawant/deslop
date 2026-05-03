@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_mutex_push_in_parallel_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `Mutex<Vec<_>>`, `RwLock<Vec<_>>`, or shared collection mutation inside `for_each` where `map/filter_map/collect/reduce` would avoid lock contention.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

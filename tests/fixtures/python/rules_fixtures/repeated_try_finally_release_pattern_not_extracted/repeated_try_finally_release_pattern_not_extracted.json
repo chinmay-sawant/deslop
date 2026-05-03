@@ -1,0 +1,14 @@
+{
+  "id": "repeated_try_finally_release_pattern_not_extracted",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag repeated manual release patterns that should live behind one helper or context manager.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

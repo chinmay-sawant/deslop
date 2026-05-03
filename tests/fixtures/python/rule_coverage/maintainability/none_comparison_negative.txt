@@ -1,6 +1,0 @@
-def process_value(val):
-    # Correct: always use 'is' or 'is not' when comparing to None
-    if val is None:
-        return "Empty"
-    if val is not None:
-        return val * 2

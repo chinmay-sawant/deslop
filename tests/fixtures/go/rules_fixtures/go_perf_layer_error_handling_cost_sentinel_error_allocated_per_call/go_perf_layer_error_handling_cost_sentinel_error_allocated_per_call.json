@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_error_handling_cost_sentinel_error_allocated_per_call",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag identical sentinel errors allocated inside functions instead of package-level variables.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

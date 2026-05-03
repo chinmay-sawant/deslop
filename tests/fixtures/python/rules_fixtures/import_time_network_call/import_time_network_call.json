@@ -1,0 +1,14 @@
+{
+  "id": "import_time_network_call",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Module-scope HTTP or socket calls executed while the module is imported.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

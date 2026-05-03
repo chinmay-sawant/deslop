@@ -1,8 +1,0 @@
-class ConfigLoader:
-    def __init__(self, url):
-        self.url = url
-        self.config = None
-
-    def load(self):
-        # Correct: side effect is in an explicit method
-        self.config = requests.get(self.url).json()

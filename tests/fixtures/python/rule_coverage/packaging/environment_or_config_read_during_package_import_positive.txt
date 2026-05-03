@@ -1,7 +1,0 @@
-import os
-
-# Violation: reading environment variables or configs at module import time makes the code untestable and brittle
-DB_URL = os.environ["DATABASE_URL"]
-
-def connect():
-    return open_db(DB_URL)

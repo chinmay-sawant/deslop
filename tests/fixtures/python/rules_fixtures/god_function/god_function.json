@@ -1,0 +1,14 @@
+{
+  "id": "god_function",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Very large Python functions with high control-flow and call-surface concentration.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

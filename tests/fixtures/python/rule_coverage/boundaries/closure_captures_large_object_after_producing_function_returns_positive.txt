@@ -1,4 +1,0 @@
-def create_reporter():
-    large_data = [i for i in range(1000000)]
-    # Violation: closure captures a large object even after the outer function returns
-    return lambda: f"Data size: {len(large_data)}"

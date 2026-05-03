@@ -1,0 +1,14 @@
+{
+  "id": "logging_call_inside_signal_handler_function",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "logging call inside a signal handler; logging uses locks and is not async-signal-safe.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "large_csv_or_json_export_without_bufio",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Export data written in loops without visible buffering in handlers.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

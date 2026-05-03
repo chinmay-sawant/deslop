@@ -1,0 +1,14 @@
+{
+  "id": "sync_function_called_from_async_without_executor",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Blocking I/O or CPU-bound function called directly inside async def without loop.run_in_executor.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

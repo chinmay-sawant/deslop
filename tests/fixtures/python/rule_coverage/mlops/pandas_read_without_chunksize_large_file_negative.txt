@@ -1,7 +1,0 @@
-import pandas as pd
-
-def process_massive_file(filepath):
-    # Correct: use chunksize to process large files incrementally and keep memory footprints low
-    chunks = pd.read_csv(filepath, chunksize=10000)
-    for chunk in chunks:
-        send_to_database_batch(chunk)

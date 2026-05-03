@@ -1,3 +1,0 @@
-def track_login(user_id):
-    # Violation: embedding dynamic user IDs into the metric name destroys observability systems with cardinality explosions
-    statsd.increment(f"login_success_user_{user_id}")

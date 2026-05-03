@@ -1,0 +1,14 @@
+{
+  "id": "context_manager_yields_global_mutable_resource",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag context managers that expose a shared global mutable resource while implying call-local ownership.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

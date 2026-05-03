@@ -1,9 +1,0 @@
-from typing import TypedDict
-
-class PartialConfig(TypedDict, total=False):
-    retries: int
-    timeout: float
-
-def execute(config: PartialConfig):
-    # Violation: accessing a key directly on a TypedDict with total=False will raise a KeyError if missing
-    print(f"Retrying {config['retries']} times")

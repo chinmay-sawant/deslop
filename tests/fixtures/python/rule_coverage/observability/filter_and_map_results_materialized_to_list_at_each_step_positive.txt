@@ -1,5 +1,0 @@
-def process_data(data):
-    # Violation: materializing full intermediate lists at each step instead of chaining generators
-    filtered_data = list(filter(lambda x: x > 0, data))
-    squared_data = list(map(lambda x: x * x, filtered_data))
-    return squared_data

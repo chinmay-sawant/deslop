@@ -1,8 +1,0 @@
-from opentelemetry import trace
-
-tracer = trace.get_tracer(__name__)
-
-def background_worker(payload):
-    # Violation: creating a new trace span in an asynchronous worker without linking to the parent context
-    with tracer.start_as_current_span("worker_process"):
-        process(payload)

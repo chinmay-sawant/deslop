@@ -1,0 +1,14 @@
+{
+  "id": "observability_metric_names_use_inconsistent_separators",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Metric names in the same codebase mix dot and underscore separators.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

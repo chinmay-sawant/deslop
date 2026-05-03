@@ -1,5 +1,0 @@
-from typing import Callable
-
-def execute_callback(cb: Callable[[int, int], int]):
-    # Correct: Callable specifies parameter types and return type
-    return cb(1, 2)

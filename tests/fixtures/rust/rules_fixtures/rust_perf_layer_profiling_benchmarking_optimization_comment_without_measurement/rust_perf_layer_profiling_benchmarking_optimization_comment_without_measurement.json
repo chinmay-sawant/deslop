@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_profiling_benchmarking_optimization_comment_without_measurement",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag optimization comments without benchmark, profile, or trace evidence.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

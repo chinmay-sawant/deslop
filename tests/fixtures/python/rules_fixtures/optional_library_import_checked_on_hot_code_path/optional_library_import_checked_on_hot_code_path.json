@@ -1,0 +1,14 @@
+{
+  "id": "optional_library_import_checked_on_hot_code_path",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Optional-dependency import guarded by try/except ImportError checked on every request.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

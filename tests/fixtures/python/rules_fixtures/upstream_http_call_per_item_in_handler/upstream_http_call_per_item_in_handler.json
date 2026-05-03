@@ -1,0 +1,14 @@
+{
+  "id": "upstream_http_call_per_item_in_handler",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request handlers make sequential upstream HTTP calls inside loops instead of batching or bounded concurrency.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

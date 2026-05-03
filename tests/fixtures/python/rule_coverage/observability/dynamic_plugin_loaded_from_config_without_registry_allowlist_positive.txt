@@ -1,6 +1,0 @@
-import importlib
-
-def load_user_plugin(config):
-    # Violation: dynamically importing a module based on raw external configuration introduces a severe code execution risk
-    plugin_name = config.get("custom_plugin_name")
-    return importlib.import_module(plugin_name)

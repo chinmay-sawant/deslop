@@ -1,5 +1,0 @@
-def test_user_validation():
-    # Violation: test re-implements production validation logic (DRY violation)
-    user_id = "abc"
-    if not user_id.isalnum():
-        pytest.fail("Validation failed")

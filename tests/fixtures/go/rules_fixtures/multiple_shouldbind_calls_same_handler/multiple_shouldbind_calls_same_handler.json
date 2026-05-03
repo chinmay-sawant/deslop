@@ -1,0 +1,14 @@
+{
+  "id": "multiple_shouldbind_calls_same_handler",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin handlers that bind the request body multiple times in one function.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

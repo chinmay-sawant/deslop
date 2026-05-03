@@ -1,7 +1,0 @@
-# module: src/my_app/testing/mocks.py
-class MockDatabase:
-    # Violation: shipping test utilities inside the main src package inflates production deployments
-    pass
-
-# module: src/my_app/api.py
-from my_app.testing.mocks import MockDatabase

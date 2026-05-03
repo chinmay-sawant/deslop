@@ -1,5 +1,0 @@
-import subprocess
-
-def list_files(directory_name):
-    # Violation: using shell=True with dynamic input allows catastrophic shell injection vulnerabilities
-    subprocess.run(f"ls -l {directory_name}", shell=True)

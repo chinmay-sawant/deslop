@@ -1,7 +1,0 @@
-import structlog
-
-logger = structlog.get_logger()
-
-def process_event(event_data):
-    # Violation: structured logging without attaching correlation IDs makes tracing requests impossible
-    logger.info("event_processed", type=event_data["type"], status="success")

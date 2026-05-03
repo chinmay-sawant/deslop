@@ -1,0 +1,14 @@
+{
+  "id": "domain_errors_declared_in_handler_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Business error types declared only in handlers instead of a reusable domain or service boundary.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}
