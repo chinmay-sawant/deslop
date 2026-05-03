@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+def expensive_sort_key_recomputed_without_preprojection_positive():
+    records = ["alice 9", "bob 3", "carol 7"]
+    top_per_round = []
+    for _ in range(2):
+        top_per_round.append(sorted(records, key=lambda row: int(row.split()[1]))[0])
+    return top_per_round

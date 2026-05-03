@@ -1,0 +1,6 @@
+import heapq
+
+
+def pop_smallest(values: list[int]) -> int:
+    heapq.heappush(values, 3)
+    return heapq.heappop(values)

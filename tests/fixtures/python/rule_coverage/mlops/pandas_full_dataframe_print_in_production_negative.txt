@@ -1,0 +1,8 @@
+import pandas as pd
+import logging
+
+def handle_data_upload(df):
+    # Correct: log only the metadata (shape) or head of the DataFrame to keep logs clean
+    logging.info(f"Received dataframe with shape {df.shape}")
+    logging.debug(f"Data preview:\n{df.head()}")
+    return df.shape

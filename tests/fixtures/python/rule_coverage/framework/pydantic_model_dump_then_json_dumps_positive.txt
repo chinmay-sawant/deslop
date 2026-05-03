@@ -1,0 +1,11 @@
+import json
+from pydantic import BaseModel
+
+class User(BaseModel):
+    id: int
+    name: str
+
+def serialize_user(user: User):
+    # Violation: using model_dump() and then json.dumps() manually
+    data = user.model_dump()
+    return json.dumps(data)

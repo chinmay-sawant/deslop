@@ -1,0 +1,10 @@
+import os
+
+# Correct: key is loaded from environment variables
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+def encrypt_data(data):
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY not set")
+    cipher = AES.new(SECRET_KEY, AES.MODE_EAX)
+    return cipher.encrypt(data)

@@ -1,0 +1,10 @@
+def load_data(filepath):
+    # Violation: ad-hoc branching on file suffixes rather than using a registry or strategy pattern
+    if filepath.endswith(".csv"):
+        return load_csv(filepath)
+    elif filepath.endswith(".json"):
+        return load_json(filepath)
+    elif filepath.endswith(".xml"):
+        return load_xml(filepath)
+    else:
+        raise ValueError("Unsupported format")

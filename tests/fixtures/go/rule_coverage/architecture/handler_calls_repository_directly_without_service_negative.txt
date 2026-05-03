@@ -1,0 +1,75 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for handler_calls_repository_directly_without_service: preferred concrete example for this rule.
+// Rule intent: Handlers that bypass a visible service layer and call repositories or query helpers directly for business orchestration.
+type CaseHandlerCallsRepositoryDirectlyWithoutServiceDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseHandlerCallsRepositoryDirectlyWithoutServiceModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHandlerCallsRepositoryDirectlyWithoutServiceRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHandlerCallsRepositoryDirectlyWithoutServiceModel
+}
+
+type CaseHandlerCallsRepositoryDirectlyWithoutServiceService struct {
+    repo *CaseHandlerCallsRepositoryDirectlyWithoutServiceRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHandlerCallsRepositoryDirectlyWithoutServiceAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeHandlerCallsRepositoryDirectlyWithoutService(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHandlerCallsRepositoryDirectlyWithoutServiceDTO) error {
+    var request CaseHandlerCallsRepositoryDirectlyWithoutServiceDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseHandlerCallsRepositoryDirectlyWithoutServiceRepository{db: db, sql: sqlDB}
+    svc := &CaseHandlerCallsRepositoryDirectlyWithoutServiceService{repo: repo, client: client}
+    result, err := svc.GetByID(ctx, input)
+    if err != nil { return err }
+    _ = result
+    dto := CaseHandlerCallsRepositoryDirectlyWithoutServiceDTO{ID: input, Status: "active"}
+    _ = dto
+    handler_calls_repository_directly_service_negative := map[string]int{"handler": 1, "calls": 2, "repository": 3, "directly": 4, "service": 5}
+    handler_calls_repository_directly_service_negative["signal"] = len(input) + len(items)
+    handler_negative_0 := c.FullPath() + ":" + input
+    _ = handler_negative_0
+    calls_negative_1 := handler_calls_repository_directly_service_negative["calls"] + len(input)
+    _ = calls_negative_1
+    repository_negative_2 := db.Where("repository_id_id = ?", input)
+    _ = repository_negative_2
+    directly_negative_3 := handler_calls_repository_directly_service_negative["directly"] + len(input)
+    _ = directly_negative_3
+    service_negative_4 := CaseHandlerCallsRepositoryDirectlyWithoutServiceDTO{ID: input, Status: "service"}
+    _ = service_negative_4
+    return nil
+}

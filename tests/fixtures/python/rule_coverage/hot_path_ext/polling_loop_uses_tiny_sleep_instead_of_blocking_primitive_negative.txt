@@ -1,0 +1,7 @@
+from __future__ import annotations
+
+def polling_loop_uses_tiny_sleep_instead_of_blocking_primitive_negative():
+    import threading
+    event = threading.Event()
+    event.set()
+    return event.wait(timeout=0.1)

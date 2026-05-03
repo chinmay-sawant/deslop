@@ -1,0 +1,7 @@
+from app.database import global_db
+
+def create_user(name):
+    # Violation: bypassing dependency injection by using a global singleton
+    user = User(name=name)
+    global_db.session.add(user)
+    global_db.session.commit()

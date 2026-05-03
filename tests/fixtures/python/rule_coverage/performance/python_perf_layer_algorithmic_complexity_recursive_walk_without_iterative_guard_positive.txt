@@ -1,0 +1,6 @@
+def walk(node: dict[str, object]) -> int:
+    children = node.get("children", [])
+    total = 1
+    for child in children:
+        total += walk(child)
+    return total

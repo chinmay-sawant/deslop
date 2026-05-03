@@ -313,6 +313,24 @@ fn http_boundary_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
                         "creating HTTP clients on regular call paths can orphan reusable keep-alive state".to_string(),
                     ],
                 });
+                findings.push(Finding {
+                    rule_id: "go_perf_layer_network_calls_http_client_created_per_call"
+                        .to_string(),
+                    severity: Severity::Warning,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: line,
+                    end_line: line,
+                    message: format!(
+                        "function {} constructs http.Client on a regular call path",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("{alias}.Client{{...}} literal observed at line {line}"),
+                        "existing Go idiom analysis observed per-call client construction instead of client reuse"
+                            .to_string(),
+                    ],
+                });
             }
 
             if !literal.contains("Timeout:") {

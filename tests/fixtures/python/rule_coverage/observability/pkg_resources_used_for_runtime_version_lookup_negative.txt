@@ -1,0 +1,5 @@
+import importlib.metadata
+
+def get_library_version():
+    # Correct: use the built-in importlib.metadata for lightning-fast package version checks
+    return importlib.metadata.version("requests")

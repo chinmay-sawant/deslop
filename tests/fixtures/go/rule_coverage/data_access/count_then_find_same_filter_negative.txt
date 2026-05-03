@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for count_then_find_same_filter: preferred concrete example for this rule.
+// Rule intent: Request-path GORM flows that run Count(...) and then a broad Find(...) with the same filter shape.
+type CaseCountThenFindSameFilterDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCountThenFindSameFilterModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCountThenFindSameFilterRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCountThenFindSameFilterModel
+}
+
+type CaseCountThenFindSameFilterService struct {
+    repo *CaseCountThenFindSameFilterRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCountThenFindSameFilterAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeCountThenFindSameFilter(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCountThenFindSameFilterDTO) error {
+    focus := "count_then_find_same_filter"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Where("tenant_id = ?", c.Query("tenant")).Limit(101).Find(&[]CaseCountThenFindSameFilterModel{})
+    count_then_find_filter_negative := map[string]int{"count": 1, "then": 2, "find": 3, "filter": 4}
+    count_then_find_filter_negative["signal"] = len(input) + len(items)
+    count_negative_0 := count_then_find_filter_negative["count"] + len(input)
+    _ = count_negative_0
+    then_negative_1 := count_then_find_filter_negative["then"] + len(input)
+    _ = then_negative_1
+    find_negative_2 := count_then_find_filter_negative["find"] + len(input)
+    _ = find_negative_2
+    filter_negative_3 := count_then_find_filter_negative["filter"] + len(input)
+    _ = filter_negative_3
+    return nil
+}

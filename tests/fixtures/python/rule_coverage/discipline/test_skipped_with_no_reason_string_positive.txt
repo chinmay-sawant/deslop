@@ -1,0 +1,6 @@
+import pytest
+
+# Violation: test is skipped without providing a reason
+@pytest.mark.skip
+def test_legacy_feature():
+    assert legacy_call() == "ok"

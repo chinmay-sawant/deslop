@@ -1,0 +1,67 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for repository_type_outside_repository_package: preferred concrete example for this rule.
+// Rule intent: Repository implementations declared outside `repository`, `repo`, or `store` packages when the repo already uses those roles elsewhere.
+type CaseRepositoryTypeOutsideRepositoryPackageDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepositoryTypeOutsideRepositoryPackageModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepositoryTypeOutsideRepositoryPackageRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryTypeOutsideRepositoryPackageModel
+}
+
+type CaseRepositoryTypeOutsideRepositoryPackageService struct {
+    repo *CaseRepositoryTypeOutsideRepositoryPackageRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryTypeOutsideRepositoryPackageAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRepositoryTypeOutsideRepositoryPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryTypeOutsideRepositoryPackageDTO) error {
+    focus := "repository_type_outside_repository_package"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseRepositoryTypeOutsideRepositoryPackageRepository{db: db, sql: sqlDB}
+    var model CaseRepositoryTypeOutsideRepositoryPackageModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    repository_type_outside_package_negative := map[string]int{"repository": 1, "type": 2, "outside": 3, "package": 4}
+    repository_type_outside_package_negative["signal"] = len(input) + len(items)
+    repository_negative_0 := db.Where("repository_id = ?", input)
+    _ = repository_negative_0
+    type_negative_1 := repository_type_outside_package_negative["type"] + len(input)
+    _ = type_negative_1
+    outside_negative_2 := repository_type_outside_package_negative["outside"] + len(input)
+    _ = outside_negative_2
+    package_negative_3 := repository_type_outside_package_negative["package"] + len(input)
+    _ = package_negative_3
+    return nil
+}

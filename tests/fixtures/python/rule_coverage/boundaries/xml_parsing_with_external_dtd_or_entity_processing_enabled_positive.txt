@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+from lxml import etree
+
+
+def parse_document(xml_text: str):
+    parser = etree.XMLParser(resolve_entities=True, load_dtd=True)
+    return etree.fromstring(xml_text.encode("utf-8"), parser=parser)

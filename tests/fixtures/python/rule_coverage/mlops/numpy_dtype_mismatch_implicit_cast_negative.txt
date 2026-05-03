@@ -1,0 +1,7 @@
+import numpy as np
+
+def process_floats():
+    # Correct: specify the correct dtype for the array to avoid data loss
+    arr = np.zeros(5, dtype=float)
+    arr[0] = 1.99
+    return arr

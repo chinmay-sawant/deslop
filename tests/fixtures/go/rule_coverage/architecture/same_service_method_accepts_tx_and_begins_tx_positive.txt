@@ -1,0 +1,59 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for same_service_method_accepts_tx_and_begins_tx: risky concrete example for this rule.
+// Rule intent: Service methods that sometimes reuse a transaction and sometimes open one themselves.
+type CaseSameServiceMethodAcceptsTxAndBeginsTxDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSameServiceMethodAcceptsTxAndBeginsTxModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSameServiceMethodAcceptsTxAndBeginsTxRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSameServiceMethodAcceptsTxAndBeginsTxModel
+}
+
+type CaseSameServiceMethodAcceptsTxAndBeginsTxService struct {
+    repo *CaseSameServiceMethodAcceptsTxAndBeginsTxRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSameServiceMethodAcceptsTxAndBeginsTxAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSameServiceMethodAcceptsTxAndBeginsTx(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSameServiceMethodAcceptsTxAndBeginsTxDTO) error {
+
+    func(tx *gorm.DB) error {
+        newTx := db.Begin()
+        if err := newTx.WithContext(ctx).Save(&CaseSameServiceMethodAcceptsTxAndBeginsTxModel{ID: input}).Error; err != nil {
+            newTx.Rollback()
+            return err
+        }
+        return newTx.Commit().Error
+    }(db)
+    return nil
+}

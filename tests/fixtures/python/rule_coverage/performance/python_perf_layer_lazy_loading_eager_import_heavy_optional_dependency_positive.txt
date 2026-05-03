@@ -1,0 +1,11 @@
+from __future__ import annotations
+
+import importlib
+
+OPTIONAL = importlib.util.find_spec("tomllib")
+
+
+def python_perf_layer_lazy_loading_eager_import_heavy_optional_dependency_positive(enabled):
+    if not enabled:
+        return "feature disabled"
+    return OPTIONAL is not None

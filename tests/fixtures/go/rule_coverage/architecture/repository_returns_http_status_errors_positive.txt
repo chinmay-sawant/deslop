@@ -1,0 +1,50 @@
+package repository
+
+import (
+	"fmt"
+	"net/http"
+
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: Repository returns errors that embed HTTP status codes.
+// Repositories should return domain-level errors, not HTTP transport errors.
+
+type Inventory struct {
+	ID       string `gorm:"column:id"`
+	Product  string `gorm:"column:product"`
+	Quantity int    `gorm:"column:quantity"`
+}
+
+type InventoryRepository struct {
+	db *gorm.DB
+}
+
+// FindByID returns an error with HTTP status code embedded - anti-pattern.
+func (r *InventoryRepository) FindByID(id string) (*Inventory, error) {
+	var item Inventory
+	if err := r.db.First(&item, "id = ?", id).Error; err != nil {
+		return nil, fmt.Errorf("http.StatusNotFound: %w", err)
+	}
+	return &item, nil
+}
+
+// Create returns HTTP status error - anti-pattern.
+func (r *InventoryRepository) Create(item *Inventory) error {
+	if err := r.db.Create(item).Error; err != nil {
+		return fmt.Errorf("http.StatusConflict: %w", err)
+	}
+	return nil
+}
+
+// Delete returns HTTP status error - anti-pattern.
+func (r *InventoryRepository) Delete(id string) error {
+	result := r.db.Delete(&Inventory{}, "id = ?", id)
+	if result.Error != nil {
+		return fmt.Errorf("http.StatusInternalServerError: %w", result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("http.StatusNotFound: item %s not found", id)
+	}
+	return nil
+}

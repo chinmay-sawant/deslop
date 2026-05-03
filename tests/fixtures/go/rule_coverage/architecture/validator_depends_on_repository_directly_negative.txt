@@ -1,0 +1,70 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for validator_depends_on_repository_directly: preferred concrete example for this rule.
+// Rule intent: Reusable validator code that reaches into repositories instead of receiving precomputed facts or focused services.
+type CaseValidatorDependsOnRepositoryDirectlyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseValidatorDependsOnRepositoryDirectlyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseValidatorDependsOnRepositoryDirectlyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseValidatorDependsOnRepositoryDirectlyModel
+}
+
+type CaseValidatorDependsOnRepositoryDirectlyService struct {
+    repo *CaseValidatorDependsOnRepositoryDirectlyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseValidatorDependsOnRepositoryDirectlyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeValidatorDependsOnRepositoryDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseValidatorDependsOnRepositoryDirectlyDTO) error {
+    focus := "validator_depends_on_repository_directly"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseValidatorDependsOnRepositoryDirectlyRepository{db: db, sql: sqlDB}
+    var model CaseValidatorDependsOnRepositoryDirectlyModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseValidatorDependsOnRepositoryDirectlyDTO{ID: input, Status: "active"}
+    model := CaseValidatorDependsOnRepositoryDirectlyModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    validator_depends_repository_directly_negative := map[string]int{"validator": 1, "depends": 2, "repository": 3, "directly": 4}
+    validator_depends_repository_directly_negative["signal"] = len(input) + len(items)
+    validator_negative_0 := CaseValidatorDependsOnRepositoryDirectlyDTO{ID: input, Status: "validator"}
+    _ = validator_negative_0
+    depends_negative_1 := validator_depends_repository_directly_negative["depends"] + len(input)
+    _ = depends_negative_1
+    repository_negative_2 := db.Where("repository_id = ?", input)
+    _ = repository_negative_2
+    directly_negative_3 := validator_depends_repository_directly_negative["directly"] + len(input)
+    _ = directly_negative_3
+    return nil
+}

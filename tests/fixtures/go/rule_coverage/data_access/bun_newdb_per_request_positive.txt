@@ -1,0 +1,55 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "github.com/uptrace/bun"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for bun_newdb_per_request: risky concrete example for this rule.
+// Rule intent: Bun DB handles created directly on request paths instead of reused process-level state.
+type CaseBunNewdbPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBunNewdbPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBunNewdbPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBunNewdbPerRequestModel
+}
+
+type CaseBunNewdbPerRequestService struct {
+    repo *CaseBunNewdbPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBunNewdbPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBunNewdbPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBunNewdbPerRequestDTO) error {
+    sqldb, _ := sql.Open("postgres", "dsn")
+    bunDB := bun.NewDB(sqldb, nil)
+    _ = bunDB
+    _ = db.Where("id = ?", input).Find(&items)
+    return nil
+}

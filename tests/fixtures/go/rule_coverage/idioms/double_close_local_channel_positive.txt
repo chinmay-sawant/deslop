@@ -1,0 +1,53 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for double_close_local_channel: risky concrete example for this rule.
+// Rule intent: The same locally created channel appears to be closed more than once in one function body.
+type CaseDoubleCloseLocalChannelDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseDoubleCloseLocalChannelModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDoubleCloseLocalChannelRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDoubleCloseLocalChannelModel
+}
+
+type CaseDoubleCloseLocalChannelService struct {
+    repo *CaseDoubleCloseLocalChannelRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDoubleCloseLocalChannelAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDoubleCloseLocalChannel(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDoubleCloseLocalChannelDTO) error {
+    ch := make(chan int)
+    close(ch)
+    close(ch)
+    return nil
+}

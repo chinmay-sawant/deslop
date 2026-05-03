@@ -1,0 +1,5 @@
+import numpy as np
+
+def scale_array(arr):
+    # Correct: rely on numpy's vectorized operations for C-level speeds
+    return arr * 2.5

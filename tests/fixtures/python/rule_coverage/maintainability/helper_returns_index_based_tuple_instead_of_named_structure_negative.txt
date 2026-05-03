@@ -1,0 +1,12 @@
+from dataclasses import dataclass
+
+@dataclass
+class UserRecord:
+    id: int
+    name: str
+    is_active: bool
+
+def parse_user_record(line) -> UserRecord:
+    # Correct: return a named structure (dataclass or NamedTuple) for clarity and maintainability
+    parts = line.split(",")
+    return UserRecord(id=int(parts[0]), name=parts[1], is_active=(parts[2] == "True"))

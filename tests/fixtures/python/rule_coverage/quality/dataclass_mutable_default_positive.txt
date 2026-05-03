@@ -1,0 +1,6 @@
+from dataclasses import dataclass
+
+@dataclass
+class Inventory:
+    # Violation: using a mutable list as a direct default value shares the same list across all instances
+    items: list = []

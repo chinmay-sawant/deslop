@@ -1,0 +1,10 @@
+import time
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/compute")
+async def compute():
+    # Violation: using blocking IO (time.sleep) inside an 'async def' route (blocks the event loop)
+    time.sleep(5)
+    return {"status": "done"}

@@ -1,0 +1,7 @@
+def get_items():
+    yield from [1, 2, 3]
+
+items = get_items()
+# Violation: generator consumed twice without recreation
+first_pass = list(items)
+second_pass = list(items) # This will be empty

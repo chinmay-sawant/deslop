@@ -1,0 +1,8 @@
+def serialize_data(data):
+    # Violation: attempting optional imports inside a high-frequency function call introduces massive try/except overhead
+    try:
+        import orjson
+        return orjson.dumps(data)
+    except ImportError:
+        import json
+        return json.dumps(data)

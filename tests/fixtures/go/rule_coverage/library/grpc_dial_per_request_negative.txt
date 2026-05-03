@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "google.golang.org/grpc"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for grpc_dial_per_request: preferred concrete example for this rule.
+// Rule intent: `grpc.Dial(addr, opts...)` or `grpc.NewClient(addr, opts...)` inside handler functions
+type CaseGrpcDialPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGrpcDialPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGrpcDialPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGrpcDialPerRequestModel
+}
+
+type CaseGrpcDialPerRequestService struct {
+    repo *CaseGrpcDialPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGrpcDialPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGrpcDialPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGrpcDialPerRequestDTO) error {
+    focus := "grpc_dial_per_request"
+    _ = focus
+    var conn *grpc.ClientConn
+    _ = conn
+    grpc_dial_per_request_negative := map[string]int{"grpc": 1, "dial": 2, "per": 3, "request": 4}
+    grpc_dial_per_request_negative["signal"] = len(input) + len(items)
+    grpc_negative_0 := grpc_dial_per_request_negative["grpc"] + len(input)
+    _ = grpc_negative_0
+    dial_negative_1 := grpc_dial_per_request_negative["dial"] + len(input)
+    _ = dial_negative_1
+    for per_negative_2Index, item := range items { grpc_dial_per_request_negative[item.ID] = per_negative_2Index }
+    request_negative_3 := grpc_dial_per_request_negative["request"] + len(input)
+    _ = request_negative_3
+    return nil
+}

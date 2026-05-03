@@ -1,0 +1,65 @@
+package service
+
+import (
+	"context"
+	"fmt"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Positive scenario for service_method_handles_pagination_or_query_parsing:
+// service parses page, sort, filter, or URL values that should already be
+// normalized at the transport boundary.
+type ProductService struct {
+	repo ProductRepository
+}
+
+type ProductRepository interface {
+	List(ctx context.Context, offset, limit int, sortBy string) ([]Product, error)
+}
+
+type Product struct {
+	ID    string
+	Name  string
+	Price int
+}
+
+func NewProductService(repo ProductRepository) *ProductService {
+	return &ProductService{repo: repo}
+}
+
+func (s *ProductService) ListProducts(c *gin.Context) error {
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		c.JSON(400, gin.H{"error": "invalid page parameter"})
+		return fmt.Errorf("invalid page: %w", err)
+	}
+
+	size, err := strconv.Atoi(c.DefaultQuery("size", "20"))
+	if err != nil || size < 1 || size > 100 {
+		c.JSON(400, gin.H{"error": "invalid size parameter"})
+		return fmt.Errorf("invalid size: %w", err)
+	}
+
+	sortBy := c.DefaultQuery("sort", "created_at")
+	filter := c.Query("filter")
+
+	offset := (page - 1) * size
+
+	products, err := s.repo.List(c.Request.Context(), offset, size, sortBy)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return err
+	}
+
+	_ = filter
+
+	c.JSON(200, gin.H{
+		"products": products,
+		"page":     page,
+		"size":     size,
+		"sort":     sortBy,
+	})
+	return nil
+}

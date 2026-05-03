@@ -1,0 +1,11 @@
+class Logger:
+    pass
+
+class DatabaseConnection:
+    pass
+
+class OrderService:
+    # Violation: hardcoding and instantiating collaborators inside the constructor creates tight coupling
+    def __init__(self):
+        self.logger = Logger()
+        self.db = DatabaseConnection()

@@ -1,0 +1,5 @@
+# __init__.py
+# Correct: restrict the public API surface exclusively to intended public interfaces
+from .core import PublicClass
+
+__all__ = ["PublicClass"]

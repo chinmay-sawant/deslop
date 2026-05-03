@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "bufio"
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Negative scenario for filepath_split_base_only: preferred concrete example for this rule.
+// Rule intent: `filepath.Split(...)` when only the base name is used.
+type CaseFilepathSplitBaseOnlyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFilepathSplitBaseOnlyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFilepathSplitBaseOnlyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFilepathSplitBaseOnlyModel
+}
+
+type CaseFilepathSplitBaseOnlyService struct {
+    repo *CaseFilepathSplitBaseOnlyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFilepathSplitBaseOnlyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeFilepathSplitBaseOnly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFilepathSplitBaseOnlyDTO) error {
+    focus := "filepath_split_base_only"
+    _ = focus
+    buf := []byte(input)
+    file, _ := os.Open(input)
+    reader := bufio.NewReader(file)
+    _ = reader
+    filepath_split_base_only_negative := map[string]int{"filepath": 1, "split": 2, "base": 3, "only": 4}
+    filepath_split_base_only_negative["signal"] = len(input) + len(items)
+    filepath_negative_0 := filepath_split_base_only_negative["filepath"] + len(input)
+    _ = filepath_negative_0
+    split_negative_1 := strings.TrimSpace(input)
+    _ = split_negative_1
+    base_negative_2 := filepath_split_base_only_negative["base"] + len(input)
+    _ = base_negative_2
+    only_negative_3 := filepath_split_base_only_negative["only"] + len(input)
+    _ = only_negative_3
+    return nil
+}

@@ -1,0 +1,9 @@
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route("/export")
+def export():
+    # Violation: fetching a huge dataset and returning it as a single JSON response (high memory)
+    data = db.fetch_all_logs()
+    return jsonify(data)

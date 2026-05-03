@@ -1,0 +1,5 @@
+def has_key(mapping, key):
+    # Violation: materializing a list of keys for a membership check (O(N) search and extra memory)
+    if key in list(mapping.keys()):
+        return True
+    return False

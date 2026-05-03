@@ -5,7 +5,7 @@ mod cli;
 
 use std::path::PathBuf;
 
-use crate::cli::{execute_bench, execute_rules, execute_scan};
+use crate::cli::{ScanCommandOptions, execute_bench, execute_rules, execute_scan};
 use deslop::{RuleLanguage, RuleStatus};
 
 #[derive(Debug, Parser)]
@@ -31,6 +31,9 @@ enum Command {
         no_ignore: bool,
         #[arg(long)]
         enable_semantic: bool,
+        /// Enable all experimental rule packs for this scan.
+        #[arg(long)]
+        experimental: bool,
         #[arg(long, value_delimiter = ',')]
         ignore: Vec<String>,
         /// Exit 0 even when findings are present (useful for informational runs).
@@ -49,6 +52,9 @@ enum Command {
         no_ignore: bool,
         #[arg(long)]
         enable_semantic: bool,
+        /// Enable all experimental rule packs for this benchmark.
+        #[arg(long)]
+        experimental: bool,
     },
     Rules {
         #[arg(long)]
@@ -70,17 +76,19 @@ fn main() -> Result<()> {
             details,
             no_ignore,
             enable_semantic,
+            experimental,
             ignore,
             no_fail,
-        } => execute_scan(
+        } => execute_scan(ScanCommandOptions {
             path,
             json,
             details,
             no_ignore,
             enable_semantic,
+            experimental,
             ignore,
             no_fail,
-        ),
+        }),
         Command::Bench {
             path,
             repeats,
@@ -88,7 +96,16 @@ fn main() -> Result<()> {
             json,
             no_ignore,
             enable_semantic,
-        } => execute_bench(path, repeats, warmups, json, no_ignore, enable_semantic),
+            experimental,
+        } => execute_bench(
+            path,
+            repeats,
+            warmups,
+            json,
+            no_ignore,
+            enable_semantic,
+            experimental,
+        ),
         Command::Rules {
             json,
             language,

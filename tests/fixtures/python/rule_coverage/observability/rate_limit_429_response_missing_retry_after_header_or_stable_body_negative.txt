@@ -1,0 +1,7 @@
+from fastapi import Response
+
+def rate_limit_exceeded():
+    # Correct: always provide a Retry-After header and a structured body when rate limiting
+    headers = {"Retry-After": "60"}
+    body = '{"error": "rate_limit_exceeded", "message": "Try again in 60 seconds"}'
+    return Response(content=body, status_code=429, headers=headers)

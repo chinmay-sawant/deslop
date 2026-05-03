@@ -1,0 +1,5 @@
+import yaml
+
+def load_config(config_stream):
+    # Violation: YAML config loaded without SafeLoader (RCE risk)
+    return yaml.load(config_stream)

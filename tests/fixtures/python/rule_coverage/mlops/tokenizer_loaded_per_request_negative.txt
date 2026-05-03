@@ -1,0 +1,7 @@
+from transformers import AutoTokenizer
+
+# Correct: load the tokenizer once into memory at module initialization
+GLOBAL_TOKENIZER = AutoTokenizer.from_pretrained("bert-base-uncased")
+
+def tokenize_input(text):
+    return GLOBAL_TOKENIZER(text)

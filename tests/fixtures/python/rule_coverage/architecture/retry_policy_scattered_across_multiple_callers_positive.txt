@@ -1,0 +1,14 @@
+# Violation: retry policy logic scattered across multiple callers
+def caller_one():
+    for i in range(3):
+        try:
+            return external_call()
+        except:
+            time.sleep(1)
+
+def caller_two():
+    for i in range(3):
+        try:
+            return external_call()
+        except:
+            time.sleep(1)

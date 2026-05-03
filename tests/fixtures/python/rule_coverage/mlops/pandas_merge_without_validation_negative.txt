@@ -1,0 +1,5 @@
+import pandas as pd
+
+def join_user_data(users_df, orders_df):
+    # Correct: assert the expected relationship (e.g., 1:m) using the validate parameter to fail fast on data anomalies
+    return pd.merge(users_df, orders_df, on="user_id", validate="1:m")

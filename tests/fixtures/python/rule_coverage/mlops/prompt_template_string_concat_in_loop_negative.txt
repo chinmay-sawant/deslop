@@ -1,0 +1,4 @@
+def build_context(documents):
+    # Correct: use list comprehensions and string.join() for O(N) efficient string building
+    docs_text = [doc.text for doc in documents]
+    return "Here is the information:\n" + "\n".join(docs_text)

@@ -1,0 +1,53 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for missing_cancel_call: risky concrete example for this rule.
+// Rule intent: Derived contexts where deslop cannot find a local cancel() or defer cancel() call.
+type CaseMissingCancelCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMissingCancelCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMissingCancelCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMissingCancelCallModel
+}
+
+type CaseMissingCancelCallService struct {
+    repo *CaseMissingCancelCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMissingCancelCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMissingCancelCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMissingCancelCallDTO) error {
+    child, _ := context.WithTimeout(ctx, time.Second)
+    _ = db.WithContext(child).Where("id = ?", input).Find(&items)
+    return nil
+}

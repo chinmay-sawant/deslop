@@ -1,0 +1,9 @@
+def apply_transform(items, transformer):
+    return [transformer(item) for item in items]
+
+def _double_value(x):
+    return x * 2
+
+def process_data(data):
+    # Correct: use a pre-defined static helper function to avoid repeated lambda allocations
+    return apply_transform(data, _double_value)

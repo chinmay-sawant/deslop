@@ -1,0 +1,27 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for strings_split_same_input_multiple_times: the same string input is split multiple times in one function.
+type CaseStringsSplitSameInputMultipleTimesDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+func PositiveStringsSplitSameInputMultipleTimes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsSplitSameInputMultipleTimesDTO) error {
+    parts := strings.Split(input, ",")
+    fields := strings.Split(input, ":")
+    _ = parts
+    _ = fields
+    return nil
+}

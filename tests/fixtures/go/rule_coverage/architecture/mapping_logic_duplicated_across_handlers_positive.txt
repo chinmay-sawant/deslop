@@ -1,0 +1,54 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for mapping_logic_duplicated_across_handlers: risky concrete example for this rule.
+// Rule intent: Repeated field mapping blocks across multiple handlers.
+type CaseMappingLogicDuplicatedAcrossHandlersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMappingLogicDuplicatedAcrossHandlersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMappingLogicDuplicatedAcrossHandlersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMappingLogicDuplicatedAcrossHandlersModel
+}
+
+type CaseMappingLogicDuplicatedAcrossHandlersService struct {
+    repo *CaseMappingLogicDuplicatedAcrossHandlersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMappingLogicDuplicatedAcrossHandlersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMappingLogicDuplicatedAcrossHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMappingLogicDuplicatedAcrossHandlersDTO) error {
+    dto := CaseMappingLogicDuplicatedAcrossHandlersDTO{ID: input, Status: "active"}
+    model1 := CaseMappingLogicDuplicatedAcrossHandlersModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    model2 := CaseMappingLogicDuplicatedAcrossHandlersModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _, _ = model1, model2
+    return nil
+}

@@ -1,0 +1,7 @@
+import math
+
+def evaluate_threshold(computed_val):
+    # Correct: always use math.isclose() when comparing floating-point numbers for logic branching
+    if math.isclose(computed_val, 0.3):
+        return "triggered"
+    return "safe"

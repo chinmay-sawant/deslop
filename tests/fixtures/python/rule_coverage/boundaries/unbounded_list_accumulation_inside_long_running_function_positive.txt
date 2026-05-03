@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+history: list[str] = []
+
+
+def record_event(event: str) -> int:
+    history.append(event)
+    return len(history)

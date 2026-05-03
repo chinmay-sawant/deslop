@@ -1,0 +1,9 @@
+# tests.py
+SHARED_STATE = {}
+
+def test_a():
+    SHARED_STATE["id"] = 1
+
+def test_b():
+    # Violation: test depends on side effects from a sibling test
+    assert SHARED_STATE["id"] == 1

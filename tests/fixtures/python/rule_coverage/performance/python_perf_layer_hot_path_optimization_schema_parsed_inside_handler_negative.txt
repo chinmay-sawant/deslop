@@ -1,0 +1,9 @@
+from __future__ import annotations
+
+import json
+
+
+def python_perf_layer_hot_path_optimization_schema_parsed_inside_handler_negative(records, schema_text):
+    schema = json.loads(schema_text)
+    required = set(schema["required"])
+    return sum(1 for record in records if required.issubset(record))

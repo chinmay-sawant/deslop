@@ -1,0 +1,9 @@
+from __future__ import annotations
+
+import hashlib
+
+
+def python_perf_layer_logging_overhead_extra_fields_computed_before_sampling_positive(logger, payload, sample):
+    extra = {"digest": hashlib.sha256(payload.encode("utf-8")).hexdigest()}
+    if sample:
+        logger.info("request accepted", extra=extra)

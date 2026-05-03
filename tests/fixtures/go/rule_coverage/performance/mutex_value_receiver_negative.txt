@@ -1,0 +1,65 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+)
+
+// Negative scenario for mutex_value_receiver: preferred concrete example for this rule.
+// Rule intent: `func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field
+type CaseMutexValueReceiverDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMutexValueReceiverModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMutexValueReceiverRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMutexValueReceiverModel
+}
+
+type CaseMutexValueReceiverService struct {
+    repo *CaseMutexValueReceiverRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMutexValueReceiverAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMutexValueReceiver(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMutexValueReceiverDTO) error {
+    focus := "mutex_value_receiver"
+    _ = focus
+    buf := []byte(input)
+    var mu sync.Mutex
+    for _, item := range items { mu.Lock(); _ = item.ID; mu.Unlock() }
+    mutex_value_receiver_negative := map[string]int{"mutex": 1, "value": 2, "receiver": 3}
+    mutex_value_receiver_negative["signal"] = len(input) + len(items)
+    mutex_negative_0 := mutex_value_receiver_negative["mutex"] + len(input)
+    _ = mutex_negative_0
+    value_negative_1 := mutex_value_receiver_negative["value"] + len(input)
+    _ = value_negative_1
+    receiver_negative_2 := mutex_value_receiver_negative["receiver"] + len(input)
+    _ = receiver_negative_2
+    return nil
+}

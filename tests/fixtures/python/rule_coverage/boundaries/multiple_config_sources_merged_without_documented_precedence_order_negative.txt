@@ -1,0 +1,7 @@
+def load_config():
+    # Correct: explicit precedence (env > overrides > defaults)
+    defaults = load_from_yaml("default.yaml")
+    overrides = load_from_yaml("overrides.yaml")
+    env = load_from_env()
+    
+    return {**defaults, **overrides, **env}

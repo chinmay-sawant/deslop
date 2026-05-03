@@ -1,0 +1,13 @@
+import pandas as pd
+import gc
+
+def process_large_data(filepath):
+    df_raw = pd.read_csv(filepath)
+    df_clean = clean_data(df_raw)
+    
+    # Correct: explicitly delete intermediate DataFrames and collect garbage
+    del df_raw
+    gc.collect()
+    
+    df_final = aggregate_data(df_clean)
+    return df_final

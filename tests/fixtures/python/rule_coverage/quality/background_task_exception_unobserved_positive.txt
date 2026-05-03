@@ -1,0 +1,6 @@
+import asyncio
+
+async def handle_request():
+    # Violation: creating a background task without saving a reference or attaching a done callback swallows exceptions
+    asyncio.create_task(background_work())
+    return "OK"

@@ -1,0 +1,5 @@
+class UserService:
+    def create_user(self, data):
+        user = User.create(data)
+        # Violation: domain service returning transport-specific metadata (HTTP status)
+        return user, 201, {"Location": f"/users/{user.id}"}

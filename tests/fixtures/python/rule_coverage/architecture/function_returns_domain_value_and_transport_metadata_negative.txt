@@ -1,0 +1,10 @@
+class UserService:
+    def create_user(self, data):
+        # Correct: service returns only the domain object
+        return User.create(data)
+
+@app.post("/users")
+def register(data):
+    user = service.create_user(data)
+    # Transport metadata is handled in the web layer
+    return JSONResponse(content=user.to_dict(), status_code=201)

@@ -1,0 +1,7 @@
+import asyncio
+
+async def fetch_and_update(state, lock):
+    # Violation: holding an async lock while awaiting network IO causes massive contention and deadlocks
+    async with lock:
+        data = await fetch_remote_data()
+        state.update(data)

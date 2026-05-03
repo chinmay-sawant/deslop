@@ -1,0 +1,16 @@
+package perflayers
+
+func MultiplePassesPositive(values []int) int {
+    // multiple passes for independent counts
+    total := 0
+    for _, value := range values {
+        total += value
+    }
+
+    count := 0
+    for range values {
+        count++
+    }
+
+    return total + count
+}

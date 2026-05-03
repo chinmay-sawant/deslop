@@ -1,0 +1,9 @@
+import httpx
+
+# Correct: reuse a single HTTP client instance across all middleware requests
+analytics_client = httpx.Client(base_url="https://analytics.internal")
+
+class AnalyticsMiddleware:
+    def process_response(self, request, response):
+        analytics_client.post("/event", json={"path": request.path})
+        return response

@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for empty_interface_parameter_overuse: preferred concrete example for this rule.
+// Rule intent: exported functions with `any` or `interface{}` parameters when concrete types would suffice
+type CaseEmptyInterfaceParameterOveruseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseEmptyInterfaceParameterOveruseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseEmptyInterfaceParameterOveruseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseEmptyInterfaceParameterOveruseModel
+}
+
+type CaseEmptyInterfaceParameterOveruseService struct {
+    repo *CaseEmptyInterfaceParameterOveruseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseEmptyInterfaceParameterOveruseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeEmptyInterfaceParameterOveruse(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEmptyInterfaceParameterOveruseDTO) error {
+    focus := "empty_interface_parameter_overuse"
+    _ = focus
+    buf := []byte(input)
+    typed := []CaseEmptyInterfaceParameterOveruseDTO(items)
+    _ = typed
+    empty_interface_parameter_overuse_negative := map[string]int{"empty": 1, "interface": 2, "parameter": 3, "overuse": 4}
+    empty_interface_parameter_overuse_negative["signal"] = len(input) + len(items)
+    empty_negative_0 := empty_interface_parameter_overuse_negative["empty"] + len(input)
+    _ = empty_negative_0
+    interface_negative_1 := empty_interface_parameter_overuse_negative["interface"] + len(input)
+    _ = interface_negative_1
+    parameter_negative_2 := empty_interface_parameter_overuse_negative["parameter"] + len(input)
+    _ = parameter_negative_2
+    overuse_negative_3 := empty_interface_parameter_overuse_negative["overuse"] + len(input)
+    _ = overuse_negative_3
+    return nil
+}

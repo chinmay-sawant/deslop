@@ -1,0 +1,101 @@
+package service
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+	"time"
+
+	"gorm.io/gorm"
+)
+
+// Positive scenario for service_struct_has_excessive_dependency_count:
+// service has too many unrelated dependencies, signaling a god-service.
+type AnalyticsService struct {
+	db           *gorm.DB
+	redisClient  RedisClient
+	httpClient   *http.Client
+	logger       *log.Logger
+	cache        Cache
+	validator    Validator
+	mailer       Mailer
+	eventBus     EventBus
+	config       map[string]string
+}
+
+type RedisClient interface {
+	Get(key string) (string, error)
+	Set(key, value string, ttl time.Duration) error
+}
+
+type Cache interface {
+	Get(ctx context.Context, key string) ([]byte, error)
+	Set(ctx context.Context, key string, value []byte, ttl time.Duration) error
+}
+
+type Validator interface {
+	Validate(data interface{}) error
+}
+
+type Mailer interface {
+	Send(to, subject, body string) error
+}
+
+type EventBus interface {
+	Publish(event string, payload interface{}) error
+}
+
+func NewAnalyticsService(
+	db *gorm.DB,
+	redisClient RedisClient,
+	httpClient *http.Client,
+	logger *log.Logger,
+	cache Cache,
+	validator Validator,
+	mailer Mailer,
+	eventBus EventBus,
+	config map[string]string,
+) *AnalyticsService {
+	return &AnalyticsService{
+		db:          db,
+		redisClient: redisClient,
+		httpClient:  httpClient,
+		logger:      logger,
+		cache:       cache,
+		validator:   validator,
+		mailer:      mailer,
+		eventBus:    eventBus,
+		config:      config,
+	}
+}
+
+func (s *AnalyticsService) GenerateReport(ctx context.Context, reportID string) error {
+	s.logger.Printf("generating report %s", reportID)
+
+	if err := s.validator.Validate(map[string]string{"report_id": reportID}); err != nil {
+		return err
+	}
+
+	cached, _ := s.cache.Get(ctx, "report:"+reportID)
+	_ = cached
+
+	s.eventBus.Publish("report.generated", map[string]string{"id": reportID})
+
+	return nil
+}
+
+func (s *AnalyticsService) SendNotification(ctx context.Context, userID, message string) error {
+	email := s.lookupEmail(ctx, userID)
+	if email == "" {
+		return fmt.Errorf("no email found for user %s", userID)
+	}
+
+	return s.mailer.Send(email, "Analytics Alert", message)
+}
+
+func (s *AnalyticsService) lookupEmail(ctx context.Context, userID string) string {
+	var email string
+	s.db.WithContext(ctx).Raw("SELECT email FROM users WHERE id = ?", userID).Scan(&email)
+	return email
+}

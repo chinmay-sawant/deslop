@@ -1,0 +1,7 @@
+import logging
+
+def handle_webhook(payload):
+    if not payload.get("valid"):
+        # Correct: extract specific keys or safely truncate massive strings before logging them
+        keys = list(payload.keys())
+        logging.warning(f"Invalid webhook payload received. Keys present: {keys}")

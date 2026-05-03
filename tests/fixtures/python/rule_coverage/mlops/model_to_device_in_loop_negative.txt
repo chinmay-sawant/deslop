@@ -1,0 +1,8 @@
+import torch
+
+def evaluate_batches(model, dataloader):
+    # Correct: move the model to the target device once before processing data
+    model.to("cuda")
+    for batch in dataloader:
+        inputs = batch.to("cuda")
+        outputs = model(inputs)

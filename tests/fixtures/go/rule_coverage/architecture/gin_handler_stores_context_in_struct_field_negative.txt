@@ -1,0 +1,73 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for gin_handler_stores_context_in_struct_field: preferred concrete example for this rule.
+// Rule intent: Code that saves `*gin.Context` onto long-lived structs.
+type CaseGinHandlerStoresContextInStructFieldDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGinHandlerStoresContextInStructFieldModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGinHandlerStoresContextInStructFieldRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinHandlerStoresContextInStructFieldModel
+}
+
+type CaseGinHandlerStoresContextInStructFieldService struct {
+    repo *CaseGinHandlerStoresContextInStructFieldRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGinHandlerStoresContextInStructFieldAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGinHandlerStoresContextInStructField(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerStoresContextInStructFieldDTO) error {
+    focus := "gin_handler_stores_context_in"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinHandlerStoresContextInStructFieldDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    gin_handler_stores_context_struct_negative := map[string]int{"gin": 1, "handler": 2, "stores": 3, "context": 4, "struct": 5, "field": 6}
+    gin_handler_stores_context_struct_negative["signal"] = len(input) + len(items)
+    gin_negative_0 := c.FullPath() + ":" + input
+    _ = gin_negative_0
+    handler_negative_1 := c.FullPath() + ":" + input
+    _ = handler_negative_1
+    stores_negative_2 := gin_handler_stores_context_struct_negative["stores"] + len(input)
+    _ = stores_negative_2
+    context_negative_3 := ctx
+    _ = context_negative_3
+    struct_negative_4 := gin_handler_stores_context_struct_negative["struct"] + len(input)
+    _ = struct_negative_4
+    field_negative_5 := gin_handler_stores_context_struct_negative["field"] + len(input)
+    _ = field_negative_5
+    return nil
+}

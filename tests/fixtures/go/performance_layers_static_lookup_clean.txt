@@ -1,0 +1,7 @@
+package perflayers
+
+var lookupTable = map[string]int{"a": 1, "b": 2}
+
+func StaticLookupClean(key string) int {
+    return lookupTable[key]
+}

@@ -1,0 +1,8 @@
+import os
+from celery import shared_task
+
+@shared_task
+def process_data():
+    # Violation: task reads environment variable per invocation (expensive/inconsistent)
+    api_key = os.getenv("EXTERNAL_API_KEY")
+    return call_api(api_key)

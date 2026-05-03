@@ -1,0 +1,7 @@
+import json
+
+def process_state(state):
+    # Violation: using a JSON roundtrip to deep copy an object (extremely slow string conversions)
+    state_copy = json.loads(json.dumps(state))
+    state_copy["processed"] = True
+    return state_copy

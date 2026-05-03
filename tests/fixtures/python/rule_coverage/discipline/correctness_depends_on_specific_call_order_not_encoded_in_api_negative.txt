@@ -1,0 +1,11 @@
+class Processor:
+    def process(self):
+        # Correct: API encodes the call order internally
+        self._stage_one()
+        self._stage_two()
+
+    def _stage_one(self):
+        self.data = "raw"
+
+    def _stage_two(self):
+        self.data = self.data.upper()

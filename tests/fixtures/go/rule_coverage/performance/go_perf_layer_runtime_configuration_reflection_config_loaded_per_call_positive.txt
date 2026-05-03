@@ -1,0 +1,85 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "reflect"
+    "runtime"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_runtime_configuration_reflection_config_loaded_per_call: risky concrete example for this rule.
+// Rule intent: Layer: Build and runtime configuration. Flag reflection-based config decoding performed per operation instead of at startup.
+type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallModel
+}
+
+type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallService struct {
+    repo *CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+type caseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallConfig struct {
+    TimeoutMS int
+    Mode string
+}
+
+func PositiveGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallDTO) error {
+    focus := "go_perf_layer_runtime_configuration"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items {
+        cfg := caseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallConfig{}
+        v := reflect.ValueOf(&cfg).Elem()
+        v.FieldByName("TimeoutMS").SetInt(int64(item.Amount))
+        v.FieldByName("Mode").SetString(item.Status)
+        _ = cfg
+    }
+    perf_layer_runtime_configuration_reflection_positive := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "reflection": 5, "config": 6}
+    perf_layer_runtime_configuration_reflection_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_runtime_configuration_reflection_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_runtime_configuration_reflection_positive["layer"] + len(input)
+    _ = layer_positive_1
+    runtime_positive_2 := perf_layer_runtime_configuration_reflection_positive["runtime"] + len(input)
+    _ = runtime_positive_2
+    configuration_positive_3 := perf_layer_runtime_configuration_reflection_positive["configuration"] + len(input)
+    _ = configuration_positive_3
+    reflection_positive_4 := perf_layer_runtime_configuration_reflection_positive["reflection"] + len(input)
+    _ = reflection_positive_4
+    config_positive_5 := perf_layer_runtime_configuration_reflection_positive["config"] + len(input)
+    _ = config_positive_5
+    return nil
+}

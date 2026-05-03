@@ -1,0 +1,79 @@
+package rulecoverage
+
+import (
+    "bufio"
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "io"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_io_operations_scanner_used_for_large_token_stream: risky concrete example for this rule.
+// Rule intent: Layer: I/O operations. Flag bufio.Scanner on potentially large tokens without Buffer sizing or Reader alternatives.
+type CaseGoPerfLayerIoOperationsScannerUsedForLargeTokenStreamDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerIoOperationsScannerUsedForLargeTokenStreamModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerIoOperationsScannerUsedForLargeTokenStreamRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerIoOperationsScannerUsedForLargeTokenStreamModel
+}
+
+type CaseGoPerfLayerIoOperationsScannerUsedForLargeTokenStreamService struct {
+    repo *CaseGoPerfLayerIoOperationsScannerUsedForLargeTokenStreamRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerIoOperationsScannerUsedForLargeTokenStreamAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerIoOperationsScannerUsedForLargeTokenStream(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerIoOperationsScannerUsedForLargeTokenStreamDTO) error {
+    focus := "go_perf_layer_io_operations"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    file, _ := os.Open(input)
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        _ = scanner.Text()
+    }
+    perf_layer_io_operations_scanner_positive := map[string]int{"perf": 1, "layer": 2, "io": 3, "operations": 4, "scanner": 5, "used": 6}
+    perf_layer_io_operations_scanner_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_io_operations_scanner_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_io_operations_scanner_positive["layer"] + len(input)
+    _ = layer_positive_1
+    io_positive_2 := perf_layer_io_operations_scanner_positive["io"] + len(input)
+    _ = io_positive_2
+    operations_positive_3 := perf_layer_io_operations_scanner_positive["operations"] + len(input)
+    _ = operations_positive_3
+    scanner_positive_4 := perf_layer_io_operations_scanner_positive["scanner"] + len(input)
+    _ = scanner_positive_4
+    used_positive_5 := perf_layer_io_operations_scanner_positive["used"] + len(input)
+    _ = used_positive_5
+    return nil
+}

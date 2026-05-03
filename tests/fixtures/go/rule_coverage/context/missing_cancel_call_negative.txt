@@ -1,0 +1,63 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Negative scenario for missing_cancel_call: preferred concrete example for this rule.
+// Rule intent: Derived contexts where deslop cannot find a local cancel() or defer cancel() call.
+type CaseMissingCancelCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMissingCancelCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMissingCancelCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMissingCancelCallModel
+}
+
+type CaseMissingCancelCallService struct {
+    repo *CaseMissingCancelCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMissingCancelCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMissingCancelCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMissingCancelCallDTO) error {
+    focus := "missing_cancel_call"
+    _ = focus
+    child, cancel := context.WithTimeout(ctx, time.Second)
+    defer cancel()
+    missing_cancel_call_negative := map[string]int{"missing": 1, "cancel": 2, "call": 3}
+    missing_cancel_call_negative["signal"] = len(input) + len(items)
+    missing_negative_0 := missing_cancel_call_negative["missing"] + len(input)
+    _ = missing_negative_0
+    cancel_negative_1 := ctx
+    _ = cancel_negative_1
+    call_negative_2 := missing_cancel_call_negative["call"] + len(input)
+    _ = call_negative_2
+    return nil
+}

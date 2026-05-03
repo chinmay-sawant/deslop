@@ -1,0 +1,10 @@
+import os
+
+DATA_BLOB = None
+
+def get_data():
+    # Correct: perform heavy file IO inside functions, optionally caching the result
+    global DATA_BLOB
+    if DATA_BLOB is None:
+        DATA_BLOB = open("massive_dataset.csv").read()
+    return DATA_BLOB

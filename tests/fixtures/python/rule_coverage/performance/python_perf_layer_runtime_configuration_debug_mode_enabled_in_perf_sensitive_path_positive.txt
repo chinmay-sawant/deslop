@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+def python_perf_layer_runtime_configuration_debug_mode_enabled_in_perf_sensitive_path_positive(values):
+    total = 0
+    debug_enabled = True
+    for value in values:
+        if debug_enabled:
+            _ = {"value": value, "repr": repr(value)}
+        total += value
+    return total

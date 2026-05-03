@@ -1,0 +1,8 @@
+import asyncio
+
+async def outer():
+    # Correct: use await instead of run_until_complete
+    await inner()
+
+async def inner():
+    await asyncio.sleep(1)

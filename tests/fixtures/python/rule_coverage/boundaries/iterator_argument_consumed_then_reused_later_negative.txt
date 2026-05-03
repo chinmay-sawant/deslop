@@ -1,0 +1,8 @@
+def validate_and_process(items):
+    # Correct: iterator is converted to a list once to allow multiple passes
+    items_list = list(items)
+    if not items_list:
+        return "Empty"
+    
+    for item in items_list:
+        process(item)

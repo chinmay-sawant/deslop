@@ -1,0 +1,10 @@
+def create_user(data):
+    # Violation: duplicate validation pipeline repeated
+    if not data.get("username"): raise ValueError("Missing username")
+    if len(data["username"]) < 3: raise ValueError("Username too short")
+    db.save_user(data)
+
+def update_user(data):
+    if not data.get("username"): raise ValueError("Missing username")
+    if len(data["username"]) < 3: raise ValueError("Username too short")
+    db.update_user(data)

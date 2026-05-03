@@ -1,0 +1,10 @@
+import threading
+
+shared_data = []
+
+def worker():
+    # Violation: shared mutable collection mutated across threads without a lock
+    shared_data.append(1)
+
+threads = [threading.Thread(target=worker) for _ in range(10)]
+for t in threads: t.start()

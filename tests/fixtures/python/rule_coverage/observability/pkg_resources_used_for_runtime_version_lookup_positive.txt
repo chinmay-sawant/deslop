@@ -1,0 +1,5 @@
+import pkg_resources
+
+def get_library_version():
+    # Violation: using pkg_resources for runtime version lookups adds hundreds of milliseconds to startup time
+    return pkg_resources.get_distribution("requests").version

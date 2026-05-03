@@ -1,0 +1,9 @@
+import asyncio
+
+async def fetch_all():
+    # Potential partial failure path without handling exceptions in gather
+    results = await asyncio.gather(
+        fetch_one(),
+        fetch_two()
+    )
+    return results

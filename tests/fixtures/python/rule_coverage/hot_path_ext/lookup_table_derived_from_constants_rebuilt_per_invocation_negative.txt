@@ -1,0 +1,6 @@
+from __future__ import annotations
+
+STATUS_LOOKUP = {"A": "active", "I": "inactive", "S": "suspended"}
+
+def lookup_table_derived_from_constants_rebuilt_per_invocation_negative(code: str = "A"):
+    return STATUS_LOOKUP.get(code, "unknown")

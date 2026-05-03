@@ -1,0 +1,6 @@
+def add_to_history(event, history=None):
+    # Correct: use None as default and initialize inside the function
+    if history is None:
+        history = []
+    history.append(event)
+    return history

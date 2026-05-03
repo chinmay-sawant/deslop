@@ -1,0 +1,7 @@
+def summarize(values):
+    total = 0
+    largest = None
+    for value in values:
+        total += value
+        largest = value if largest is None or value > largest else largest
+    return total, largest

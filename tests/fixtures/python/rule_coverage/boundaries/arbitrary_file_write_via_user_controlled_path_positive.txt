@@ -1,0 +1,4 @@
+def save_report(filename, content):
+    # Violation: arbitrary file write via user-controlled path
+    with open(f"/tmp/reports/{filename}", "w") as f:
+        f.write(content)

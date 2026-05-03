@@ -1,0 +1,10 @@
+import json
+from flask import Flask, Response
+
+app = Flask(__name__)
+
+@app.route("/api")
+def api():
+    # Violation: manually calling json.dumps() and then creating a Response object
+    data = {"status": "ok"}
+    return Response(json.dumps(data), mimetype='application/json')

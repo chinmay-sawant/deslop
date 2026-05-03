@@ -1,0 +1,65 @@
+package handler
+
+import (
+	"errors"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Positive scenario for validator_outside_validation_package.
+// Rule intent: Reusable validators that are scattered across handlers instead of
+// living in a dedicated validation helper package.
+
+// UserValidator is defined in the handler package instead of a validation package.
+type UserValidator struct{}
+
+func (v *UserValidator) ValidateName(name string) error {
+	if name == "" {
+		return errors.New("name is required")
+	}
+	if len(name) > 100 {
+		return errors.New("name must be less than 100 characters")
+	}
+	return nil
+}
+
+func (v *UserValidator) ValidateEmail(email string) error {
+	if email == "" {
+		return errors.New("email is required")
+	}
+	if len(email) > 254 {
+		return errors.New("email must be less than 254 characters")
+	}
+	return nil
+}
+
+// OrderValidator is also defined in the handler package — another validator outside validation package.
+type OrderValidator struct{}
+
+func (v *OrderValidator) ValidateAmount(amount float64) error {
+	if amount <= 0 {
+		return errors.New("amount must be positive")
+	}
+	if amount > 1000000 {
+		return errors.New("amount exceeds maximum")
+	}
+	return nil
+}
+
+func CreateUserHandler(c *gin.Context) {
+	validator := &UserValidator{}
+	name := c.PostForm("name")
+	email := c.PostForm("email")
+
+	if err := validator.ValidateName(name); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := validator.ValidateEmail(email); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "user created"})
+}

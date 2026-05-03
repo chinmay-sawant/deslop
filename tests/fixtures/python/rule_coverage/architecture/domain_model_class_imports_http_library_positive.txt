@@ -1,0 +1,6 @@
+# domain/user.py
+import requests  # Violation: domain model importing HTTP library
+
+class User:
+    def sync_external(self):
+        requests.post("https://api.external.com/sync", json={"id": self.id})

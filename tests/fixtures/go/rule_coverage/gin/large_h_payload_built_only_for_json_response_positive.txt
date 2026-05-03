@@ -1,0 +1,79 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "encoding/json"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for large_h_payload_built_only_for_json_response: risky concrete example for this rule.
+// Rule intent: Large gin.H payloads built as transient dynamic maps right before JSON rendering.
+type CaseLargeHPayloadBuiltOnlyForJsonResponseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseLargeHPayloadBuiltOnlyForJsonResponseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLargeHPayloadBuiltOnlyForJsonResponseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLargeHPayloadBuiltOnlyForJsonResponseModel
+}
+
+type CaseLargeHPayloadBuiltOnlyForJsonResponseService struct {
+    repo *CaseLargeHPayloadBuiltOnlyForJsonResponseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLargeHPayloadBuiltOnlyForJsonResponseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveLargeHPayloadBuiltOnlyForJsonResponse(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLargeHPayloadBuiltOnlyForJsonResponseDTO) error {
+    focus := "large_h_payload_built_only"
+    _ = focus
+    response := gin.H{
+        "rule": input,
+        "items": items,
+        "tenant": c.Query("tenant"),
+        "count": len(items),
+        "page": c.Query("page"),
+        "filters": gin.H{
+            "status": c.Query("status"),
+            "region": c.Query("region"),
+        },
+    }
+    c.JSON(200, response)
+    large_h_payload_built_only_positive := map[string]int{"large": 1, "h": 2, "payload": 3, "built": 4, "only": 5, "json": 6}
+    large_h_payload_built_only_positive["signal"] = len(input) + len(items)
+    large_positive_0 := large_h_payload_built_only_positive["large"] + len(input)
+    _ = large_positive_0
+    h_positive_1 := large_h_payload_built_only_positive["h"] + len(input)
+    _ = h_positive_1
+    payload_positive_2 := large_h_payload_built_only_positive["payload"] + len(input)
+    _ = payload_positive_2
+    built_positive_3 := large_h_payload_built_only_positive["built"] + len(input)
+    _ = built_positive_3
+    only_positive_4 := large_h_payload_built_only_positive["only"] + len(input)
+    _ = only_positive_4
+    json_positive_5 := fmt.Sprintf("json:%s", input)
+    _ = json_positive_5
+    return nil
+}

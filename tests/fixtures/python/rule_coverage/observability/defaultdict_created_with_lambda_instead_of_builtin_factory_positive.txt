@@ -1,0 +1,8 @@
+from collections import defaultdict
+
+def group_items(items):
+    # Violation: using a lambda where the built-in type object itself would work perfectly
+    grouped = defaultdict(lambda: [])
+    for item in items:
+        grouped[item.type].append(item)
+    return grouped

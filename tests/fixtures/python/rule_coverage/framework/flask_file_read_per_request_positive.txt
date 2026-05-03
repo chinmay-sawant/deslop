@@ -1,0 +1,10 @@
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/terms")
+def terms():
+    # Violation: static file read from disk on every request
+    with open("terms.txt") as f:
+        content = f.read()
+    return content

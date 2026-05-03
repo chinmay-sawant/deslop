@@ -1,0 +1,2 @@
+def load_orders(session, order_ids: list[int]) -> list[object]:
+    return session.query("Order").filter(("id", "in", order_ids)).all()

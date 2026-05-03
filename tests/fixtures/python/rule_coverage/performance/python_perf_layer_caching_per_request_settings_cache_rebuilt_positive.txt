@@ -1,0 +1,6 @@
+def get_feature_flags(env: dict[str, str]) -> dict[str, bool]:
+    settings_cache = {
+        "beta": env.get("BETA_ENABLED") == "1",
+        "audit": env.get("AUDIT_ENABLED") == "1",
+    }
+    return settings_cache

@@ -1,0 +1,8 @@
+_CACHE: dict[tuple[int, str], int] = {}
+
+
+def score_user(user_id: int, region: str) -> int:
+    key = (user_id, region)
+    if key not in _CACHE:
+        _CACHE[key] = user_id + len(region)
+    return _CACHE[key]

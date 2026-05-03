@@ -1,0 +1,11 @@
+# module: billing.py
+from users import UserDatabase
+
+class BillingProcessor:
+    # Violation: tightly coupling a business module to the concrete implementation of another domain
+    def __init__(self):
+        self.db = UserDatabase()
+        
+    def charge_all(self):
+        for user in self.db.get_all_users():
+            print(f"Charging {user.name}")

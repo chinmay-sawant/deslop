@@ -1,0 +1,5 @@
+from jinja2 import Environment
+
+# Violation: Jinja2 environment created with autoescape disabled (XSS risk)
+env = Environment(autoescape=False)
+template = env.from_string("Hello {{ name }}")

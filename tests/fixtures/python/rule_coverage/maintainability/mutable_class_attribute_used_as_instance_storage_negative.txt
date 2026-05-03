@@ -1,0 +1,7 @@
+class Session:
+    def __init__(self):
+        # Correct: initialize mutable objects inside __init__ so each instance has its own copy
+        self.data = {}
+        
+    def set(self, key, value):
+        self.data[key] = value

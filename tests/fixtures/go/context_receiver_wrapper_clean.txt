@@ -1,0 +1,22 @@
+package sample
+
+import (
+	"context"
+	"net/http"
+)
+
+type HTTPClient interface {
+	Do(*http.Request) (*http.Response, error)
+}
+
+type Service struct {
+	client HTTPClient
+}
+
+func (s *Service) Fetch(ctx context.Context, url string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return s.client.Do(req)
+}

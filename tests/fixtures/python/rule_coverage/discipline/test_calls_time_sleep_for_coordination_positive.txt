@@ -1,0 +1,7 @@
+import time
+
+def test_async_task():
+    task.start()
+    # Violation: test calls time.sleep() for coordination (fragile and slow)
+    time.sleep(2)
+    assert task.is_done()

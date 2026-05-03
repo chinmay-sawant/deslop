@@ -1,0 +1,12 @@
+def handle_event(event_type, mode):
+    # Violation: type branch and mode branch compounded in the same function (high complexity)
+    if event_type == "upload":
+        if mode == "async":
+            process_async_upload()
+        else:
+            process_sync_upload()
+    elif event_type == "delete":
+        if mode == "async":
+            process_async_delete()
+        else:
+            process_sync_delete()

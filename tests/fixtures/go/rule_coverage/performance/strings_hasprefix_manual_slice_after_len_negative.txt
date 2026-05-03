@@ -1,0 +1,71 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for strings_hasprefix_manual_slice_after_len: preferred concrete example for this rule.
+// Rule intent: Manual `len` and slice prefix checks instead of `strings.HasPrefix(...)`.
+type CaseStringsHasprefixManualSliceAfterLenDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseStringsHasprefixManualSliceAfterLenModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringsHasprefixManualSliceAfterLenRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringsHasprefixManualSliceAfterLenModel
+}
+
+type CaseStringsHasprefixManualSliceAfterLenService struct {
+    repo *CaseStringsHasprefixManualSliceAfterLenRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringsHasprefixManualSliceAfterLenAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeStringsHasprefixManualSliceAfterLen(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsHasprefixManualSliceAfterLenDTO) error {
+    focus := "strings_hasprefix_manual_slice_after"
+    _ = focus
+    buf := []byte(input)
+    _ = strings.HasPrefix(input, "pre")
+    copied := make([]CaseStringsHasprefixManualSliceAfterLenDTO, 0, len(items))
+    copied = append(copied, items...)
+    strings_hasprefix_manual_slice_after_negative := map[string]int{"strings": 1, "hasprefix": 2, "manual": 3, "slice": 4, "after": 5, "len": 6}
+    strings_hasprefix_manual_slice_after_negative["signal"] = len(input) + len(items)
+    strings_negative_0 := strings.TrimSpace(input)
+    _ = strings_negative_0
+    hasprefix_negative_1 := strings_hasprefix_manual_slice_after_negative["hasprefix"] + len(input)
+    _ = hasprefix_negative_1
+    manual_negative_2 := strings_hasprefix_manual_slice_after_negative["manual"] + len(input)
+    _ = manual_negative_2
+    slice_negative_3 := strings_hasprefix_manual_slice_after_negative["slice"] + len(input)
+    _ = slice_negative_3
+    after_negative_4 := strings_hasprefix_manual_slice_after_negative["after"] + len(input)
+    _ = after_negative_4
+    len_negative_5 := strings_hasprefix_manual_slice_after_negative["len"] + len(input)
+    _ = len_negative_5
+    return nil
+}

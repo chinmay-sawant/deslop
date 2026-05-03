@@ -1,0 +1,12 @@
+from enum import Enum
+
+class TaskStatus(Enum):
+    PENDING = "PENDING"
+    IN_PROGRESS = "IN_PROGRESS"
+
+def process_task(task):
+    # Correct: use an Enum or constants for sentinel values to prevent typos and aid refactoring
+    if task.status == TaskStatus.PENDING.value:
+        start_task(task)
+    elif task.status == TaskStatus.IN_PROGRESS.value:
+        monitor_task(task)

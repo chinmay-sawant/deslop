@@ -1,0 +1,6 @@
+from contextlib import suppress
+
+def safe_delete(path):
+    # Correct: suppress only specific, expected exceptions
+    with suppress(FileNotFoundError):
+        os.remove(path)

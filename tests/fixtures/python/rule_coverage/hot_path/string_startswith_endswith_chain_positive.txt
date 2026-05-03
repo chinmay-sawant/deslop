@@ -1,0 +1,5 @@
+def process_path(path):
+    # Violation: chaining multiple string startswith/endswith checks with logical ORs
+    if path.startswith("/api/v1") or path.startswith("/api/v2") or path.startswith("/admin"):
+        return True
+    return False

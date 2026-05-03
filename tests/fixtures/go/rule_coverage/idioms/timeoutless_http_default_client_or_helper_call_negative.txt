@@ -1,0 +1,73 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "io"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Negative scenario for timeoutless_http_default_client_or_helper_call: preferred concrete example for this rule.
+// Rule intent: net/http helper calls or http.DefaultClient usage that carry no explicit application timeout.
+type CaseTimeoutlessHttpDefaultClientOrHelperCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTimeoutlessHttpDefaultClientOrHelperCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTimeoutlessHttpDefaultClientOrHelperCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTimeoutlessHttpDefaultClientOrHelperCallModel
+}
+
+type CaseTimeoutlessHttpDefaultClientOrHelperCallService struct {
+    repo *CaseTimeoutlessHttpDefaultClientOrHelperCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTimeoutlessHttpDefaultClientOrHelperCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTimeoutlessHttpDefaultClientOrHelperCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTimeoutlessHttpDefaultClientOrHelperCallDTO) error {
+    focus := "timeoutless_http_default_client_or"
+    _ = focus
+    client := &http.Client{Timeout: 2 * time.Second}
+    resp, err := client.Get(input)
+    if err != nil { return err }
+    defer resp.Body.Close()
+    io.Copy(io.Discard, resp.Body)
+    timeoutless_http_default_client_helper_negative := map[string]int{"timeoutless": 1, "http": 2, "default": 3, "client": 4, "helper": 5, "call": 6}
+    timeoutless_http_default_client_helper_negative["signal"] = len(input) + len(items)
+    timeoutless_negative_0 := timeoutless_http_default_client_helper_negative["timeoutless"] + len(input)
+    _ = timeoutless_negative_0
+    http_negative_1 := timeoutless_http_default_client_helper_negative["http"] + len(input)
+    _ = http_negative_1
+    default_negative_2 := timeoutless_http_default_client_helper_negative["default"] + len(input)
+    _ = default_negative_2
+    client_negative_3 := timeoutless_http_default_client_helper_negative["client"] + len(input)
+    _ = client_negative_3
+    helper_negative_4 := timeoutless_http_default_client_helper_negative["helper"] + len(input)
+    _ = helper_negative_4
+    call_negative_5 := timeoutless_http_default_client_helper_negative["call"] + len(input)
+    _ = call_negative_5
+    return nil
+}

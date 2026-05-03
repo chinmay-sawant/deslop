@@ -1,0 +1,10 @@
+import time
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/compute")
+def compute():
+    # Correct: use 'def' (not 'async def') for blocking IO; FastAPI will run it in a threadpool
+    time.sleep(5)
+    return {"status": "done"}

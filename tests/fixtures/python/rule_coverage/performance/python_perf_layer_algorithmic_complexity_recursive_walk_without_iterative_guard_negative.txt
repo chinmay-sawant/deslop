@@ -1,0 +1,13 @@
+def walk(root: dict[str, object]) -> int:
+    stack = [root]
+    seen: set[int] = set()
+    total = 0
+    while stack:
+        node = stack.pop()
+        marker = id(node)
+        if marker in seen:
+            continue
+        seen.add(marker)
+        total += 1
+        stack.extend(node.get("children", []))
+    return total

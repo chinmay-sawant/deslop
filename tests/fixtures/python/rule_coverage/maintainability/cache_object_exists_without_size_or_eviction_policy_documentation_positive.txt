@@ -1,0 +1,7 @@
+# Violation: Global cache dictionary without size limits or an eviction policy (memory leak risk)
+USER_CACHE = {}
+
+def get_user(user_id):
+    if user_id not in USER_CACHE:
+        USER_CACHE[user_id] = fetch_user_from_db(user_id)
+    return USER_CACHE[user_id]

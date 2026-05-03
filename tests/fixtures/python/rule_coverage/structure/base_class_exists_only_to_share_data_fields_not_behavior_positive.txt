@@ -1,0 +1,11 @@
+# Violation: using inheritance strictly to inherit data fields (not behavior) creates rigid, fragile hierarchies
+class EntityBase:
+    def __init__(self):
+        self.id = None
+        self.created_at = None
+        self.updated_at = None
+
+class Product(EntityBase):
+    def __init__(self):
+        super().__init__()
+        self.price = 0.0

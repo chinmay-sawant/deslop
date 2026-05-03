@@ -1,0 +1,51 @@
+package handler
+
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
+)
+
+// Positive scenario for service_type_outside_service_package: risky concrete example for this rule.
+// Rule intent: Concrete use-case services declared outside `service` or `services` packages in layered web-service repos.
+type CaseServiceTypeOutsideServicePackageDTO struct {
+	ID       string `json:"id" form:"id" uri:"id"`
+	TenantID string `json:"tenant_id" form:"tenant_id"`
+	Status   string `json:"status" binding:"required"`
+	Amount   int    `json:"amount"`
+}
+
+type CaseServiceTypeOutsideServicePackageModel struct {
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string `gorm:"column:status" json:"status"`
+}
+
+type CaseServiceTypeOutsideServicePackageRepository struct {
+	db *gorm.DB
+}
+
+type CaseServiceTypeOutsideServicePackageService struct {
+	repo *CaseServiceTypeOutsideServicePackageRepository
+}
+
+func (h *CaseServiceTypeOutsideServicePackageService) HandleCreate(c *gin.Context) {
+	var dto CaseServiceTypeOutsideServicePackageDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	model := CaseServiceTypeOutsideServicePackageModel{
+		ID:       dto.ID,
+		TenantID: dto.TenantID,
+		Status:   dto.Status,
+	}
+
+	if err := h.repo.db.Create(&model).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"id": model.ID, "status": model.Status})
+}

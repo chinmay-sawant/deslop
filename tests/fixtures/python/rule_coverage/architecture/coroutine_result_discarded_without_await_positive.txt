@@ -1,0 +1,9 @@
+import asyncio
+
+async def fetch_user(id):
+    return {"id": id}
+
+async def process():
+    # Violation: coroutine result discarded without await
+    fetch_user(123)
+    print("Fetch triggered?")

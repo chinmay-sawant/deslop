@@ -1,0 +1,59 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for bytes_split_same_input_multiple_times: risky concrete example for this rule.
+// Rule intent: The same byte-slice input is passed through bytes.Split* or bytes.Fields* helpers multiple times in one function.
+type CaseBytesSplitSameInputMultipleTimesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBytesSplitSameInputMultipleTimesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBytesSplitSameInputMultipleTimesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBytesSplitSameInputMultipleTimesModel
+}
+
+type CaseBytesSplitSameInputMultipleTimesService struct {
+    repo *CaseBytesSplitSameInputMultipleTimesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBytesSplitSameInputMultipleTimesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBytesSplitSameInputMultipleTimes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesSplitSameInputMultipleTimesDTO) error {
+    buf := []byte(input)
+    segments := bytes.Split(buf, []byte(","))
+    fields := bytes.Fields(buf)
+    pairs := bytes.SplitN(buf, []byte("="), 2)
+    _ = segments
+    _ = fields
+    _ = pairs
+    return nil
+}

@@ -1,0 +1,54 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+    "os"
+)
+
+// Negative scenario for world_readable_file_permissions: preferred concrete example for this rule.
+// Rule intent: `os.OpenFile(path, flag, 0666)` or `os.WriteFile(path, data, 0777)` with world-readable/writable permissions
+type CaseWorldReadableFilePermissionsDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+type CaseWorldReadableFilePermissionsModel struct {
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseWorldReadableFilePermissionsRepository struct {
+    db    *gorm.DB
+    sql   *sql.DB
+    cache map[string]CaseWorldReadableFilePermissionsModel
+}
+
+type CaseWorldReadableFilePermissionsService struct {
+    repo   *CaseWorldReadableFilePermissionsRepository
+    client *http.Client
+}
+
+type CaseWorldReadableFilePermissionsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeWorldReadableFilePermissions(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWorldReadableFilePermissionsDTO) error {
+    // Restrictive file permissions — only owner can read/write.
+    _ = os.WriteFile("/tmp/config.json", []byte(input), 0600)
+    f, err := os.OpenFile("/tmp/secrets.txt", os.O_CREATE|os.O_WRONLY, 0644)
+    if err != nil {
+        return err
+    }
+    defer f.Close()
+    _, _ = f.WriteString(input)
+    return nil
+}

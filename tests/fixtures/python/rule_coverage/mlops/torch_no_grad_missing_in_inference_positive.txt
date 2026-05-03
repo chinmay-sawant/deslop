@@ -1,0 +1,7 @@
+import torch
+
+def generate_prediction(model, data):
+    model.eval()
+    # Violation: failing to use torch.no_grad() during inference wastes memory building the autograd graph
+    output = model(data)
+    return output

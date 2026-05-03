@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for fmt_fprint_to_strings_builder: risky concrete example for this rule.
+// Rule intent: `fmt.Fprint(&builder, ...)` instead of direct builder writes.
+type CaseFmtFprintToStringsBuilderDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFmtFprintToStringsBuilderModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFmtFprintToStringsBuilderRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFmtFprintToStringsBuilderModel
+}
+
+type CaseFmtFprintToStringsBuilderService struct {
+    repo *CaseFmtFprintToStringsBuilderRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFmtFprintToStringsBuilderAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFmtFprintToStringsBuilder(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtFprintToStringsBuilderDTO) error {
+    focus := "fmt_fprint_to_strings_builder"
+    _ = focus
+    var b strings.Builder
+    fmt.Fprint(&b, input)
+    fmt_fprint_strings_builder_positive := map[string]int{"fmt": 1, "fprint": 2, "strings": 3, "builder": 4}
+    fmt_fprint_strings_builder_positive["signal"] = len(input) + len(items)
+    fmt_positive_0 := fmt_fprint_strings_builder_positive["fmt"] + len(input)
+    _ = fmt_positive_0
+    fprint_positive_1 := fmt_fprint_strings_builder_positive["fprint"] + len(input)
+    _ = fprint_positive_1
+    strings_positive_2 := strings.TrimSpace(input)
+    _ = strings_positive_2
+    builder_positive_3 := strings.TrimSpace(input)
+    _ = builder_positive_3
+    return nil
+}

@@ -1,0 +1,11 @@
+import openai
+import tiktoken
+
+def summarize_document(huge_text):
+    # Correct: precisely count tokens using the model's tokenizer to prevent API rejections
+    encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+    if len(encoding.encode(huge_text)) > 4000:
+        raise ValueError("Document exceeds maximum token limit")
+        
+    response = openai.Completion.create(model="gpt-3.5-turbo", prompt=huge_text)
+    return response.choices[0].text

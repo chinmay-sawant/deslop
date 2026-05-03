@@ -1,0 +1,4 @@
+def build_report(user_id: int) -> dict:
+    total_count = 3
+    item_list = ["a", "b", "c"]
+    return {"user_id": user_id, "total_count": total_count, "item_list": item_list}

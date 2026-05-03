@@ -1,0 +1,4 @@
+def find_similar(query_text, precomputed_doc_embs, embedder):
+    # Correct: use precomputed embeddings for the document corpus to save inference time
+    query_emb = embedder.encode(query_text)
+    return cosine_similarity(query_emb, precomputed_doc_embs)

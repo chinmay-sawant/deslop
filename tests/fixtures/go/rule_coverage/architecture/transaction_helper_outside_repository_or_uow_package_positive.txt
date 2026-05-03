@@ -1,0 +1,60 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for transaction_helper_outside_repository_or_uow_package: risky concrete example for this rule.
+// Rule intent: Transaction helpers buried in handlers or services instead of a repository or unit-of-work package.
+type CaseTransactionHelperOutsideRepositoryOrUowPackageDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTransactionHelperOutsideRepositoryOrUowPackageModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTransactionHelperOutsideRepositoryOrUowPackageRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTransactionHelperOutsideRepositoryOrUowPackageModel
+}
+
+type CaseTransactionHelperOutsideRepositoryOrUowPackageService struct {
+    repo *CaseTransactionHelperOutsideRepositoryOrUowPackageRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTransactionHelperOutsideRepositoryOrUowPackageAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTransactionHelperOutsideRepositoryOrUowPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTransactionHelperOutsideRepositoryOrUowPackageDTO) error {
+    WithTransaction := func(db *gorm.DB, fn func(tx *gorm.DB) error) error {
+        tx := db.Begin()
+        if err := fn(tx); err != nil {
+            tx.Rollback()
+            return err
+        }
+        return tx.Commit().Error
+    }
+    return WithTransaction(db, func(tx *gorm.DB) error {
+        return tx.Where("id = ?", input).Find(&items).Error
+    })
+}

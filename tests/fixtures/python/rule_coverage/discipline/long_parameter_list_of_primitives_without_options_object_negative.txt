@@ -1,0 +1,8 @@
+class SystemConfig(BaseModel):
+    host: str
+    port: int
+    timeout: float = 30.0
+
+def configure_system(config: SystemConfig):
+    # Correct: use an options object to group related parameters
+    print(f"Connecting to {config.host}:{config.port}")

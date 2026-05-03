@@ -1,0 +1,12 @@
+import copy
+
+class SystemCache:
+    # Correct: strictly separate read/write boundaries by returning deep copies to prevent external mutation
+    def __init__(self):
+        self._store = {}
+        
+    def get_data(self):
+        return copy.deepcopy(self._store)
+        
+    def update_data(self, key, val):
+        self._store[key] = val

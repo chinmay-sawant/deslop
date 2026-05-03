@@ -1,0 +1,3 @@
+def send_chunks(chunks: list[bytes], sink) -> None:
+    whole = b"".join(chunks)
+    sink.write(whole)

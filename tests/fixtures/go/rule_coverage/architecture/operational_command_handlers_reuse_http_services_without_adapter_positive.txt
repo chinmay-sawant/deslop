@@ -1,0 +1,76 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for operational_command_handlers_reuse_http_services_without_adapter: risky concrete example for this rule.
+// Rule intent: CLI or cron entrypoints that import Gin-only service contracts instead of neutral application services.
+type CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterModel
+}
+
+type CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterService struct {
+    repo *CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveOperationalCommandHandlersReuseHttpServicesWithoutAdapter(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterDTO) error {
+    focus := "operational_command_handlers_reuse_http"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    service := &CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterService{repo: &CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseOperationalCommandHandlersReuseHttpServicesWithoutAdapterModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    operational_command_handlers_reuse_http_positive := map[string]int{"operational": 1, "command": 2, "handlers": 3, "reuse": 4, "http": 5, "services": 6}
+    operational_command_handlers_reuse_http_positive["signal"] = len(input) + len(items)
+    operational_positive_0 := operational_command_handlers_reuse_http_positive["operational"] + len(input)
+    _ = operational_positive_0
+    command_positive_1 := operational_command_handlers_reuse_http_positive["command"] + len(input)
+    _ = command_positive_1
+    handlers_positive_2 := c.FullPath() + ":" + input
+    _ = handlers_positive_2
+    reuse_positive_3 := operational_command_handlers_reuse_http_positive["reuse"] + len(input)
+    _ = reuse_positive_3
+    http_positive_4 := operational_command_handlers_reuse_http_positive["http"] + len(input)
+    _ = http_positive_4
+    services_positive_5 := operational_command_handlers_reuse_http_positive["services"] + len(input)
+    _ = services_positive_5
+    return nil
+}

@@ -1,0 +1,5 @@
+# Violation: reaching into another package to import a protected/private implementation detail
+from shared_auth._internal_hashing import hash_password
+
+def register_user(pwd):
+    return hash_password(pwd)

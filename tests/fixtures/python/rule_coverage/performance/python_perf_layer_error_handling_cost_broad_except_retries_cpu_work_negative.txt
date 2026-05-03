@@ -1,0 +1,5 @@
+def read_value(client) -> str:
+    try:
+        return client.fetch()
+    except TimeoutError:
+        return "retry"

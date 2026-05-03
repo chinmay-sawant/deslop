@@ -1,0 +1,7 @@
+# Violation: deep, multi-level inheritance hierarchies are impossible to understand and prone to the fragile base class problem
+class BaseComponent: pass
+class UIComponent(BaseComponent): pass
+class InteractiveUIComponent(UIComponent): pass
+class ButtonComponent(InteractiveUIComponent): pass
+class SubmitButtonComponent(ButtonComponent): pass
+class AsyncSubmitButtonComponent(SubmitButtonComponent): pass

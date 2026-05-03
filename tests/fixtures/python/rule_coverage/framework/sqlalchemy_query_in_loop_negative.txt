@@ -1,0 +1,5 @@
+from .models import User
+
+def fetch_users(session, user_ids):
+    # Correct: fetch all items in a single query using the in_ operator
+    return session.query(User).filter(User.id.in_(user_ids)).all()

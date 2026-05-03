@@ -1,0 +1,8 @@
+def count_elements(items):
+    counts = {}
+    for item in items:
+        # Violation: manually checking existence and assigning zero is verbose and slow
+        if item not in counts:
+            counts[item] = 0
+        counts[item] += 1
+    return counts

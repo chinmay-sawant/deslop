@@ -1,0 +1,7 @@
+from __future__ import annotations
+
+def repeated_directory_scan_inside_nested_loop_negative():
+    import os
+    folders = ["logs", "cache"]
+    directory_sizes = {folder: len(os.listdir(folder)) for folder in folders}
+    return [directory_sizes[folder] for folder in folders for _ in range(2)]

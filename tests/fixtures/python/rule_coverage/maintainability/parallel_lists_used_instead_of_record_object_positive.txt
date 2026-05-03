@@ -1,0 +1,8 @@
+def process_records():
+    # Violation: using parallel lists to store properties of the same entities (brittle and prone to desync)
+    names = ["Alice", "Bob"]
+    ages = [25, 30]
+    roles = ["admin", "user"]
+    
+    for i in range(len(names)):
+        print(f"{names[i]} ({ages[i]}): {roles[i]}")

@@ -1,0 +1,7 @@
+class OrderOrchestrator:
+    def process_raw_data(self, raw_input):
+        # Violation: orchestrator performing low-level parsing
+        parts = raw_input.split("|")
+        header = parts[0].strip()
+        items = [p.split(":")[1] for p in parts[1:]]
+        # ... logic

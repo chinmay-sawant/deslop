@@ -1,0 +1,12 @@
+class FeatureFlags:
+    def is_enabled(self, flag_name):
+        return os.getenv(flag_name) == "true"
+
+flags = FeatureFlags()
+
+@app.get("/v1")
+def handler_one():
+    # Correct: feature flags checked via a centralized abstraction
+    if flags.is_enabled("ENABLE_NEW_V1"):
+        return "New V1"
+    return "Old V1"

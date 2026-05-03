@@ -1,0 +1,6 @@
+def build_context(documents):
+    context = "Here is the information:\n"
+    for doc in documents:
+        # Violation: using += to concatenate prompt strings inside a loop is O(N^2) inefficient
+        context += doc.text + "\n"
+    return context

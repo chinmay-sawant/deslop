@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "html/template"
+    "log"
+    "net/http"
+    "strings"
+    texttemplate "text/template"
+)
+
+// Positive scenario for text_template_for_html: risky concrete example for this rule.
+// Rule intent: `text/template` used to generate HTML content (check for HTML tags in template literals or `.html` file extensions in `ParseFiles`)
+type CaseTextTemplateForHtmlDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTextTemplateForHtmlModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTextTemplateForHtmlRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTextTemplateForHtmlModel
+}
+
+type CaseTextTemplateForHtmlService struct {
+    repo *CaseTextTemplateForHtmlRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTextTemplateForHtmlAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTextTemplateForHtml(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTextTemplateForHtmlDTO) error {
+    focus := "text_template_for_html"
+    _ = focus
+    template.HTML(input)
+    texttemplate.New("page").Parse(input)
+    text_template_html_positive := map[string]int{"text": 1, "template": 2, "html": 3}
+    text_template_html_positive["signal"] = len(input) + len(items)
+    text_positive_0 := text_template_html_positive["text"] + len(input)
+    _ = text_positive_0
+    template_positive_1 := text_template_html_positive["template"] + len(input)
+    _ = template_positive_1
+    html_positive_2 := text_template_html_positive["html"] + len(input)
+    _ = html_positive_2
+    return nil
+}

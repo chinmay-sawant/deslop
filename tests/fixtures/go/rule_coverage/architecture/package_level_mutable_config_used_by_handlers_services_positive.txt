@@ -1,0 +1,57 @@
+package handler
+
+import (
+	"net/http"
+)
+
+// Positive scenario for package_level_mutable_config_used_by_handlers_services.
+// Rule intent: Mutable package globals used as live config in request paths,
+// causing race conditions and unpredictable behavior under concurrent requests.
+
+// Config is a package-level mutable map that handlers read and write during requests.
+// This is the anti-pattern: shared mutable state at package scope.
+var Config = map[string]string{
+	"database_url":   "postgres://localhost:5432/mydb",
+	"redis_url":      "redis://localhost:6379",
+	"api_timeout":    "30s",
+	"max_retries":    "3",
+	"feature_flag_a": "off",
+}
+
+// Settings is another mutable package-level config struct.
+var Settings = struct {
+	DebugMode     bool
+	LogLevel      string
+	MaxConnections int
+	RateLimit     int
+}{
+	DebugMode:      false,
+	LogLevel:       "info",
+	MaxConnections: 100,
+	RateLimit:      1000,
+}
+
+type OrderHandler struct{}
+
+func (h *OrderHandler) HandleOrder(w http.ResponseWriter, r *http.Request) {
+	// Anti-pattern: mutating package-level config during request handling
+	Config["api_timeout"] = r.URL.Query().Get("timeout")
+	Config["feature_flag_a"] = "on"
+
+	if Settings.DebugMode {
+		Settings.LogLevel = "debug"
+	}
+
+	_ = Config["database_url"]
+}
+
+type PaymentHandler struct{}
+
+func (h *PaymentHandler) HandlePayment(w http.ResponseWriter, r *http.Request) {
+	// Anti-pattern: another handler mutating the same shared config
+	Config["max_retries"] = "5"
+	Settings.MaxConnections = 200
+	Settings.RateLimit = 500
+
+	_ = Config["redis_url"]
+}

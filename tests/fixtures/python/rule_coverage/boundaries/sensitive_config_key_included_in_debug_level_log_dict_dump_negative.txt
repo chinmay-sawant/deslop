@@ -1,0 +1,5 @@
+import logging
+
+def log_config(settings: AppSettings):
+    # Correct: sensitive keys are excluded from the log dump
+    logging.debug(f"Current settings: {settings.model_dump(exclude={'api_key', 'db_pass'})}")

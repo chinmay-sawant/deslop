@@ -1,0 +1,10 @@
+# my_app/utils.py
+# Violation: a "dumping ground" monolithic module containing completely unrelated utilities
+import sqlite3
+import requests
+import re
+
+def connect_db(): pass
+def fetch_api(): pass
+def parse_regex(): pass
+def render_html(): pass

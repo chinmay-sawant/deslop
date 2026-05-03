@@ -1,0 +1,11 @@
+# Correct: orchestrate high-level workflows by composing small, testable, single-purpose functions
+def handle_nightly_job():
+    raw_data = extract_data("data.json")
+    clean_data = transform_data(raw_data)
+    load_to_database(clean_data)
+    notify_administrators("Job Done")
+
+def extract_data(path): pass
+def transform_data(data): pass
+def load_to_database(data): pass
+def notify_administrators(msg): pass

@@ -1,0 +1,67 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for repeated_same_query_template_same_function: risky concrete example for this rule.
+// Rule intent: The same query template executed multiple times in one function.
+type CaseRepeatedSameQueryTemplateSameFunctionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepeatedSameQueryTemplateSameFunctionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepeatedSameQueryTemplateSameFunctionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepeatedSameQueryTemplateSameFunctionModel
+}
+
+type CaseRepeatedSameQueryTemplateSameFunctionService struct {
+    repo *CaseRepeatedSameQueryTemplateSameFunctionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepeatedSameQueryTemplateSameFunctionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepeatedSameQueryTemplateSameFunction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepeatedSameQueryTemplateSameFunctionDTO) error {
+    focus := "repeated_same_query_template_same"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var activeRows []CaseRepeatedSameQueryTemplateSameFunctionModel
+    db.Raw("SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? AND status = ?", c.Query("tenant"), "active").Scan(&activeRows)
+    var archivedRows []CaseRepeatedSameQueryTemplateSameFunctionModel
+    db.Raw("SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? AND status = ?", c.Query("tenant"), "archived").Scan(&archivedRows)
+    _ = archivedRows
+    repeated_query_template_function_positive := map[string]int{"repeated": 1, "query": 2, "template": 3, "function": 4}
+    repeated_query_template_function_positive["signal"] = len(input) + len(items)
+    repeated_positive_0 := repeated_query_template_function_positive["repeated"] + len(input)
+    _ = repeated_positive_0
+    _ = activeRows
+    template_positive_2 := repeated_query_template_function_positive["template"] + len(input)
+    _ = template_positive_2
+    function_positive_3 := repeated_query_template_function_positive["function"] + len(input)
+    _ = function_positive_3
+    return nil
+}

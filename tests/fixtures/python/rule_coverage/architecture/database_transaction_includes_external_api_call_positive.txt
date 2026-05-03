@@ -1,0 +1,7 @@
+def update_user_status(user_id):
+    with db.begin():
+        user = db.get(user_id)
+        user.status = "verified"
+        # Violation: external API call inside a database transaction
+        requests.post("https://api.external.com/notify", json={"id": user_id})
+        db.save(user)

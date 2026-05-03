@@ -1,0 +1,10 @@
+package perflayers
+
+import "os"
+
+func SmallWritesPositive(file *os.File, lines []string) {
+    // small writes without buffering
+    for _, line := range lines {
+        _, _ = file.WriteString(line)
+    }
+}

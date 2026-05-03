@@ -1,0 +1,7 @@
+from ldap3.utils.conv import escape_filter_chars
+
+def find_user(username):
+    # Correct: user input is escaped before being used in an LDAP filter
+    safe_username = escape_filter_chars(username)
+    search_filter = f"(uid={safe_username})"
+    ldap_connection.search(search_base, search_filter)

@@ -1,0 +1,11 @@
+from __future__ import annotations
+
+class FixedWindowLimiter:
+    def __init__(self, limit):
+        self.limit = limit
+        self.tokens = limit
+
+
+def python_perf_layer_resource_pooling_rate_limiter_created_per_request_positive(limit):
+    limiter = FixedWindowLimiter(limit)
+    return limiter.tokens

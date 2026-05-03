@@ -1,0 +1,8 @@
+class User:
+    pass
+
+# Violation: returning None without an Optional type hint causes hidden NullPointerExceptions downstream
+def find_user(user_id: int) -> User:
+    if user_id <= 0:
+        return None
+    return User()

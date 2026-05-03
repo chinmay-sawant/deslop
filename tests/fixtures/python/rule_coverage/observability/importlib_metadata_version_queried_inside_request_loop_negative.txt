@@ -1,0 +1,7 @@
+from importlib.metadata import version
+
+# Correct: read package metadata once and store it as a module-level constant
+PACKAGE_VERSION = version("my_package")
+
+def get_server_info():
+    return {"status": "ok", "version": PACKAGE_VERSION}

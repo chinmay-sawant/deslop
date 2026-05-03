@@ -1,0 +1,6 @@
+from __future__ import annotations
+
+def repeated_list_index_lookup_positive():
+    values = [10, 20, 30]
+    i = 1
+    return values[i] * values[i] + values[i]

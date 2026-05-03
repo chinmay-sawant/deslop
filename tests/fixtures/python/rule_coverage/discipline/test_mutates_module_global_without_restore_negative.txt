@@ -1,0 +1,13 @@
+import pytest
+from app import settings
+
+@pytest.fixture
+def debug_enabled():
+    old_val = settings.DEBUG
+    settings.DEBUG = True
+    yield
+    # Correct: ensure the global state is restored after the test
+    settings.DEBUG = old_val
+
+def test_debug_mode(debug_enabled):
+    assert app.is_ready() is True

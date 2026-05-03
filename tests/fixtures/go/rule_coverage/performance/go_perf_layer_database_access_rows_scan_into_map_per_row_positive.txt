@@ -1,0 +1,77 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_database_access_rows_scan_into_map_per_row: risky concrete example for this rule.
+// Rule intent: Layer: Database access. Flag row scans into map[string]any where typed structs or column slices would reduce allocation.
+type CaseGoPerfLayerDatabaseAccessRowsScanIntoMapPerRowDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerDatabaseAccessRowsScanIntoMapPerRowModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerDatabaseAccessRowsScanIntoMapPerRowRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerDatabaseAccessRowsScanIntoMapPerRowModel
+}
+
+type CaseGoPerfLayerDatabaseAccessRowsScanIntoMapPerRowService struct {
+    repo *CaseGoPerfLayerDatabaseAccessRowsScanIntoMapPerRowRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerDatabaseAccessRowsScanIntoMapPerRowAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerDatabaseAccessRowsScanIntoMapPerRow(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerDatabaseAccessRowsScanIntoMapPerRowDTO) error {
+    focus := "go_perf_layer_database_access"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    rows, _ := sqlDB.QueryContext(ctx, "SELECT id, tenant_id, status FROM items")
+    for rows.Next() {
+        row := make(map[string]interface{})
+        _, _ = rows.Scan(&row)
+    }
+    _ = rows
+    perf_layer_database_access_rows_positive := map[string]int{"perf": 1, "layer": 2, "database": 3, "access": 4, "rows": 5, "scan": 6}
+    perf_layer_database_access_rows_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_database_access_rows_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_database_access_rows_positive["layer"] + len(input)
+    _ = layer_positive_1
+    database_positive_2 := db.Where("database_id = ?", input)
+    _ = database_positive_2
+    access_positive_3 := perf_layer_database_access_rows_positive["access"] + len(input)
+    _ = access_positive_3
+    rows_positive_4 := perf_layer_database_access_rows_positive["rows"] + len(input)
+    _ = rows_positive_4
+    scan_positive_5 := perf_layer_database_access_rows_positive["scan"] + len(input)
+    _ = scan_positive_5
+    return nil
+}

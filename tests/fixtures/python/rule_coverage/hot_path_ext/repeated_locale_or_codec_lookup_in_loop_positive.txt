@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+def repeated_locale_or_codec_lookup_in_loop_positive():
+    import codecs
+    payloads = ["ok", "go", "up"]
+    encoded = []
+    for text in payloads:
+        codec = codecs.lookup("utf-8")
+        encoded.append(codec.encode(text)[0])
+    return encoded

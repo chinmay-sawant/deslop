@@ -1,0 +1,6 @@
+from .models import User
+
+def import_users(user_data):
+    # Violation: creating objects one-by-one in a loop (multiple database hits)
+    for data in user_data:
+        User.objects.create(username=data["username"], email=data["email"])

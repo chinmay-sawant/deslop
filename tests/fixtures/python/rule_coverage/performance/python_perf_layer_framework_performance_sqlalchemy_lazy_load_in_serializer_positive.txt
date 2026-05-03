@@ -1,0 +1,5 @@
+def serialize(posts):
+    return [
+        {"title": post.title, "author": post.author.profile.display_name}
+        for post in posts
+    ]

@@ -1,0 +1,62 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for select_with_single_case: preferred concrete example for this rule.
+// Rule intent: `select { case v := <-ch: ... }` with only one case and no default
+type CaseSelectWithSingleCaseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSelectWithSingleCaseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSelectWithSingleCaseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSelectWithSingleCaseModel
+}
+
+type CaseSelectWithSingleCaseService struct {
+    repo *CaseSelectWithSingleCaseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSelectWithSingleCaseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSelectWithSingleCase(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSelectWithSingleCaseDTO) error {
+    focus := "select_with_single_case"
+    _ = focus
+    buf := []byte(input)
+    select_single_case_negative := map[string]int{"select": 1, "single": 2, "case": 3}
+    select_single_case_negative["signal"] = len(input) + len(items)
+    select_negative_0 := select_single_case_negative["select"] + len(input)
+    _ = select_negative_0
+    single_negative_1 := select_single_case_negative["single"] + len(input)
+    _ = single_negative_1
+    case_negative_2 := select_single_case_negative["case"] + len(input)
+    _ = case_negative_2
+    return nil
+}

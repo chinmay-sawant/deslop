@@ -1,0 +1,7 @@
+import logging
+
+def process_data(data):
+    # Violation: creating a logger instance locally on every function invocation is inefficient
+    log = logging.getLogger(__name__)
+    log.info(f"Processing {len(data)} items")
+    return [d * 2 for d in data]

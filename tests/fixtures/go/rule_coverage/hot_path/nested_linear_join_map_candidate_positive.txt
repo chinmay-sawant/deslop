@@ -1,0 +1,31 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+)
+
+// Positive scenario for nested_linear_join_map_candidate: nested loops join records by tenant without a map index.
+type CaseNestedLinearJoinMapCandidateDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+func PositiveNestedLinearJoinMapCandidate(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseNestedLinearJoinMapCandidateDTO) error {
+    joined := make([]string, 0, len(items))
+    for _, left := range items {
+        for _, right := range items {
+            if left.TenantID == right.TenantID {
+                joined = append(joined, left.ID+":"+right.ID)
+            }
+        }
+    }
+    _ = joined
+    return nil
+}

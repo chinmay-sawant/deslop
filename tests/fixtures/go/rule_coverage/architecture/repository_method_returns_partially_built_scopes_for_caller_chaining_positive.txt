@@ -1,0 +1,44 @@
+package repository
+
+import (
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: Repository method returns a partially built *gorm.DB scope
+// for the caller to finish chaining. This leaks query builder internals.
+
+type Article struct {
+	ID        string `gorm:"column:id"`
+	Title     string `gorm:"column:title"`
+	AuthorID  string `gorm:"column:author_id"`
+	Published bool   `gorm:"column:published"`
+}
+
+type ArticleRepository struct {
+	db *gorm.DB
+}
+
+// QueryByAuthor returns a partially built scope - anti-pattern.
+// The caller must remember to call .Find() or .First() to execute the query.
+func (r *ArticleRepository) QueryByAuthor(authorID string) *gorm.DB {
+	return r.db.Where("author_id = ?", authorID)
+}
+
+// PublishedScope returns another partial scope - anti-pattern.
+func (r *ArticleRepository) PublishedScope() *gorm.DB {
+	return r.db.Where("published = ?", true)
+}
+
+// Search returns a scope with some conditions pre-applied - anti-pattern.
+func (r *ArticleRepository) Search(term string) *gorm.DB {
+	return r.db.Where("title LIKE ?", "%"+term+"%").Order("created_at DESC")
+}
+
+// Example of how a caller misuses the partial scope:
+//
+//	scope := repo.QueryByAuthor("user-1")
+//	scope = scope.Where("published = ?", true)
+//	scope.Find(&articles)
+//
+// The repository has leaked its query builder, and the caller is responsible
+// for completing the query correctly.

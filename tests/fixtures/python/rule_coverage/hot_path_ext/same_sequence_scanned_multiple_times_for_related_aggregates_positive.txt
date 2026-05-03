@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+def same_sequence_scanned_multiple_times_for_related_aggregates_positive():
+    values = [3, 8, 2, 5]
+    total = sum(values)
+    highest = max(values)
+    lowest = min(values)
+    return total, highest, lowest

@@ -1,0 +1,8 @@
+@app.post("/transfer")
+def transfer_funds(amount: float, to_user: str):
+    # Violation: view function manually managing transaction lifecycle
+    with db.session.begin():
+        current_user.balance -= amount
+        target_user = db.get_user(to_user)
+        target_user.balance += amount
+        db.session.commit()

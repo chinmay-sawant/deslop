@@ -1,0 +1,5 @@
+class UserService:
+    def register_user(self, email):
+        # Violation: domain service performing direct IO (API call)
+        requests.post("https://api.internal.com/users", json={"email": email})
+        return "Registered"

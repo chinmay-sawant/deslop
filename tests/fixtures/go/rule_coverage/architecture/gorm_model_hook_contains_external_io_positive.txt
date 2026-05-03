@@ -1,0 +1,35 @@
+package models
+
+import (
+	"encoding/json"
+	"net/http"
+	"os"
+
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: AfterCreate hook performs external I/O — an HTTP POST to a
+// webhook URL and writing a file to disk. Model hooks should never perform
+// network calls or file system operations.
+
+type Order struct {
+	ID     uint    `gorm:"primaryKey"`
+	UserID uint    `gorm:"column:user_id"`
+	Total  float64 `gorm:"column:total"`
+	Status string  `gorm:"column:status"`
+}
+
+func (o *Order) AfterCreate(tx *gorm.DB) error {
+	// External HTTP call inside a model hook.
+	payload, _ := json.Marshal(map[string]interface{}{
+		"event":  "order.created",
+		"order_id": o.ID,
+	})
+	http.Post("https://hooks.example.com/orders", "application/json", nil)
+	_ = payload
+
+	// File I/O inside a model hook.
+	os.WriteFile("/tmp/order_created.log", []byte("order created"), 0644)
+
+	return nil
+}

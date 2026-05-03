@@ -1,0 +1,6 @@
+def handle_request(req):
+    # Correct: logic is decomposed into specific steps/functions
+    validate_request(req)
+    user = fetch_user(req.user_id)
+    formatted_user = format_user_display(user)
+    return formatted_user

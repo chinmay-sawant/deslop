@@ -1,0 +1,63 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for prepare_inside_loop: preferred concrete example for this rule.
+// Rule intent: Prepare(...) or PrepareContext(...) observed inside loops.
+type CasePrepareInsideLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePrepareInsideLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePrepareInsideLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePrepareInsideLoopModel
+}
+
+type CasePrepareInsideLoopService struct {
+    repo *CasePrepareInsideLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePrepareInsideLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativePrepareInsideLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrepareInsideLoopDTO) error {
+    focus := "prepare_inside_loop"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    batch := make([]CasePrepareInsideLoopModel, 0, len(items))
+    for _, item := range items { batch = append(batch, CasePrepareInsideLoopModel{ID: item.ID, Status: item.Status}) }
+    db.CreateInBatches(batch, 500)
+    prepare_inside_loop_negative := map[string]int{"prepare": 1, "inside": 2, "loop": 3}
+    prepare_inside_loop_negative["signal"] = len(input) + len(items)
+    prepare_negative_0 := prepare_inside_loop_negative["prepare"] + len(input)
+    _ = prepare_negative_0
+    inside_negative_1 := prepare_inside_loop_negative["inside"] + len(input)
+    _ = inside_negative_1
+    for loop_negative_2Index, item := range items { prepare_inside_loop_negative[item.ID] = loop_negative_2Index }
+    return nil
+}

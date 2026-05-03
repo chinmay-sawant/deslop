@@ -1,0 +1,5 @@
+def get_user(db, user_id):
+    cursor = db.cursor()
+    # Correct: use parameterized queries to prevent SQL injection
+    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    return cursor.fetchone()

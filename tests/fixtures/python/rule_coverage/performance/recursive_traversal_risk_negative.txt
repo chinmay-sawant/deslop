@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+def recursive_traversal_risk_negative(root):
+    total = 0
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        total += node.value
+        stack.extend(node.children)
+    return total

@@ -1,0 +1,6 @@
+def checkout_cart():
+    # Violation: using completely different identifiers for the exact same logical operation across observability pillars
+    logger.info("Executing user charge")
+    statsd.increment("billing.payment.processed")
+    with tracer.start_as_current_span("cart_checkout_transaction"):
+        pass

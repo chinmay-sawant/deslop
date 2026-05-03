@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for duplicate_struct_tag_key: preferred concrete example for this rule.
+// Rule intent: Struct field tags that repeat the same key more than once.
+type CaseDuplicateStructTagKeyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseDuplicateStructTagKeyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDuplicateStructTagKeyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDuplicateStructTagKeyModel
+}
+
+type CaseDuplicateStructTagKeyService struct {
+    repo *CaseDuplicateStructTagKeyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDuplicateStructTagKeyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeDuplicateStructTagKey(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDuplicateStructTagKeyDTO) error {
+    focus := "duplicate_struct_tag_key"
+    _ = focus
+    type CleanTag struct { ID string `json:"id" db:"id"` }
+    _ = CleanTag{}
+    duplicate_struct_tag_key_negative := map[string]int{"duplicate": 1, "struct": 2, "tag": 3, "key": 4}
+    duplicate_struct_tag_key_negative["signal"] = len(input) + len(items)
+    duplicate_negative_0 := duplicate_struct_tag_key_negative["duplicate"] + len(input)
+    _ = duplicate_negative_0
+    struct_negative_1 := duplicate_struct_tag_key_negative["struct"] + len(input)
+    _ = struct_negative_1
+    tag_negative_2 := duplicate_struct_tag_key_negative["tag"] + len(input)
+    _ = tag_negative_2
+    key_negative_3 := duplicate_struct_tag_key_negative["key"] + len(input)
+    _ = key_negative_3
+    return nil
+}

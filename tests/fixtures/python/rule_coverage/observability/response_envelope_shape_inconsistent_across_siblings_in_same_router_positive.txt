@@ -1,0 +1,12 @@
+from fastapi import APIRouter
+
+router = APIRouter()
+
+# Violation: inconsistent response envelopes. One endpoint returns a dict, the other returns a raw list.
+@router.get("/users")
+def get_users():
+    return {"data": [{"id": 1}], "meta": {"count": 1}}
+
+@router.get("/products")
+def get_products():
+    return [{"id": 99}]

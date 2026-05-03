@@ -1,0 +1,7 @@
+from app import settings
+
+def test_debug_mode():
+    # Violation: test mutates a module-level global without restoring its original value
+    settings.DEBUG = True
+    assert app.is_ready() is True
+# If another test runs after this, it will see settings.DEBUG = True

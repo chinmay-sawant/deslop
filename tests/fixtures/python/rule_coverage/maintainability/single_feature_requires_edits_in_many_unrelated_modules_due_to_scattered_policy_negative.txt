@@ -1,0 +1,14 @@
+# policies.py
+def is_active_admin(user):
+    # Correct: centralize the policy logic so it can be updated in one place
+    return user.role == "admin" and user.is_active
+
+# auth.py
+def login(user):
+    if is_active_admin(user):
+        setup_admin_session()
+
+# ui.py
+def render_dashboard(user):
+    if is_active_admin(user):
+        show_admin_panel()

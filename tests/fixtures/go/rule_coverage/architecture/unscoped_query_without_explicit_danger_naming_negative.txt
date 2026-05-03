@@ -1,0 +1,69 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for unscoped_query_without_explicit_danger_naming: preferred concrete example for this rule.
+// Rule intent: `Unscoped()` usage in generic repository methods without a clearly dangerous or admin-only name.
+type CaseUnscopedQueryWithoutExplicitDangerNamingDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseUnscopedQueryWithoutExplicitDangerNamingModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUnscopedQueryWithoutExplicitDangerNamingRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUnscopedQueryWithoutExplicitDangerNamingModel
+}
+
+type CaseUnscopedQueryWithoutExplicitDangerNamingService struct {
+    repo *CaseUnscopedQueryWithoutExplicitDangerNamingRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUnscopedQueryWithoutExplicitDangerNamingAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeUnscopedQueryWithoutExplicitDangerNaming(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUnscopedQueryWithoutExplicitDangerNamingDTO) error {
+    focus := "unscoped_query_without_explicit_danger"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseUnscopedQueryWithoutExplicitDangerNamingRepository{db: db, sql: sqlDB}
+    var model CaseUnscopedQueryWithoutExplicitDangerNamingModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    unscoped_query_explicit_danger_naming_negative := map[string]int{"unscoped": 1, "query": 2, "explicit": 3, "danger": 4, "naming": 5}
+    unscoped_query_explicit_danger_naming_negative["signal"] = len(input) + len(items)
+    unscoped_negative_0 := unscoped_query_explicit_danger_naming_negative["unscoped"] + len(input)
+    _ = unscoped_negative_0
+    query_negative_1 := db.Where("query_id = ?", input)
+    _ = query_negative_1
+    explicit_negative_2 := unscoped_query_explicit_danger_naming_negative["explicit"] + len(input)
+    _ = explicit_negative_2
+    danger_negative_3 := unscoped_query_explicit_danger_naming_negative["danger"] + len(input)
+    _ = danger_negative_3
+    naming_negative_4 := unscoped_query_explicit_danger_naming_negative["naming"] + len(input)
+    _ = naming_negative_4
+    return nil
+}

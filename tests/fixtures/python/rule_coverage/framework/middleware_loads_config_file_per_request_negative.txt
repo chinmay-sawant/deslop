@@ -1,0 +1,10 @@
+import json
+
+# Correct: load configuration once at module level or during middleware initialization
+with open("middleware_config.json") as f:
+    MIDDLEWARE_CONFIG = json.load(f)
+
+class ConfigMiddleware:
+    def process_request(self, request):
+        if MIDDLEWARE_CONFIG["maintenance_mode"]:
+            return HttpResponse(status=503)

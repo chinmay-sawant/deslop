@@ -1,0 +1,54 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "github.com/uptrace/bun"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for bun_select_scan_without_limit: risky concrete example for this rule.
+// Rule intent: Bun select-and-scan request paths without a visible limit or pagination marker.
+type CaseBunSelectScanWithoutLimitDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBunSelectScanWithoutLimitModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBunSelectScanWithoutLimitRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBunSelectScanWithoutLimitModel
+}
+
+type CaseBunSelectScanWithoutLimitService struct {
+    repo *CaseBunSelectScanWithoutLimitRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBunSelectScanWithoutLimitAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBunSelectScanWithoutLimit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBunSelectScanWithoutLimitDTO) error {
+    var bunDB *bun.DB
+    _ = bunDB.NewSelect().Model(&items).Scan(ctx)
+    _ = db.Where("id = ?", input).Find(&items)
+    return nil
+}

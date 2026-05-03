@@ -1,0 +1,12 @@
+package perflayers
+
+import "os"
+
+func StatBeforeOpenClean(path string) error {
+    // branch handled before open
+    file, err := os.Open(path)
+    if err != nil {
+        return err
+    }
+    return file.Close()
+}

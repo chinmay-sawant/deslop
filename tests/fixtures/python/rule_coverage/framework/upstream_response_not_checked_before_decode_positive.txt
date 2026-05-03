@@ -1,0 +1,7 @@
+import requests
+
+@app.get("/data")
+def get_external_data():
+    resp = requests.get("https://api.external.com/data", timeout=5)
+    # Violation: response body decoded to JSON without checking for error status codes first
+    return resp.json()

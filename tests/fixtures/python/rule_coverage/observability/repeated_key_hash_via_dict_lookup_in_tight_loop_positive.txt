@@ -1,0 +1,5 @@
+def process_stats(data, state_dict):
+    # Violation: hashing and looking up the exact same dictionary key millions of times inside a loop
+    for item in data:
+        state_dict["total_processed"] += 1
+        state_dict["bytes_processed"] += len(item)

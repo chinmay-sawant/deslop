@@ -1,0 +1,42 @@
+package service
+
+import (
+	"context"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
+	"sync"
+)
+
+// Positive scenario for cache_invalidation_before_transaction_commit.
+// Rule intent: Cache mutation or eviction that happens before a write transaction commits.
+type CacheInvalidationModel struct {
+	ID      string `gorm:"column:id" json:"id"`
+	Balance int    `gorm:"column:balance" json:"balance"`
+}
+
+type AccountCache struct {
+	mu    sync.RWMutex
+	items map[string]*CacheInvalidationModel
+}
+
+func (c *AccountCache) Delete(key string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.items, key)
+}
+
+func PositiveCacheInvalidationBeforeTransactionCommit(c *gin.Context, db *gorm.DB, cache *AccountCache, accountID string) error {
+	tx := db.Begin()
+
+	tx.Model(&CacheInvalidationModel{}).Where("id = ?", accountID).Update("balance", gorm.Expr("balance - ?", 100))
+
+	cache.Delete("account:" + accountID)
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
+}

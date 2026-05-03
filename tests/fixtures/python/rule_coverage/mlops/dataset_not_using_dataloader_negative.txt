@@ -1,0 +1,11 @@
+from torch.utils.data import DataLoader
+
+def train_model(model, dataset, optimizer):
+    # Correct: use a DataLoader for efficient batching, shuffling, and multi-processing
+    dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+    for inputs, labels in dataloader:
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()

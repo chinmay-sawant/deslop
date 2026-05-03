@@ -1,0 +1,7 @@
+from __future__ import annotations
+
+import timeit
+
+
+def python_perf_layer_profiling_benchmarking_timeit_result_not_consumed_negative():
+    return timeit.timeit("sum(range(100))", number=1000)

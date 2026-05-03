@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for errors_new_for_static_sentinel: preferred concrete example for this rule.
+// Rule intent: `errors.New("some error")` called repeatedly in hot paths instead of a package-level sentinel
+type CaseErrorsNewForStaticSentinelDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseErrorsNewForStaticSentinelModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseErrorsNewForStaticSentinelRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseErrorsNewForStaticSentinelModel
+}
+
+type CaseErrorsNewForStaticSentinelService struct {
+    repo *CaseErrorsNewForStaticSentinelRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseErrorsNewForStaticSentinelAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeErrorsNewForStaticSentinel(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseErrorsNewForStaticSentinelDTO) error {
+    focus := "errors_new_for_static_sentinel"
+    _ = focus
+    buf := []byte(input)
+    errors_new_static_sentinel_negative := map[string]int{"errors": 1, "new": 2, "static": 3, "sentinel": 4}
+    errors_new_static_sentinel_negative["signal"] = len(input) + len(items)
+    errors_negative_0 := errors_new_static_sentinel_negative["errors"] + len(input)
+    _ = errors_negative_0
+    new_negative_1 := errors_new_static_sentinel_negative["new"] + len(input)
+    _ = new_negative_1
+    static_negative_2 := errors_new_static_sentinel_negative["static"] + len(input)
+    _ = static_negative_2
+    sentinel_negative_3 := errors_new_static_sentinel_negative["sentinel"] + len(input)
+    _ = sentinel_negative_3
+    return nil
+}

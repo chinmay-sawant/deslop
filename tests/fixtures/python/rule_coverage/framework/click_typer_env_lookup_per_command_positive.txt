@@ -1,0 +1,15 @@
+import os
+import typer
+
+app = typer.Typer()
+
+@app.command()
+def deploy():
+    # Violation: environment variable lookup per command invocation
+    env = os.getenv("APP_ENV", "dev")
+    print(f"Deploying to {env}")
+
+@app.command()
+def rollback():
+    env = os.getenv("APP_ENV", "dev")
+    print(f"Rolling back in {env}")

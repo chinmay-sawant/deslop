@@ -1,0 +1,43 @@
+package repository
+
+import (
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: Repository returns a framework builder (*gorm.DB or *sql.DB)
+// to the upper layer instead of returning concrete results or domain types.
+
+type Task struct {
+	ID       string `gorm:"column:id"`
+	Title    string `gorm:"column:title"`
+	Status   string `gorm:"column:status"`
+	Priority int    `gorm:"column:priority"`
+}
+
+type TaskRepository struct {
+	db *gorm.DB
+}
+
+// GetQueryBuilder returns *gorm.DB to the service layer - anti-pattern.
+// The caller now has direct access to the query builder.
+func (r *TaskRepository) GetQueryBuilder() *gorm.DB {
+	return r.db
+}
+
+// FilterByStatus returns a *gorm.DB chain instead of []Task - anti-pattern.
+func (r *TaskRepository) FilterByStatus(status string) *gorm.DB {
+	return r.db.Where("status = ?", status)
+}
+
+// GetDB returns the raw *gorm.DB instance - anti-pattern.
+func (r *TaskRepository) GetDB() *gorm.DB {
+	return r.db
+}
+
+// Example misuse in service layer:
+//
+//	qb := repo.GetQueryBuilder()
+//	qb.Where("priority > ?", 5).Delete(&Task{})
+//
+// The service layer can now execute arbitrary queries, bypassing
+// repository encapsulation.

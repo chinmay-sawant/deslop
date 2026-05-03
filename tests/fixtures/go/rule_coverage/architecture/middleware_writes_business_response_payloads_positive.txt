@@ -1,0 +1,81 @@
+package middleware
+
+import (
+	"context"
+	"database/sql"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
+	"time"
+)
+
+// Positive scenario for middleware_writes_business_response_payloads.
+// Rule intent: Middleware that emits domain success payloads instead of leaving response bodies to handlers or render helpers.
+type CaseMiddlewareWritesBusinessResponsePayloadsDTO struct {
+	ID       string `json:"id" form:"id" uri:"id"`
+	TenantID string `json:"tenant_id" form:"tenant_id"`
+	Status   string `json:"status,omitempty" binding:"required"`
+	Amount   int    `json:"amount"`
+	Payload  []byte `json:"payload"`
+}
+
+type CaseMiddlewareWritesBusinessResponsePayloadsModel struct {
+	ID        string         `gorm:"column:id" json:"id"`
+	TenantID  string         `gorm:"column:tenant_id" json:"tenant_id"`
+	Status    string         `gorm:"column:status" json:"status"`
+	CreatedAt time.Time      `gorm:"column:created_at" json:"created_at"`
+	DeletedAt sql.NullTime   `json:"deleted_at,omitempty"`
+}
+
+type CaseMiddlewareWritesBusinessResponsePayloadsRepository struct {
+	db    *gorm.DB
+	sqlDB *sql.DB
+}
+
+func (r *CaseMiddlewareWritesBusinessResponsePayloadsRepository) FindByID(ctx context.Context, id string) (*CaseMiddlewareWritesBusinessResponsePayloadsModel, error) {
+	var model CaseMiddlewareWritesBusinessResponsePayloadsModel
+	err := r.db.Where("id = ?", id).First(&model).Error
+	return &model, err
+}
+
+func PositiveMiddlewareWritesBusinessResponsePayloads(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB) error {
+	repo := &CaseMiddlewareWritesBusinessResponsePayloadsRepository{db: db, sqlDB: sqlDB}
+
+	middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+		return func(c *gin.Context) {
+			id := c.Param("id")
+			model, err := repo.FindByID(ctx, id)
+			if err != nil {
+				c.JSON(http.StatusNotFound, gin.H{
+					"error":   "record not found",
+					"data":    nil,
+					"code":    "NOT_FOUND",
+				})
+				c.Abort()
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"data": gin.H{
+					"id":         model.ID,
+					"tenant_id":  model.TenantID,
+					"status":     model.Status,
+					"created_at": model.CreatedAt,
+				},
+				"meta": gin.H{
+					"total": 1,
+					"page":  1,
+				},
+			})
+
+			next(c)
+		}
+	}
+
+	handler := func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "this should never be reached"})
+	}
+
+	middleware(handler)(c)
+	return nil
+}

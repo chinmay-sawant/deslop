@@ -1,0 +1,10 @@
+class FileMetadata:
+    def __init__(self, key, size):
+        self.key = key
+        self.size = size
+
+class S3Storage:
+    def save(self, key, data):
+        # ... logic to save to S3
+        # Correct: returns a domain-specific metadata object
+        return FileMetadata(key=key, size=len(data))

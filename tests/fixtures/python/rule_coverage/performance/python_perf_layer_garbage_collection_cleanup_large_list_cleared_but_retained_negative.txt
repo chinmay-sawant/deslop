@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+def python_perf_layer_garbage_collection_cleanup_large_list_cleared_but_retained_negative(values):
+    big = list(values)
+    count = len(big)
+    big.clear()
+    del big
+    return count

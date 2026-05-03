@@ -1,0 +1,80 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for feature_flag_lookup_without_config_abstraction: preferred concrete example for this rule.
+// Rule intent: Handlers or services that query feature flags directly without a focused flag interface.
+type CaseFeatureFlagLookupWithoutConfigAbstractionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFeatureFlagLookupWithoutConfigAbstractionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFeatureFlagLookupWithoutConfigAbstractionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFeatureFlagLookupWithoutConfigAbstractionModel
+}
+
+type CaseFeatureFlagLookupWithoutConfigAbstractionService struct {
+    repo *CaseFeatureFlagLookupWithoutConfigAbstractionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFeatureFlagLookupWithoutConfigAbstractionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeFeatureFlagLookupWithoutConfigAbstraction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFeatureFlagLookupWithoutConfigAbstractionDTO) error {
+    focus := "feature_flag_lookup_without_config"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseFeatureFlagLookupWithoutConfigAbstractionDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseFeatureFlagLookupWithoutConfigAbstractionRepository{db: db, sql: sqlDB}
+    var model CaseFeatureFlagLookupWithoutConfigAbstractionModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseFeatureFlagLookupWithoutConfigAbstractionDTO{ID: input, Status: "active"}
+    model := CaseFeatureFlagLookupWithoutConfigAbstractionModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    cfg := map[string]string{"feature_flag_lookup_without_config_abstraction": "configured at startup"}
+    _ = cfg
+    feature_flag_lookup_config_abstraction_negative := map[string]int{"feature": 1, "flag": 2, "lookup": 3, "config": 4, "abstraction": 5}
+    feature_flag_lookup_config_abstraction_negative["signal"] = len(input) + len(items)
+    feature_negative_0 := feature_flag_lookup_config_abstraction_negative["feature"] + len(input)
+    _ = feature_negative_0
+    flag_negative_1 := feature_flag_lookup_config_abstraction_negative["flag"] + len(input)
+    _ = flag_negative_1
+    lookup_negative_2 := feature_flag_lookup_config_abstraction_negative["lookup"] + len(input)
+    _ = lookup_negative_2
+    config_negative_3 := feature_flag_lookup_config_abstraction_negative["config"] + len(input)
+    _ = config_negative_3
+    abstraction_negative_4 := feature_flag_lookup_config_abstraction_negative["abstraction"] + len(input)
+    _ = abstraction_negative_4
+    return nil
+}

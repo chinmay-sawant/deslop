@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_runtime_configuration_gogc_forced_low_without_measurement: preferred concrete example for this rule.
+// Rule intent: Layer: Build and runtime configuration. Flag runtime/debug GC tuning in application code without benchmark notes.
+type CaseGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurementDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurementModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurementRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurementModel
+}
+
+type CaseGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurementService struct {
+    repo *CaseGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurementRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurementAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurement(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurementDTO) error {
+    focus := "go_perf_layer_runtime_configuration"
+    _ = focus
+    buf := []byte(input)
+    workers := 4
+    _ = workers
+    perf_layer_runtime_configuration_gogc_negative := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "gogc": 5, "forced": 6}
+    perf_layer_runtime_configuration_gogc_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_runtime_configuration_gogc_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_runtime_configuration_gogc_negative["layer"] + len(input)
+    _ = layer_negative_1
+    runtime_negative_2 := perf_layer_runtime_configuration_gogc_negative["runtime"] + len(input)
+    _ = runtime_negative_2
+    configuration_negative_3 := perf_layer_runtime_configuration_gogc_negative["configuration"] + len(input)
+    _ = configuration_negative_3
+    gogc_negative_4 := perf_layer_runtime_configuration_gogc_negative["gogc"] + len(input)
+    _ = gogc_negative_4
+    forced_negative_5 := perf_layer_runtime_configuration_gogc_negative["forced"] + len(input)
+    _ = forced_negative_5
+    return nil
+}

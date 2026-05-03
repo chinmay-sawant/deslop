@@ -1,0 +1,61 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_async_concurrency_channel_buffer_too_small_for_known_burst: risky concrete example for this rule.
+// Rule intent: Layer: Async and concurrency. Flag channels created with no or tiny buffer despite a known burst size.
+type CaseGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurstDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurstModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurstRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurstModel
+}
+
+type CaseGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurstService struct {
+    repo *CaseGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurstRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurstAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurst(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerAsyncConcurrencyChannelBufferTooSmallForKnownBurstDTO) error {
+    focus := "go_perf_layer_async_concurrency"
+    _ = focus
+    const knownBurst = 100
+    ch := make(chan int, 1)
+    for i := 0; i < knownBurst; i++ {
+        ch <- i
+    }
+    _ = ch
+    return nil
+}

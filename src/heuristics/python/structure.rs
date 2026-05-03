@@ -806,7 +806,16 @@ pub(super) fn project_agnostic_structure_function_findings(
         && !contains_any(&lower_body, &["normalize"])
         && !contains_any(
             &file.path.to_string_lossy().to_ascii_lowercase(),
-            &["policy", "boundary", "middleware", "main.py", "app.py", "api/", "routes", "views"],
+            &[
+                "policy",
+                "boundary",
+                "middleware",
+                "main.py",
+                "app.py",
+                "api/",
+                "routes",
+                "views",
+            ],
         )
         && function.fingerprint.line_count >= 8
     {

@@ -1,0 +1,11 @@
+class DiscountMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, scope, receive, send):
+        # Violation: implementing business logic (discount calculation) in middleware
+        if scope["path"] == "/checkout":
+            user = get_user(scope)
+            if user.is_premium:
+                apply_premium_discount(scope)
+        return self.app(scope, receive, send)

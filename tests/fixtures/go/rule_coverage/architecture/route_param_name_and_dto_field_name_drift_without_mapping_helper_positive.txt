@@ -1,0 +1,49 @@
+package router
+
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+// Positive scenario for route_param_name_and_dto_field_name_drift_without_mapping_helper
+// Anti-pattern: Route param names and DTO field names drift apart with no mapping helper.
+type UpdateUserDTO struct {
+	UserID   string `json:"user_id"`
+	UserName string `json:"user_name"`
+	Email    string `json:"email"`
+}
+
+func HandleUpdateUser(c *gin.Context) {
+	// Anti-pattern: route param is "user_id" but DTO field is "UserID"
+	userID := c.Param("user_id")
+
+	var dto UpdateUserDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Anti-pattern: manual mapping required because names drift
+	dto.UserID = userID
+
+	// Anti-pattern: another route uses "id" but DTO expects "UserID"
+	c.JSON(http.StatusOK, gin.H{
+		"user_id":    dto.UserID,
+		"user_name":  dto.UserName,
+		"email":      dto.Email,
+	})
+}
+
+func HandleGetUser(c *gin.Context) {
+	// Anti-pattern: this handler uses "id" as param name
+	id := c.Param("id")
+
+	// Anti-pattern: but DTO still expects "UserID"
+	dto := UpdateUserDTO{
+		UserID: id,
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"user_id": dto.UserID,
+	})
+}

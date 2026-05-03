@@ -1,0 +1,7 @@
+import openai
+
+def generate_long_document(prompt):
+    # Correct: enable streaming to process large responses incrementally
+    resp = openai.Completion.create(model="gpt-4", prompt=prompt, max_tokens=4000, stream=True)
+    for chunk in resp:
+        yield chunk.choices[0].text

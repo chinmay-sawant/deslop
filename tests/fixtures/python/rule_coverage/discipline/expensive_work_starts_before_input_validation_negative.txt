@@ -1,0 +1,7 @@
+def process_data(data, user_id):
+    # Correct: validate inputs as early as possible
+    if not user_id:
+        raise ValueError("User ID required")
+        
+    result = heavy_computation(data)
+    save_result(user_id, result)

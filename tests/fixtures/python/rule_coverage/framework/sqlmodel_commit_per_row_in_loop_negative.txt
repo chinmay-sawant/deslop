@@ -1,0 +1,8 @@
+from sqlmodel import Session
+
+def save_items(engine, items):
+    # Correct: add all items to the session and commit once at the end
+    with Session(engine) as session:
+        for item in items:
+            session.add(item)
+        session.commit()

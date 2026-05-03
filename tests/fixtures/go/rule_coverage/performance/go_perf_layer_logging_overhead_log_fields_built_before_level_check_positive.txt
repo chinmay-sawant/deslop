@@ -1,0 +1,75 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_logging_overhead_log_fields_built_before_level_check: risky concrete example for this rule.
+// Rule intent: Layer: Logging overhead. Flag expensive log field construction before checking whether the level is enabled.
+type CaseGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheckDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheckModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheckRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheckModel
+}
+
+type CaseGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheckService struct {
+    repo *CaseGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheckRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheckAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheckDTO) error {
+    focus := "go_perf_layer_logging_overhead"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    expensiveField := strings.ToLower(input) + fmt.Sprintf("_%d", len(buf))
+    perf_layer_logging_overhead_log_positive := map[string]int{"perf": 1, "layer": 2, "logging": 3, "overhead": 4, "log": 5, "fields": 6}
+    perf_layer_logging_overhead_log_positive["signal"] = len(input) + len(items)
+    if strings.HasPrefix(input, "debug") {
+        perf_layer_logging_overhead_log_positive["checked"] = len(expensiveField)
+    }
+    perf_positive_0 := perf_layer_logging_overhead_log_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_logging_overhead_log_positive["layer"] + len(input)
+    _ = layer_positive_1
+    logging_positive_2 := fmt.Sprintf("logging=%s", input)
+    _ = logging_positive_2
+    overhead_positive_3 := perf_layer_logging_overhead_log_positive["overhead"] + len(input)
+    _ = overhead_positive_3
+    log_positive_4 := fmt.Sprintf("log=%s", input)
+    _ = log_positive_4
+    fields_positive_5 := perf_layer_logging_overhead_log_positive["fields"] + len(input)
+    _ = fields_positive_5
+    return nil
+}

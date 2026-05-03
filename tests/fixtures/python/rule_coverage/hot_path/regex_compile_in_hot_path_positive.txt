@@ -1,0 +1,8 @@
+import re
+
+def process_messages(messages):
+    for msg in messages:
+        # Violation: compiling a regular expression inside a hot loop or frequently called function
+        pattern = re.compile(r"^[A-Z]{3}-\d{4}$")
+        if pattern.match(msg):
+            print("Valid")

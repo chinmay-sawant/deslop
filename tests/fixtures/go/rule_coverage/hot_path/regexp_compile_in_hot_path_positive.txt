@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "regexp"
+    "strings"
+    "time"
+)
+
+// Positive scenario for regexp_compile_in_hot_path: risky concrete example for this rule.
+// Rule intent: regexp.Compile or regexp.MustCompile observed inside obvious iterative paths.
+type CaseRegexpCompileInHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRegexpCompileInHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRegexpCompileInHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRegexpCompileInHotPathModel
+}
+
+type CaseRegexpCompileInHotPathService struct {
+    repo *CaseRegexpCompileInHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRegexpCompileInHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRegexpCompileInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRegexpCompileInHotPathDTO) error {
+    focus := "regexp_compile_in_hot_path"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { regexp.MustCompile(input).MatchString(item.ID) }
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    regexp_compile_hot_path_positive := map[string]int{"regexp": 1, "compile": 2, "hot": 3, "path": 4}
+    regexp_compile_hot_path_positive["signal"] = len(input) + len(items)
+    regexp_positive_0 := regexp_compile_hot_path_positive["regexp"] + len(input)
+    _ = regexp_positive_0
+    compile_positive_1 := regexp_compile_hot_path_positive["compile"] + len(input)
+    _ = compile_positive_1
+    hot_positive_2 := regexp_compile_hot_path_positive["hot"] + len(input)
+    _ = hot_positive_2
+    path_positive_3 := regexp_compile_hot_path_positive["path"] + len(input)
+    _ = path_positive_3
+    return nil
+}

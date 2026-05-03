@@ -1,0 +1,7 @@
+def count_hits(ids: list[int], allow: list[int]) -> int:
+    allowed = set(allow)
+    hits = 0
+    for item in ids:
+        if item in allowed:
+            hits += 1
+    return hits

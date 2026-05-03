@@ -1,0 +1,69 @@
+package handler
+
+import (
+	"errors"
+	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Positive scenario for handler_switches_on_error_strings.
+// Rule intent: Handlers should branch on typed/sentinel errors (errors.Is, errors.As),
+// not on err.Error() string matching which is fragile and breaks with refactoring.
+// Anti-pattern: switch err.Error() or strings.Contains(err.Error(), "...") for control flow.
+
+type UserHandler struct{}
+
+func (h *UserHandler) GetUser(c *gin.Context) {
+	id := c.Param("id")
+	user, err := findUser(id)
+	if err != nil {
+		// Anti-pattern: switching on error string instead of using typed errors
+		switch err.Error() {
+		case "not found":
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		case "duplicate key value violates unique constraint":
+			c.JSON(http.StatusConflict, gin.H{"error": "duplicate user"})
+		case "connection refused":
+			c.JSON(http.StatusBadGateway, gin.H{"error": "database unavailable"})
+		case "context deadline exceeded":
+			c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request timed out"})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": user})
+}
+
+func (h *UserHandler) DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+	err := deleteUser(id)
+	if err != nil {
+		// Anti-pattern: string matching on error messages
+		msg := err.Error()
+		switch {
+		case strings.Contains(msg, "foreign key constraint"):
+			c.JSON(http.StatusConflict, gin.H{"error": "user has associated records"})
+		case strings.Contains(msg, "not found"):
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		case strings.Contains(msg, "permission denied"):
+			c.JSON(http.StatusForbidden, gin.H{"error": "insufficient permissions"})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "delete failed"})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"deleted": true})
+}
+
+func findUser(id string) (interface{}, error) {
+	return nil, errors.New("not found")
+}
+
+func deleteUser(id string) error {
+	return errors.New("foreign key constraint failed")
+}

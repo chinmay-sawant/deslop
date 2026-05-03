@@ -1,0 +1,4 @@
+def compute_hot_loop_metric(data):
+    # Violation: using function-local imports inside a hot loop (to avoid circular imports) destroys performance
+    from .heavy_module import calculate_score
+    return calculate_score(data)

@@ -1,0 +1,7 @@
+from __future__ import annotations
+
+import json
+
+
+def python_perf_layer_serialization_json_dumps_for_equality_or_hash_positive(left, right):
+    return json.dumps(left, sort_keys=True) == json.dumps(right, sort_keys=True)

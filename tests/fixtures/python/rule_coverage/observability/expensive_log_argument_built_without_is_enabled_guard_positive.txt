@@ -1,0 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+def compute_engine():
+    # Violation: eagerly building a massive string for a debug log that will be discarded 99% of the time in production
+    logger.debug(f"Current matrix state: {compute_massive_serialization_string()}")
+    run_heavy_math()

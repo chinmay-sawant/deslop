@@ -1,0 +1,31 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for stable_value_normalization_in_inner_loop: the same stable input is normalized inside an inner loop.
+type CaseStableValueNormalizationInInnerLoopDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+func PositiveStableValueNormalizationInInnerLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStableValueNormalizationInInnerLoopDTO) error {
+    for _, left := range items {
+        for _, right := range items {
+            normalized := strings.ToLower(strings.TrimSpace(input))
+            if normalized == right.TenantID && left.ID != "" {
+                c.Set(left.ID, right.Status)
+            }
+        }
+    }
+    return nil
+}

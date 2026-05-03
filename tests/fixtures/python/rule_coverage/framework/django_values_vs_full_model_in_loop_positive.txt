@@ -1,0 +1,6 @@
+from .models import User
+
+def list_usernames():
+    # Violation: fetching full model instances when only a single field is needed (expensive)
+    for user in User.objects.all():
+        print(user.username)

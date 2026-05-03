@@ -1,0 +1,62 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+    "time"
+)
+
+// Positive scenario for waitgroup_fanout_without_errgroup_on_error_path: risky concrete example for this rule.
+// Rule intent: WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup.
+type CaseWaitgroupFanoutWithoutErrgroupOnErrorPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseWaitgroupFanoutWithoutErrgroupOnErrorPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseWaitgroupFanoutWithoutErrgroupOnErrorPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseWaitgroupFanoutWithoutErrgroupOnErrorPathModel
+}
+
+type CaseWaitgroupFanoutWithoutErrgroupOnErrorPathService struct {
+    repo *CaseWaitgroupFanoutWithoutErrgroupOnErrorPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseWaitgroupFanoutWithoutErrgroupOnErrorPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveWaitgroupFanoutWithoutErrgroupOnErrorPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWaitgroupFanoutWithoutErrgroupOnErrorPathDTO) error {
+    var wg sync.WaitGroup
+    for _, item := range items {
+        wg.Add(1)
+        go func(id string) {
+            defer wg.Done()
+            var result CaseWaitgroupFanoutWithoutErrgroupOnErrorPathModel
+            _ = db.Where("id = ?", id).First(&result)
+        }(item.ID)
+    }
+    wg.Wait()
+    return nil
+}

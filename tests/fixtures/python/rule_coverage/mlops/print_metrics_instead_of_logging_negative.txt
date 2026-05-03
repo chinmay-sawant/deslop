@@ -1,0 +1,6 @@
+import mlflow
+
+def train_epoch(model, dataloader, epoch_num):
+    loss = run_epoch(model, dataloader)
+    # Correct: log metrics to an experiment tracking system like MLflow or Weights & Biases
+    mlflow.log_metric("train_loss", loss, step=epoch_num)

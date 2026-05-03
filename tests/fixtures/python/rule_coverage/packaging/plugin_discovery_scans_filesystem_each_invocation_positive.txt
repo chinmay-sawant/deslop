@@ -1,0 +1,7 @@
+import glob
+import importlib
+
+def run_plugins():
+    # Violation: scanning the filesystem dynamically on every invocation is terribly slow and error-prone
+    for filepath in glob.glob("plugins/*.py"):
+        importlib.import_module(filepath)

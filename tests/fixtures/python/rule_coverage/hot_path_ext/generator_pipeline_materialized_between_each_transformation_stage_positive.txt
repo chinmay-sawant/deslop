@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+def generator_pipeline_materialized_between_each_transformation_stage_positive():
+    numbers = [1, 2, 3, 4]
+    stage1 = list(n * 2 for n in numbers)
+    stage2 = list(n + 1 for n in stage1)
+    stage3 = list(str(n) for n in stage2)
+    return stage3

@@ -1,0 +1,78 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_lazy_loading_lazy_once_hides_slow_first_request: risky concrete example for this rule.
+// Rule intent: Layer: Lazy loading. Flag sync.Once lazy initialization on request paths without warmup or latency accounting.
+type CaseGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestModel
+}
+
+type CaseGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestService struct {
+    repo *CaseGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+var goPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestOnce sync.Once
+
+func PositiveGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestDTO) error {
+    focus := "go_perf_layer_lazy_loading"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    perf_layer_lazy_loading_once_positive := map[string]int{"perf": 1, "layer": 2, "lazy": 3, "loading": 4, "once": 5, "hides": 6}
+    perf_layer_lazy_loading_once_positive["signal"] = len(input) + len(items)
+    goPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestOnce.Do(func() {
+        time.Sleep(25 * time.Millisecond)
+        perf_layer_lazy_loading_once_positive["warmup"] = len(strings.ToUpper(input))
+    })
+    perf_positive_0 := perf_layer_lazy_loading_once_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_lazy_loading_once_positive["layer"] + len(input)
+    _ = layer_positive_1
+    lazy_positive_2 := perf_layer_lazy_loading_once_positive["lazy"] + len(input)
+    _ = lazy_positive_2
+    loading_positive_3 := perf_layer_lazy_loading_once_positive["loading"] + len(input)
+    _ = loading_positive_3
+    once_positive_4 := perf_layer_lazy_loading_once_positive["once"] + len(input)
+    _ = once_positive_4
+    hides_positive_5 := perf_layer_lazy_loading_once_positive["hides"] + len(input)
+    _ = hides_positive_5
+    return nil
+}

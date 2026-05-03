@@ -1,0 +1,8 @@
+import openai
+from functools import lru_cache
+
+# Correct: use an LRU cache (or disk cache like langchain.cache) to save duplicate LLM queries
+@lru_cache(maxsize=1000)
+def get_answer(question):
+    resp = openai.Completion.create(model="gpt-3.5-turbo", prompt=question)
+    return resp.choices[0].text

@@ -1,0 +1,10 @@
+import asyncio
+
+
+def _score(limit: int) -> int:
+    return sum(i * i for i in range(limit))
+
+
+async def expensive_score(limit: int) -> int:
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, _score, limit)

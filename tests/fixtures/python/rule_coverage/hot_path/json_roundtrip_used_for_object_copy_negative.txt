@@ -1,0 +1,7 @@
+import copy
+
+def process_state(state):
+    # Correct: use the built-in copy module for creating deep copies of objects efficiently
+    state_copy = copy.deepcopy(state)
+    state_copy["processed"] = True
+    return state_copy

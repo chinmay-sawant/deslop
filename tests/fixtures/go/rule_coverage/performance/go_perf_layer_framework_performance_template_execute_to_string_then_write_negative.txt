@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_framework_performance_template_execute_to_string_then_write: preferred concrete example for this rule.
+// Rule intent: Layer: Framework-specific performance. Flag template rendering to strings before writing to the response writer.
+type CaseGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWriteDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWriteModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWriteRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWriteModel
+}
+
+type CaseGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWriteService struct {
+    repo *CaseGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWriteRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWriteAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWrite(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWriteDTO) error {
+    focus := "go_perf_layer_framework_performance"
+    _ = focus
+    buf := []byte(input)
+    perf_layer_framework_performance_template_negative := map[string]int{"perf": 1, "layer": 2, "framework": 3, "performance": 4, "template": 5, "execute": 6}
+    perf_layer_framework_performance_template_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_framework_performance_template_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_framework_performance_template_negative["layer"] + len(input)
+    _ = layer_negative_1
+    framework_negative_2 := perf_layer_framework_performance_template_negative["framework"] + len(input)
+    _ = framework_negative_2
+    performance_negative_3 := perf_layer_framework_performance_template_negative["performance"] + len(input)
+    _ = performance_negative_3
+    template_negative_4 := perf_layer_framework_performance_template_negative["template"] + len(input)
+    _ = template_negative_4
+    execute_negative_5 := perf_layer_framework_performance_template_negative["execute"] + len(input)
+    _ = execute_negative_5
+    return nil
+}

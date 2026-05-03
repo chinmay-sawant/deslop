@@ -1,0 +1,9 @@
+from fastapi import FastAPI, Response
+
+app = FastAPI()
+
+@app.post("/jobs/cleanup")
+def trigger_cleanup():
+    execute_cleanup()
+    # Correct: always return 204 No Content for successful operations that return no data
+    return Response(status_code=204)

@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for error_string_comparison: risky concrete example for this rule.
+// Rule intent: `if err.Error() == "some error"` string comparison for error checking
+type CaseErrorStringComparisonDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseErrorStringComparisonModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseErrorStringComparisonRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseErrorStringComparisonModel
+}
+
+type CaseErrorStringComparisonService struct {
+    repo *CaseErrorStringComparisonRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseErrorStringComparisonAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveErrorStringComparison(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseErrorStringComparisonDTO) error {
+    focus := "error_string_comparison"
+    _ = focus
+    _, err := os.ReadFile(input)
+    if err != nil && err.Error() == "file not found" {
+        return err
+    }
+    error_string_comparison_positive := map[string]int{"error": 1, "string": 2, "comparison": 3}
+    error_string_comparison_positive["signal"] = len(input) + len(items)
+    error_positive_0 := error_string_comparison_positive["error"] + len(input)
+    _ = error_positive_0
+    string_positive_1 := strings.TrimSpace(input)
+    _ = string_positive_1
+    comparison_positive_2 := error_string_comparison_positive["comparison"] + len(input)
+    _ = comparison_positive_2
+    return nil
+}

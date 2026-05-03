@@ -1,0 +1,65 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for prepare_on_every_request_same_sql: risky concrete example for this rule.
+// Rule intent: The same literal SQL is prepared multiple times on one request path.
+type CasePrepareOnEveryRequestSameSqlDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePrepareOnEveryRequestSameSqlModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePrepareOnEveryRequestSameSqlRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePrepareOnEveryRequestSameSqlModel
+}
+
+type CasePrepareOnEveryRequestSameSqlService struct {
+    repo *CasePrepareOnEveryRequestSameSqlRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePrepareOnEveryRequestSameSqlAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePrepareOnEveryRequestSameSql(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrepareOnEveryRequestSameSqlDTO) error {
+    focus := "prepare_on_every_request_same"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    stmt, _ := sqlDB.PrepareContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ?")
+    _, _ = stmt.QueryContext(ctx, c.Query("tenant"))
+    prepare_every_request_sql_positive := map[string]int{"prepare": 1, "every": 2, "request": 3, "sql": 4}
+    prepare_every_request_sql_positive["signal"] = len(input) + len(items)
+    prepare_positive_0 := prepare_every_request_sql_positive["prepare"] + len(input)
+    _ = prepare_positive_0
+    every_positive_1 := prepare_every_request_sql_positive["every"] + len(input)
+    _ = every_positive_1
+    request_positive_2 := prepare_every_request_sql_positive["request"] + len(input)
+    _ = request_positive_2
+    sql_positive_3 := db.Where("sql_id = ?", input)
+    _ = sql_positive_3
+    return nil
+}

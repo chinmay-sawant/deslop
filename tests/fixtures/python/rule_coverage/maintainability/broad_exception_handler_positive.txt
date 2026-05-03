@@ -1,0 +1,7 @@
+def fetch_data():
+    try:
+        return make_network_request()
+    # Violation: using a broad exception handler masks unexpected bugs and system exits
+    except Exception as e:
+        print(f"Failed: {e}")
+        return None

@@ -1,0 +1,10 @@
+# my_app/database.py
+def connect_db(): pass
+
+# my_app/network.py
+def fetch_api(): pass
+
+# my_app/parsing.py
+def parse_regex(): pass
+
+# Correct: break apart "utils.py" into heavily focused, domain-specific modules

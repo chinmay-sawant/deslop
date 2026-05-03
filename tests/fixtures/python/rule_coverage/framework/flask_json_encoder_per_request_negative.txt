@@ -1,0 +1,9 @@
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+# Correct: set the custom JSON encoder once on the app instance
+app.json_encoder = MyCustomEncoder
+
+@app.route("/data")
+def get_data():
+    return jsonify({"data": 1})

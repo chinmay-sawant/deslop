@@ -1,0 +1,11 @@
+class Logger:
+    pass
+
+class DatabaseConnection:
+    pass
+
+class OrderService:
+    # Correct: inject dependencies from the outside (Inversion of Control) to allow mocking and reuse
+    def __init__(self, logger: Logger, db: DatabaseConnection):
+        self.logger = logger
+        self.db = db

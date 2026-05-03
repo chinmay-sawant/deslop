@@ -1,0 +1,5 @@
+@app.post("/logs")
+def write_log(message: str, logger: LoggerService = Depends()):
+    # Correct: view delegates IO to a service abstraction
+    logger.log(message)
+    return {"status": "ok"}

@@ -1,0 +1,6 @@
+def process_batch(items):
+    for item in items:
+        # Violation: object allocated in a tight loop instead of being reused or pooled
+        conn = DatabaseConnection()
+        conn.query(item)
+        conn.close()

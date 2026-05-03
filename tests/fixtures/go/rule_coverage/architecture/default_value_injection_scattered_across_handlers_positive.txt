@@ -1,0 +1,99 @@
+package handler
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Positive scenario for default_value_injection_scattered_across_handlers.
+// Rule intent: Default value logic for pagination, filters, or booleans should be
+// centralized, not repeated across multiple handler functions.
+// Anti-pattern: Multiple handlers each duplicating the same defaulting logic.
+
+type UserHandler struct{}
+
+func (h *UserHandler) ListUsers(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+	size, _ := strconv.Atoi(c.DefaultQuery("size", "0"))
+	sort := c.Query("sort")
+	status := c.Query("status")
+
+	// Scattered default injection
+	if page == 0 {
+		page = 1
+	}
+	if size == 0 {
+		size = 20
+	}
+	if sort == "" {
+		sort = "created_at"
+	}
+	if status == "" {
+		status = "active"
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"page":   page,
+		"size":   size,
+		"sort":   sort,
+		"status": status,
+	})
+}
+
+func (h *UserHandler) ListOrders(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+	size, _ := strconv.Atoi(c.DefaultQuery("size", "0"))
+	sort := c.Query("sort")
+	status := c.Query("status")
+
+	// Same scattered default injection repeated
+	if page == 0 {
+		page = 1
+	}
+	if size == 0 {
+		size = 20
+	}
+	if sort == "" {
+		sort = "created_at"
+	}
+	if status == "" {
+		status = "pending"
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"page":   page,
+		"size":   size,
+		"sort":   sort,
+		"status": status,
+	})
+}
+
+func (h *UserHandler) ListProducts(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+	size, _ := strconv.Atoi(c.DefaultQuery("size", "0"))
+	sort := c.Query("sort")
+	status := c.Query("status")
+
+	// Same scattered default injection repeated again
+	if page == 0 {
+		page = 1
+	}
+	if size == 0 {
+		size = 20
+	}
+	if sort == "" {
+		sort = "name"
+	}
+	if status == "" {
+		status = "available"
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"page":   page,
+		"size":   size,
+		"sort":   sort,
+		"status": status,
+	})
+}

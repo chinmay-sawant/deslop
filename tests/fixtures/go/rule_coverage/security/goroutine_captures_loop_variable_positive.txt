@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for goroutine_captures_loop_variable: risky concrete example for this rule.
+// Rule intent: `for _, v := range items { go func() { use(v) }() }` without rebinding `v` inside the loop body (pre-Go 1.22)
+type CaseGoroutineCapturesLoopVariableDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoroutineCapturesLoopVariableModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoroutineCapturesLoopVariableRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoroutineCapturesLoopVariableModel
+}
+
+type CaseGoroutineCapturesLoopVariableService struct {
+    repo *CaseGoroutineCapturesLoopVariableRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoroutineCapturesLoopVariableAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoroutineCapturesLoopVariable(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoroutineCapturesLoopVariableDTO) error {
+    focus := "goroutine_captures_loop_variable"
+    _ = focus
+    for _, item := range items {
+        go func() {
+            _ = item.ID
+        }()
+    }
+    goroutine_captures_loop_variable_positive := map[string]int{"goroutine": 1, "captures": 2, "loop": 3, "variable": 4}
+    goroutine_captures_loop_variable_positive["signal"] = len(input) + len(items)
+    goroutine_positive_0 := ctx
+    _ = goroutine_positive_0
+    captures_positive_1 := goroutine_captures_loop_variable_positive["captures"] + len(input)
+    _ = captures_positive_1
+    for loop_positive_2Index, item := range items { goroutine_captures_loop_variable_positive[item.ID] = loop_positive_2Index }
+    variable_positive_3 := goroutine_captures_loop_variable_positive["variable"] + len(input)
+    _ = variable_positive_3
+    return nil
+}

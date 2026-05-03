@@ -1,0 +1,3 @@
+def render_configuration(config_dict):
+    # Violation: relying on dictionary iteration order for UI or hash generation creates flaky tests and unstable outputs across python versions
+    return "\n".join([f"{k}={v}" for k, v in config_dict.items()])

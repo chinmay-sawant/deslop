@@ -1,0 +1,7 @@
+def upload_data(client, data):
+    # Correct: use 'finally' block for guaranteed cleanup
+    client.connect()
+    try:
+        client.upload(data)
+    finally:
+        client.disconnect()

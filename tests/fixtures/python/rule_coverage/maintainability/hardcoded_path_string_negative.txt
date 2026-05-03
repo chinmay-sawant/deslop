@@ -1,0 +1,8 @@
+import os
+
+# Correct: use environment variables or configuration blocks to define paths
+LOG_FILE_PATH = os.getenv("APP_LOG_PATH", "/var/log/myapp/application.log")
+
+def read_application_logs():
+    with open(LOG_FILE_PATH, "r") as f:
+        return f.readlines()

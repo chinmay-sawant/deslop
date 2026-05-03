@@ -226,6 +226,15 @@ fn module_namespace_matches_item(
         return true;
     }
 
+    for include_file in index.rust_include_neighbors_for_file(module_file) {
+        if index
+            .package_for_rust_file(include_file)
+            .is_some_and(|package| package.has_function(item_name) || package.has_symbol(item_name))
+        {
+            return true;
+        }
+    }
+
     let imports = index.rust_imports_for_file(module_file);
     let import_aliases = alias_lookup(imports);
     if let Some(import_spec) = import_aliases.get(item_name)

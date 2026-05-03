@@ -1,0 +1,6 @@
+import pandas as pd
+
+def combine_names(df):
+    # Correct: use the built-in pandas .str accessor for high-performance vectorized string operations
+    df['full_name'] = df['first_name'].astype(str).str.cat(df['last_name'].astype(str), sep=" ")
+    return df

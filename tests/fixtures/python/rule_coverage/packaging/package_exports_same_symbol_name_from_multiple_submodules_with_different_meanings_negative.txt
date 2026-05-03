@@ -1,0 +1,6 @@
+# my_package/__init__.py
+# Correct: alias conflicting names to provide a clear, unambiguous public API
+from .database import Client as DatabaseClient
+from .api import Client as ApiClient
+
+__all__ = ["DatabaseClient", "ApiClient"]

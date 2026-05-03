@@ -1,0 +1,10 @@
+import threading
+
+lock = threading.Lock()
+
+def start_task():
+    # Violation: lock acquired here and released by a different caller/function
+    lock.acquire()
+
+def end_task():
+    lock.release()

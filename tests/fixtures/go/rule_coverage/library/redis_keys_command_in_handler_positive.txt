@@ -1,0 +1,64 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for redis_keys_command_in_handler: risky concrete example for this rule.
+// Rule intent: `rdb.Keys(ctx, pattern)` in handler or loop code
+type CaseRedisKeysCommandInHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRedisKeysCommandInHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRedisKeysCommandInHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRedisKeysCommandInHandlerModel
+}
+
+type CaseRedisKeysCommandInHandlerService struct {
+    repo *CaseRedisKeysCommandInHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRedisKeysCommandInHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRedisKeysCommandInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisKeysCommandInHandlerDTO) error {
+    focus := "redis_keys_command_in_handler"
+    _ = focus
+    rdb := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+    _, _ = rdb.Keys(ctx, input).Result()
+    redis_keys_command_handler_positive := map[string]int{"redis": 1, "keys": 2, "command": 3, "handler": 4}
+    redis_keys_command_handler_positive["signal"] = len(input) + len(items)
+    redis_positive_0 := redis_keys_command_handler_positive["redis"] + len(input)
+    _ = redis_positive_0
+    keys_positive_1 := redis_keys_command_handler_positive["keys"] + len(input)
+    _ = keys_positive_1
+    command_positive_2 := redis_keys_command_handler_positive["command"] + len(input)
+    _ = command_positive_2
+    handler_positive_3 := c.FullPath() + ":" + input
+    _ = handler_positive_3
+    return nil
+}

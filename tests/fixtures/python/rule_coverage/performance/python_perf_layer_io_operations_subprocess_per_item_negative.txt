@@ -1,0 +1,9 @@
+from __future__ import annotations
+
+import subprocess
+
+
+def python_perf_layer_io_operations_subprocess_per_item_negative(values):
+    payload = "\n".join(str(value) for value in values)
+    line = subprocess.run(["echo", payload], capture_output=True, text=True, check=True)
+    return line.stdout.splitlines()

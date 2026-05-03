@@ -1,0 +1,13 @@
+def handle_event(event_type, mode):
+    # Correct: use a dispatch table or split into specific handlers to reduce complexity
+    handlers = {
+        "upload": upload_handler,
+        "delete": delete_handler
+    }
+    handler = handlers.get(event_type)
+    if handler:
+        handler(mode)
+
+def upload_handler(mode):
+    if mode == "async": ...
+    else: ...

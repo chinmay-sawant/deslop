@@ -1,0 +1,92 @@
+package service
+
+import (
+	"context"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Positive scenario for service_tests_import_gin:
+// service-level tests depend on gin when the service contract is supposed to be transport-neutral.
+type TaskService struct {
+	repo TaskRepository
+}
+
+type TaskRepository interface {
+	Create(ctx context.Context, title string) (*Task, error)
+	GetByID(ctx context.Context, id string) (*Task, error)
+}
+
+type Task struct {
+	ID    string
+	Title string
+	Done  bool
+}
+
+func NewTaskService(repo TaskRepository) *TaskService {
+	return &TaskService{repo: repo}
+}
+
+func (s *TaskService) CreateTask(ctx context.Context, title string) (*Task, error) {
+	return s.repo.Create(ctx, title)
+}
+
+func (s *TaskService) GetTask(ctx context.Context, id string) (*Task, error) {
+	return s.repo.GetByID(ctx, id)
+}
+
+type mockTaskRepo struct{}
+
+func (m *mockTaskRepo) Create(ctx context.Context, title string) (*Task, error) {
+	return &Task{ID: "1", Title: title, Done: false}, nil
+}
+
+func (m *mockTaskRepo) GetByID(ctx context.Context, id string) (*Task, error) {
+	return &Task{ID: id, Title: "test", Done: false}, nil
+}
+
+func TestTaskService_CreateTask(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+
+	svc := NewTaskService(&mockTaskRepo{})
+
+	task, err := svc.CreateTask(c.Request.Context(), "write tests")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if task.Title != "write tests" {
+		t.Errorf("expected title 'write tests', got '%s'", task.Title)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"task": task})
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected status 200, got %d", w.Code)
+	}
+}
+
+func TestTaskService_GetTask(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodGet, "/tasks/1", nil)
+
+	svc := NewTaskService(&mockTaskRepo{})
+
+	task, err := svc.GetTask(c.Request.Context(), "1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"task": task})
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected status 200, got %d", w.Code)
+	}
+}

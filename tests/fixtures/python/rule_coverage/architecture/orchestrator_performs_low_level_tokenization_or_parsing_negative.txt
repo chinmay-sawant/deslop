@@ -1,0 +1,8 @@
+class OrderOrchestrator:
+    def __init__(self, parser):
+        self.parser = parser
+
+    def process_raw_data(self, raw_input):
+        # Correct: orchestrator delegates low-level parsing to a dedicated component
+        data = self.parser.parse(raw_input)
+        # ... logic uses structured data

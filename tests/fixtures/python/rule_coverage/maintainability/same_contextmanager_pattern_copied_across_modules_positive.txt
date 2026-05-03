@@ -1,0 +1,16 @@
+# module_a.py
+def process_data():
+    # Violation: duplicating the same setup/teardown logic manually across modules
+    db.connect()
+    try:
+        db.execute("...")
+    finally:
+        db.disconnect()
+
+# module_b.py
+def process_other():
+    db.connect()
+    try:
+        db.execute("...")
+    finally:
+        db.disconnect()

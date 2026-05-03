@@ -1,0 +1,9 @@
+class Node:
+    def __init__(self, payload: bytes) -> None:
+        self.payload = payload
+        self.peer = None
+
+
+def release_pair(left: Node, right: Node) -> None:
+    left.peer = None
+    right.peer = None

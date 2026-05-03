@@ -1,0 +1,6 @@
+def process_positive(numbers):
+    # Violation: iterating over a collection, filtering it into a list, counting, and then iterating again
+    positives = [n for n in numbers if n > 0]
+    if len(positives) > 0:
+        for p in positives:
+            print(p)

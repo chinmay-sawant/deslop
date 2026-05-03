@@ -1,0 +1,4 @@
+from __future__ import annotations
+
+def serialization_cost_paid_only_to_compare_or_hash_intermediate_state_negative(state):
+    return hash(tuple(sorted(state.items())))

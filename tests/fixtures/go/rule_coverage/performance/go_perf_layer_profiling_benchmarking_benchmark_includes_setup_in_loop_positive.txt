@@ -1,0 +1,80 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "testing"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_profiling_benchmarking_benchmark_includes_setup_in_loop: risky concrete example for this rule.
+// Rule intent: Layer: Profiling and benchmarking. Flag Go benchmarks that perform setup inside the timed loop without ResetTimer.
+type CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopModel
+}
+
+type CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopService struct {
+    repo *CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func BenchmarkGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoop(b *testing.B) {
+    for index := 0; index < b.N; index++ {
+        payload := bytes.Repeat([]byte("payload:"), 128)
+        _ = strings.ToUpper(string(payload))
+    }
+}
+
+func PositiveGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopDTO) error {
+    focus := "go_perf_layer_profiling_benchmarking"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    perf_layer_profiling_benchmarking_benchmark_positive := map[string]int{"perf": 1, "layer": 2, "profiling": 3, "benchmarking": 4, "benchmark": 5, "includes": 6}
+    perf_layer_profiling_benchmarking_benchmark_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_profiling_benchmarking_benchmark_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_profiling_benchmarking_benchmark_positive["layer"] + len(input)
+    _ = layer_positive_1
+    profiling_positive_2 := perf_layer_profiling_benchmarking_benchmark_positive["profiling"] + len(input)
+    _ = profiling_positive_2
+    benchmarking_positive_3 := perf_layer_profiling_benchmarking_benchmark_positive["benchmarking"] + len(input)
+    _ = benchmarking_positive_3
+    benchmark_positive_4 := perf_layer_profiling_benchmarking_benchmark_positive["benchmark"] + len(input)
+    _ = benchmark_positive_4
+    includes_positive_5 := perf_layer_profiling_benchmarking_benchmark_positive["includes"] + len(input)
+    _ = includes_positive_5
+    return nil
+}

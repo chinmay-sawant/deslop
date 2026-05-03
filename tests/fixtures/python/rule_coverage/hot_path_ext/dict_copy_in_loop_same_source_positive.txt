@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+def dict_copy_in_loop_same_source_positive():
+    config = {"timeout": 10, "retry": 2}
+    snapshots = []
+    for _ in range(3):
+        snapshots.append(dict(config))
+    return snapshots

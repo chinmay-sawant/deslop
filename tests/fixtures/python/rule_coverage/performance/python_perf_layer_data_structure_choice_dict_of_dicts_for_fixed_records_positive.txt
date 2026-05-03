@@ -1,0 +1,5 @@
+def build_people() -> dict[str, dict[str, object]]:
+    return {
+        "u1": {"name": "Ana", "score": 12},
+        "u2": {"name": "Ben", "score": 18},
+    }

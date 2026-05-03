@@ -1,0 +1,6 @@
+import os
+
+def connect():
+    # Correct: delay environment and configuration reading until execution time, allowing test mocking
+    db_url = os.environ.get("DATABASE_URL", "sqlite:///:memory:")
+    return open_db(db_url)

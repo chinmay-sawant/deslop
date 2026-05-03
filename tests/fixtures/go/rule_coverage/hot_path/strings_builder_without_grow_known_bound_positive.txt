@@ -1,0 +1,29 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for strings_builder_without_grow_known_bound: strings.Builder grows repeatedly despite a visible expected size.
+type CaseStringsBuilderWithoutGrowKnownBoundDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+func PositiveStringsBuilderWithoutGrowKnownBound(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsBuilderWithoutGrowKnownBoundDTO) error {
+    var sb strings.Builder
+    for _, item := range items {
+        sb.WriteString(item.ID)
+        sb.WriteString(item.Status)
+    }
+    _ = sb.Len()
+    return nil
+}

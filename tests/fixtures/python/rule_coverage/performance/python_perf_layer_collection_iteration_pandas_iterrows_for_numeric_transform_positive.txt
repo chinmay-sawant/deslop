@@ -1,0 +1,4 @@
+def add_tax(df):
+    for idx, row in df.iterrows():
+        df.loc[idx, "gross"] = row["net"] * 1.18
+    return df

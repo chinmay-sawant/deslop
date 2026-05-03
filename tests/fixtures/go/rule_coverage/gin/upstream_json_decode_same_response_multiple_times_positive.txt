@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "encoding/json"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "io"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for upstream_json_decode_same_response_multiple_times: risky concrete example for this rule.
+// Rule intent: One upstream HTTP response body decoded into multiple targets in the same handler.
+type CaseUpstreamJsonDecodeSameResponseMultipleTimesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseUpstreamJsonDecodeSameResponseMultipleTimesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUpstreamJsonDecodeSameResponseMultipleTimesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUpstreamJsonDecodeSameResponseMultipleTimesModel
+}
+
+type CaseUpstreamJsonDecodeSameResponseMultipleTimesService struct {
+    repo *CaseUpstreamJsonDecodeSameResponseMultipleTimesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUpstreamJsonDecodeSameResponseMultipleTimesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveUpstreamJsonDecodeSameResponseMultipleTimes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUpstreamJsonDecodeSameResponseMultipleTimesDTO) error {
+    resp, _ := client.Get(input)
+    if resp == nil {
+        return nil
+    }
+    defer resp.Body.Close()
+
+    body, _ := io.ReadAll(resp.Body)
+
+    var summary struct {
+        Items []CaseUpstreamJsonDecodeSameResponseMultipleTimesDTO `json:"items"`
+    }
+    var metadata map[string]any
+
+    _ = json.Unmarshal(body, &summary)
+    _ = json.Unmarshal(body, &metadata)
+    c.Set("upstream_metadata", metadata)
+    return nil
+}

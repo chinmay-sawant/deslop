@@ -1,0 +1,9 @@
+from pathlib import Path
+
+def process_files(base_dir, filenames):
+    results = []
+    for filename in filenames:
+        # Violation: reconstructing the base Path object repeatedly inside a loop
+        full_path = Path(base_dir) / filename
+        results.append(str(full_path))
+    return results

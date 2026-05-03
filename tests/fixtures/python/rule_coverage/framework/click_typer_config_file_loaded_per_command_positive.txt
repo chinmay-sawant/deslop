@@ -1,0 +1,14 @@
+import click
+
+@click.command()
+def sync():
+    # Violation: config file loaded per command invocation
+    with open("config.yaml") as f:
+        config = yaml.safe_load(f)
+    print(f"Syncing {config['endpoint']}")
+
+@click.command()
+def backup():
+    with open("config.yaml") as f:
+        config = yaml.safe_load(f)
+    print(f"Backing up to {config['storage']}")

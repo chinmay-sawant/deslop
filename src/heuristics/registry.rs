@@ -11,9 +11,10 @@ use super::go::{
     go_architecture_file_findings, go_architecture_repo_findings, go_file_findings,
     go_framework_patterns_file_findings, go_library_misuse_file_findings, go_repo_findings,
     import_grouping_findings, json_findings, load_findings, mutex_findings, n_squared_findings,
-    package_name_consistency, propagate_findings, receiver_findings, reflect_findings,
-    request_context_background_findings, rwmutex_file_findings, shutdown_findings, sleep_findings,
-    tag_findings, waitgroup_errgroup_findings,
+    package_name_consistency, performance_layer_rule_findings, propagate_findings,
+    receiver_findings, reflect_findings, request_context_background_findings,
+    rwmutex_file_findings, shutdown_findings, sleep_findings, tag_findings,
+    waitgroup_errgroup_findings,
 };
 use super::hallucination::hallucination_findings;
 use super::naming::{generic_finding, overlong_finding, weak_finding};
@@ -25,7 +26,8 @@ use super::rust::{
     rust_bad_practices_indexed_repo_findings, rust_boundary_file_findings,
     rust_boundary_function_findings, rust_domain_file_findings, rust_import_resolution_findings,
     rust_local_call_findings, rust_module_surface_file_findings, rust_performance_file_findings,
-    rust_performance_function_findings, rust_runtime_file_findings, rust_runtime_function_findings,
+    rust_performance_function_findings, rust_performance_layer_rule_findings,
+    rust_runtime_file_findings, rust_runtime_function_findings,
     rust_runtime_ownership_function_findings, rust_security_file_findings,
     rust_security_function_findings, rust_unsafe_soundness_findings,
 };
@@ -254,6 +256,7 @@ const GO_RULE_SPECS: &[RuleExecutionSpec] = &[
             json_findings,
             load_findings,
             extra_performance_findings,
+            performance_layer_rule_findings,
         ],
         file_function_rules: &[],
         indexed_function_rules: &[],
@@ -362,7 +365,10 @@ const RUST_RULE_SPECS: &[RuleExecutionSpec] = &[
         file_rules: &[rust_performance_file_findings],
         indexed_file_rules: &[],
         optional_function_rules: &[],
-        function_rules: &[rust_performance_function_findings],
+        function_rules: &[
+            rust_performance_function_findings,
+            rust_performance_layer_rule_findings,
+        ],
         file_function_rules: &[],
         indexed_function_rules: &[],
         configurable_function_rules: &[],

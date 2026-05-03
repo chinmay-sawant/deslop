@@ -1,0 +1,12 @@
+package perflayers
+
+import "encoding/json"
+
+func JsonCachePositive(payload []byte) error {
+    cache := map[string]string{}
+    cache["item"] = string(payload)
+
+    value := cache["item"]
+    var decoded map[string]any
+    return json.Unmarshal([]byte(value), &decoded)
+}

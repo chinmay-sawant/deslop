@@ -1,0 +1,7 @@
+# Correct: use a factory or dependency injection
+class RedisProvider:
+    def __init__(self, host):
+        self.client = Redis(host=host)
+
+    def get_client(self):
+        return self.client

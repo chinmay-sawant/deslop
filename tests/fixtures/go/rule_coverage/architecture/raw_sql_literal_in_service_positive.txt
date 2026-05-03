@@ -1,0 +1,71 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for raw_sql_literal_in_service: risky concrete example for this rule.
+// Rule intent: Literal SQL strings executed from services instead of repositories or query packages.
+type CaseRawSqlLiteralInServiceDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRawSqlLiteralInServiceModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRawSqlLiteralInServiceUserRepo struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRawSqlLiteralInServiceModel
+}
+
+type CaseRawSqlLiteralInServiceUserService struct {
+    repo *CaseRawSqlLiteralInServiceUserRepo
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRawSqlLiteralInServiceAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRawSqlLiteralInService(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRawSqlLiteralInServiceDTO) error {
+    focus := "raw_sql_literal_in_service"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseRawSqlLiteralInServiceUserService{repo: &CaseRawSqlLiteralInServiceUserRepo{db: db, sql: sqlDB}, client: client, logger: nil}
+    service.repo.db = service.repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    service.repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRawSqlLiteralInServiceModel{})
+    service.repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseRawSqlLiteralInServiceModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    raw_sql_literal_service_positive := map[string]int{"raw": 1, "sql": 2, "literal": 3, "service": 4}
+    raw_sql_literal_service_positive["signal"] = len(input) + len(items)
+    raw_positive_0 := raw_sql_literal_service_positive["raw"] + len(input)
+    _ = raw_positive_0
+    sql_positive_1 := db.Where("sql_id = ?", input)
+    _ = sql_positive_1
+    literal_positive_2 := raw_sql_literal_service_positive["literal"] + len(input)
+    _ = literal_positive_2
+    service_positive_3 := CaseRawSqlLiteralInServiceDTO{ID: input, Status: "service"}
+    _ = service_positive_3
+    return nil
+}

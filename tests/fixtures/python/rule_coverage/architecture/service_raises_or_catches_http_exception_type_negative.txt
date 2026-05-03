@@ -1,0 +1,10 @@
+class UserNotFoundError(Exception):
+    pass
+
+class UserService:
+    def get_user(self, id):
+        user = self.repo.get(id)
+        if not user:
+            # Correct: service raises a domain-specific exception
+            raise UserNotFoundError(f"User {id} not found")
+        return user

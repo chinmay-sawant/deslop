@@ -1,0 +1,16 @@
+from contextlib import contextmanager
+
+@contextmanager
+def locked(lock):
+    lock.acquire()
+    try:
+        yield
+    finally:
+        lock.release()
+
+def sync_data():
+    # Correct: logic is extracted into a reusable context manager
+    with locked(lock1):
+        perform_a()
+    with locked(lock2):
+        perform_b()

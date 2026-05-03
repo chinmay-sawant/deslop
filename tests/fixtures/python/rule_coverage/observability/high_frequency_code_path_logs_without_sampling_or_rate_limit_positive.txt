@@ -1,0 +1,7 @@
+import logging
+
+def ingest_event_stream(events):
+    for event in events:
+        # Violation: logging every single event in a high-throughput stream will destroy I/O and balloon log storage costs
+        logging.info(f"Ingested event ID: {event.id}")
+        process(event)

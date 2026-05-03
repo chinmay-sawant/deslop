@@ -1,0 +1,8 @@
+def calculate_discount(user_status):
+    if user_status == "premium":
+        return 0.20
+    elif user_status == "basic":
+        return 0.05
+    else:
+        # Violation: returning a plausible default instead of failing loud hides critical system invariant violations
+        return 0.00

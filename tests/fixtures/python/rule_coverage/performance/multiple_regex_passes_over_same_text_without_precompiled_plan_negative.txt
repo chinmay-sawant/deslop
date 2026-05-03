@@ -1,0 +1,8 @@
+import re
+
+DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+LEVEL_RE = re.compile(r"\b(INFO|WARN|ERROR)\b")
+
+
+def parse_log(line: str) -> bool:
+    return DATE_RE.search(line) is not None and LEVEL_RE.search(line) is not None

@@ -1,0 +1,6 @@
+import re
+
+def validate_input(user_input):
+    # Violation: regex pattern with catastrophic backtracking applied to unbounded input
+    pattern = re.compile(r"^(a+)+$")
+    return pattern.match(user_input)

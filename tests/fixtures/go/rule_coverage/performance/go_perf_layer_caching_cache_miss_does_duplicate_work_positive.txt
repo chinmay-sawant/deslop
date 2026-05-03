@@ -1,0 +1,62 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_caching_cache_miss_does_duplicate_work: risky concrete example for this rule.
+// Rule intent: Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key.
+type CaseGoPerfLayerCachingCacheMissDoesDuplicateWorkDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerCachingCacheMissDoesDuplicateWorkModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerCachingCacheMissDoesDuplicateWorkRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerCachingCacheMissDoesDuplicateWorkModel
+}
+
+type CaseGoPerfLayerCachingCacheMissDoesDuplicateWorkService struct {
+    repo *CaseGoPerfLayerCachingCacheMissDoesDuplicateWorkRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerCachingCacheMissDoesDuplicateWorkAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerCachingCacheMissDoesDuplicateWork(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerCachingCacheMissDoesDuplicateWorkDTO) error {
+    focus := "go_perf_layer_caching_cache"
+    _ = focus
+    cache := map[string]string{}
+    key := "mykey"
+    val, ok := cache[key]
+    if !ok {
+        val = key + "_computed"
+        cache[key] = val
+    }
+    _ = val
+    return nil
+}

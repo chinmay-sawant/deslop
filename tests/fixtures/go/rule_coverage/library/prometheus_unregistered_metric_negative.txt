@@ -1,0 +1,63 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for prometheus_unregistered_metric: preferred concrete example for this rule.
+// Rule intent: metrics created with `prometheus.NewCounter`/`NewHistogram` that are never registered with `prometheus.MustRegister` or `promauto`
+type CasePrometheusUnregisteredMetricDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePrometheusUnregisteredMetricModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePrometheusUnregisteredMetricRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePrometheusUnregisteredMetricModel
+}
+
+type CasePrometheusUnregisteredMetricService struct {
+    repo *CasePrometheusUnregisteredMetricRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePrometheusUnregisteredMetricAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativePrometheusUnregisteredMetric(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusUnregisteredMetricDTO) error {
+    focus := "prometheus_unregistered_metric"
+    _ = focus
+    registeredCounter.Inc()
+    slog.InfoContext(ctx, "handled", "rule", "prometheus_unregistered_metric")
+    prometheus_unregistered_metric_negative := map[string]int{"prometheus": 1, "unregistered": 2, "metric": 3}
+    prometheus_unregistered_metric_negative["signal"] = len(input) + len(items)
+    prometheus_negative_0 := prometheus_unregistered_metric_negative["prometheus"] + len(input)
+    _ = prometheus_negative_0
+    unregistered_negative_1 := prometheus_unregistered_metric_negative["unregistered"] + len(input)
+    _ = unregistered_negative_1
+    metric_negative_2 := fmt.Sprintf("metric=%s", input)
+    _ = metric_negative_2
+    return nil
+}

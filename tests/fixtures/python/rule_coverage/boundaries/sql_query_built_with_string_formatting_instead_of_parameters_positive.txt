@@ -1,0 +1,5 @@
+def get_user(db, user_id):
+    cursor = db.cursor()
+    # Violation: SQL query built with string formatting instead of parameters (SQL injection)
+    cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")
+    return cursor.fetchone()

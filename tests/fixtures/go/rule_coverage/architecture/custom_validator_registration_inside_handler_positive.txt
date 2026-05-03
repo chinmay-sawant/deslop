@@ -1,0 +1,36 @@
+package handler
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"net/http"
+)
+
+// Positive scenario for custom_validator_registration_inside_handler.
+// Rule intent: Per-request validator registration instead of startup-time validator wiring.
+type CreateProductRequest struct {
+	Name     string `json:"name" binding:"required"`
+	Category string `json:"category" binding:"required,valid_category"`
+	Price    int    `json:"price" binding:"required,min=0"`
+}
+
+func PositiveCustomValidatorRegistrationInsideHandler(c *gin.Context) {
+	v := validator.New()
+	v.RegisterValidation("valid_category", func(fl validator.FieldLevel) bool {
+		val := fl.Field().String()
+		return val == "electronics" || val == "clothing" || val == "food"
+	})
+
+	var req CreateProductRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := v.Struct(req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"name": req.Name, "category": req.Category})
+}

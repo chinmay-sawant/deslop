@@ -1,0 +1,5 @@
+def calculate_discount(order):
+    # Violation: hardcoding business rules (like discount rates or thresholds) directly in the logic
+    if order.total > 1000:
+        return order.total * 0.15
+    return 0

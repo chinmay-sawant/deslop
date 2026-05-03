@@ -1,0 +1,6 @@
+import openai
+
+def summarize_document(huge_text):
+    # Violation: sending unbounded text to an LLM without checking token counts will cause ContextWindow errors
+    response = openai.Completion.create(model="gpt-3.5-turbo", prompt=huge_text)
+    return response.choices[0].text

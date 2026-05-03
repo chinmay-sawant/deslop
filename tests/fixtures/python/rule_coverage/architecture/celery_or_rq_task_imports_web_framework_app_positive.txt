@@ -1,0 +1,11 @@
+from celery import Celery
+# Violation: importing the web framework app into background tasks
+from my_web_app.main import app as flask_app
+
+celery_app = Celery('tasks')
+
+@celery_app.task
+def background_task():
+    with flask_app.app_context():
+        # ... logic
+        pass

@@ -1,0 +1,14 @@
+import threading
+
+_trace_context = threading.local()
+
+def measure_time(func):
+    def wrapper(*args, **kwargs):
+        # Correct: use side-channels (like headers, context variables, or globals) to export telemetry
+        _trace_context.current_id = "12345"
+        return func(*args, **kwargs)
+    return wrapper
+
+@measure_time
+def get_user_data():
+    return {"name": "Alice"}

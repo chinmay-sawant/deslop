@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+import importlib.util
+
+
+def python_perf_layer_runtime_configuration_pythonpath_mutated_per_call_negative(module_file):
+    spec = importlib.util.spec_from_file_location("plugin_mod", module_file)
+    return spec.name if spec is not None else None

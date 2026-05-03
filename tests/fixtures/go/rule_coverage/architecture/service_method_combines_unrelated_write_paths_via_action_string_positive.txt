@@ -1,0 +1,61 @@
+package service
+
+import (
+	"fmt"
+	"gorm.io/gorm"
+)
+
+// Positive scenario for service_method_combines_unrelated_write_paths_via_action_string: risky concrete example for this rule.
+// Rule intent: Services that branch on action strings to implement many create, update, or delete variants in one method.
+type CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringModel struct {
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string `gorm:"column:status" json:"status"`
+}
+
+type CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringRepository struct {
+	db *gorm.DB
+}
+
+type CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringService struct {
+	repo *CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringRepository
+}
+
+func (s *CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringService) HandleAction(action string, id string) error {
+	switch action {
+	case "create":
+		model := CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringModel{
+			ID:     id,
+			Status: "active",
+		}
+		if err := s.repo.db.Create(&model).Error; err != nil {
+			return fmt.Errorf("create failed: %w", err)
+		}
+	case "update":
+		if err := s.repo.db.Model(&CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringModel{}).
+			Where("id = ?", id).
+			Update("status", "updated").Error; err != nil {
+			return fmt.Errorf("update failed: %w", err)
+		}
+	case "archive":
+		if err := s.repo.db.Model(&CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringModel{}).
+			Where("id = ?", id).
+			Update("status", "archived").Error; err != nil {
+			return fmt.Errorf("archive failed: %w", err)
+		}
+	case "delete":
+		if err := s.repo.db.Where("id = ?", id).
+			Delete(&CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringModel{}).Error; err != nil {
+			return fmt.Errorf("delete failed: %w", err)
+		}
+	case "restore":
+		if err := s.repo.db.Model(&CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringModel{}).
+			Where("id = ?", id).
+			Update("status", "active").Error; err != nil {
+			return fmt.Errorf("restore failed: %w", err)
+		}
+	default:
+		return fmt.Errorf("unknown action: %s", action)
+	}
+	return nil
+}

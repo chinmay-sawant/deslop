@@ -1,0 +1,2 @@
+def find_matches(left: list[int], right: list[int]) -> list[tuple[int, int]]:
+    return [(a, b) for a in left for b in right if a == b]

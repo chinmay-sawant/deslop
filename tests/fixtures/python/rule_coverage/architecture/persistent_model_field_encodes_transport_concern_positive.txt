@@ -1,0 +1,5 @@
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    # Violation: persistent field encoding a transport-specific concern (caching key for API)
+    api_cache_etag = Column(String)

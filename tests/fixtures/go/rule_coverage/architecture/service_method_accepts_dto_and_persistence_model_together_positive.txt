@@ -1,0 +1,54 @@
+package service
+
+import (
+	"fmt"
+	"gorm.io/gorm"
+)
+
+// Positive scenario for service_method_accepts_dto_and_persistence_model_together: risky concrete example for this rule.
+// Rule intent: Signatures that mix transport DTOs and GORM models in the same service API.
+type CaseServiceMethodAcceptsDtoAndPersistenceModelTogetherDTO struct {
+	ID       string `json:"id"`
+	TenantID string `json:"tenant_id"`
+	Status   string `json:"status"`
+	Amount   int    `json:"amount"`
+}
+
+type CaseServiceMethodAcceptsDtoAndPersistenceModelTogetherModel struct {
+	ID        string `gorm:"column:id" json:"id"`
+	TenantID  string `gorm:"column:tenant_id" json:"tenant_id"`
+	Status    string `gorm:"column:status" json:"status"`
+	Amount    int    `gorm:"column:amount" json:"amount"`
+	UpdatedAt string `gorm:"column:updated_at" json:"updated_at"`
+}
+
+type CaseServiceMethodAcceptsDtoAndPersistenceModelTogetherRepository struct {
+	db *gorm.DB
+}
+
+type CaseServiceMethodAcceptsDtoAndPersistenceModelTogetherService struct {
+	repo *CaseServiceMethodAcceptsDtoAndPersistenceModelTogetherRepository
+}
+
+func (s *CaseServiceMethodAcceptsDtoAndPersistenceModelTogetherService) Update(dto CaseServiceMethodAcceptsDtoAndPersistenceModelTogetherDTO, model CaseServiceMethodAcceptsDtoAndPersistenceModelTogetherModel) error {
+	if dto.ID == "" {
+		return fmt.Errorf("dto id is required")
+	}
+
+	model.ID = dto.ID
+	model.TenantID = dto.TenantID
+	model.Status = dto.Status
+	model.Amount = dto.Amount
+
+	if err := s.repo.db.Model(&CaseServiceMethodAcceptsDtoAndPersistenceModelTogetherModel{}).
+		Where("id = ?", model.ID).
+		Updates(map[string]any{
+			"tenant_id": model.TenantID,
+			"status":    model.Status,
+			"amount":    model.Amount,
+		}).Error; err != nil {
+		return fmt.Errorf("failed to update: %w", err)
+	}
+
+	return nil
+}

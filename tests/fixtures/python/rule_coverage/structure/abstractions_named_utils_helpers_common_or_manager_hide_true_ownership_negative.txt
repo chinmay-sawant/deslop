@@ -1,0 +1,14 @@
+# Correct: name classes exactly for what they do, enforcing single-responsibility and high cohesion
+class UserAuthenticator:
+    def authenticate(self): pass
+
+class UserNotifier:
+    def send_welcome_email(self): pass
+
+class UrlParser:
+    @staticmethod
+    def parse(url): pass
+
+class PasswordHasher:
+    @staticmethod
+    def hash(pwd): pass

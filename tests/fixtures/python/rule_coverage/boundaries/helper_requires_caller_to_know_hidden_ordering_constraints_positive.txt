@@ -1,0 +1,12 @@
+class DataClient:
+    def __init__(self):
+        self._connected = False
+
+    def connect(self):
+        self._connected = True
+
+    def fetch(self):
+        # Violation: caller must know to call connect() before fetch()
+        if not self._connected:
+            raise RuntimeError("Not connected")
+        return "data"

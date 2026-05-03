@@ -1,0 +1,5 @@
+import yaml
+
+def parse_config(data):
+    # Correct: always use yaml.safe_load() to restrict parsing to standard primitives (dicts, lists, strings, etc.)
+    return yaml.safe_load(data)

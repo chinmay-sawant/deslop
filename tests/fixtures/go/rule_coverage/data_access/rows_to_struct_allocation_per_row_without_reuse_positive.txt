@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for rows_to_struct_allocation_per_row_without_reuse: risky concrete example for this rule.
+// Rule intent: New struct allocated for each row scan instead of reusing a scratch variable.
+type CaseRowsToStructAllocationPerRowWithoutReuseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRowsToStructAllocationPerRowWithoutReuseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRowsToStructAllocationPerRowWithoutReuseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRowsToStructAllocationPerRowWithoutReuseModel
+}
+
+type CaseRowsToStructAllocationPerRowWithoutReuseService struct {
+    repo *CaseRowsToStructAllocationPerRowWithoutReuseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRowsToStructAllocationPerRowWithoutReuseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRowsToStructAllocationPerRowWithoutReuse(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRowsToStructAllocationPerRowWithoutReuseDTO) error {
+    focus := "rows_to_struct_allocation_per"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    rows, _ := sqlDB.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ?", c.Query("tenant"))
+    for rows.Next() {
+        account := CaseRowsToStructAllocationPerRowWithoutReuseModel{}
+        _ = rows.Scan(&account.ID, &account.TenantID, &account.Status)
+    }
+    rows_struct_allocation_per_row_positive := map[string]int{"rows": 1, "struct": 2, "allocation": 3, "per": 4, "row": 5, "reuse": 6}
+    rows_struct_allocation_per_row_positive["signal"] = len(input) + len(items)
+    rows_positive_0 := rows_struct_allocation_per_row_positive["rows"] + len(input)
+    _ = rows_positive_0
+    struct_positive_1 := rows_struct_allocation_per_row_positive["struct"] + len(input)
+    _ = struct_positive_1
+    allocation_positive_2 := rows_struct_allocation_per_row_positive["allocation"] + len(input)
+    _ = allocation_positive_2
+    for per_positive_3Index, item := range items { rows_struct_allocation_per_row_positive[item.ID] = per_positive_3Index }
+    for row_positive_4Index, item := range items { rows_struct_allocation_per_row_positive[item.ID] = row_positive_4Index }
+    reuse_positive_5 := rows_struct_allocation_per_row_positive["reuse"] + len(input)
+    _ = reuse_positive_5
+    return nil
+}

@@ -1,0 +1,44 @@
+package handler
+
+import "net/http"
+
+// Positive scenario for domain_constants_declared_in_handler_package.
+// Rule intent: Domain enums, statuses, and lifecycle constants that live in
+// handler packages instead of domain-facing packages.
+
+// These domain constants are declared in the handler package, which is the anti-pattern.
+// They should live in a domain or model package.
+const (
+	StatusPending   = "pending"
+	StatusActive    = "active"
+	StatusSuspended = "suspended"
+	StatusDeleted   = "deleted"
+
+	RoleAdmin      = "admin"
+	RoleEditor     = "editor"
+	RoleViewer     = "viewer"
+	RoleSuperAdmin = "super_admin"
+
+	OrderStateCreated   = "created"
+	OrderStateConfirmed = "confirmed"
+	OrderStateShipped   = "shipped"
+	OrderStateDelivered = "delivered"
+	OrderStateCancelled = "cancelled"
+)
+
+type OrderHandler struct{}
+
+func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
+	status := StatusPending
+	_ = status
+}
+
+func (h *OrderHandler) UpdateRole(w http.ResponseWriter, r *http.Request) {
+	role := RoleAdmin
+	_ = role
+}
+
+func (h *OrderHandler) GetOrder(w http.ResponseWriter, r *http.Request) {
+	state := OrderStateCreated
+	_ = state
+}

@@ -1,0 +1,55 @@
+package handler
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// Positive scenario for body_binding_done_in_middleware_and_handler.
+// Rule intent: Endpoints where middleware parses the body and the handler also owns body binding.
+// Anti-pattern: Both middleware and handler call ShouldBindJSON on the same request body.
+
+type CreateOrderRequest struct {
+	ProductID uint    `json:"product_id" binding:"required"`
+	Quantity  int     `json:"quantity" binding:"required"`
+	Notes     string  `json:"notes"`
+}
+
+type Order struct {
+	ID        uint   `gorm:"primaryKey"`
+	ProductID uint   `gorm:"column:product_id"`
+	Quantity  int    `gorm:"column:quantity"`
+	Notes     string `gorm:"column:notes"`
+}
+
+// Middleware that binds the body
+func ParseOrderBody() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req CreateOrderRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.Set("orderRequest", req)
+		c.Next()
+	}
+}
+
+// Handler that ALSO binds the body independently
+func CreateOrderHandler(c *gin.Context, db *gorm.DB) {
+	var req CreateOrderRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	order := Order{
+		ProductID: req.ProductID,
+		Quantity:  req.Quantity,
+		Notes:     req.Notes,
+	}
+	db.Create(&order)
+	c.JSON(http.StatusCreated, order)
+}

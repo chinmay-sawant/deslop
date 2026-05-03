@@ -1,0 +1,5 @@
+from .models import User
+
+def activate_users(user_ids):
+    # Correct: use .update() to perform a bulk update on the database-side
+    User.objects.filter(id__in=user_ids).update(is_active=True)

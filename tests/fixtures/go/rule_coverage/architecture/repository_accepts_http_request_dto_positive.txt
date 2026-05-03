@@ -1,0 +1,52 @@
+package repository
+
+import (
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: Repository accepts an HTTP request DTO with json: tags.
+// Repositories should accept domain values or repository-specific input types,
+// not transport-layer DTOs that carry HTTP binding concerns.
+
+// CreateUserRequest is an HTTP request DTO with json: and binding: tags.
+type CreateUserRequest struct {
+	Name     string `json:"name" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
+	Role     string `json:"role" binding:"oneof=admin user"`
+}
+
+type User struct {
+	ID       string `gorm:"column:id"`
+	Name     string `gorm:"column:name"`
+	Email    string `gorm:"column:email"`
+	Password string `gorm:"column:password"`
+	Role     string `gorm:"column:role"`
+}
+
+type UserRepository struct {
+	db *gorm.DB
+}
+
+// Create accepts an HTTP request DTO - this is the anti-pattern.
+// The repository should not know about json: or binding: tags.
+func (r *UserRepository) Create(req *CreateUserRequest) (*User, error) {
+	user := User{
+		Name:     req.Name,
+		Email:    req.Email,
+		Password: req.Password,
+		Role:     req.Role,
+	}
+	err := r.db.Create(&user).Error
+	return &user, err
+}
+
+// Update also accepts the same HTTP DTO.
+func (r *UserRepository) Update(id string, req *CreateUserRequest) error {
+	return r.db.Model(&User{}).Where("id = ?", id).Updates(User{
+		Name:     req.Name,
+		Email:    req.Email,
+		Password: req.Password,
+		Role:     req.Role,
+	}).Error
+}

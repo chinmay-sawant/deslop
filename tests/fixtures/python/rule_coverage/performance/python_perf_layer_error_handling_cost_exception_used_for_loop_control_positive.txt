@@ -1,0 +1,11 @@
+def flatten(rows: list[list[int]]) -> list[int]:
+    out: list[int] = []
+    for row in rows:
+        idx = 0
+        while True:
+            try:
+                out.append(row[idx])
+                idx += 1
+            except IndexError:
+                break
+    return out

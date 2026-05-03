@@ -1,0 +1,9 @@
+import asyncio
+
+background_tasks = set()
+
+async def process():
+    # Correct: background task is tracked and result can be checked
+    task = asyncio.create_task(background_work())
+    background_tasks.add(task)
+    task.add_done_callback(background_tasks.discard)

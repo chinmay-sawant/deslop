@@ -1,0 +1,42 @@
+package repository
+
+import (
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: Repository returns *gorm.DB query builder instead of
+// executing the query and returning concrete results.
+
+type Comment struct {
+	ID       string `gorm:"column:id"`
+	PostID   string `gorm:"column:post_id"`
+	AuthorID string `gorm:"column:author_id"`
+	Body     string `gorm:"column:body"`
+}
+
+type CommentRepository struct {
+	db *gorm.DB
+}
+
+// QueryByPost returns *gorm.DB instead of []Comment - anti-pattern.
+func (r *CommentRepository) QueryByPost(postID string) *gorm.DB {
+	return r.db.Where("post_id = ?", postID).Order("created_at ASC")
+}
+
+// QueryByAuthor returns *gorm.DB instead of []Comment - anti-pattern.
+func (r *CommentRepository) QueryByAuthor(authorID string) *gorm.DB {
+	return r.db.Where("author_id = ?", authorID)
+}
+
+// Recent returns a partially built *gorm.DB query - anti-pattern.
+func (r *CommentRepository) Recent(limit int) *gorm.DB {
+	return r.db.Order("created_at DESC").Limit(limit)
+}
+
+// Example misuse:
+//
+//	query := repo.QueryByPost("post-123")
+//	query.Where("author_id = ?", "user-456").Find(&comments)
+//
+// The repository returns the gorm query builder, forcing the caller
+// to know how to execute the query.

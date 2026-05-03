@@ -1,0 +1,7 @@
+import database
+
+# Violation: performing active network IO or side effects at the module level crashes tests and imports
+global_db_conn = database.connect("postgresql://localhost/prod")
+
+def get_user():
+    return global_db_conn.query("...")

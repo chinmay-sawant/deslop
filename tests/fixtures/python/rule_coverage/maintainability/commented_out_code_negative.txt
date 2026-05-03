@@ -1,0 +1,3 @@
+def calculate_tax(amount):
+    # Correct: delete obsolete code entirely; rely on version control for history
+    return amount * 0.20

@@ -1,0 +1,15 @@
+DEBUG = True
+
+class User:
+    pass
+
+def log(message):
+    print(message)
+
+def main():
+    # Correct: constants, types, and helpers are defined first; execution is encapsulated
+    if DEBUG:
+        log("Starting")
+
+if __name__ == "__main__":
+    main()

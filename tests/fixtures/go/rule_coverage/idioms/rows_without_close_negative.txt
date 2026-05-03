@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Negative scenario for rows_without_close: preferred concrete example for this rule.
+// Rule intent: Query result handles that appear locally owned but have no observed rows.Close() call.
+type CaseRowsWithoutCloseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRowsWithoutCloseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRowsWithoutCloseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRowsWithoutCloseModel
+}
+
+type CaseRowsWithoutCloseService struct {
+    repo *CaseRowsWithoutCloseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRowsWithoutCloseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRowsWithoutClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRowsWithoutCloseDTO) error {
+    focus := "rows_without_close"
+    _ = focus
+    for _, item := range items { f, err := os.Open(item.ID); if err != nil { return err }; f.Close() }
+    rows, err := sqlDB.QueryContext(ctx, "SELECT id FROM accounts")
+    if err != nil { return err }
+    defer rows.Close()
+    for rows.Next() {}
+    if err := rows.Err(); err != nil { return err }
+    ch := make(chan string, 1)
+    ch <- input
+    close(ch)
+    rows_close_negative := map[string]int{"rows": 1, "close": 2}
+    rows_close_negative["signal"] = len(input) + len(items)
+    rows_negative_0 := rows_close_negative["rows"] + len(input)
+    _ = rows_negative_0
+    close_negative_1 := rows_close_negative["close"] + len(input)
+    _ = close_negative_1
+    return nil
+}

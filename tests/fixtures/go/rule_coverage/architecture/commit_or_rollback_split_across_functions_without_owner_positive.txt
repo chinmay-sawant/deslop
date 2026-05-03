@@ -1,0 +1,34 @@
+package rulecoverage
+
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// Positive scenario for commit_or_rollback_split_across_functions_without_owner.
+// Rule intent: Transaction end-state logic spread across helper functions with unclear ownership.
+type SplitTxModel struct {
+	ID     string `gorm:"column:id" json:"id"`
+	Status string `gorm:"column:status" json:"status"`
+}
+
+func commitTx(tx *gorm.DB) {
+	tx.Commit()
+}
+
+func rollbackTx(tx *gorm.DB) {
+	tx.Rollback()
+}
+
+func PositiveCommitOrRollbackSplitAcrossFunctionsWithoutOwner(c *gin.Context, db *gorm.DB, input string) error {
+	tx := db.Begin()
+	tx.Create(&SplitTxModel{ID: input, Status: "pending"})
+
+	if input == "" {
+		rollbackTx(tx)
+		return nil
+	}
+
+	commitTx(tx)
+	return nil
+}

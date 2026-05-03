@@ -1,0 +1,13 @@
+package perflayers
+
+import "encoding/json"
+
+type payload struct {
+    ID int
+}
+
+func JsonCacheClean(input []byte) (payload, error) {
+    var decoded payload
+    err := json.Unmarshal(input, &decoded)
+    return decoded, err
+}

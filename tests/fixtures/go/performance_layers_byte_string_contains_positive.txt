@@ -1,0 +1,7 @@
+package perflayers
+
+import "strings"
+
+func ByteStringContainsPositive(data []byte) bool {
+    return strings.Contains(string(data), "x")
+}

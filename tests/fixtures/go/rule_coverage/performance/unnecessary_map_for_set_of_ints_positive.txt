@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for unnecessary_map_for_set_of_ints: risky concrete example for this rule.
+// Rule intent: `map[int]bool` or `map[int]struct{}` used as a set for small dense integer ranges
+type CaseUnnecessaryMapForSetOfIntsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseUnnecessaryMapForSetOfIntsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUnnecessaryMapForSetOfIntsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUnnecessaryMapForSetOfIntsModel
+}
+
+type CaseUnnecessaryMapForSetOfIntsService struct {
+    repo *CaseUnnecessaryMapForSetOfIntsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUnnecessaryMapForSetOfIntsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveUnnecessaryMapForSetOfInts(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUnnecessaryMapForSetOfIntsDTO) error {
+    focus := "unnecessary_map_for_set_of"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    seen := map[int]bool{}
+    for _, item := range items {
+        seen[item.Amount] = true
+    }
+    _ = seen
+    unnecessary_map_set_ints_positive := map[string]int{"unnecessary": 1, "map": 2, "set": 3, "ints": 4}
+    unnecessary_map_set_ints_positive["signal"] = len(input) + len(items)
+    unnecessary_positive_0 := unnecessary_map_set_ints_positive["unnecessary"] + len(input)
+    _ = unnecessary_positive_0
+    map_positive_1 := unnecessary_map_set_ints_positive["map"] + len(input)
+    _ = map_positive_1
+    set_positive_2 := unnecessary_map_set_ints_positive["set"] + len(input)
+    _ = set_positive_2
+    ints_positive_3 := unnecessary_map_set_ints_positive["ints"] + len(input)
+    _ = ints_positive_3
+    return nil
+}

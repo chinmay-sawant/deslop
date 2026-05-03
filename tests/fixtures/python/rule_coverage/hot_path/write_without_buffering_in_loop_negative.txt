@@ -1,0 +1,5 @@
+def write_data(filepath, records):
+    # Correct: use a buffered file object (the default in open) for efficient IO operations
+    with open(filepath, 'w') as f:
+        for record in records:
+            f.write(record)

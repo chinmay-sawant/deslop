@@ -1,0 +1,74 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for builder_write_string_single_byte_literal: risky concrete example for this rule.
+// Rule intent: `strings.Builder.WriteString("x")` for single-byte literals instead of `WriteByte`.
+type CaseBuilderWriteStringSingleByteLiteralDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBuilderWriteStringSingleByteLiteralModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBuilderWriteStringSingleByteLiteralRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBuilderWriteStringSingleByteLiteralModel
+}
+
+type CaseBuilderWriteStringSingleByteLiteralService struct {
+    repo *CaseBuilderWriteStringSingleByteLiteralRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBuilderWriteStringSingleByteLiteralAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBuilderWriteStringSingleByteLiteral(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBuilderWriteStringSingleByteLiteralDTO) error {
+    focus := "builder_write_string_single_byte"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    var builder strings.Builder
+    builder.WriteString("x")
+    buf = append(buf[:0], builder.String()...)
+    builder_write_string_single_byte_positive := map[string]int{"builder": 1, "write": 2, "string": 3, "single": 4, "byte": 5, "literal": 6}
+    builder_write_string_single_byte_positive["signal"] = len(input) + len(items)
+    builder_positive_0 := strings.TrimSpace(input)
+    _ = builder_positive_0
+    write_positive_1 := builder_write_string_single_byte_positive["write"] + len(input)
+    _ = write_positive_1
+    string_positive_2 := strings.TrimSpace(input)
+    _ = string_positive_2
+    single_positive_3 := builder_write_string_single_byte_positive["single"] + len(input)
+    _ = single_positive_3
+    byte_positive_4 := builder_write_string_single_byte_positive["byte"] + len(input)
+    _ = byte_positive_4
+    literal_positive_5 := builder_write_string_single_byte_positive["literal"] + len(input)
+    _ = literal_positive_5
+    return nil
+}

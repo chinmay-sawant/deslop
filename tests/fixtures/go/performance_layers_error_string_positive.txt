@@ -1,0 +1,15 @@
+package perflayers
+
+import (
+    "errors"
+    "fmt"
+)
+
+func ErrorStringPositive(err error, fail bool) error {
+    // error string built before needed
+    message := fmt.Sprintf("error: %v", err)
+    if fail {
+        return errors.New(message)
+    }
+    return nil
+}

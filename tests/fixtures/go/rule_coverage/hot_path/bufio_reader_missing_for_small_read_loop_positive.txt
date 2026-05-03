@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "io"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+    "time"
+)
+
+// Positive scenario for bufio_reader_missing_for_small_read_loop: risky concrete example for this rule.
+// Rule intent: File or socket reads inside loops without visible bufio buffering.
+type CaseBufioReaderMissingForSmallReadLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBufioReaderMissingForSmallReadLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBufioReaderMissingForSmallReadLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBufioReaderMissingForSmallReadLoopModel
+}
+
+type CaseBufioReaderMissingForSmallReadLoopService struct {
+    repo *CaseBufioReaderMissingForSmallReadLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBufioReaderMissingForSmallReadLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBufioReaderMissingForSmallReadLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBufioReaderMissingForSmallReadLoopDTO) error {
+    file, _ := os.Open(input)
+    if file == nil {
+        return nil
+    }
+    defer file.Close()
+
+    scratch := make([]byte, 64)
+    for {
+        _, err := file.Read(scratch)
+        if err == io.EOF {
+            break
+        }
+        if err != nil {
+            break
+        }
+    }
+    return nil
+}

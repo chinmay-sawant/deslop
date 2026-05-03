@@ -1,0 +1,7 @@
+def parse_log(filepath):
+    # Correct: iterate directly over the file object to yield lines one by one efficiently
+    with open(filepath, "r") as f:
+        for line in f:
+            if "ERROR" in line:
+                # Need to strip the trailing newline to match splitlines() behavior
+                print(line.rstrip("\n"))

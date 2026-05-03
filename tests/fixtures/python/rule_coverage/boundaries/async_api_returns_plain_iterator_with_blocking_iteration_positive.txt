@@ -1,0 +1,4 @@
+async def get_large_dataset():
+    data = [i for i in range(1000000)]
+    # Violation: async API returns a plain iterator which results in blocking iteration
+    return iter(data)

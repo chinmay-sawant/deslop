@@ -1,0 +1,9 @@
+def get_config_values():
+    # Correct: open the file once, read its contents into memory, and process it as needed
+    with open("config.ini", "r") as f:
+        content = f.read()
+    
+    host = parse_host(content)
+    port = parse_port(content)
+        
+    return host, port

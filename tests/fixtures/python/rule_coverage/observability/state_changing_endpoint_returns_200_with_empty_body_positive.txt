@@ -1,0 +1,9 @@
+from fastapi import FastAPI, Response
+
+app = FastAPI()
+
+@app.post("/jobs/cleanup")
+def trigger_cleanup():
+    execute_cleanup()
+    # Violation: returning 200 OK with an empty body is poor HTTP semantic design
+    return Response(content="", status_code=200)

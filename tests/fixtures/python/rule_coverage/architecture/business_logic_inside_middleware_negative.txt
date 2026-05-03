@@ -1,0 +1,9 @@
+class AuthMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, scope, receive, send):
+        # Correct: only infrastructure concerns in middleware
+        if not is_authenticated(scope):
+            return unauthorized_response()
+        return self.app(scope, receive, send)

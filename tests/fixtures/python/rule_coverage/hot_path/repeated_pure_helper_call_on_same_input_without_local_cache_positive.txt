@@ -1,0 +1,5 @@
+def analyze_data(data):
+    # Violation: repeatedly calling a pure helper function on the same input without caching the result locally
+    if compute_expensive_metric(data) > 10:
+        print(f"High metric: {compute_expensive_metric(data)}")
+        return compute_expensive_metric(data)

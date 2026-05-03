@@ -1,0 +1,9 @@
+import boto3
+
+class S3Storage:
+    def save(self, key, data):
+        s3 = boto3.resource('s3')
+        obj = s3.Object('my-bucket', key)
+        obj.put(Body=data)
+        # Violation: storage write returns a driver-specific object (boto3.s3.Object)
+        return obj

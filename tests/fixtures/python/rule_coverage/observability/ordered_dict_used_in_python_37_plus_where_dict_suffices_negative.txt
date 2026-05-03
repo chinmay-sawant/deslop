@@ -1,0 +1,6 @@
+def create_payload():
+    # Correct: standard dictionaries in Python 3.7+ guarantee insertion order preservation by default
+    payload = {}
+    payload["first"] = 1
+    payload["second"] = 2
+    return payload

@@ -1,0 +1,55 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "golang.org/x/crypto/ssh"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for ssh_host_key_callback_insecure: risky concrete example for this rule.
+// Rule intent: `ssh.ClientConfig{HostKeyCallback: ssh.InsecureIgnoreHostKey()}` in non-test code
+type CaseSshHostKeyCallbackInsecureDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSshHostKeyCallbackInsecureModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSshHostKeyCallbackInsecureRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSshHostKeyCallbackInsecureModel
+}
+
+type CaseSshHostKeyCallbackInsecureService struct {
+    repo *CaseSshHostKeyCallbackInsecureRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSshHostKeyCallbackInsecureAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSshHostKeyCallbackInsecure(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSshHostKeyCallbackInsecureDTO) error {
+    config := &ssh.ClientConfig{
+        HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+    }
+    _ = config
+    return nil
+}

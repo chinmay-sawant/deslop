@@ -1,0 +1,11 @@
+def test_user_lifecycle():
+    # Violation: test function covers multiple unrelated scenarios
+    user = create_user("alice")
+    assert user.name == "alice"
+    
+    user.email = "alice@example.com"
+    update_user(user)
+    assert get_user(user.id).email == "alice@example.com"
+    
+    delete_user(user.id)
+    assert get_user(user.id) is None

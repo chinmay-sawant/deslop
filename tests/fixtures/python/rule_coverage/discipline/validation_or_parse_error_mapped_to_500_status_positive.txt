@@ -1,0 +1,8 @@
+@app.post("/submit")
+def submit():
+    try:
+        data = parse_request(request)
+        validate(data)
+    except (ParseError, ValidationError):
+        # Violation: validation or parse error mapped to 500 status (should be 400)
+        return {"error": "Internal Error"}, 500

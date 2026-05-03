@@ -1,0 +1,5 @@
+def load_orders(session, order_ids: list[int]) -> list[object]:
+    rows = []
+    for order_id in order_ids:
+        rows.append(session.query("Order").filter_by(id=order_id).first())
+    return rows

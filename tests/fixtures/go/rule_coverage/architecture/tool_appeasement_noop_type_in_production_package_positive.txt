@@ -1,0 +1,48 @@
+package user
+
+import "fmt"
+
+// Positive scenario for tool_appeasement_noop_type_in_production_package.
+// Rule intent: Production no-op or dummy types that appear to exist mainly to satisfy
+// tooling (linters, interface checkers) instead of providing runtime behavior.
+
+type UserRepository interface {
+	FindByID(id string) (*User, error)
+	Save(user *User) error
+	Delete(id string) error
+}
+
+type User struct {
+	ID    string
+	Name  string
+	Email string
+}
+
+// Anti-pattern: compile-time interface satisfaction check with no runtime purpose.
+// This exists only to appease linters/static analysis tools.
+var _ UserRepository = (*MockUserRepository)(nil)
+
+type MockUserRepository struct{}
+
+func (m *MockUserRepository) FindByID(id string) (*User, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+func (m *MockUserRepository) Save(user *User) error {
+	return fmt.Errorf("not implemented")
+}
+
+func (m *MockUserRepository) Delete(id string) error {
+	return fmt.Errorf("not implemented")
+}
+
+// Anti-pattern: another noop type assertion to satisfy tooling.
+var _ fmt.Stringer = (*User)(nil)
+
+// Anti-pattern: empty struct used only to satisfy an interface check.
+type NoopValidator struct{}
+
+var _ interface{} = (*NoopValidator)(nil)
+
+// Anti-pattern: unused type alias created to silence "unused import" linter warnings.
+type _unused = int

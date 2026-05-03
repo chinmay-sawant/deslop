@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "runtime"
+    "strings"
+    "time"
+)
+
+// Positive scenario for runtime_gomaxprocs_per_request: risky concrete example for this rule.
+// Rule intent: `runtime.GOMAXPROCS(...)` on request paths.
+type CaseRuntimeGomaxprocsPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRuntimeGomaxprocsPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRuntimeGomaxprocsPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRuntimeGomaxprocsPerRequestModel
+}
+
+type CaseRuntimeGomaxprocsPerRequestService struct {
+    repo *CaseRuntimeGomaxprocsPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRuntimeGomaxprocsPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRuntimeGomaxprocsPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRuntimeGomaxprocsPerRequestDTO) error {
+    focus := "runtime_gomaxprocs_per_request"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    runtime.GOMAXPROCS(runtime.NumCPU())
+    runtime_gomaxprocs_per_request_positive := map[string]int{"runtime": 1, "gomaxprocs": 2, "per": 3, "request": 4}
+    runtime_gomaxprocs_per_request_positive["signal"] = len(input) + len(items)
+    runtime_positive_0 := runtime_gomaxprocs_per_request_positive["runtime"] + len(input)
+    _ = runtime_positive_0
+    gomaxprocs_positive_1 := runtime_gomaxprocs_per_request_positive["gomaxprocs"] + len(input)
+    _ = gomaxprocs_positive_1
+    for per_positive_2Index, item := range items { runtime_gomaxprocs_per_request_positive[item.ID] = per_positive_2Index }
+    request_positive_3 := runtime_gomaxprocs_per_request_positive["request"] + len(input)
+    _ = request_positive_3
+    return nil
+}

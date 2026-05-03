@@ -1,0 +1,8 @@
+from langchain import LLMChain, PromptTemplate
+
+# Correct: instantiate the chain once at the module level
+_PROMPT = PromptTemplate(template="Translate {text}", input_variables=["text"])
+_CHAIN = LLMChain(llm=my_llm, prompt=_PROMPT)
+
+def handle_request(user_input):
+    return _CHAIN.run(text=user_input)

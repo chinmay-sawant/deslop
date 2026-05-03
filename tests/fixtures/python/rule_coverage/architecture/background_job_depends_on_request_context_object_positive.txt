@@ -1,0 +1,14 @@
+from celery import Celery
+from flask import request
+
+app = Celery('tasks')
+
+@app.task
+def send_email_task(request_obj):
+    # Dangerous: depending on a request context object in a background job
+    user_email = request_obj.json['email']
+    send_email(user_email)
+
+@route("/signup")
+def signup():
+    send_email_task.delay(request)

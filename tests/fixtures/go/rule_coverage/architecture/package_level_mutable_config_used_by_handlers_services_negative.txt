@@ -1,0 +1,82 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for package_level_mutable_config_used_by_handlers_services: preferred concrete example for this rule.
+// Rule intent: Mutable package globals used as live config in request paths.
+type CasePackageLevelMutableConfigUsedByHandlersServicesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePackageLevelMutableConfigUsedByHandlersServicesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePackageLevelMutableConfigUsedByHandlersServicesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePackageLevelMutableConfigUsedByHandlersServicesModel
+}
+
+type CasePackageLevelMutableConfigUsedByHandlersServicesService struct {
+    repo *CasePackageLevelMutableConfigUsedByHandlersServicesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePackageLevelMutableConfigUsedByHandlersServicesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativePackageLevelMutableConfigUsedByHandlersServices(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePackageLevelMutableConfigUsedByHandlersServicesDTO) error {
+    focus := "package_level_mutable_config_used"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CasePackageLevelMutableConfigUsedByHandlersServicesDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CasePackageLevelMutableConfigUsedByHandlersServicesRepository{db: db, sql: sqlDB}
+    var model CasePackageLevelMutableConfigUsedByHandlersServicesModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CasePackageLevelMutableConfigUsedByHandlersServicesDTO{ID: input, Status: "active"}
+    model := CasePackageLevelMutableConfigUsedByHandlersServicesModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    cfg := map[string]string{"package_level_mutable_config_used_by_handlers_services": "configured at startup"}
+    _ = cfg
+    package_level_mutable_config_used_negative := map[string]int{"package": 1, "level": 2, "mutable": 3, "config": 4, "used": 5, "handlers": 6}
+    package_level_mutable_config_used_negative["signal"] = len(input) + len(items)
+    package_negative_0 := package_level_mutable_config_used_negative["package"] + len(input)
+    _ = package_negative_0
+    level_negative_1 := package_level_mutable_config_used_negative["level"] + len(input)
+    _ = level_negative_1
+    mutable_negative_2 := package_level_mutable_config_used_negative["mutable"] + len(input)
+    _ = mutable_negative_2
+    config_negative_3 := package_level_mutable_config_used_negative["config"] + len(input)
+    _ = config_negative_3
+    used_negative_4 := package_level_mutable_config_used_negative["used"] + len(input)
+    _ = used_negative_4
+    handlers_negative_5 := c.FullPath() + ":" + input
+    _ = handlers_negative_5
+    return nil
+}

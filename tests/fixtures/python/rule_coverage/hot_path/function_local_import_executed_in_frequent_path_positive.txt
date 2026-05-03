@@ -1,0 +1,4 @@
+def compute_hash(data):
+    # Violation: importing a module inside a frequently executed function (import overhead)
+    import hashlib
+    return hashlib.md5(data.encode()).hexdigest()

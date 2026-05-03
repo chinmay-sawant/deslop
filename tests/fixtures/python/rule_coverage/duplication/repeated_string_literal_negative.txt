@@ -1,0 +1,8 @@
+STATUS_PENDING = "PENDING_APPROVAL"
+
+def process_status(status):
+    # Correct: repeated literal is extracted into a constant
+    if status == STATUS_PENDING:
+        log(f"Status is {STATUS_PENDING}")
+        return f"Waiting for {STATUS_PENDING}"
+    return "Complete"

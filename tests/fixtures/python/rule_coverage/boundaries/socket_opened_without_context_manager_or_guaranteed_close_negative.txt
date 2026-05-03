@@ -1,0 +1,7 @@
+import socket
+
+def send_data(message):
+    # Correct: socket managed using a context manager
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect(("localhost", 8000))
+        s.sendall(message.encode())

@@ -1,0 +1,11 @@
+import tempfile
+
+def process_data(data):
+    # Correct: always wrap temporary files and directories in a context manager to ensure automatic garbage collection
+    with tempfile.NamedTemporaryFile() as temp:
+        temp.write(data)
+        temp.flush()
+        
+        run_external_tool(temp.name)
+        
+    return "Done"

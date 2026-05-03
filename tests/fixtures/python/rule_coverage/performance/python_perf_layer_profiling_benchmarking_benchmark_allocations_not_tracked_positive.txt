@@ -1,0 +1,9 @@
+from __future__ import annotations
+
+import time
+
+
+def python_perf_layer_profiling_benchmarking_benchmark_allocations_not_tracked_positive(work):
+    start = time.perf_counter()
+    work()
+    return time.perf_counter() - start

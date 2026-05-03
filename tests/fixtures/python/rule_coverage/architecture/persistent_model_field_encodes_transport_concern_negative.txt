@@ -1,0 +1,5 @@
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    # Correct: persistent model contains only domain data
+    email = Column(String)

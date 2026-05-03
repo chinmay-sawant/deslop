@@ -1,0 +1,5 @@
+import jwt
+
+def decode_token(token, secret):
+    # Violation: jwt.decode allows 'none' algorithm or lacks restriction
+    return jwt.decode(token, secret, algorithms=["HS256", "none"])

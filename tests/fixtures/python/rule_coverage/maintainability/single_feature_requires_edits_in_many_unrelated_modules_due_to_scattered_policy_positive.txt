@@ -1,0 +1,10 @@
+# auth.py
+def login(user):
+    # Violation: authorization policy (role == "admin") is scattered across multiple unrelated modules
+    if user.role == "admin" and user.is_active:
+        setup_admin_session()
+
+# ui.py
+def render_dashboard(user):
+    if user.role == "admin" and user.is_active:
+        show_admin_panel()

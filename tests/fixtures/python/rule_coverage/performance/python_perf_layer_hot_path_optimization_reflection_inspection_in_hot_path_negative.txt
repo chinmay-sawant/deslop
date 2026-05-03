@@ -1,0 +1,9 @@
+from __future__ import annotations
+
+import inspect
+
+
+def python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path_negative(func, rows):
+    params = inspect.signature(func).parameters
+    has_debug = "debug" in params
+    return sum(1 for _ in rows if has_debug)

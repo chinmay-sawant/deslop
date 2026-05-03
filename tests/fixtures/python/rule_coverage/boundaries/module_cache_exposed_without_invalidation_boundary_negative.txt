@@ -1,0 +1,10 @@
+_cache = {}
+
+def get_data(key):
+    if key not in _cache:
+        _cache[key] = fetch_data(key)
+    return _cache[key]
+
+# Correct: provides a way to invalidate/clear the cache
+def clear_cache():
+    _cache.clear()

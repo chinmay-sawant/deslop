@@ -1,0 +1,6 @@
+# Violation: function accepts too many cross-cutting dependencies
+def process_order(order, db, logger, tracer, statsd, config, auth_client, email_service):
+    logger.info("Processing order")
+    db.save(order)
+    statsd.increment("order_processed")
+    # ...

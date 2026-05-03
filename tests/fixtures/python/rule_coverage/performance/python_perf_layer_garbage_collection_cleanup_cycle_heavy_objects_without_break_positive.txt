@@ -1,0 +1,12 @@
+class Node:
+    def __init__(self, payload: bytes) -> None:
+        self.payload = payload
+        self.peer = None
+
+
+def make_cycle() -> tuple[Node, Node]:
+    left = Node(b"x" * 1024)
+    right = Node(b"y" * 1024)
+    left.peer = right
+    right.peer = left
+    return left, right

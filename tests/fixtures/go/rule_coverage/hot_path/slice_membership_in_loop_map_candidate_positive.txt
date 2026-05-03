@@ -1,0 +1,30 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+)
+
+// Positive scenario for slice_membership_in_loop_map_candidate: stable membership is checked with repeated slice scans in a loop.
+type CaseSliceMembershipInLoopMapCandidateDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+func PositiveSliceMembershipInLoopMapCandidate(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSliceMembershipInLoopMapCandidateDTO) error {
+    allowed := []string{"active", "pending"}
+    for _, item := range items {
+        for _, v := range allowed {
+            if item.Status == v {
+                c.Set(item.ID, v)
+            }
+        }
+    }
+    return nil
+}

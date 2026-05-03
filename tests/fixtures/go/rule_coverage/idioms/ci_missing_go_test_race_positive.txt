@@ -1,0 +1,32 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for ci_missing_go_test_race: CI text runs Go tests without a visible -race invocation.
+type CaseCiMissingGoTestRaceDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+func PositiveCiMissingGoTestRace(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCiMissingGoTestRaceDTO) error {
+    workflow := strings.Join([]string{
+        "name: go-ci",
+        "jobs:",
+        "  test:",
+        "    steps:",
+        "      - run: go test ./...",
+        "      - run: golangci-lint run",
+    }, "\n")
+    c.Set("workflow", workflow)
+    return nil
+}

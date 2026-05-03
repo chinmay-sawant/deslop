@@ -1,0 +1,6 @@
+import os
+
+def list_files(user_path):
+    # Correct: path is expanded and normalized to an absolute path
+    safe_path = os.path.abspath(os.path.expanduser(user_path))
+    return os.listdir(safe_path)

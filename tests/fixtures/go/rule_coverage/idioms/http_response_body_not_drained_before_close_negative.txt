@@ -1,0 +1,78 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "io"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Negative scenario for http_response_body_not_drained_before_close: preferred concrete example for this rule.
+// Rule intent: HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored.
+type CaseHttpResponseBodyNotDrainedBeforeCloseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHttpResponseBodyNotDrainedBeforeCloseModel
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseService struct {
+    repo *CaseHttpResponseBodyNotDrainedBeforeCloseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeHttpResponseBodyNotDrainedBeforeClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpResponseBodyNotDrainedBeforeCloseDTO) error {
+    focus := "http_response_body_not_drained"
+    _ = focus
+    client := &http.Client{Timeout: 2 * time.Second}
+    resp, err := client.Get(input)
+    if err != nil { return err }
+    defer resp.Body.Close()
+    io.Copy(io.Discard, resp.Body)
+    ch := make(chan string, 1)
+    ch <- input
+    close(ch)
+    limited := http.MaxBytesReader(c.Writer, c.Request.Body, 1<<20)
+    io.ReadAll(limited)
+    http_response_body_not_drained_negative := map[string]int{"http": 1, "response": 2, "body": 3, "not": 4, "drained": 5, "before": 6}
+    http_response_body_not_drained_negative["signal"] = len(input) + len(items)
+    http_negative_0 := http_response_body_not_drained_negative["http"] + len(input)
+    _ = http_negative_0
+    response_negative_1 := http_response_body_not_drained_negative["response"] + len(input)
+    _ = response_negative_1
+    body_negative_2 := http_response_body_not_drained_negative["body"] + len(input)
+    _ = body_negative_2
+    not_negative_3 := http_response_body_not_drained_negative["not"] + len(input)
+    _ = not_negative_3
+    drained_negative_4 := http_response_body_not_drained_negative["drained"] + len(input)
+    _ = drained_negative_4
+    before_negative_5 := http_response_body_not_drained_negative["before"] + len(input)
+    _ = before_negative_5
+    return nil
+}

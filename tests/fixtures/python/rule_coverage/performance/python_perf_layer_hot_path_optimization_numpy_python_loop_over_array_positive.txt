@@ -1,0 +1,7 @@
+from __future__ import annotations
+
+def python_perf_layer_hot_path_optimization_numpy_python_loop_over_array_positive(arr):
+    total = 0.0
+    for value in arr:
+        total += value * value
+    return total

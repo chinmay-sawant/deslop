@@ -1,0 +1,5 @@
+from typing import Dict
+
+def update_config(settings: Dict):
+    # Correct: function explicitly accepts a mutable Dict
+    settings["updated_at"] = "now"

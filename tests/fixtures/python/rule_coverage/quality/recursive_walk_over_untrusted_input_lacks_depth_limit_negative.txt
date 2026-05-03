@@ -1,0 +1,10 @@
+def parse_json_payload(data, depth=0):
+    # Correct: strictly enforce a maximum recursion depth when processing arbitrary or untrusted nested structures
+    if depth > 100:
+        raise ValueError("Payload exceeds maximum permitted nesting depth of 100")
+        
+    for key, value in data.items():
+        if isinstance(value, dict):
+            parse_json_payload(value, depth + 1)
+        else:
+            process_leaf(key, value)

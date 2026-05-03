@@ -1,0 +1,9 @@
+from __future__ import annotations
+
+def invariant_computation_not_hoisted_out_of_nested_loop_positive():
+    reference = ["us", "eu", "apac", "us"]
+    total = 0
+    for outer in range(3):
+        for inner in range(2):
+            total += len(set(reference)) + outer + inner
+    return total

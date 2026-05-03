@@ -1,0 +1,3 @@
+def validate(item: dict[str, str]) -> bool:
+    errors = ["missing:name", "missing:email", "missing:phone"]
+    return "name" in item and not errors

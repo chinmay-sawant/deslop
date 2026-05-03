@@ -1,0 +1,9 @@
+import re
+
+# Correct: compile the regex pattern once at the module level
+MSG_PATTERN = re.compile(r"^[A-Z]{3}-\d{4}$")
+
+def process_messages(messages):
+    for msg in messages:
+        if MSG_PATTERN.match(msg):
+            print("Valid")

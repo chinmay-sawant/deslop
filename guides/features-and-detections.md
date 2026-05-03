@@ -32,14 +32,14 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **1505 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **1805 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
-| go | 651 | 2 | 0 | 653 |
-| python | 591 | 0 | 0 | 591 |
-| rust | 238 | 12 | 0 | 250 |
+| go | 751 | 2 | 0 | 753 |
+| python | 691 | 0 | 0 | 691 |
+| rust | 338 | 12 | 0 | 350 |
 
 The sections below are generated from the rule registry and grouped by language and family.
 When the same rule ID is implemented in more than one backend, it appears once in each relevant language section.
@@ -67,7 +67,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `placeholder_test_body`: Tests that look skipped, TODO-shaped, or otherwise placeholder-like.
 - `test_without_assertion_signal`: Tests that exercise production code without an obvious assertion or failure signal.
 
-### Go rules (653)
+### Go rules (753)
 
 #### Architecture (221)
 - `admin_or_debug_endpoint_registration_mixed_into_public_router_setup`: Operational endpoints registered alongside public routes with no clear boundary.
@@ -527,7 +527,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `xml_unmarshal_same_payload_multiple_times`: The same local XML payload binding is unmarshaled into multiple targets in one function.
 - `yaml_unmarshal_same_payload_multiple_times`: The same local YAML payload binding is unmarshaled into multiple targets in one function.
 
-#### Performance (161)
+#### Performance (261)
 - `adler32_checksum_in_loop`: `adler32.Checksum(...)` inside loops.
 - `allocation_churn_in_loop`: Obvious make, new, or buffer-construction calls inside loops.
 - `base64_decode_string_in_loop`: Base64 decode from string inside loops.
@@ -591,6 +591,106 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `fmt_sprintf_quote_to_string`: `fmt.Sprintf("%q", s)` instead of `strconv.Quote(s)`.
 - `fmt_sprintf_single_string_passthrough`: `fmt.Sprintf("%s", s)` instead of returning or writing the string directly.
 - `full_dataset_load`: Calls that load an entire payload into memory instead of streaming.
+- `go_perf_layer_algorithmic_complexity_per_request_topk_full_sort`: Layer: Algorithmic complexity. Flag request paths that sort all candidates when heap-based top-k selection would bound work.
+- `go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline`: Layer: Algorithmic complexity. Flag append-based filter pipelines that rescan accumulated results for every input item.
+- `go_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen_set`: Layer: Algorithmic complexity. Flag recursive graph or tree walks that do not track visited nodes for cyclic or shared inputs.
+- `go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans`: Layer: Algorithmic complexity. Flag nested slice scans that should be indexed or mapped before joining large collections.
+- `go_perf_layer_algorithmic_complexity_sort_before_linear_dedup`: Layer: Algorithmic complexity. Flag full sorts used only to remove duplicates where map-backed membership would scale better.
+- `go_perf_layer_async_concurrency_channel_buffer_too_small_for_known_burst`: Layer: Async and concurrency. Flag channels created with no or tiny buffer despite a known burst size.
+- `go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call`: Layer: Async and concurrency. Flag context.WithTimeout creation inside tight retry loops when an outer deadline would suffice.
+- `go_perf_layer_async_concurrency_goroutine_per_item_without_worker_limit`: Layer: Async and concurrency. Flag unbounded goroutine-per-item fanout without a semaphore or worker pool.
+- `go_perf_layer_async_concurrency_mutex_held_during_slow_call`: Layer: Async and concurrency. Flag mutex-protected regions that include network, disk, or database calls.
+- `go_perf_layer_async_concurrency_select_default_busy_poll`: Layer: Async and concurrency. Flag select loops with default branches that spin instead of blocking or using timers.
+- `go_perf_layer_caching_cache_key_built_with_fmt`: Layer: Caching. Flag cache keys built with fmt.Sprintf in hot paths where append/Builder or structured keys are cheaper.
+- `go_perf_layer_caching_cache_miss_does_duplicate_work`: Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key.
+- `go_perf_layer_caching_json_cache_value_stored_as_string`: Layer: Caching. Flag caches that store JSON strings only to unmarshal them again before every use.
+- `go_perf_layer_caching_per_request_config_cache_rebuild`: Layer: Caching. Flag request-scoped caches rebuilt from config or environment on every call.
+- `go_perf_layer_caching_unbounded_cache_map`: Layer: Caching. Flag package-level cache maps without size, TTL, or eviction policy.
+- `go_perf_layer_collection_iteration_copy_slice_before_readonly_range`: Layer: Collection iteration. Flag slice copies made immediately before read-only range loops.
+- `go_perf_layer_collection_iteration_len_called_after_materializing_channel`: Layer: Collection iteration. Flag channel streams collected into slices only to measure length or emptiness.
+- `go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need`: Layer: Collection iteration. Flag manual index loops over slices where range would avoid repeated bounds-sensitive indexing.
+- `go_perf_layer_collection_iteration_multiple_passes_for_independent_counts`: Layer: Collection iteration. Flag multiple full passes over the same slice for independent counters that can be combined.
+- `go_perf_layer_collection_iteration_range_over_map_for_deterministic_first`: Layer: Collection iteration. Flag map iteration used to pick a deterministic first value, causing unstable work and extra sorting later.
+- `go_perf_layer_data_structure_choice_interface_map_for_typed_values`: Layer: Data structure choice. Flag map[string]any used for homogeneous hot-path values where typed structs avoid assertions.
+- `go_perf_layer_data_structure_choice_linked_list_for_cache_iteration`: Layer: Data structure choice. Flag container/list use in cache iteration paths where slices or maps would improve locality.
+- `go_perf_layer_data_structure_choice_map_string_bool_for_membership`: Layer: Data structure choice. Flag map[string]bool membership sets where map[string]struct{} avoids unnecessary value storage.
+- `go_perf_layer_data_structure_choice_slice_queue_pop_front`: Layer: Data structure choice. Flag queue-style slice reslicing from the front that can retain backing arrays or shift too much data.
+- `go_perf_layer_data_structure_choice_small_enum_string_switch_map`: Layer: Data structure choice. Flag map lookups for tiny static enum-like string sets where switch can avoid allocation and hashing.
+- `go_perf_layer_database_access_count_query_before_paged_fetch`: Layer: Database access. Flag count queries paired with page fetches on every request without cache or user-visible need.
+- `go_perf_layer_database_access_query_inside_loop_without_batching`: Layer: Database access. Flag SQL queries issued inside loops where batching or IN queries can bound round trips.
+- `go_perf_layer_database_access_rows_scan_into_map_per_row`: Layer: Database access. Flag row scans into map[string]any where typed structs or column slices would reduce allocation.
+- `go_perf_layer_database_access_select_star_on_hot_query`: Layer: Database access. Flag SELECT * in hot queries where narrow projections reduce scan and decode cost.
+- `go_perf_layer_database_access_transaction_per_row_bulk_write`: Layer: Database access. Flag bulk writes that open and commit one transaction per row.
+- `go_perf_layer_error_handling_cost_error_string_built_before_error_needed`: Layer: Error handling cost. Flag error message formatting before the code knows an error will be returned.
+- `go_perf_layer_error_handling_cost_errors_wrap_in_tight_loop`: Layer: Error handling cost. Flag repeated error wrapping inside loops where one aggregated context would be cheaper.
+- `go_perf_layer_error_handling_cost_multierror_append_for_success_path`: Layer: Error handling cost. Flag multi-error aggregators allocated on success-heavy paths before any error exists.
+- `go_perf_layer_error_handling_cost_panic_recover_for_control_flow`: Layer: Error handling cost. Flag panic/recover used for expected branch control in performance-sensitive code.
+- `go_perf_layer_error_handling_cost_sentinel_error_allocated_per_call`: Layer: Error handling cost. Flag identical sentinel errors allocated inside functions instead of package-level variables.
+- `go_perf_layer_framework_performance_gin_context_copied_for_sync_path`: Layer: Framework-specific performance. Flag Gin context Copy calls where work remains synchronous and request-scoped.
+- `go_perf_layer_framework_performance_gorm_preload_all_associations`: Layer: Framework-specific performance. Flag GORM Preload of broad association sets on list endpoints.
+- `go_perf_layer_framework_performance_grpc_metadata_parsed_repeatedly`: Layer: Framework-specific performance. Flag repeated metadata extraction/parsing in gRPC interceptors and handlers.
+- `go_perf_layer_framework_performance_sqlx_select_slice_unbounded`: Layer: Framework-specific performance. Flag sqlx Select into slices without LIMIT or streaming for large tables.
+- `go_perf_layer_framework_performance_template_execute_to_string_then_write`: Layer: Framework-specific performance. Flag template rendering to strings before writing to the response writer.
+- `go_perf_layer_garbage_collection_cleanup_finalizer_used_for_regular_cleanup`: Layer: Garbage collection and cleanup. Flag runtime.SetFinalizer use for ordinary resource cleanup instead of explicit Close ownership.
+- `go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate`: Layer: Garbage collection and cleanup. Flag long-lived slices truncated to zero that still retain large backing arrays.
+- `go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse`: Layer: Garbage collection and cleanup. Flag HTTP response handling that closes bodies without draining when connection reuse matters.
+- `go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers`: Layer: Garbage collection and cleanup. Flag sync.Pool usage that stores large buffers without a cap before putting them back.
+- `go_perf_layer_garbage_collection_cleanup_ticker_not_stopped_on_exit`: Layer: Garbage collection and cleanup. Flag time.Ticker creation without a visible Stop path in services or workers.
+- `go_perf_layer_hot_path_optimization_allocation_in_hash_or_less_func`: Layer: Hot path optimization. Flag allocations inside sort comparison or hashing callbacks.
+- `go_perf_layer_hot_path_optimization_defer_for_simple_unlock_in_hot_loop`: Layer: Hot path optimization. Flag defer used for simple unlock/close work inside very hot loops.
+- `go_perf_layer_hot_path_optimization_invariant_parse_inside_handler`: Layer: Hot path optimization. Flag handlers that parse invariant templates, schemas, or expressions per request.
+- `go_perf_layer_hot_path_optimization_reflection_on_hot_path`: Layer: Hot path optimization. Flag reflect-based field access in hot loops where typed access is available.
+- `go_perf_layer_hot_path_optimization_time_now_called_many_times_per_item`: Layer: Hot path optimization. Flag repeated time.Now calls inside per-item loops where one timestamp would suffice.
+- `go_perf_layer_io_operations_readall_on_known_large_file`: Layer: I/O operations. Flag os.ReadFile or io.ReadAll on files that are processed sequentially.
+- `go_perf_layer_io_operations_scanner_used_for_large_token_stream`: Layer: I/O operations. Flag bufio.Scanner on potentially large tokens without Buffer sizing or Reader alternatives.
+- `go_perf_layer_io_operations_small_writes_without_bufio_writer`: Layer: I/O operations. Flag many Write calls to files or network connections without bufio buffering.
+- `go_perf_layer_io_operations_stat_before_open_without_branch`: Layer: I/O operations. Flag os.Stat checks immediately followed by open/read operations without using the stat result meaningfully.
+- `go_perf_layer_io_operations_temporary_file_for_stream_transform`: Layer: I/O operations. Flag temporary files used only to bridge streaming transformations.
+- `go_perf_layer_lazy_loading_eager_connect_to_all_backends`: Layer: Lazy loading. Flag services connecting to every optional backend at startup instead of lazy initialization.
+- `go_perf_layer_lazy_loading_eager_load_optional_config`: Layer: Lazy loading. Flag optional configuration or metadata loaded at startup before any feature uses it.
+- `go_perf_layer_lazy_loading_eager_metric_label_cardinality_build`: Layer: Lazy loading. Flag eager construction of high-cardinality metric labels before the metric is emitted.
+- `go_perf_layer_lazy_loading_eager_template_parse_for_unused_routes`: Layer: Lazy loading. Flag parsing templates for routes that may never be served in the current process mode.
+- `go_perf_layer_lazy_loading_lazy_once_hides_slow_first_request`: Layer: Lazy loading. Flag sync.Once lazy initialization on request paths without warmup or latency accounting.
+- `go_perf_layer_logging_overhead_fmt_log_message_in_loop`: Layer: Logging overhead. Flag formatted log strings built inside loops instead of structured lazy fields.
+- `go_perf_layer_logging_overhead_log_fields_built_before_level_check`: Layer: Logging overhead. Flag expensive log field construction before checking whether the level is enabled.
+- `go_perf_layer_logging_overhead_log_payload_serialized_before_sampling`: Layer: Logging overhead. Flag payload serialization for logs before sampling or level filters run.
+- `go_perf_layer_logging_overhead_logger_with_fields_per_request`: Layer: Logging overhead. Flag derived logger construction per request when stable fields can be attached once.
+- `go_perf_layer_logging_overhead_per_record_debug_log_in_batch`: Layer: Logging overhead. Flag debug logging per batch record on hot ingestion paths.
+- `go_perf_layer_memory_allocation_append_without_known_capacity`: Layer: Memory allocation. Flag slice appends in builders where an obvious count is available for make capacity.
+- `go_perf_layer_memory_allocation_bytes_buffer_allocated_per_record`: Layer: Memory allocation. Flag bytes.Buffer construction per record when a reusable buffer can be reset safely.
+- `go_perf_layer_memory_allocation_closure_capture_allocates_in_loop`: Layer: Memory allocation. Flag loop-local closures that capture variables in high-frequency paths and may force heap allocation.
+- `go_perf_layer_memory_allocation_map_recreated_for_static_lookup`: Layer: Memory allocation. Flag static lookup maps rebuilt inside functions instead of package-level immutable tables.
+- `go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write`: Layer: Memory allocation. Flag []byte(string) conversions used only to write strings to writers.
+- `go_perf_layer_network_calls_dns_lookup_per_request_path`: Layer: Network calls. Flag net.Lookup* calls in request paths without caching or resolver ownership.
+- `go_perf_layer_network_calls_http_client_created_per_call`: Layer: Network calls. Flag http.Client construction per call instead of reusing clients and transports.
+- `go_perf_layer_network_calls_retry_loop_without_backoff`: Layer: Network calls. Flag network retry loops that immediately retry and amplify load.
+- `go_perf_layer_network_calls_tls_config_built_per_request`: Layer: Network calls. Flag TLS configuration construction per request instead of reusing immutable configs.
+- `go_perf_layer_network_calls_transport_without_connection_limits`: Layer: Network calls. Flag custom http.Transport values missing MaxIdleConns or MaxIdleConnsPerHost for service clients.
+- `go_perf_layer_profiling_benchmarking_benchmark_includes_setup_in_loop`: Layer: Profiling and benchmarking. Flag Go benchmarks that perform setup inside the timed loop without ResetTimer.
+- `go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report`: Layer: Profiling and benchmarking. Flag benchmarks for allocation-sensitive code that omit b.ReportAllocs.
+- `go_perf_layer_profiling_benchmarking_microbenchmark_dead_code_eliminated`: Layer: Profiling and benchmarking. Flag benchmarks that do not consume results and may let the compiler remove work.
+- `go_perf_layer_profiling_benchmarking_optimization_comment_without_benchmark`: Layer: Profiling and benchmarking. Flag performance-claim comments that lack benchmark, profile, or trace evidence.
+- `go_perf_layer_profiling_benchmarking_pprof_endpoint_enabled_without_sampling_plan`: Layer: Profiling and benchmarking. Flag always-on profiling endpoints in production services without access or sampling controls.
+- `go_perf_layer_resource_pooling_buffer_pool_without_max_capacity`: Layer: Resource pooling. Flag buffer pools that return arbitrarily large buffers and retain memory after spikes.
+- `go_perf_layer_resource_pooling_db_pool_created_per_repository`: Layer: Resource pooling. Flag database pools constructed per repository instance instead of shared process ownership.
+- `go_perf_layer_resource_pooling_http_transport_per_service_method`: Layer: Resource pooling. Flag new transports per service method instead of shared clients per upstream.
+- `go_perf_layer_resource_pooling_rate_limiter_per_request`: Layer: Resource pooling. Flag rate limiter construction inside request handlers instead of per identity or dependency.
+- `go_perf_layer_resource_pooling_worker_pool_without_shutdown_backpressure`: Layer: Resource pooling. Flag worker pools that accept unlimited jobs without bounded queues or shutdown draining.
+- `go_perf_layer_runtime_configuration_debug_build_tags_in_hot_binary`: Layer: Build and runtime configuration. Flag performance-sensitive binaries that keep debug/profiling build tags enabled by default.
+- `go_perf_layer_runtime_configuration_gogc_forced_low_without_measurement`: Layer: Build and runtime configuration. Flag runtime/debug GC tuning in application code without benchmark notes.
+- `go_perf_layer_runtime_configuration_gomaxprocs_set_in_library`: Layer: Build and runtime configuration. Flag libraries setting GOMAXPROCS and overriding host runtime policy.
+- `go_perf_layer_runtime_configuration_race_detector_assumed_in_benchmark_numbers`: Layer: Build and runtime configuration. Flag benchmark guidance or scripts that compare race-enabled and normal builds directly.
+- `go_perf_layer_runtime_configuration_reflection_config_loaded_per_call`: Layer: Build and runtime configuration. Flag reflection-based config decoding performed per operation instead of at startup.
+- `go_perf_layer_serialization_base64_roundtrip_for_binary_transport`: Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside a single process boundary.
+- `go_perf_layer_serialization_gzip_writer_created_per_small_payload`: Layer: Serialization and deserialization. Flag gzip writers created for tiny payloads where compression overhead can dominate.
+- `go_perf_layer_serialization_json_decoder_without_reuse_for_stream`: Layer: Serialization and deserialization. Flag JSON decoders created for each element of a stream instead of decoding the stream once.
+- `go_perf_layer_serialization_json_marshal_for_deep_equal`: Layer: Serialization and deserialization. Flag json.Marshal used only to compare structures or build equality keys.
+- `go_perf_layer_serialization_map_any_json_decode_in_hot_path`: Layer: Serialization and deserialization. Flag JSON decoding into map[string]any in hot paths where typed structs avoid reflection churn.
+- `go_perf_layer_string_handling_byte_string_roundtrip_for_contains`: Layer: String handling. Flag string/[]byte roundtrips around Contains/Index checks that have native package variants.
+- `go_perf_layer_string_handling_fmt_sprintf_for_simple_concat`: Layer: String handling. Flag fmt.Sprintf used for simple string concatenation on hot or repeated paths.
+- `go_perf_layer_string_handling_regexp_compile_in_request_path`: Layer: String handling. Flag regexp.Compile or MustCompile inside handlers, loops, or repeated functions.
+- `go_perf_layer_string_handling_string_lower_for_case_insensitive_compare`: Layer: String handling. Flag strings.ToLower comparisons where EqualFold avoids extra allocation.
+- `go_perf_layer_string_handling_strings_join_single_element_loop`: Layer: String handling. Flag repeated strings.Join calls in loops where one builder outside the loop would do.
 - `goroutine_for_sync_work`: `go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited
 - `hex_decode_string_in_loop`: `hex.DecodeString(...)` inside loops.
 - `hex_encode_to_string_in_loop`: `hex.EncodeToString(...)` inside loops.
@@ -750,7 +850,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `inconsistent_package_name`: Directories that mix base Go package names after ignoring the _test suffix.
 - `misgrouped_imports`: Import blocks that place stdlib imports after third-party imports.
 
-### Python rules (591)
+### Python rules (691)
 
 #### Ai Smells (5)
 - `enthusiastic_commentary`: Unusually enthusiastic or emoji-heavy production comments.
@@ -1272,7 +1372,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `runtime_data_file_assumption_in_implicit_namespace_package`: Flag implicit namespace packages that assume local data-file discovery at runtime.
 - `test_helpers_shipped_inside_production_package_path`: Flag test-only helpers living under the production import path.
 
-#### Performance (29)
+#### Performance (129)
 - `batchable_writes_executed_one_at_a_time`: Flag repeated write operations that could be grouped or buffered.
 - `blocking_sync_io_in_async`: Synchronous network, subprocess, sleep, or file I/O calls made from async def functions.
 - `bytes_text_bytes_roundtrip_without_transformation`: Flag code that decodes and re-encodes data without changing it.
@@ -1290,6 +1390,106 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `list_materialization_first_element`: list(...)[0] style access that materializes a whole list just to read the first element.
 - `list_membership_in_loop`: Repeated membership checks against obviously list-like containers inside loops.
 - `multiple_regex_passes_over_same_text_without_precompiled_plan`: Flag code that re-runs several overlapping regex passes on the same text.
+- `python_perf_layer_algorithmic_complexity_cartesian_product_materialized_before_filter`: Layer: Algorithmic complexity. Flag itertools product or nested loops materialized before cheap filters narrow the pairs.
+- `python_perf_layer_algorithmic_complexity_full_sort_for_top_n`: Layer: Algorithmic complexity. Flag sorted(...)[0:n] or DataFrame sort_values().head() where nlargest/nsmallest or heap selection would bound work.
+- `python_perf_layer_algorithmic_complexity_nested_membership_scan_without_set`: Layer: Algorithmic complexity. Flag nested membership checks over lists where a set or dict index should be built once.
+- `python_perf_layer_algorithmic_complexity_recursive_walk_without_iterative_guard`: Layer: Algorithmic complexity. Flag recursive traversals over untrusted depth without iterative fallback or visited tracking.
+- `python_perf_layer_algorithmic_complexity_repeated_dataframe_filter_chain`: Layer: Algorithmic complexity. Flag repeated pandas filters over the same frame where one boolean mask can combine predicates.
+- `python_perf_layer_async_concurrency_asyncio_task_per_item_unbounded`: Layer: Async and concurrency. Flag unbounded create_task fanout without a semaphore, queue, or batch limit.
+- `python_perf_layer_async_concurrency_blocking_requests_in_async_route`: Layer: Async and concurrency. Flag requests.* calls inside async routes or coroutines instead of async clients or executor boundaries.
+- `python_perf_layer_async_concurrency_busy_async_poll_sleep_zero`: Layer: Async and concurrency. Flag async polling loops that sleep(0) or spin instead of awaiting a real event.
+- `python_perf_layer_async_concurrency_lock_held_during_await_or_io`: Layer: Async and concurrency. Flag locks held while awaiting, doing network I/O, or touching disk.
+- `python_perf_layer_async_concurrency_threadpool_created_per_request`: Layer: Async and concurrency. Flag ThreadPoolExecutor or ProcessPoolExecutor construction per request or call.
+- `python_perf_layer_caching_cache_key_uses_json_dumps_in_hot_path`: Layer: Caching. Flag cache keys built with json.dumps in hot paths when tuple or stable string keys would work.
+- `python_perf_layer_caching_cache_miss_duplicate_concurrent_work`: Layer: Caching. Flag async or threaded cache miss paths that recompute the same key concurrently.
+- `python_perf_layer_caching_cached_value_immediately_deserialized`: Layer: Caching. Flag caches storing serialized data only to deserialize before every use.
+- `python_perf_layer_caching_per_request_settings_cache_rebuilt`: Layer: Caching. Flag settings or feature-flag caches rebuilt for each request.
+- `python_perf_layer_caching_unbounded_dict_cache`: Layer: Caching. Flag module-level dict caches without max size, TTL, or eviction.
+- `python_perf_layer_collection_iteration_enumerate_list_materialized`: Layer: Collection iteration. Flag list(enumerate(...)) materialization before immediate iteration.
+- `python_perf_layer_collection_iteration_generator_materialized_for_truthiness`: Layer: Collection iteration. Flag list(generator) or tuple(generator) used only for truthiness checks.
+- `python_perf_layer_collection_iteration_list_comprehension_only_for_side_effect`: Layer: Collection iteration. Flag list comprehensions used only for side effects, forcing unnecessary list allocation.
+- `python_perf_layer_collection_iteration_multiple_passes_over_same_iterable`: Layer: Collection iteration. Flag independent loops over the same collection where aggregation can be fused.
+- `python_perf_layer_collection_iteration_pandas_iterrows_for_numeric_transform`: Layer: Collection iteration. Flag pandas iterrows loops for numeric transformations that can be vectorized or applied in batches.
+- `python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records`: Layer: Data structure choice. Flag dict-of-dicts records in hot loops where dataclass, tuple, or typed containers reduce lookup cost.
+- `python_perf_layer_data_structure_choice_heapq_reimplemented_with_sorted_list`: Layer: Data structure choice. Flag sorted-list priority queues where heapq avoids repeated full ordering.
+- `python_perf_layer_data_structure_choice_list_as_fifo_queue`: Layer: Data structure choice. Flag list pop(0) or insert(0, ...) queue usage where collections.deque fits the access pattern.
+- `python_perf_layer_data_structure_choice_pandas_object_dtype_for_numeric_hot_columns`: Layer: Data structure choice. Flag numeric pandas columns kept as object dtype on transformation-heavy paths.
+- `python_perf_layer_data_structure_choice_set_rebuilt_for_each_lookup_batch`: Layer: Data structure choice. Flag sets rebuilt inside loops instead of once per lookup batch.
+- `python_perf_layer_database_access_count_then_fetch_every_page`: Layer: Database access. Flag count queries paired with every paginated fetch without product need or caching.
+- `python_perf_layer_database_access_dataframe_to_sql_row_loop`: Layer: Database access. Flag DataFrame writes to SQL through row loops instead of chunked to_sql or bulk copy.
+- `python_perf_layer_database_access_orm_query_inside_loop`: Layer: Database access. Flag ORM queries inside loops where select_related, prefetch_related, or bulk queries can collapse round trips.
+- `python_perf_layer_database_access_row_by_row_bulk_insert`: Layer: Database access. Flag bulk inserts implemented one row at a time instead of executemany or ORM bulk APIs.
+- `python_perf_layer_database_access_select_all_columns_for_serializer_subset`: Layer: Database access. Flag ORM or SQL queries loading all columns when serializers use a small subset.
+- `python_perf_layer_error_handling_cost_broad_except_retries_cpu_work`: Layer: Error handling cost. Flag broad except retry loops that repeat CPU-heavy work instead of isolating the failing call.
+- `python_perf_layer_error_handling_cost_error_message_formatted_on_success_path`: Layer: Error handling cost. Flag expensive error messages built before checking whether an error exists.
+- `python_perf_layer_error_handling_cost_exception_used_for_loop_control`: Layer: Error handling cost. Flag exceptions used for ordinary loop control in hot paths.
+- `python_perf_layer_error_handling_cost_multi_error_list_allocated_before_failure`: Layer: Error handling cost. Flag error accumulation lists allocated on success-heavy paths before any error occurs.
+- `python_perf_layer_error_handling_cost_raise_from_none_hides_retriable_error_context`: Layer: Error handling cost. Flag error translation that drops cause context needed to avoid repeated failed retries.
+- `python_perf_layer_framework_performance_celery_task_loads_config_each_run`: Layer: Framework-specific performance. Flag Celery tasks loading settings, models, or clients on every invocation without reuse.
+- `python_perf_layer_framework_performance_django_queryset_evaluated_in_template_loop`: Layer: Framework-specific performance. Flag Django QuerySets evaluated repeatedly from templates or per-row template helpers.
+- `python_perf_layer_framework_performance_fastapi_dependency_builds_client_per_request`: Layer: Framework-specific performance. Flag FastAPI dependencies that build heavy clients for every request.
+- `python_perf_layer_framework_performance_pandas_apply_for_vectorizable_operation`: Layer: Framework-specific performance. Flag pandas apply calls for operations that have vectorized Series/DataFrame equivalents.
+- `python_perf_layer_framework_performance_sqlalchemy_lazy_load_in_serializer`: Layer: Framework-specific performance. Flag SQLAlchemy lazy loads triggered from serializers or response mapping loops.
+- `python_perf_layer_garbage_collection_cleanup_cycle_heavy_objects_without_break`: Layer: Garbage collection and cleanup. Flag cyclic object graphs that keep large buffers alive after request or batch completion.
+- `python_perf_layer_garbage_collection_cleanup_file_handle_closed_by_gc`: Layer: Garbage collection and cleanup. Flag file or socket resources relying on garbage collection instead of context-managed close.
+- `python_perf_layer_garbage_collection_cleanup_large_list_cleared_but_retained`: Layer: Garbage collection and cleanup. Flag long-lived lists cleared after spikes while still retaining oversized capacity-sensitive state.
+- `python_perf_layer_garbage_collection_cleanup_lru_cache_on_unbounded_argument_space`: Layer: Garbage collection and cleanup. Flag lru_cache usage without maxsize on functions fed user-controlled or high-cardinality inputs.
+- `python_perf_layer_garbage_collection_cleanup_temporary_directory_not_cleaned_promptly`: Layer: Garbage collection and cleanup. Flag TemporaryDirectory or temp files held across long workflows after their last use.
+- `python_perf_layer_hot_path_optimization_attribute_lookup_in_deep_inner_loop`: Layer: Hot path optimization. Flag repeated dynamic getattr or attribute lookup in deep loops where local binding helps.
+- `python_perf_layer_hot_path_optimization_datetime_now_called_per_field`: Layer: Hot path optimization. Flag repeated datetime.now calls per record when one timestamp can be reused.
+- `python_perf_layer_hot_path_optimization_numpy_python_loop_over_array`: Layer: Hot path optimization. Flag Python loops over large NumPy arrays where vectorized operations fit the computation.
+- `python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path`: Layer: Hot path optimization. Flag inspect/signature/reflection work in hot paths.
+- `python_perf_layer_hot_path_optimization_schema_parsed_inside_handler`: Layer: Hot path optimization. Flag schemas, templates, or expressions parsed per request instead of precompiled once.
+- `python_perf_layer_io_operations_path_exists_before_open_race`: Layer: I/O operations. Flag exists/stat checks immediately followed by open when exception handling can avoid duplicate syscalls.
+- `python_perf_layer_io_operations_read_entire_file_for_line_processing`: Layer: I/O operations. Flag read()/readlines() on files that are processed line by line.
+- `python_perf_layer_io_operations_small_file_writes_without_buffer`: Layer: I/O operations. Flag many tiny writes where writelines, join, or buffering would reduce syscalls.
+- `python_perf_layer_io_operations_subprocess_per_item`: Layer: I/O operations. Flag subprocess launches inside item loops where batching or a long-lived worker should be considered.
+- `python_perf_layer_io_operations_temporary_file_for_bytes_transform`: Layer: I/O operations. Flag temporary files used only for pure bytes transformations that can stream in memory.
+- `python_perf_layer_lazy_loading_eager_import_heavy_optional_dependency`: Layer: Lazy loading. Flag heavy optional dependencies imported at module import time for rarely used features.
+- `python_perf_layer_lazy_loading_eager_template_compile_for_unused_views`: Layer: Lazy loading. Flag compiling templates for disabled or rarely used views during startup.
+- `python_perf_layer_lazy_loading_feature_flag_data_loaded_before_needed`: Layer: Lazy loading. Flag feature-specific lookup data loaded before the feature is enabled or requested.
+- `python_perf_layer_lazy_loading_lazy_init_on_first_user_request`: Layer: Lazy loading. Flag lazy initialization that shifts a large one-time cost onto the first user request without warmup.
+- `python_perf_layer_lazy_loading_optional_model_loaded_at_startup`: Layer: Lazy loading. Flag optional ML/model assets loaded at startup before any route or job needs them.
+- `python_perf_layer_logging_overhead_extra_fields_computed_before_sampling`: Layer: Logging overhead. Flag expensive log extra fields computed before sampling or level filters.
+- `python_perf_layer_logging_overhead_log_message_formatted_before_level_check`: Layer: Logging overhead. Flag f-string or format log messages built before logger level checks can skip them.
+- `python_perf_layer_logging_overhead_logger_created_per_request`: Layer: Logging overhead. Flag getLogger or adapter construction per request when stable module loggers are enough.
+- `python_perf_layer_logging_overhead_per_item_info_log_in_batch`: Layer: Logging overhead. Flag info/debug logging per record in large batch processing loops.
+- `python_perf_layer_logging_overhead_trace_payload_serialized_unconditionally`: Layer: Logging overhead. Flag trace or log payload serialization even when tracing is disabled.
+- `python_perf_layer_memory_allocation_closure_or_lambda_allocated_in_inner_loop`: Layer: Memory allocation. Flag lambdas or closures allocated inside tight loops when a named function or hoisted callable works.
+- `python_perf_layer_memory_allocation_dataclass_asdict_in_hot_path`: Layer: Memory allocation. Flag dataclasses.asdict calls in hot paths when shallow field access would suffice.
+- `python_perf_layer_memory_allocation_deepcopy_before_readonly_transform`: Layer: Memory allocation. Flag copy.deepcopy of large objects before operations that only read them.
+- `python_perf_layer_memory_allocation_list_append_without_generator_stream`: Layer: Memory allocation. Flag large intermediate lists built only to feed another iterator-compatible consumer.
+- `python_perf_layer_memory_allocation_temporary_dataframe_created_per_row`: Layer: Memory allocation. Flag DataFrame construction per row or per record instead of vectorized batch construction.
+- `python_perf_layer_network_calls_dns_or_url_parse_repeated_per_request`: Layer: Network calls. Flag repeated DNS, URL parsing, or endpoint normalization for stable upstreams.
+- `python_perf_layer_network_calls_http_session_created_per_call`: Layer: Network calls. Flag requests.Session or client objects created per call instead of reused per upstream.
+- `python_perf_layer_network_calls_large_response_downloaded_before_status_check`: Layer: Network calls. Flag response bodies read before checking status, headers, or content length guards.
+- `python_perf_layer_network_calls_retry_without_backoff_or_jitter`: Layer: Network calls. Flag network retries without backoff and jitter, which amplifies latency and load.
+- `python_perf_layer_network_calls_tls_context_built_per_request`: Layer: Network calls. Flag SSLContext or certificate bundle loading per request instead of process-level reuse.
+- `python_perf_layer_profiling_benchmarking_benchmark_allocations_not_tracked`: Layer: Profiling and benchmarking. Flag memory-sensitive benchmarks that omit tracemalloc, memory_profiler, or allocation accounting.
+- `python_perf_layer_profiling_benchmarking_benchmark_missing_warmup`: Layer: Profiling and benchmarking. Flag benchmarks that time import/setup/warmup along with the operation under test.
+- `python_perf_layer_profiling_benchmarking_load_test_without_realistic_payload_size`: Layer: Profiling and benchmarking. Flag performance tests that use tiny payloads despite rules targeting large-input behavior.
+- `python_perf_layer_profiling_benchmarking_profile_claim_without_profile_artifact`: Layer: Profiling and benchmarking. Flag optimization comments or docs without profile, benchmark, or trace evidence.
+- `python_perf_layer_profiling_benchmarking_timeit_result_not_consumed`: Layer: Profiling and benchmarking. Flag microbenchmarks whose results are unused and may measure optimized-away or irrelevant work.
+- `python_perf_layer_resource_pooling_db_engine_created_per_repository`: Layer: Resource pooling. Flag database engine/session factory construction per repository instance.
+- `python_perf_layer_resource_pooling_http_pool_not_reused`: Layer: Resource pooling. Flag HTTP connection pools that are recreated rather than shared per upstream.
+- `python_perf_layer_resource_pooling_large_buffer_pool_without_cap`: Layer: Resource pooling. Flag reusable buffer pools that keep oversized buffers after traffic spikes.
+- `python_perf_layer_resource_pooling_process_pool_without_shutdown`: Layer: Resource pooling. Flag ProcessPoolExecutor ownership without shutdown or bounded queue behavior.
+- `python_perf_layer_resource_pooling_rate_limiter_created_per_request`: Layer: Resource pooling. Flag rate limiter construction per request instead of per identity or dependency.
+- `python_perf_layer_runtime_configuration_debug_mode_enabled_in_perf_sensitive_path`: Layer: Build and runtime configuration. Flag framework debug or reload mode enabled in performance-sensitive runtime config.
+- `python_perf_layer_runtime_configuration_env_parsed_per_operation`: Layer: Build and runtime configuration. Flag environment parsing and type conversion per operation instead of startup settings load.
+- `python_perf_layer_runtime_configuration_locale_timezone_loaded_per_request`: Layer: Build and runtime configuration. Flag locale or timezone data loaded for every request instead of cached process state.
+- `python_perf_layer_runtime_configuration_profiling_hooks_enabled_by_default`: Layer: Build and runtime configuration. Flag cProfile, tracing, or coverage hooks enabled in default runtime paths.
+- `python_perf_layer_runtime_configuration_pythonpath_mutated_per_call`: Layer: Build and runtime configuration. Flag sys.path or import path mutation inside functions instead of startup configuration.
+- `python_perf_layer_serialization_base64_roundtrip_same_process`: Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside one process boundary.
+- `python_perf_layer_serialization_gzip_compress_tiny_payloads`: Layer: Serialization and deserialization. Flag gzip compression of tiny payloads where CPU overhead can exceed transfer savings.
+- `python_perf_layer_serialization_json_dumps_for_equality_or_hash`: Layer: Serialization and deserialization. Flag json.dumps used only for equality checks, hashing, or dedup keys.
+- `python_perf_layer_serialization_pickle_in_request_hot_path`: Layer: Serialization and deserialization. Flag pickle serialization in request paths where structured fields or lighter codecs would suffice.
+- `python_perf_layer_serialization_pydantic_model_recreated_for_internal_dict`: Layer: Serialization and deserialization. Flag Pydantic model construction around trusted internal dicts in tight loops.
+- `python_perf_layer_string_handling_bytes_decode_encode_roundtrip`: Layer: String handling. Flag bytes-to-text-to-bytes roundtrips without transformation.
+- `python_perf_layer_string_handling_json_string_concat_manual_build`: Layer: String handling. Flag manual JSON string assembly in loops instead of streaming encoders or structured dumps.
+- `python_perf_layer_string_handling_lowercase_compare_allocates`: Layer: String handling. Flag lower()/upper() equality checks where casefold once or normalized keys avoid repeated allocation.
+- `python_perf_layer_string_handling_plus_equals_string_in_loop`: Layer: String handling. Flag repeated += string growth in loops where join or StringIO avoids quadratic copying.
+- `python_perf_layer_string_handling_regex_compiled_per_call`: Layer: String handling. Flag re.compile calls in repeated functions, handlers, or loops instead of module-level compiled patterns.
 - `quadratic_string_building_via_plus_equals`: Flag loops that grow large strings with repeated +=.
 - `recursive_traversal_risk`: Direct recursion in traversal-style helpers that may be safer as iterative walks for deep inputs.
 - `repeated_file_open_for_same_resource_within_single_operation`: Flag workflows that reopen the same file repeatedly during one logical operation.
@@ -1373,7 +1573,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `tight_module_coupling`: Modules that depend on a large number of repository-local Python modules.
 - `too_many_instance_attributes`: Classes that assign an unusually large number of instance attributes across their methods.
 
-### Rust rules (250)
+### Rust rules (350)
 
 #### Api Design (21)
 - `rust_arc_mutex_option_state`: Arc<Mutex<Option<T>>>-style state bags that hide lifecycle state behind nested mutation layers.
@@ -1601,7 +1801,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `rust_redundant_path_attribute`: Same-directory #[path = "..."] module attributes that standard resolution could replace.
 - `rust_root_reexport_wall`: Crate roots that expose too many public re-exports at once.
 
-#### Performance (12)
+#### Performance (112)
 - `rust_aos_hot_path`: Repeated struct-field dereferences inside a loop that may indicate an array-of-structs hot path.
 - `rust_blocking_drop`: A Drop implementation performs blocking work.
 - `rust_blocking_io_in_async`: Blocking I/O or blocking work observed in async Rust code. *(status: experimental)*
@@ -1610,6 +1810,106 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `rust_lines_allocate_per_line`: .lines() iteration used in a loop where per-item allocation may matter.
 - `rust_lock_across_await`: A lock appears to be held across an .await boundary. *(status: experimental)*
 - `rust_path_join_absolute`: Path::join used with an absolute segment that discards the existing base path.
+- `rust_perf_layer_algorithmic_complexity_iterator_chain_recomputes_expensive_predicate`: Layer: Algorithmic complexity. Flag iterator chains that recompute an expensive predicate instead of caching per item.
+- `rust_perf_layer_algorithmic_complexity_nested_vec_scan_without_index`: Layer: Algorithmic complexity. Flag nested Vec scans that should build a HashMap, BTreeMap, or index before joining large collections.
+- `rust_perf_layer_algorithmic_complexity_quadratic_string_or_vec_growth`: Layer: Algorithmic complexity. Flag algorithms that repeatedly grow and rescan accumulated String or Vec state.
+- `rust_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen`: Layer: Algorithmic complexity. Flag recursive graph walks that do not track visited nodes for cyclic or shared inputs.
+- `rust_perf_layer_algorithmic_complexity_sort_for_top_k`: Layer: Algorithmic complexity. Flag full Vec sorts used only to keep top-k elements where BinaryHeap or select_nth_unstable would bound work.
+- `rust_perf_layer_async_concurrency_blocking_mutex_in_async_path`: Layer: Async and concurrency. Flag std::sync::Mutex use in async paths where blocking can stall executor workers.
+- `rust_perf_layer_async_concurrency_busy_poll_future_loop`: Layer: Async and concurrency. Flag async loops that poll with try_recv or zero sleeps instead of awaiting notifications.
+- `rust_perf_layer_async_concurrency_lock_guard_held_across_slow_call`: Layer: Async and concurrency. Flag lock guards held during network, disk, database, or expensive compute work.
+- `rust_perf_layer_async_concurrency_timeout_created_for_inner_retry`: Layer: Async and concurrency. Flag timeout futures created inside tight retry loops where an outer deadline would bound the operation.
+- `rust_perf_layer_async_concurrency_tokio_spawn_per_item_unbounded`: Layer: Async and concurrency. Flag unbounded tokio::spawn per item without JoinSet, semaphore, or bounded queue ownership.
+- `rust_perf_layer_caching_cache_key_allocates_string_hot_path`: Layer: Caching. Flag cache keys built as allocated Strings in hot paths where borrowed or structured keys fit.
+- `rust_perf_layer_caching_cache_miss_duplicate_async_work`: Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key.
+- `rust_perf_layer_caching_cached_json_string_deserialized_each_use`: Layer: Caching. Flag caches storing JSON strings only to deserialize before every read.
+- `rust_perf_layer_caching_once_lock_lazy_cost_on_first_request`: Layer: Caching. Flag OnceLock/LazyLock initialization that puts large first-use cost on a user request without warmup.
+- `rust_perf_layer_caching_unbounded_hashmap_cache`: Layer: Caching. Flag process-level HashMap caches without size, TTL, or eviction policy.
+- `rust_perf_layer_collection_iteration_collect_for_len_or_is_empty`: Layer: Collection iteration. Flag iterator collection used only to call len or check emptiness.
+- `rust_perf_layer_collection_iteration_hashset_rebuilt_per_lookup_batch`: Layer: Collection iteration. Flag HashSet rebuilt inside loops instead of once per batch.
+- `rust_perf_layer_collection_iteration_iter_cloned_before_filter`: Layer: Collection iteration. Flag iter().cloned() before filters that could borrow until ownership is needed.
+- `rust_perf_layer_collection_iteration_manual_index_loop_over_slice`: Layer: Collection iteration. Flag manual index loops over slices where iterators or chunks avoid repeated indexing.
+- `rust_perf_layer_collection_iteration_multiple_passes_over_same_slice`: Layer: Collection iteration. Flag independent passes over the same slice where aggregation can be fused.
+- `rust_perf_layer_data_structure_choice_boxed_trait_objects_in_hot_collection`: Layer: Data structure choice. Flag Vec<Box<dyn Trait>> in hot homogeneous collections where enums or generics can avoid dispatch and pointer chasing.
+- `rust_perf_layer_data_structure_choice_btreemap_for_unordered_hot_lookup`: Layer: Data structure choice. Flag BTreeMap lookups in unordered hot paths where HashMap or indexed Vec may be cheaper.
+- `rust_perf_layer_data_structure_choice_hashmap_for_tiny_static_set`: Layer: Data structure choice. Flag HashMap use for tiny static sets where match, arrays, or phf-like tables may avoid hashing cost.
+- `rust_perf_layer_data_structure_choice_string_keys_for_enum_domain`: Layer: Data structure choice. Flag String keys for finite domains where enums or interned IDs avoid allocation and hashing.
+- `rust_perf_layer_data_structure_choice_vec_remove_zero_queue`: Layer: Data structure choice. Flag Vec::remove(0) queue behavior where VecDeque fits front removal.
+- `rust_perf_layer_database_access_count_before_page_fetch_each_request`: Layer: Database access. Flag count queries paired with every paginated fetch without caching or product need.
+- `rust_perf_layer_database_access_row_to_hashmap_decode_hot_path`: Layer: Database access. Flag database row decoding into HashMap<String, Value> on hot typed paths.
+- `rust_perf_layer_database_access_select_star_for_typed_projection`: Layer: Database access. Flag SELECT * when typed row mapping uses only a subset of columns.
+- `rust_perf_layer_database_access_sql_query_inside_loop`: Layer: Database access. Flag SQL queries inside loops where batching or joins can collapse round trips.
+- `rust_perf_layer_database_access_transaction_per_row_bulk_insert`: Layer: Database access. Flag bulk inserts that begin and commit a transaction for every row.
+- `rust_perf_layer_error_handling_cost_anyhow_context_in_hot_loop`: Layer: Error handling cost. Flag anyhow/context formatting inside hot loops where one boundary context would suffice.
+- `rust_perf_layer_error_handling_cost_clone_error_context_large_payload`: Layer: Error handling cost. Flag error context cloning large payloads only for diagnostic strings.
+- `rust_perf_layer_error_handling_cost_error_enum_allocates_string_success_path`: Layer: Error handling cost. Flag error strings built before the failing branch is known.
+- `rust_perf_layer_error_handling_cost_panic_catch_unwind_for_control_flow`: Layer: Error handling cost. Flag catch_unwind used for expected branch control in performance-sensitive code.
+- `rust_perf_layer_error_handling_cost_vec_errors_allocated_before_error`: Layer: Error handling cost. Flag error aggregation Vec allocated on success-heavy paths before any error exists.
+- `rust_perf_layer_framework_performance_actix_blocking_pool_for_light_work`: Layer: Framework-specific performance. Flag actix web::block for light synchronous work where scheduling overhead can dominate.
+- `rust_perf_layer_framework_performance_askama_render_to_string_then_body`: Layer: Framework-specific performance. Flag template rendering to String before writing to streaming response bodies.
+- `rust_perf_layer_framework_performance_axum_extension_clones_heavy_state`: Layer: Framework-specific performance. Flag Axum handler state extraction that clones heavy state instead of cheap Arc handles.
+- `rust_perf_layer_framework_performance_sqlx_fetch_all_unbounded`: Layer: Framework-specific performance. Flag sqlx fetch_all on unbounded queries where streaming or limits would control memory.
+- `rust_perf_layer_framework_performance_tonic_metadata_parsed_repeatedly`: Layer: Framework-specific performance. Flag repeated tonic metadata parsing across interceptors and handlers.
+- `rust_perf_layer_garbage_collection_cleanup_arc_cycle_without_weak_break`: Layer: Garbage collection and cleanup. Flag Arc graphs that appear cyclic without Weak ownership edges.
+- `rust_perf_layer_garbage_collection_cleanup_bufwriter_not_flushed_at_owner_boundary`: Layer: Garbage collection and cleanup. Flag buffered writers whose flush ownership is unclear at the boundary.
+- `rust_perf_layer_garbage_collection_cleanup_drop_impl_does_io_or_blocking_work`: Layer: Garbage collection and cleanup. Flag Drop implementations that perform I/O, locking, or other blocking cleanup.
+- `rust_perf_layer_garbage_collection_cleanup_large_vec_clear_retains_spike_capacity`: Layer: Garbage collection and cleanup. Flag long-lived Vec buffers cleared after spikes without capacity trimming or replacement policy.
+- `rust_perf_layer_garbage_collection_cleanup_leaked_box_for_runtime_singleton`: Layer: Garbage collection and cleanup. Flag Box::leak used for runtime singletons where OnceLock or LazyLock would express ownership better.
+- `rust_perf_layer_hot_path_optimization_allocation_inside_sort_comparator`: Layer: Hot path optimization. Flag allocation, parsing, or formatting inside sort comparator closures.
+- `rust_perf_layer_hot_path_optimization_bounds_checks_from_repeated_indexing`: Layer: Hot path optimization. Flag repeated indexed access patterns where iterators, windows, or chunks can reduce bounds-check pressure.
+- `rust_perf_layer_hot_path_optimization_dynamic_dispatch_in_deep_loop`: Layer: Hot path optimization. Flag trait-object dynamic dispatch inside deep loops where generics or enum dispatch may fit.
+- `rust_perf_layer_hot_path_optimization_instant_now_called_many_times_per_item`: Layer: Hot path optimization. Flag repeated Instant::now calls per item where one timestamp or measurement scope would suffice.
+- `rust_perf_layer_hot_path_optimization_schema_parsed_inside_handler`: Layer: Hot path optimization. Flag schemas, templates, regex sets, or expressions parsed per request.
+- `rust_perf_layer_io_operations_command_spawn_per_item`: Layer: I/O operations. Flag process spawning inside item loops where batching or long-lived workers may fit.
+- `rust_perf_layer_io_operations_metadata_before_open_without_need`: Layer: I/O operations. Flag fs::metadata calls immediately followed by open/read without using metadata meaningfully.
+- `rust_perf_layer_io_operations_read_to_string_for_line_processing`: Layer: I/O operations. Flag read_to_string/read_to_end before sequential line or chunk processing.
+- `rust_perf_layer_io_operations_tempfile_for_stream_transform`: Layer: I/O operations. Flag temporary files used only to pass data between streaming transformations.
+- `rust_perf_layer_io_operations_unbuffered_writes_in_loop`: Layer: I/O operations. Flag repeated file or socket writes without BufWriter or batching.
+- `rust_perf_layer_lazy_loading_eager_compile_unused_templates`: Layer: Lazy loading. Flag compiling templates or route metadata for disabled features.
+- `rust_perf_layer_lazy_loading_eager_connect_all_upstreams`: Layer: Lazy loading. Flag connecting to every optional upstream during startup instead of lazy or feature-gated initialization.
+- `rust_perf_layer_lazy_loading_eager_load_optional_assets`: Layer: Lazy loading. Flag optional assets, dictionaries, or models loaded at startup before any feature uses them.
+- `rust_perf_layer_lazy_loading_lazy_static_hides_tail_latency`: Layer: Lazy loading. Flag lazy statics initialized on first request without warmup or latency accounting.
+- `rust_perf_layer_lazy_loading_optional_crate_init_on_default_path`: Layer: Lazy loading. Flag optional crate initialization on the default path when feature-gated initialization would avoid cost.
+- `rust_perf_layer_logging_overhead_debug_format_large_value_unconditional`: Layer: Logging overhead. Flag debug formatting before log level checks.
+- `rust_perf_layer_logging_overhead_log_fields_allocated_before_enabled`: Layer: Logging overhead. Flag expensive tracing/log fields allocated before level or subscriber filters can skip them.
+- `rust_perf_layer_logging_overhead_payload_serialized_for_disabled_trace`: Layer: Logging overhead. Flag payload serialization for tracing even when tracing is disabled.
+- `rust_perf_layer_logging_overhead_per_item_info_span_in_batch`: Layer: Logging overhead. Flag tracing spans or info logs emitted per record in large batch loops.
+- `rust_perf_layer_logging_overhead_span_created_inside_tight_loop`: Layer: Logging overhead. Flag tracing span construction in very tight loops without sampling or aggregation.
+- `rust_perf_layer_memory_allocation_clone_large_value_for_readonly_use`: Layer: Memory allocation. Flag Clone of large values immediately before read-only operations.
+- `rust_perf_layer_memory_allocation_collect_vec_only_to_iterate_once`: Layer: Memory allocation. Flag collect::<Vec<_>>() used only to iterate once into another consumer.
+- `rust_perf_layer_memory_allocation_format_allocates_for_writer`: Layer: Memory allocation. Flag format! used before write!/push_str where direct writing avoids temporary allocation.
+- `rust_perf_layer_memory_allocation_string_reallocated_per_record`: Layer: Memory allocation. Flag String allocation per record where a reusable buffer can be cleared safely.
+- `rust_perf_layer_memory_allocation_vec_push_without_capacity`: Layer: Memory allocation. Flag Vec pushes in builders where an obvious capacity is known.
+- `rust_perf_layer_network_calls_dns_resolution_in_request_path`: Layer: Network calls. Flag DNS or endpoint resolution in request paths without cache or resolver ownership.
+- `rust_perf_layer_network_calls_hyper_connector_rebuilt_per_request`: Layer: Network calls. Flag HTTP connector or TLS connector construction per request.
+- `rust_perf_layer_network_calls_reqwest_client_created_per_call`: Layer: Network calls. Flag reqwest::Client construction per call instead of reuse per upstream.
+- `rust_perf_layer_network_calls_retry_without_backoff_jitter`: Layer: Network calls. Flag network retry loops without backoff and jitter.
+- `rust_perf_layer_network_calls_tls_config_loaded_per_request`: Layer: Network calls. Flag rustls/native-tls configuration loading per request instead of shared immutable state.
+- `rust_perf_layer_profiling_benchmarking_alloc_sensitive_benchmark_without_alloc_counts`: Layer: Profiling and benchmarking. Flag allocation-sensitive benchmarks that omit allocation counting or heap profiling.
+- `rust_perf_layer_profiling_benchmarking_benchmark_missing_black_box`: Layer: Profiling and benchmarking. Flag microbenchmarks that do not use black_box or otherwise consume results.
+- `rust_perf_layer_profiling_benchmarking_criterion_benchmark_includes_setup`: Layer: Profiling and benchmarking. Flag Criterion benchmarks that include setup in the measured closure instead of setup/measurement separation.
+- `rust_perf_layer_profiling_benchmarking_load_test_payload_too_small`: Layer: Profiling and benchmarking. Flag performance tests using tiny payloads despite targeting large-input behavior.
+- `rust_perf_layer_profiling_benchmarking_optimization_comment_without_measurement`: Layer: Profiling and benchmarking. Flag optimization comments without benchmark, profile, or trace evidence.
+- `rust_perf_layer_resource_pooling_buffer_pool_returns_oversized_vec`: Layer: Resource pooling. Flag reusable Vec/String pools that retain oversized buffers after spikes.
+- `rust_perf_layer_resource_pooling_connection_pool_without_limits`: Layer: Resource pooling. Flag connection pools missing max size, idle, or timeout controls.
+- `rust_perf_layer_resource_pooling_pool_created_per_request`: Layer: Resource pooling. Flag database, HTTP, or worker pools created per request instead of process or dependency ownership.
+- `rust_perf_layer_resource_pooling_semaphore_created_per_operation`: Layer: Resource pooling. Flag Semaphore or rate limiter construction per operation instead of shared dependency ownership.
+- `rust_perf_layer_resource_pooling_threadpool_without_shutdown_owner`: Layer: Resource pooling. Flag custom thread pools without explicit shutdown/drain ownership.
+- `rust_perf_layer_runtime_configuration_debug_assertions_expected_in_bench`: Layer: Build and runtime configuration. Flag benchmark or performance docs that mix debug-assertion builds with release numbers.
+- `rust_perf_layer_runtime_configuration_env_parsed_per_operation`: Layer: Build and runtime configuration. Flag environment parsing and type conversion per operation instead of startup config load.
+- `rust_perf_layer_runtime_configuration_feature_flags_loaded_per_request`: Layer: Build and runtime configuration. Flag feature flag or config files loaded in request paths.
+- `rust_perf_layer_runtime_configuration_lto_codegen_claim_without_profile`: Layer: Build and runtime configuration. Flag Cargo profile performance claims without benchmark notes or profile evidence.
+- `rust_perf_layer_runtime_configuration_rayon_threads_set_in_library`: Layer: Build and runtime configuration. Flag library code configuring global Rayon thread pools and overriding host policy.
+- `rust_perf_layer_serialization_base64_roundtrip_same_process`: Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside one process boundary.
+- `rust_perf_layer_serialization_bincode_or_postcard_for_tiny_messages`: Layer: Serialization and deserialization. Flag binary serialization setup for tiny in-process messages where direct structs or slices would do.
+- `rust_perf_layer_serialization_gzip_encoder_per_tiny_payload`: Layer: Serialization and deserialization. Flag compression writers created for tiny payloads where CPU overhead dominates.
+- `rust_perf_layer_serialization_serde_json_to_value_hot_path`: Layer: Serialization and deserialization. Flag serde_json::Value decoding in hot typed paths where concrete structs avoid dynamic lookup.
+- `rust_perf_layer_serialization_serialize_for_hash_or_eq`: Layer: Serialization and deserialization. Flag serialization used only to hash, compare, or deduplicate values.
+- `rust_perf_layer_string_handling_format_in_loop_for_simple_append`: Layer: String handling. Flag format! in loops for simple string appends where write! or push_str can reuse buffers.
+- `rust_perf_layer_string_handling_regex_new_in_function_path`: Layer: String handling. Flag Regex::new in repeated functions or loops instead of LazyLock or once_cell.
+- `rust_perf_layer_string_handling_split_collect_for_first_segment`: Layer: String handling. Flag split().collect::<Vec<_>>() used only to access one segment.
+- `rust_perf_layer_string_handling_string_from_utf8_roundtrip`: Layer: String handling. Flag String/Vec<u8> roundtrips without transformation.
+- `rust_perf_layer_string_handling_to_lowercase_compare`: Layer: String handling. Flag to_lowercase/to_uppercase comparisons where eq_ignore_ascii_case or normalized keys avoid allocation.
 - `rust_pointer_chasing_vec_box`: Pointer-heavy boxed vector-style storage that may hurt cache locality.
 - `rust_tokio_mutex_unnecessary`: tokio::sync::Mutex used in a fully synchronous critical path with no await. *(status: experimental)*
 - `rust_unbuffered_file_writes`: File-like writes performed inside a loop without buffering or batching.

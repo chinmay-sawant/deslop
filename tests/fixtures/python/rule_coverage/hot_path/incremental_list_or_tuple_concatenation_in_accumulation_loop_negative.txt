@@ -1,0 +1,6 @@
+def build_sequence(items):
+    result = []
+    for item in items:
+        # Correct: use .append() to mutate the list in place efficiently in O(1) amortized time
+        result.append(item * 2)
+    return result

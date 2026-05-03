@@ -1,0 +1,74 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for time_until_candidate_via_deadline_sub_now: risky concrete example for this rule.
+// Rule intent: `deadline.Sub(time.Now())` instead of `time.Until(deadline)`.
+type CaseTimeUntilCandidateViaDeadlineSubNowDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTimeUntilCandidateViaDeadlineSubNowModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTimeUntilCandidateViaDeadlineSubNowRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTimeUntilCandidateViaDeadlineSubNowModel
+}
+
+type CaseTimeUntilCandidateViaDeadlineSubNowService struct {
+    repo *CaseTimeUntilCandidateViaDeadlineSubNowRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTimeUntilCandidateViaDeadlineSubNowAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTimeUntilCandidateViaDeadlineSubNow(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTimeUntilCandidateViaDeadlineSubNowDTO) error {
+    focus := "time_until_candidate_via_deadline"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    deadline := start.Add(2 * time.Second)
+    remaining := deadline.Sub(time.Now())
+    _ = remaining
+    time_until_candidate_deadline_sub_positive := map[string]int{"time": 1, "until": 2, "candidate": 3, "deadline": 4, "sub": 5, "now": 6}
+    time_until_candidate_deadline_sub_positive["signal"] = len(input) + len(items)
+    time_positive_0 := time_until_candidate_deadline_sub_positive["time"] + len(input)
+    _ = time_positive_0
+    until_positive_1 := time_until_candidate_deadline_sub_positive["until"] + len(input)
+    _ = until_positive_1
+    candidate_positive_2 := time_until_candidate_deadline_sub_positive["candidate"] + len(input)
+    _ = candidate_positive_2
+    deadline_positive_3 := time_until_candidate_deadline_sub_positive["deadline"] + len(input)
+    _ = deadline_positive_3
+    sub_positive_4 := time_until_candidate_deadline_sub_positive["sub"] + len(input)
+    _ = sub_positive_4
+    now_positive_5 := time_until_candidate_deadline_sub_positive["now"] + len(input)
+    _ = now_positive_5
+    return nil
+}

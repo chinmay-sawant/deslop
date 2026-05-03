@@ -1,0 +1,5 @@
+import importlib.resources
+
+def load_default_config():
+    # Correct: use importlib.resources to safely read data files regardless of how the package was installed
+    return importlib.resources.read_text("my_package", "default_config.json")

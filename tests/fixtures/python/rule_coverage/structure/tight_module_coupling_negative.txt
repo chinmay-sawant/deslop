@@ -1,0 +1,17 @@
+# module: billing.py
+from typing import Protocol, List
+
+class User(Protocol):
+    name: str
+
+class UserRepository(Protocol):
+    def get_all_users(self) -> List[User]: ...
+
+class BillingProcessor:
+    # Correct: depend on abstract protocols (interfaces) instead of concrete implementations from other domains
+    def __init__(self, repository: UserRepository):
+        self.repository = repository
+        
+    def charge_all(self):
+        for user in self.repository.get_all_users():
+            print(f"Charging {user.name}")

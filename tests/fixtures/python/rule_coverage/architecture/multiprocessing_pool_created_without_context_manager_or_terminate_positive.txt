@@ -1,0 +1,7 @@
+from multiprocessing import Pool
+
+def process():
+    # Violation: pool created without context manager or explicit terminate
+    p = Pool(5)
+    results = p.map(work, data)
+    return results

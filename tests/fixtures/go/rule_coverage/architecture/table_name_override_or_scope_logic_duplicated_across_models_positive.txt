@@ -1,0 +1,55 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for table_name_override_or_scope_logic_duplicated_across_models: risky concrete example for this rule.
+// Rule intent: Repeated table-name or model-scope customization across many model files without a shared convention.
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsModel
+}
+
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsService struct {
+    repo *CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTableNameOverrideOrScopeLogicDuplicatedAcrossModels(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsDTO) error {
+    type ModelA struct{ ID string }
+    type ModelB struct{ ID string }
+    _ = (func(m ModelA) string { return "users" })(ModelA{})
+    _ = (func(m ModelB) string { return "users" })(ModelB{})
+    _ = db.Where("id = ?", input).Find(&items)
+    return nil
+}

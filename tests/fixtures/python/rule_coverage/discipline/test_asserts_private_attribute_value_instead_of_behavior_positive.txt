@@ -1,0 +1,4 @@
+def test_user_initialization():
+    user = User(id=1)
+    # Violation: test asserts private attribute value instead of observable behavior
+    assert user._status == "PENDING"

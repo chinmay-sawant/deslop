@@ -1,0 +1,24 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "github.com/prometheus/client_golang/prometheus"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for prometheus_counter_created_per_request: risky concrete example for this rule.
+// Rule intent: `prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions creates a new metric on every request
+func PositivePrometheusCounterCreatedPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusCounterCreatedPerRequestDTO) error {
+    counter := prometheus.NewCounter(prometheus.CounterOpts{
+        Name: "requests_total",
+        Help: "Total requests",
+    })
+    counter.Inc()
+    return nil
+}

@@ -1,0 +1,5 @@
+import numpy as np
+
+def stack_matrices(matrices):
+    # Correct: pass the entire collection to np.vstack at once
+    return np.vstack(matrices)

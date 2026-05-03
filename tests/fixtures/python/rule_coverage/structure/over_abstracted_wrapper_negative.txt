@@ -1,0 +1,3 @@
+# Correct: use built-in language primitives directly unless you are adding significant domain-specific logic
+def print_message(msg: str):
+    print(msg)

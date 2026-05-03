@@ -1,0 +1,6 @@
+class BaseProcessor:
+    def run(self): pass
+
+# Violation: mixing sync and async execution models under the same inheritance tree breaks Liskov Substitution
+class AsyncProcessor(BaseProcessor):
+    async def run(self): pass

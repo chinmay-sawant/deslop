@@ -1,0 +1,5 @@
+import heapq
+
+
+def top_n(scores: list[int], n: int) -> list[int]:
+    return heapq.nlargest(n, scores)

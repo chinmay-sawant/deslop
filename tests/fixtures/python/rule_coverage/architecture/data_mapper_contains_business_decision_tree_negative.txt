@@ -1,0 +1,4 @@
+class UserMapper:
+    def to_dto(self, user):
+        # Correct: mapper only copies data, logic resides in the domain model
+        return UserDTO(id=user.id, status=user.get_account_status())

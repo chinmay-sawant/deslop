@@ -1,0 +1,7 @@
+import requests
+
+@app.get("/proxy")
+def proxy():
+    # Correct: always specify a timeout for outbound calls to external services
+    resp = requests.get("https://upstream.api/data", timeout=5.0)
+    return resp.json()

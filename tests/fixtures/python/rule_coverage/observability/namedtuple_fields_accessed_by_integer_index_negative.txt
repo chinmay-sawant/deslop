@@ -1,0 +1,7 @@
+from collections import namedtuple
+
+User = namedtuple("User", ["id", "name", "email"])
+
+def print_user(u):
+    # Correct: always access namedtuple fields by their descriptive attribute name
+    print(f"{u.name} can be reached at {u.email}")

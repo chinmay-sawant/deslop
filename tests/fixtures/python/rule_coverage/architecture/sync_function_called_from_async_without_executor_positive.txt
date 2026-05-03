@@ -1,0 +1,7 @@
+import asyncio
+import time
+
+async def process_data():
+    # Violation: calling a synchronous blocking function from async without an executor
+    time.sleep(5)
+    return "Done"

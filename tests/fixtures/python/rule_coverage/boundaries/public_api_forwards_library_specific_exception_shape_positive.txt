@@ -1,0 +1,8 @@
+import sqlalchemy
+
+@app.errorhandler(500)
+def handle_internal_error(e):
+    # Violation: public API forwards raw library-specific exception details (SQL leak)
+    if isinstance(e, sqlalchemy.exc.SQLAlchemyError):
+        return {"error": str(e)}, 500
+    return {"error": "Internal Server Error"}, 500

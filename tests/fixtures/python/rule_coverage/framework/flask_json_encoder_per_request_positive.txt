@@ -1,0 +1,10 @@
+import json
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route("/data")
+def get_data():
+    # Violation: custom JSON encoder instantiated inside the request handler
+    encoder = MyCustomEncoder()
+    return Response(encoder.encode({"data": 1}), mimetype='application/json')

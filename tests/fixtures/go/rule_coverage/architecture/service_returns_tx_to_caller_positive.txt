@@ -1,0 +1,38 @@
+package service
+
+import (
+	"fmt"
+	"gorm.io/gorm"
+)
+
+// Positive scenario for service_returns_tx_to_caller: risky concrete example for this rule.
+// Rule intent: Services that hand transaction objects back to handlers or controllers.
+type CaseServiceReturnsTxToCallerModel struct {
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string `gorm:"column:status" json:"status"`
+}
+
+type CaseServiceReturnsTxToCallerRepository struct {
+	db *gorm.DB
+}
+
+type CaseServiceReturnsTxToCallerService struct {
+	db *gorm.DB
+}
+
+func (s *CaseServiceReturnsTxToCallerService) BeginTransaction() *gorm.DB {
+	tx := s.db.Begin()
+	return tx
+}
+
+func (s *CaseServiceReturnsTxToCallerService) CreateWithTx(tx *gorm.DB, id string) error {
+	model := CaseServiceReturnsTxToCallerModel{
+		ID:     id,
+		Status: "pending",
+	}
+	if err := tx.Create(&model).Error; err != nil {
+		return fmt.Errorf("create failed: %w", err)
+	}
+	return nil
+}

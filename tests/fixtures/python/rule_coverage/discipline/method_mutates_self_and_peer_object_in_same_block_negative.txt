@@ -1,0 +1,11 @@
+class Account:
+    def withdraw(self, amount):
+        self.balance -= amount
+
+    def deposit(self, amount):
+        # Correct: mutations are encapsulated within each object's own methods
+        self.balance += amount
+
+def transfer(source, target, amount):
+    source.withdraw(amount)
+    target.deposit(amount)

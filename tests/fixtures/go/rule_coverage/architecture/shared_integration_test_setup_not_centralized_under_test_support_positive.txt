@@ -1,0 +1,106 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "net/http/httptest"
+    "strings"
+    "testing"
+)
+
+// Positive scenario for shared_integration_test_setup_not_centralized_under_test_support: risky concrete example for this rule.
+// Rule intent: Repeated app, DB, or router bootstrapping that is not moved into shared test support.
+type CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel
+}
+
+type CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportService struct {
+    repo *CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+// TestCreateOrder duplicates full setup: opens DB, seeds data, builds router.
+func TestCreateOrder(t *testing.T) {
+    db, err := gorm.Open(sql.OpenDB(sqlDB), &gorm.Config{})
+    if err != nil {
+        t.Fatal(err)
+    }
+    db.AutoMigrate(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{})
+    db.Create(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{ID: "seed-1", TenantID: "t1", Status: "active"})
+    router := gin.Default()
+    router.POST("/orders", func(c *gin.Context) { c.JSON(200, gin.H{"ok": true}) })
+    recorder := httptest.NewRecorder()
+    req, _ := http.NewRequest("POST", "/orders", nil)
+    router.ServeHTTP(recorder, req)
+    if recorder.Code != 200 {
+        t.Fatalf("expected 200, got %d", recorder.Code)
+    }
+}
+
+// TestListOrders duplicates the same setup again.
+func TestListOrders(t *testing.T) {
+    db, err := gorm.Open(sql.OpenDB(sqlDB), &gorm.Config{})
+    if err != nil {
+        t.Fatal(err)
+    }
+    db.AutoMigrate(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{})
+    db.Create(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{ID: "seed-1", TenantID: "t1", Status: "active"})
+    router := gin.Default()
+    router.GET("/orders", func(c *gin.Context) { c.JSON(200, gin.H{"orders": []string{}}) })
+    recorder := httptest.NewRecorder()
+    req, _ := http.NewRequest("GET", "/orders", nil)
+    router.ServeHTTP(recorder, req)
+    if recorder.Code != 200 {
+        t.Fatalf("expected 200, got %d", recorder.Code)
+    }
+}
+
+// TestDeleteOrder duplicates the same setup a third time.
+func TestDeleteOrder(t *testing.T) {
+    db, err := gorm.Open(sql.OpenDB(sqlDB), &gorm.Config{})
+    if err != nil {
+        t.Fatal(err)
+    }
+    db.AutoMigrate(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{})
+    db.Create(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{ID: "seed-1", TenantID: "t1", Status: "active"})
+    router := gin.Default()
+    router.DELETE("/orders/:id", func(c *gin.Context) { c.JSON(200, gin.H{"deleted": true}) })
+    recorder := httptest.NewRecorder()
+    req, _ := http.NewRequest("DELETE", "/orders/seed-1", nil)
+    router.ServeHTTP(recorder, req)
+    if recorder.Code != 200 {
+        t.Fatalf("expected 200, got %d", recorder.Code)
+    }
+}
+
+func PositiveSharedIntegrationTestSetupNotCentralizedUnderTestSupport(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportDTO) error {
+    return nil
+}

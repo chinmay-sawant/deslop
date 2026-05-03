@@ -1,0 +1,13 @@
+package alpha
+
+import (
+    "github.com/acme/pkg"
+    "fmt"
+)
+
+// Positive scenario for misgrouped_imports: risky concrete example for this rule.
+// Rule intent: Import blocks that place stdlib imports after third-party imports.
+func PositiveMisgroupedImports() {
+    fmt.Println(pkg.Name)
+    fmt.Println("local import grouped before stdlib")
+}

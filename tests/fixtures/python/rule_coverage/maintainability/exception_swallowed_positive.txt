@@ -1,0 +1,6 @@
+def process_item(item):
+    try:
+        perform_complex_calculation(item)
+    # Violation: swallowing exceptions silently makes debugging extremely difficult
+    except Exception:
+        pass

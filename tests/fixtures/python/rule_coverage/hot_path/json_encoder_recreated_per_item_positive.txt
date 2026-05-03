@@ -1,0 +1,9 @@
+import json
+
+def process_records(records):
+    results = []
+    for record in records:
+        # Violation: JSONEncoder instantiated repeatedly inside a loop
+        encoder = json.JSONEncoder()
+        results.append(encoder.encode(record))
+    return results

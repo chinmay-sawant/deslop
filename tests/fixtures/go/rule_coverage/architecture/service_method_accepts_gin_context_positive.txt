@@ -1,0 +1,40 @@
+package service
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Positive scenario for service_method_accepts_gin_context:
+// service method takes *gin.Context instead of domain inputs plus context.Context.
+type InventoryService struct {
+	repo InventoryRepository
+}
+
+type InventoryRepository interface {
+	GetStock(ctx context.Context, sku string) (int, error)
+	UpdateStock(ctx context.Context, sku string, quantity int) error
+}
+
+func NewInventoryService(repo InventoryRepository) *InventoryService {
+	return &InventoryService{repo: repo}
+}
+
+func (s *InventoryService) CheckStock(c *gin.Context) error {
+	sku := c.Param("sku")
+	if sku == "" {
+		c.JSON(400, gin.H{"error": "sku parameter required"})
+		return fmt.Errorf("missing sku")
+	}
+
+	stock, err := s.repo.GetStock(c.Request.Context(), sku)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return err
+	}
+
+	c.JSON(200, gin.H{"sku": sku, "stock": stock})
+	return nil
+}

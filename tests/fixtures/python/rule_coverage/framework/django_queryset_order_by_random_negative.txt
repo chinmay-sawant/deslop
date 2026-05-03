@@ -1,0 +1,8 @@
+import random
+from .models import User
+
+def get_random_users():
+    # Correct: use a more efficient way to sample random records (e.g. random ID range)
+    count = User.objects.aggregate(count=Count('id'))['count']
+    random_index = random.randint(0, count - 5)
+    return User.objects.all()[random_index:random_index + 5]

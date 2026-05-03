@@ -1,0 +1,11 @@
+import threading
+
+lock = threading.Lock()
+
+async def critical_section():
+    # Violation: acquiring a blocking threading.Lock inside an async function
+    lock.acquire()
+    try:
+        await perform_work()
+    finally:
+        lock.release()

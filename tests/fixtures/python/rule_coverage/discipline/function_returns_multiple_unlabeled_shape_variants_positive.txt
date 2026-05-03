@@ -1,0 +1,8 @@
+def get_metadata(item_id):
+    # Violation: function returns multiple unlabeled shape variants
+    if not item_id:
+        return "Not found"
+    if item_id == "all":
+        return [{"id": 1}, {"id": 2}]
+    return {"id": item_id}
+# Caller has to check types: str, list, or dict

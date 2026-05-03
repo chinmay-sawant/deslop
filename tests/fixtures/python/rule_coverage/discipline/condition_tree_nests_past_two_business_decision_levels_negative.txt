@@ -1,0 +1,12 @@
+def calculate_tax(order):
+    # Correct: use early returns to flatten the logic
+    if not order.is_active:
+        return 0
+    
+    if not order.customer.is_premium:
+        return order.amount * 0.1
+        
+    if order.amount > 1000:
+        return order.amount * 0.05
+    
+    return order.amount * 0.08

@@ -1,0 +1,54 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "path/filepath"
+    "strings"
+)
+
+// Positive scenario for temp_file_predictable_name: risky concrete example for this rule.
+// Rule intent: `os.Create("/tmp/myapp-data.txt")` or `os.OpenFile("/tmp/" + fixedName, ...)` with predictable filenames
+type CaseTempFilePredictableNameDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTempFilePredictableNameModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTempFilePredictableNameRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTempFilePredictableNameModel
+}
+
+type CaseTempFilePredictableNameService struct {
+    repo *CaseTempFilePredictableNameRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTempFilePredictableNameAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTempFilePredictableName(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTempFilePredictableNameDTO) error {
+    f, _ := os.Create("/tmp/" + input + ".txt")
+    _ = f
+    return nil
+}

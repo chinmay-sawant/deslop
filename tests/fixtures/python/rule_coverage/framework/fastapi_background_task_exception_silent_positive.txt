@@ -1,0 +1,12 @@
+from fastapi import BackgroundTasks, FastAPI
+
+app = FastAPI()
+
+def sync_data():
+    # Violation: background task logic lacks error handling (fails silently)
+    perform_risky_sync()
+
+@app.post("/sync")
+def trigger_sync(background_tasks: BackgroundTasks):
+    background_tasks.add_task(sync_data)
+    return {"message": "Started"}

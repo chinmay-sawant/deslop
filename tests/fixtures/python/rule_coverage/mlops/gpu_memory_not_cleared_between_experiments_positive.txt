@@ -1,0 +1,7 @@
+import torch
+
+def run_experiments(configs):
+    for config in configs:
+        model = create_model(config).cuda()
+        train_model(model)
+        # Violation: failing to clear GPU memory between experiments causes OutOfMemory errors

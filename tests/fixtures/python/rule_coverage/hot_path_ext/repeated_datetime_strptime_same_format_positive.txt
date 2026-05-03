@@ -1,0 +1,9 @@
+from __future__ import annotations
+
+def repeated_datetime_strptime_same_format_positive():
+    from datetime import datetime
+    raw_dates = ["2026-01-01", "2026-01-02", "2026-01-03"]
+    parsed = []
+    for raw in raw_dates:
+        parsed.append(datetime.strptime(raw, "%Y-%m-%d"))
+    return parsed

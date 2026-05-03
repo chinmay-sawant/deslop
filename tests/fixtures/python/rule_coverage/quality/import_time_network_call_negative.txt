@@ -1,0 +1,10 @@
+import requests
+
+INSTANCE_IP = None
+
+def get_ip():
+    # Correct: make network requests on-demand after the application has fully initialized
+    global INSTANCE_IP
+    if INSTANCE_IP is None:
+        INSTANCE_IP = requests.get("http://169.254.169.254/latest/meta-data/local-ipv4", timeout=2).text
+    return INSTANCE_IP

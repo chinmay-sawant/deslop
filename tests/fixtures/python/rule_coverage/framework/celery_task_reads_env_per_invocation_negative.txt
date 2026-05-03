@@ -1,0 +1,9 @@
+import os
+from celery import shared_task
+
+# Correct: read environment variables once at module level or pass via configuration
+API_KEY = os.getenv("EXTERNAL_API_KEY")
+
+@shared_task
+def process_data():
+    return call_api(API_KEY)

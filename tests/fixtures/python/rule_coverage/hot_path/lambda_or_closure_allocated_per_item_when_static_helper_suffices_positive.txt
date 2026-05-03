@@ -1,0 +1,6 @@
+def apply_transform(items, transformer):
+    return [transformer(item) for item in items]
+
+def process_data(data):
+    # Violation: lambda allocated per item (or per loop iteration) when a static helper would suffice
+    return apply_transform(data, lambda x: x * 2)

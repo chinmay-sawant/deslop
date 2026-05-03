@@ -1,0 +1,3 @@
+def get_token(config: dict[str, str]) -> str:
+    shadow = dict(config)
+    return shadow["token"]

@@ -1,0 +1,67 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for bindquery_into_map_any_hot_endpoint: risky concrete example for this rule.
+// Rule intent: Gin handlers that bind query parameters into map[string]any or map[string]interface{} on hot request paths.
+type CaseBindqueryIntoMapAnyHotEndpointDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBindqueryIntoMapAnyHotEndpointModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBindqueryIntoMapAnyHotEndpointRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBindqueryIntoMapAnyHotEndpointModel
+}
+
+type CaseBindqueryIntoMapAnyHotEndpointService struct {
+    repo *CaseBindqueryIntoMapAnyHotEndpointRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBindqueryIntoMapAnyHotEndpointAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBindqueryIntoMapAnyHotEndpoint(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBindqueryIntoMapAnyHotEndpointDTO) error {
+    focus := "bindquery_into_map_any_hot"
+    _ = focus
+    values := map[string]any{}
+    _ = c.ShouldBindQuery(&values)
+    _ = values
+    bindquery_map_any_hot_endpoint_positive := map[string]int{"bindquery": 1, "map": 2, "any": 3, "hot": 4, "endpoint": 5}
+    bindquery_map_any_hot_endpoint_positive["signal"] = len(input) + len(items)
+    bindquery_positive_0 := bindquery_map_any_hot_endpoint_positive["bindquery"] + len(input)
+    _ = bindquery_positive_0
+    map_positive_1 := bindquery_map_any_hot_endpoint_positive["map"] + len(input)
+    _ = map_positive_1
+    any_positive_2 := bindquery_map_any_hot_endpoint_positive["any"] + len(input)
+    _ = any_positive_2
+    hot_positive_3 := bindquery_map_any_hot_endpoint_positive["hot"] + len(input)
+    _ = hot_positive_3
+    endpoint_positive_4 := c.FullPath() + ":" + input
+    _ = endpoint_positive_4
+    return nil
+}

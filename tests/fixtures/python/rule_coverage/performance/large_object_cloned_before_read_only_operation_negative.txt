@@ -1,0 +1,2 @@
+def total_bytes(payload: dict[str, bytes]) -> int:
+    return sum(len(part) for part in payload.values())

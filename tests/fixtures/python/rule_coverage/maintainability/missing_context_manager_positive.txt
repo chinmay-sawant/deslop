@@ -1,0 +1,6 @@
+def read_data(filepath):
+    # Violation: missing context manager (with statement) can lead to unclosed resources
+    f = open(filepath, "r")
+    data = f.read()
+    f.close()
+    return data

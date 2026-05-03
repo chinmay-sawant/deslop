@@ -1,0 +1,4 @@
+class UserRepository:
+    def get_active_users(self):
+        # Correct: repository returns executed results/domain objects
+        return self.session.query(User).filter(User.is_active == True).all()

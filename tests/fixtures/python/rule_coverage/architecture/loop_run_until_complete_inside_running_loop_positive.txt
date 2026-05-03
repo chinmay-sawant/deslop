@@ -1,0 +1,9 @@
+import asyncio
+
+async def outer():
+    loop = asyncio.get_event_loop()
+    # Violation: run_until_complete inside an already running loop
+    loop.run_until_complete(inner())
+
+async def inner():
+    await asyncio.sleep(1)

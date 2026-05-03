@@ -1,0 +1,10 @@
+import importlib
+
+ALLOWED_PLUGINS = {"formatter_v1", "formatter_v2", "default_exporter"}
+
+def load_user_plugin(config):
+    # Correct: always validate dynamic imports against a strict, hardcoded allowlist
+    plugin_name = config.get("custom_plugin_name")
+    if plugin_name not in ALLOWED_PLUGINS:
+        raise ValueError(f"Plugin {plugin_name} is not allowed.")
+    return importlib.import_module(plugin_name)

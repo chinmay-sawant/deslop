@@ -1,0 +1,9 @@
+import asyncpg
+
+async def init_db():
+    # Correct: conservative pool size
+    return await asyncpg.create_pool(
+        dsn="postgres://user:pass@localhost/db",
+        min_size=5,
+        max_size=20
+    )

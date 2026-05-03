@@ -1,0 +1,11 @@
+# module_a.py
+def process_batch(batch):
+    # Violation: magic numbers/thresholds duplicated across modules
+    if len(batch) > 50:
+        flush(batch)
+
+# module_b.py
+def enqueue(item, queue):
+    queue.append(item)
+    if len(queue) > 50:
+        flush(queue)

@@ -1,0 +1,7 @@
+import torch
+
+def predict(input_data):
+    # Violation: loading model weights from disk on every single inference request
+    model = torch.load("model_weights.pth")
+    model.eval()
+    return model(input_data)

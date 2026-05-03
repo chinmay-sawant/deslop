@@ -1,0 +1,6 @@
+import pandas as pd
+
+def update_active_users(df):
+    # Correct: use .loc for safe, explicit assignment that avoids the SettingWithCopy warning
+    df.loc[df['status'] == 'active', 'is_verified'] = True
+    return df

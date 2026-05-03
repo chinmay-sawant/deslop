@@ -1,0 +1,7 @@
+from __future__ import annotations
+
+def string_concat_in_loop_positive(parts):
+    text = ""
+    for part in parts:
+        text += part
+    return text

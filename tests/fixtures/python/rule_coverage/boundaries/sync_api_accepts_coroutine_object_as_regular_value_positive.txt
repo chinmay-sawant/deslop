@@ -1,0 +1,9 @@
+def process_task(task_coro):
+    # Violation: synchronous API accepts a coroutine object as a regular value without awaiting or managing it
+    print(f"Registering task: {task_coro}")
+    save_to_registry(task_coro)
+
+async def my_task():
+    return "done"
+
+process_task(my_task())

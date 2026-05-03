@@ -1,0 +1,11 @@
+def helper_start_transaction():
+    # Violation: transaction lifecycle managed across unrelated helpers
+    db.session.begin()
+
+def helper_commit_transaction():
+    db.session.commit()
+
+def process():
+    helper_start_transaction()
+    # ... logic
+    helper_commit_transaction()

@@ -1,0 +1,7 @@
+from typing import Union, List
+
+# Violation: type alias shadows a builtin name ('List')
+List = Union[int, str]
+
+def process(items: List):
+    pass

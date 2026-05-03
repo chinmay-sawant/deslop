@@ -1,0 +1,5 @@
+import itertools
+
+def flatten_list_of_lists(nested_lists):
+    # Correct: use standard library utilities (like itertools.chain) for common operations
+    return list(itertools.chain.from_iterable(nested_lists))

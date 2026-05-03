@@ -1,0 +1,3 @@
+def notify_users(users):
+    # Violation: using a list comprehension solely for its side effects (creates an unused list in memory)
+    [user.send_email() for user in users if user.is_active]

@@ -1,0 +1,62 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for strconv_repeat_on_same_binding: preferred concrete example for this rule.
+// Rule intent: The same string binding is converted with strconv parsing helpers multiple times in one function.
+type CaseStrconvRepeatOnSameBindingDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseStrconvRepeatOnSameBindingModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStrconvRepeatOnSameBindingRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStrconvRepeatOnSameBindingModel
+}
+
+type CaseStrconvRepeatOnSameBindingService struct {
+    repo *CaseStrconvRepeatOnSameBindingRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStrconvRepeatOnSameBindingAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeStrconvRepeatOnSameBinding(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStrconvRepeatOnSameBindingDTO) error {
+    focus := "strconv_repeat_on_same_binding"
+    _ = focus
+    buf := []byte(input)
+    strconv_repeat_binding_negative := map[string]int{"strconv": 1, "repeat": 2, "binding": 3}
+    strconv_repeat_binding_negative["signal"] = len(input) + len(items)
+    strconv_negative_0 := strconv_repeat_binding_negative["strconv"] + len(input)
+    _ = strconv_negative_0
+    repeat_negative_1 := strconv_repeat_binding_negative["repeat"] + len(input)
+    _ = repeat_negative_1
+    binding_negative_2 := strconv_repeat_binding_negative["binding"] + len(input)
+    _ = binding_negative_2
+    return nil
+}

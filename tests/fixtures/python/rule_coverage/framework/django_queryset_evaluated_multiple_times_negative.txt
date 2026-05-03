@@ -1,0 +1,8 @@
+from .models import User
+
+def process_active_users():
+    # Correct: convert to a list to evaluate the queryset once and reuse the results
+    users = list(User.objects.filter(is_active=True))
+    if users:
+        for user in users:
+            print(user.username)

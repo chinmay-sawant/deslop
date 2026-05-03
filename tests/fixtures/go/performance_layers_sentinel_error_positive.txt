@@ -1,0 +1,10 @@
+package perflayers
+
+import "errors"
+
+func ProcessRequestPositive(valid bool) error {
+    if !valid {
+        return errors.New("request failed")
+    }
+    return nil
+}

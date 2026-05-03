@@ -1,0 +1,17 @@
+from functools import wraps
+
+def transactional(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except Exception as e:
+            # Correct: error handling is centralized in a decorator
+            logger.error(f"Operation failed: {e}")
+            db.rollback()
+            raise
+    return wrapper
+
+@transactional
+def create_user():
+    db.add_user()

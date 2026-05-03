@@ -1,0 +1,8 @@
+import logging
+
+def process_payment(user_id, amount):
+    try:
+        charge_card(user_id, amount)
+    except Exception as e:
+        # Correct: include critical business identifiers and inputs in the log message
+        logging.error(f"Payment failed for user_id={user_id}, amount={amount}. Error: {e}", exc_info=True)

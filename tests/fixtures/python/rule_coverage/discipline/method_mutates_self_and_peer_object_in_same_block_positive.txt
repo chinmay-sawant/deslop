@@ -1,0 +1,5 @@
+class Account:
+    def transfer(self, other, amount):
+        # Violation: method mutates self and peer object in the same block
+        self.balance -= amount
+        other.balance += amount

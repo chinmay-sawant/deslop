@@ -1,0 +1,11 @@
+# Correct: bootstrap logic is inside a function
+import threading
+
+def start_background_sync():
+    def background_sync():
+        while True:
+            print("Syncing...")
+            time.sleep(60)
+
+    t = threading.Thread(target=background_sync, daemon=True)
+    t.start()

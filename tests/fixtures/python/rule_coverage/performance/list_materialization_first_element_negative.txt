@@ -1,0 +1,2 @@
+def first_even(values: list[int]) -> int:
+    return next(v for v in values if v % 2 == 0)

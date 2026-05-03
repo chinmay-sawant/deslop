@@ -1,0 +1,65 @@
+package main
+
+import (
+	"log"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// Positive scenario for cmd_or_main_contains_domain_rules.
+// Rule intent: main or cmd packages that contain business-rule branches instead of wiring and startup concerns.
+// Anti-pattern: Business logic (discount rules, approval thresholds) embedded in main.go.
+
+type Order struct {
+	ID       uint    `gorm:"primaryKey"`
+	Total    float64 `gorm:"column:total"`
+	Status   string  `gorm:"column:status"`
+	Customer string  `gorm:"column:customer"`
+}
+
+func ApplyDiscount(order *Order) {
+	if order.Total > 1000 {
+		order.Total *= 0.9
+		log.Printf("applied 10%% bulk discount, new total: %.2f", order.Total)
+	}
+	if order.Total > 5000 {
+		order.Total *= 0.95
+		log.Printf("applied additional 5%% VIP discount, new total: %.2f", order.Total)
+	}
+}
+
+func DetermineApprovalLevel(order *Order) string {
+	if order.Total < 100 {
+		return "auto-approved"
+	}
+	if order.Total < 1000 {
+		return "manager-approval"
+	}
+	if order.Total < 10000 {
+		return "director-approval"
+	}
+	return "executive-approval"
+}
+
+func main() {
+	r := gin.Default()
+
+	r.POST("/orders", func(c *gin.Context, db *gorm.DB) {
+		var order Order
+		if err := c.ShouldBindJSON(&order); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Domain rules in main package instead of a service layer
+		ApplyDiscount(&order)
+		order.Status = DetermineApprovalLevel(&order)
+
+		db.Create(&order)
+		c.JSON(http.StatusCreated, order)
+	})
+
+	r.Run(":8080")
+}

@@ -1,0 +1,12 @@
+from tenacity import retry, stop_after_attempt
+
+# Correct: centralized retry policy using a decorator
+@retry(stop=stop_after_attempt(3))
+def external_call_wrapper():
+    return external_call()
+
+def caller_one():
+    return external_call_wrapper()
+
+def caller_two():
+    return external_call_wrapper()

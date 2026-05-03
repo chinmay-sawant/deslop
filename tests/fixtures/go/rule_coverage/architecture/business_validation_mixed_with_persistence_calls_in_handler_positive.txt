@@ -1,0 +1,49 @@
+package handler
+
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
+)
+
+// Positive scenario for business_validation_mixed_with_persistence_calls_in_handler.
+// Rule intent: Handlers that start querying or writing before finishing request validation.
+type OrderModel struct {
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Amount   int    `gorm:"column:amount" json:"amount"`
+	Status   string `gorm:"column:status" json:"status"`
+}
+
+func PositiveBusinessValidationMixedWithPersistenceCallsInHandler(c *gin.Context, db *gorm.DB) {
+	var req struct {
+		TenantID string `json:"tenant_id"`
+		Amount   int    `json:"amount"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	var existingTenant OrderModel
+	db.Where("id = ?", req.TenantID).First(&existingTenant)
+
+	if req.Amount < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "amount must be positive"})
+		return
+	}
+
+	if req.TenantID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "tenant required"})
+		return
+	}
+
+	order := OrderModel{
+		TenantID: req.TenantID,
+		Amount:   req.Amount,
+		Status:   "pending",
+	}
+	db.Create(&order)
+
+	c.JSON(http.StatusCreated, gin.H{"id": order.ID})
+}

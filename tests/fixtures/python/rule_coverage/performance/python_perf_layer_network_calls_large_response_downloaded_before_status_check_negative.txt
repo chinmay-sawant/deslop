@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+from urllib.request import urlopen
+
+
+def python_perf_layer_network_calls_large_response_downloaded_before_status_check_negative(url):
+    with urlopen(url) as response:
+        if response.status != 200:
+            return b""
+        return response.read()

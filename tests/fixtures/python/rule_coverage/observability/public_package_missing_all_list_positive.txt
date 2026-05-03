@@ -1,0 +1,6 @@
+# __init__.py of public package
+# Violation: failing to define __all__ makes the public API ambiguous and polutes wildcard imports
+from .core import MainClass
+from .utils import helper_func
+import os
+import sys

@@ -1,0 +1,8 @@
+import torch
+
+def train_step(model, inputs, targets, optimizer, criterion):
+    # Violation: failing to zero out gradients means they accumulate infinitely across batches
+    outputs = model(inputs)
+    loss = criterion(outputs, targets)
+    loss.backward()
+    optimizer.step()

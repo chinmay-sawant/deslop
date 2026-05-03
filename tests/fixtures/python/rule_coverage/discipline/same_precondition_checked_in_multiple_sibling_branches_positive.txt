@@ -1,0 +1,6 @@
+def process_node(node):
+    # Violation: same precondition checked in multiple sibling branches
+    if node.is_active and node.type == "user":
+        return process_user(node)
+    elif node.is_active and node.type == "admin":
+        return process_admin(node)

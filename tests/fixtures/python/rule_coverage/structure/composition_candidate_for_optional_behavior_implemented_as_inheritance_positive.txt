@@ -1,0 +1,12 @@
+class Notifier:
+    def notify(self, msg): pass
+
+# Violation: using subclassing to toggle optional behaviors creates a combinatorial explosion of classes
+class EmailNotifier(Notifier):
+    pass
+
+class EncryptedEmailNotifier(EmailNotifier):
+    pass
+
+class CompressedEncryptedEmailNotifier(EncryptedEmailNotifier):
+    pass

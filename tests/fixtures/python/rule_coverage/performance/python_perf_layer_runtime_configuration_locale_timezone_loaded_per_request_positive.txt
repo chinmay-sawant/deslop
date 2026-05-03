@@ -1,0 +1,13 @@
+from __future__ import annotations
+
+import locale
+from zoneinfo import ZoneInfo
+
+
+def python_perf_layer_runtime_configuration_locale_timezone_loaded_per_request_positive(timestamps):
+    rendered = []
+    for ts in timestamps:
+        _ = locale.getlocale()
+        zone = ZoneInfo("UTC")
+        rendered.append(ts.astimezone(zone).isoformat())
+    return rendered

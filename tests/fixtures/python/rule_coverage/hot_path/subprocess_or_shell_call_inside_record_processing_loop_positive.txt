@@ -1,0 +1,6 @@
+import subprocess
+
+def process_images(image_files):
+    for img in image_files:
+        # Violation: executing a subprocess call inside a processing loop (massive OS overhead per item)
+        subprocess.run(["convert", img, "-resize", "800x600", f"resized_{img}"])

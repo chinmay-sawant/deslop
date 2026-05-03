@@ -1,0 +1,5 @@
+def get_user_id(user_obj):
+    # Get the user id from the user object
+    user_id = user_obj.id 
+    # Return the user id
+    return user_id

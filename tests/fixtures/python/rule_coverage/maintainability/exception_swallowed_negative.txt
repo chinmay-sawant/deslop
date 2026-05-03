@@ -1,0 +1,9 @@
+import logging
+
+def process_item(item):
+    try:
+        perform_complex_calculation(item)
+    # Correct: log the exception with traceback and/or raise it
+    except Exception as e:
+        logging.error("Failed to process item", exc_info=True)
+        raise

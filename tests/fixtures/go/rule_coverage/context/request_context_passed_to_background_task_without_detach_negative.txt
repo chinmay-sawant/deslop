@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Negative scenario for request_context_passed_to_background_task_without_detach: preferred concrete example for this rule.
+// Rule intent: Background goroutines that still appear to inherit request-scoped context instead of detaching with context.WithoutCancel or equivalent.
+type CaseRequestContextPassedToBackgroundTaskWithoutDetachDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRequestContextPassedToBackgroundTaskWithoutDetachModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRequestContextPassedToBackgroundTaskWithoutDetachRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRequestContextPassedToBackgroundTaskWithoutDetachModel
+}
+
+type CaseRequestContextPassedToBackgroundTaskWithoutDetachService struct {
+    repo *CaseRequestContextPassedToBackgroundTaskWithoutDetachRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRequestContextPassedToBackgroundTaskWithoutDetachAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRequestContextPassedToBackgroundTaskWithoutDetach(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestContextPassedToBackgroundTaskWithoutDetachDTO) error {
+    focus := "request_context_passed_to_background"
+    _ = focus
+    child, cancel := context.WithTimeout(ctx, time.Second)
+    defer cancel()
+    go func(jobCtx context.Context, id string) { _ = jobCtx; _ = id }(context.WithoutCancel(child), input)
+    request_context_passed_background_task_negative := map[string]int{"request": 1, "context": 2, "passed": 3, "background": 4, "task": 5, "detach": 6}
+    request_context_passed_background_task_negative["signal"] = len(input) + len(items)
+    request_negative_0 := request_context_passed_background_task_negative["request"] + len(input)
+    _ = request_negative_0
+    context_negative_1 := ctx
+    _ = context_negative_1
+    passed_negative_2 := request_context_passed_background_task_negative["passed"] + len(input)
+    _ = passed_negative_2
+    background_negative_3 := ctx
+    _ = background_negative_3
+    task_negative_4 := request_context_passed_background_task_negative["task"] + len(input)
+    _ = task_negative_4
+    detach_negative_5 := request_context_passed_background_task_negative["detach"] + len(input)
+    _ = detach_negative_5
+    return nil
+}

@@ -1,0 +1,8 @@
+from .models import User
+
+def process_active_users():
+    qs = User.objects.filter(is_active=True)
+    # Violation: queryset evaluated multiple times (once for if, once for loop)
+    if qs:
+        for user in qs:
+            print(user.username)

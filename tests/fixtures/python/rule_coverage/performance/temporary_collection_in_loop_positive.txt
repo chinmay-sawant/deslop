@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+def temporary_collection_in_loop_positive(values):
+    total = 0
+    for value in values:
+        bucket = [value, value * 2, value * 3]
+        total += max(bucket)
+    return total

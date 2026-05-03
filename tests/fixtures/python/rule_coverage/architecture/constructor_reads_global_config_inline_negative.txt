@@ -1,0 +1,5 @@
+class PaymentService:
+    def __init__(self, api_key, timeout):
+        # Correct: configuration is injected via constructor
+        self.api_key = api_key
+        self.timeout = timeout

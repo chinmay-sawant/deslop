@@ -1,0 +1,6 @@
+import json
+
+def save_config(data):
+    # Violation: writing directly to the target file is non-atomic; a crash mid-write results in a corrupted file
+    with open("config.json", "w") as f:
+        json.dump(data, f)

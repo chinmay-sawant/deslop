@@ -1,0 +1,6 @@
+def analyze_data(data):
+    # Correct: cache the result of the pure helper function in a local variable
+    metric = compute_expensive_metric(data)
+    if metric > 10:
+        print(f"High metric: {metric}")
+        return metric

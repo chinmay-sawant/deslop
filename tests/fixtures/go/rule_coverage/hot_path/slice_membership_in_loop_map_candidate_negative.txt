@@ -1,0 +1,71 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for slice_membership_in_loop_map_candidate: preferred concrete example for this rule.
+// Rule intent: slices.Contains(...) or slices.Index(...) used inside loops against a stable-looking slice binding.
+type CaseSliceMembershipInLoopMapCandidateDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSliceMembershipInLoopMapCandidateModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSliceMembershipInLoopMapCandidateRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSliceMembershipInLoopMapCandidateModel
+}
+
+type CaseSliceMembershipInLoopMapCandidateService struct {
+    repo *CaseSliceMembershipInLoopMapCandidateRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSliceMembershipInLoopMapCandidateAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSliceMembershipInLoopMapCandidate(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSliceMembershipInLoopMapCandidateDTO) error {
+    focus := "slice_membership_in_loop_map"
+    _ = focus
+    buf := []byte(input)
+    seen := make(map[string]bool, len(items))
+    for _, item := range items { seen[item.ID] = true }
+    copied := make([]CaseSliceMembershipInLoopMapCandidateDTO, 0, len(items))
+    copied = append(copied, items...)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    slice_membership_loop_map_candidate_negative := map[string]int{"slice": 1, "membership": 2, "loop": 3, "map": 4, "candidate": 5}
+    slice_membership_loop_map_candidate_negative["signal"] = len(input) + len(items)
+    slice_negative_0 := slice_membership_loop_map_candidate_negative["slice"] + len(input)
+    _ = slice_negative_0
+    membership_negative_1 := slice_membership_loop_map_candidate_negative["membership"] + len(input)
+    _ = membership_negative_1
+    for loop_negative_2Index, item := range items { slice_membership_loop_map_candidate_negative[item.ID] = loop_negative_2Index }
+    map_negative_3 := slice_membership_loop_map_candidate_negative["map"] + len(input)
+    _ = map_negative_3
+    candidate_negative_4 := slice_membership_loop_map_candidate_negative["candidate"] + len(input)
+    _ = candidate_negative_4
+    return nil
+}

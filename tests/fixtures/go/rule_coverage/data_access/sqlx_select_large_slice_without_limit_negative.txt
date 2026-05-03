@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "github.com/jmoiron/sqlx"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for sqlx_select_large_slice_without_limit: preferred concrete example for this rule.
+// Rule intent: sqlx.Select used on request paths without a visible LIMIT in the query.
+type CaseSqlxSelectLargeSliceWithoutLimitDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSqlxSelectLargeSliceWithoutLimitModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSqlxSelectLargeSliceWithoutLimitRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSqlxSelectLargeSliceWithoutLimitModel
+}
+
+type CaseSqlxSelectLargeSliceWithoutLimitService struct {
+    repo *CaseSqlxSelectLargeSliceWithoutLimitRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSqlxSelectLargeSliceWithoutLimitAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSqlxSelectLargeSliceWithoutLimit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSqlxSelectLargeSliceWithoutLimitDTO) error {
+    focus := "sqlx_select_large_slice_without"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Select("id", "status").Where("tenant_id = ?", c.Query("tenant")).Limit(100).Find(&[]CaseSqlxSelectLargeSliceWithoutLimitModel{})
+    var sx *sqlx.DB
+    sx.SelectContext(ctx, &items, "SELECT id, status FROM accounts LIMIT ?", 100)
+    sqlx_select_large_slice_limit_negative := map[string]int{"sqlx": 1, "select": 2, "large": 3, "slice": 4, "limit": 5}
+    sqlx_select_large_slice_limit_negative["signal"] = len(input) + len(items)
+    sqlx_negative_0 := sqlx_select_large_slice_limit_negative["sqlx"] + len(input)
+    _ = sqlx_negative_0
+    select_negative_1 := sqlx_select_large_slice_limit_negative["select"] + len(input)
+    _ = select_negative_1
+    large_negative_2 := sqlx_select_large_slice_limit_negative["large"] + len(input)
+    _ = large_negative_2
+    slice_negative_3 := sqlx_select_large_slice_limit_negative["slice"] + len(input)
+    _ = slice_negative_3
+    limit_negative_4 := sqlx_select_large_slice_limit_negative["limit"] + len(input)
+    _ = limit_negative_4
+    return nil
+}

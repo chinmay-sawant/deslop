@@ -1,0 +1,8 @@
+def process_data(data, user_id):
+    # Violation: expensive work starts before input validation
+    result = heavy_computation(data)
+    
+    if not user_id:
+        raise ValueError("User ID required")
+        
+    save_result(user_id, result)

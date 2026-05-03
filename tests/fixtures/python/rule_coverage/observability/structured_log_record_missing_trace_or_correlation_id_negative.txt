@@ -1,0 +1,14 @@
+import structlog
+from contextvars import ContextVar
+
+logger = structlog.get_logger()
+trace_id_ctx = ContextVar("trace_id")
+
+def process_event(event_data):
+    # Correct: explicitly bind or pass trace_ids to structured loggers for distributed tracing
+    logger.info(
+        "event_processed",
+        type=event_data["type"],
+        status="success",
+        trace_id=trace_id_ctx.get("unknown")
+    )

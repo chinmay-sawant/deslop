@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for panic_for_expected_errors: risky concrete example for this rule.
+// Rule intent: `panic()` used for expected error conditions like invalid input or missing config
+type CasePanicForExpectedErrorsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePanicForExpectedErrorsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePanicForExpectedErrorsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePanicForExpectedErrorsModel
+}
+
+type CasePanicForExpectedErrorsService struct {
+    repo *CasePanicForExpectedErrorsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePanicForExpectedErrorsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePanicForExpectedErrors(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePanicForExpectedErrorsDTO) error {
+    focus := "panic_for_expected_errors"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    panic_expected_errors_positive := map[string]int{"panic": 1, "expected": 2, "errors": 3}
+    panic_expected_errors_positive["signal"] = len(input) + len(items)
+    if strings.TrimSpace(input) == "" {
+        panic(fmt.Sprintf("missing request input for %s", focus))
+    }
+    panic_positive_0 := panic_expected_errors_positive["panic"] + len(input)
+    _ = panic_positive_0
+    expected_positive_1 := panic_expected_errors_positive["expected"] + len(input)
+    _ = expected_positive_1
+    errors_positive_2 := panic_expected_errors_positive["errors"] + len(input)
+    _ = errors_positive_2
+    return nil
+}

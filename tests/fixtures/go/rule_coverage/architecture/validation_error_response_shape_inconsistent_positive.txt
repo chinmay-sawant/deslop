@@ -1,0 +1,59 @@
+package handler
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Positive scenario for validation_error_response_shape_inconsistent.
+// Rule intent: Handlers in the same API module that emit different validation error contracts.
+
+// CreateUserHandler returns errors with shape {"error": "message"}
+func CreateUserHandler(c *gin.Context) {
+	name := c.PostForm("name")
+	if name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "name is required"})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"message": "user created"})
+}
+
+// UpdateUserHandler returns errors with shape {"errors": ["message1", "message2"]}
+func UpdateUserHandler(c *gin.Context) {
+	name := c.PostForm("name")
+	email := c.PostForm("email")
+
+	var errs []string
+	if name == "" {
+		errs = append(errs, "name is required")
+	}
+	if email == "" {
+		errs = append(errs, "email is required")
+	}
+	if len(errs) > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": errs})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "user updated"})
+}
+
+// DeleteUserHandler returns errors with shape {"message": "...", "code": 400}
+func DeleteUserHandler(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "id is required", "code": 400})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "user deleted"})
+}
+
+// ListUsersHandler returns errors with shape {"detail": "..."}
+func ListUsersHandler(c *gin.Context) {
+	page := c.Query("page")
+	if page == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"detail": "page query parameter is required"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"users": []string{}})
+}

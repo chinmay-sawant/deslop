@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "google.golang.org/grpc"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for grpc_context_not_propagated: risky concrete example for this rule.
+// Rule intent: gRPC handler methods that create new `context.Background()` instead of using the stream/request context
+type CaseGrpcContextNotPropagatedDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGrpcContextNotPropagatedModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGrpcContextNotPropagatedRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGrpcContextNotPropagatedModel
+}
+
+type CaseGrpcContextNotPropagatedService struct {
+    repo *CaseGrpcContextNotPropagatedRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGrpcContextNotPropagatedAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGrpcContextNotPropagated(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGrpcContextNotPropagatedDTO) error {
+    focus := "grpc_context_not_propagated"
+    _ = focus
+    conn, _ := grpc.Dial(input, grpc.WithInsecure())
+    _ = conn
+    inner := context.Background()
+    _, _ = inner.Value("key"), ctx
+    grpc_context_not_propagated_positive := map[string]int{"grpc": 1, "context": 2, "not": 3, "propagated": 4}
+    grpc_context_not_propagated_positive["signal"] = len(input) + len(items)
+    grpc_positive_0 := grpc_context_not_propagated_positive["grpc"] + len(input)
+    _ = grpc_positive_0
+    context_positive_1 := ctx
+    _ = context_positive_1
+    not_positive_2 := grpc_context_not_propagated_positive["not"] + len(input)
+    _ = not_positive_2
+    propagated_positive_3 := grpc_context_not_propagated_positive["propagated"] + len(input)
+    _ = propagated_positive_3
+    return nil
+}

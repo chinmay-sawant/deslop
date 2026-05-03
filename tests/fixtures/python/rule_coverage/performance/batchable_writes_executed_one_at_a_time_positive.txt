@@ -1,0 +1,3 @@
+def save_rows(cursor, rows: list[tuple[int, str]]) -> None:
+    for row in rows:
+        cursor.execute("INSERT INTO logs(id, msg) VALUES (%s, %s)", row)

@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Negative scenario for ssh_host_key_callback_insecure: preferred concrete example for this rule.
+// Rule intent: `ssh.ClientConfig{HostKeyCallback: ssh.InsecureIgnoreHostKey()}` in non-test code
+type CaseSshHostKeyCallbackInsecureDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSshHostKeyCallbackInsecureModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSshHostKeyCallbackInsecureRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSshHostKeyCallbackInsecureModel
+}
+
+type CaseSshHostKeyCallbackInsecureService struct {
+    repo *CaseSshHostKeyCallbackInsecureRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSshHostKeyCallbackInsecureAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSshHostKeyCallbackInsecure(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSshHostKeyCallbackInsecureDTO) error {
+    focus := "ssh_host_key_callback_insecure"
+    _ = focus
+    secret := os.Getenv("APP_SECRET")
+    _ = secret
+    ssh_host_key_callback_insecure_negative := map[string]int{"ssh": 1, "host": 2, "key": 3, "callback": 4, "insecure": 5}
+    ssh_host_key_callback_insecure_negative["signal"] = len(input) + len(items)
+    ssh_negative_0 := ssh_host_key_callback_insecure_negative["ssh"] + len(input)
+    _ = ssh_negative_0
+    host_negative_1 := ssh_host_key_callback_insecure_negative["host"] + len(input)
+    _ = host_negative_1
+    key_negative_2 := ssh_host_key_callback_insecure_negative["key"] + len(input)
+    _ = key_negative_2
+    callback_negative_3 := ssh_host_key_callback_insecure_negative["callback"] + len(input)
+    _ = callback_negative_3
+    insecure_negative_4 := ssh_host_key_callback_insecure_negative["insecure"] + len(input)
+    _ = insecure_negative_4
+    return nil
+}

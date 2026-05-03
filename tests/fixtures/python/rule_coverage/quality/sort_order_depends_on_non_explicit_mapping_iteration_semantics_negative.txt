@@ -1,0 +1,3 @@
+def render_configuration(config_dict):
+    # Correct: explicitly sort dictionary keys when producing serialized output or user-facing lists
+    return "\n".join([f"{k}={config_dict[k]}" for k in sorted(config_dict.keys())])

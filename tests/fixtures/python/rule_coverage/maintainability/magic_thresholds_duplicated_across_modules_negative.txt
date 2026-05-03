@@ -1,0 +1,10 @@
+# constants.py
+BATCH_FLUSH_THRESHOLD = 50
+
+# module_a.py
+from constants import BATCH_FLUSH_THRESHOLD
+
+def process_batch(batch):
+    # Correct: use a centralized constant for shared thresholds
+    if len(batch) > BATCH_FLUSH_THRESHOLD:
+        flush(batch)

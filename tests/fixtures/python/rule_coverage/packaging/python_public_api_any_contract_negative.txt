@@ -1,0 +1,5 @@
+from typing import Dict, List
+
+# Correct: use precise, strict type hints for all public-facing interfaces
+def process_payload(payload: Dict[str, List[int]]) -> List[int]:
+    return payload.get("data", [])

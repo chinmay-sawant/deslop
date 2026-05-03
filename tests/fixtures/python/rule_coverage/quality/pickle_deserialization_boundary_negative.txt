@@ -1,0 +1,6 @@
+import json
+
+def handle_inbound_message(raw_bytes):
+    # Correct: strictly use safe serialization formats like JSON across all network/untrusted boundaries
+    payload = json.loads(raw_bytes)
+    process(payload)

@@ -1,0 +1,52 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for automigrate_or_schema_probe_in_request_path: risky concrete example for this rule.
+// Rule intent: AutoMigrate or schema probes running on request paths instead of startup.
+type CaseAutomigrateOrSchemaProbeInRequestPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseAutomigrateOrSchemaProbeInRequestPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseAutomigrateOrSchemaProbeInRequestPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseAutomigrateOrSchemaProbeInRequestPathModel
+}
+
+type CaseAutomigrateOrSchemaProbeInRequestPathService struct {
+    repo *CaseAutomigrateOrSchemaProbeInRequestPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseAutomigrateOrSchemaProbeInRequestPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveAutomigrateOrSchemaProbeInRequestPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAutomigrateOrSchemaProbeInRequestPathDTO) error {
+    db.AutoMigrate(&CaseAutomigrateOrSchemaProbeInRequestPathModel{})
+    _ = db.Where("id = ?", input).Find(&items)
+    return nil
+}

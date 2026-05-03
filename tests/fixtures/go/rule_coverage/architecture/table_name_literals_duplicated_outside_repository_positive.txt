@@ -1,0 +1,54 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for table_name_literals_duplicated_outside_repository: risky concrete example for this rule.
+// Rule intent: Repeated table-name strings across handlers, services, and jobs.
+type CaseTableNameLiteralsDuplicatedOutsideRepositoryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTableNameLiteralsDuplicatedOutsideRepositoryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTableNameLiteralsDuplicatedOutsideRepositoryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTableNameLiteralsDuplicatedOutsideRepositoryModel
+}
+
+type CaseTableNameLiteralsDuplicatedOutsideRepositoryService struct {
+    repo *CaseTableNameLiteralsDuplicatedOutsideRepositoryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTableNameLiteralsDuplicatedOutsideRepositoryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTableNameLiteralsDuplicatedOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTableNameLiteralsDuplicatedOutsideRepositoryDTO) error {
+    db.Table("users").Where("id = ?", input).Find(&items)
+    db.Raw("SELECT * FROM users WHERE id = ?", input).Scan(&items)
+    _ = c
+    return nil
+}

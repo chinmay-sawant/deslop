@@ -1,0 +1,9 @@
+class DocumentProcessor:
+    # Violation: a single processor class controlling entirely unrelated domains via a "mode" switch
+    def process(self, doc, mode):
+        if mode == "pdf_to_text":
+            return self._extract_text(doc)
+        elif mode == "image_blur":
+            return self._apply_gaussian_blur(doc)
+        elif mode == "json_to_csv":
+            return self._convert_format(doc)

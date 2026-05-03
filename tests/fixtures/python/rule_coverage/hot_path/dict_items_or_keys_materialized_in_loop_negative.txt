@@ -1,0 +1,5 @@
+def count_keys(data):
+    # Correct: iterate directly over the dictionary to avoid creating a temporary list of keys
+    for key in data:
+        if key.startswith("internal_"):
+            print(f"Found: {key}")

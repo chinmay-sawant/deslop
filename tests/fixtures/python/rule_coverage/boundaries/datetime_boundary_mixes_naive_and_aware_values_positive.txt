@@ -1,0 +1,7 @@
+from datetime import datetime
+
+def check_expiry(expiry_date):
+    # Violation: mixing naive and aware datetime values (now() is naive)
+    if datetime.now() > expiry_date:
+        return True
+    return False

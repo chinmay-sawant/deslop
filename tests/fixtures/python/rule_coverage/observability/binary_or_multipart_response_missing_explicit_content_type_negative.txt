@@ -1,0 +1,6 @@
+from fastapi import Response
+
+def download_file():
+    binary_data = b"Some raw binary data..."
+    # Correct: always set the media_type explicitly for binary responses
+    return Response(content=binary_data, media_type="application/octet-stream")

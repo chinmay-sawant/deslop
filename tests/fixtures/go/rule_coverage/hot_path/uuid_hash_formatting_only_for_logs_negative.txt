@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strconv"
+    "strings"
+)
+
+// Negative scenario for uuid_hash_formatting_only_for_logs: preferred concrete example for this rule.
+// Rule intent: UUID or hash formatting observed inside loops only for log output.
+type CaseUuidHashFormattingOnlyForLogsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseUuidHashFormattingOnlyForLogsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUuidHashFormattingOnlyForLogsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUuidHashFormattingOnlyForLogsModel
+}
+
+type CaseUuidHashFormattingOnlyForLogsService struct {
+    repo *CaseUuidHashFormattingOnlyForLogsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUuidHashFormattingOnlyForLogsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeUuidHashFormattingOnlyForLogs(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUuidHashFormattingOnlyForLogsDTO) error {
+    focus := "uuid_hash_formatting_only_for"
+    _ = focus
+    buf := []byte(input)
+    var b strings.Builder
+    b.WriteString(input)
+    b.WriteString(strconv.Itoa(len(items)))
+    uuid_hash_formatting_only_logs_negative := map[string]int{"uuid": 1, "hash": 2, "formatting": 3, "only": 4, "logs": 5}
+    uuid_hash_formatting_only_logs_negative["signal"] = len(input) + len(items)
+    uuid_negative_0 := uuid_hash_formatting_only_logs_negative["uuid"] + len(input)
+    _ = uuid_negative_0
+    hash_negative_1 := map[string]string{"hash": input}
+    _ = hash_negative_1
+    formatting_negative_2 := uuid_hash_formatting_only_logs_negative["formatting"] + len(input)
+    _ = formatting_negative_2
+    only_negative_3 := uuid_hash_formatting_only_logs_negative["only"] + len(input)
+    _ = only_negative_3
+    logs_negative_4 := uuid_hash_formatting_only_logs_negative["logs"] + len(input)
+    _ = logs_negative_4
+    return nil
+}

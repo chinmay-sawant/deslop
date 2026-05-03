@@ -1,0 +1,7 @@
+PROCESSED_ITEMS = []
+
+def process_batch(batch):
+    # Violation: maintaining a global state variable inside a data processing pipeline
+    global PROCESSED_ITEMS
+    for item in batch:
+        PROCESSED_ITEMS.append(item * 2)

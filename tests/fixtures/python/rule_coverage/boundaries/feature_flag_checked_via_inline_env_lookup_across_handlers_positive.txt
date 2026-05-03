@@ -1,0 +1,14 @@
+import os
+
+@app.get("/v1")
+def handler_one():
+    # Violation: feature flag check via inline environment lookup
+    if os.getenv("ENABLE_NEW_V1") == "true":
+        return "New V1"
+    return "Old V1"
+
+@app.get("/v2")
+def handler_two():
+    if os.getenv("ENABLE_NEW_V1") == "true":
+        return "New V2"
+    return "Old V2"

@@ -1,0 +1,7 @@
+from pinecone import Pinecone
+
+def query_vector_db(query_embedding):
+    # Violation: instantiating a vector database client connection inside every request handler
+    pc = Pinecone(api_key="xxx")
+    index = pc.Index("my-index")
+    return index.query(vector=query_embedding, top_k=5)

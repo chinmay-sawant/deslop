@@ -1,0 +1,10 @@
+class MetadataResult(BaseModel):
+    items: List[Dict]
+    status: str
+
+def get_metadata(item_id):
+    # Correct: function returns a consistent, labeled object/model
+    if not item_id:
+        return MetadataResult(items=[], status="missing")
+    data = fetch_data(item_id)
+    return MetadataResult(items=[data], status="ok")

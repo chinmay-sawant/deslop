@@ -1,0 +1,3 @@
+def render_rows(template, queryset):
+    rows = list(queryset)
+    return "".join(template.render({"name": obj.name}) for obj in rows)

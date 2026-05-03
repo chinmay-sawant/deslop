@@ -1,0 +1,4 @@
+@app.errorhandler(500)
+def handle_internal_error(e):
+    # Correct: public API returns a sanitized error message
+    return {"error": "A database error occurred. Please try again later."}, 500

@@ -1,0 +1,74 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for where_clause_templates_duplicated_across_repositories: preferred concrete example for this rule.
+// Rule intent: Repeated filter templates that should be shared through scopes or query builders.
+type CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesModel
+}
+
+type CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesService struct {
+    repo *CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeWhereClauseTemplatesDuplicatedAcrossRepositories(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesDTO) error {
+    focus := "where_clause_templates_duplicated_across"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesRepository{db: db, sql: sqlDB}
+    var model CaseWhereClauseTemplatesDuplicatedAcrossRepositoriesModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    allowedSorts := map[string]string{"created_at": "created_at", "id": "id"}
+    orderBy := allowedSorts[c.DefaultQuery("sort", "id")]
+    db.Order(orderBy).Limit(100).Find(&[]any{})
+    where_clause_templates_duplicated_across_negative := map[string]int{"where": 1, "clause": 2, "templates": 3, "duplicated": 4, "across": 5, "repositories": 6}
+    where_clause_templates_duplicated_across_negative["signal"] = len(input) + len(items)
+    where_negative_0 := where_clause_templates_duplicated_across_negative["where"] + len(input)
+    _ = where_negative_0
+    clause_negative_1 := where_clause_templates_duplicated_across_negative["clause"] + len(input)
+    _ = clause_negative_1
+    templates_negative_2 := where_clause_templates_duplicated_across_negative["templates"] + len(input)
+    _ = templates_negative_2
+    duplicated_negative_3 := where_clause_templates_duplicated_across_negative["duplicated"] + len(input)
+    _ = duplicated_negative_3
+    across_negative_4 := where_clause_templates_duplicated_across_negative["across"] + len(input)
+    _ = across_negative_4
+    repositories_negative_5 := db.Where("repositories_id = ?", input)
+    _ = repositories_negative_5
+    return nil
+}

@@ -1,0 +1,7 @@
+import importlib.metadata
+
+def run_plugins():
+    # Correct: use standardized python EntryPoints to discover and load plugins efficiently
+    for entry_point in importlib.metadata.entry_points(group='my_app.plugins'):
+        plugin_func = entry_point.load()
+        plugin_func()

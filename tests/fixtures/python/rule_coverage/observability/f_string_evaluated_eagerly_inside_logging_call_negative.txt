@@ -1,0 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+def handle_request(user):
+    # Correct: use `%s` formatting so the string is only evaluated if the log level is active
+    logger.debug("Request handled for user %s", user.id)

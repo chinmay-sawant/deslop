@@ -1,0 +1,7 @@
+from typing import Union
+
+# Correct: use a unique name for the type alias
+ItemSelector = Union[int, str]
+
+def process(items: ItemSelector):
+    pass

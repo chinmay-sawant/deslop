@@ -1,0 +1,63 @@
+package rulecoverage
+
+import (
+    "context"
+    "crypto/tls"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net"
+    "net/http"
+    "net/smtp"
+)
+
+// Negative scenario for smtp_plaintext_auth: preferred concrete example for this rule.
+// Rule intent: `smtp.PlainAuth` used without TLS, sending credentials in plaintext.
+type CaseSmtpPlaintextAuthDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+type CaseSmtpPlaintextAuthModel struct {
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSmtpPlaintextAuthRepository struct {
+    db    *gorm.DB
+    sql   *sql.DB
+    cache map[string]CaseSmtpPlaintextAuthModel
+}
+
+type CaseSmtpPlaintextAuthService struct {
+    repo   *CaseSmtpPlaintextAuthRepository
+    client *http.Client
+}
+
+type CaseSmtpPlaintextAuthAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSmtpPlaintextAuth(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSmtpPlaintextAuthDTO) error {
+    // TLS connection established before sending auth credentials.
+    conn, err := net.Dial("tcp", "smtp.example.com:465")
+    if err != nil {
+        return err
+    }
+    tlsConn := tls.Client(conn, &tls.Config{ServerName: "smtp.example.com", MinVersion: tls.VersionTLS12})
+    smtpClient, err := smtp.NewClient(tlsConn, "smtp.example.com")
+    if err != nil {
+        return err
+    }
+    defer smtpClient.Close()
+    auth := smtp.PlainAuth("", "user@example.com", "password123", "smtp.example.com")
+    if err := smtpClient.Auth(auth); err != nil {
+        return err
+    }
+    return nil
+}

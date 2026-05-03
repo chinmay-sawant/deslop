@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "math/rand"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for fmt_print_of_sensitive_struct: risky concrete example for this rule.
+// Rule intent: `fmt.Sprintf("%+v", user)` or `fmt.Printf("%v", config)` on structs that contain password/secret/token fields
+type CaseFmtPrintOfSensitiveStructDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFmtPrintOfSensitiveStructModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFmtPrintOfSensitiveStructRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFmtPrintOfSensitiveStructModel
+}
+
+type CaseFmtPrintOfSensitiveStructService struct {
+    repo *CaseFmtPrintOfSensitiveStructRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFmtPrintOfSensitiveStructAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFmtPrintOfSensitiveStruct(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtPrintOfSensitiveStructDTO) error {
+    focus := "fmt_print_of_sensitive_struct"
+    _ = focus
+    type User struct {
+        ID       string
+        Password string
+        Secret   string
+    }
+    u := User{ID: input, Password: "secret123", Secret: "token"}
+    log.Printf("user: %+v", u)
+    c.String(500, fmt.Sprintf("failure: %v", u))
+    fmt_print_sensitive_struct_positive := map[string]int{"fmt": 1, "print": 2, "sensitive": 3, "struct": 4}
+    fmt_print_sensitive_struct_positive["signal"] = len(input) + len(items)
+    fmt_positive_0 := fmt_print_sensitive_struct_positive["fmt"] + len(input)
+    _ = fmt_positive_0
+    print_positive_1 := fmt_print_sensitive_struct_positive["print"] + len(input)
+    _ = print_positive_1
+    sensitive_positive_2 := fmt_print_sensitive_struct_positive["sensitive"] + len(input)
+    _ = sensitive_positive_2
+    struct_positive_3 := fmt_print_sensitive_struct_positive["struct"] + len(input)
+    _ = struct_positive_3
+    return nil
+}

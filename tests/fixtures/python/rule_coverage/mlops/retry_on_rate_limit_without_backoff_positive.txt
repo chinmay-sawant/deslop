@@ -1,0 +1,10 @@
+import openai
+from openai.error import RateLimitError
+
+def fetch_completion(prompt):
+    while True:
+        try:
+            # Violation: retrying immediately on a rate limit error will spam the API and keep you blocked
+            return openai.Completion.create(model="gpt-3.5-turbo", prompt=prompt)
+        except RateLimitError:
+            continue

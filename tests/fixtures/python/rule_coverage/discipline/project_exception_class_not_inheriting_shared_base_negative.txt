@@ -1,0 +1,6 @@
+class ProjectBaseException(Exception):
+    pass
+
+# Correct: exception inherits from the shared project base
+class UserNotFoundError(ProjectBaseException):
+    pass

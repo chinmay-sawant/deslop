@@ -1,0 +1,11 @@
+from flask import Flask, Response, stream_with_context
+
+app = Flask(__name__)
+
+@app.route("/export")
+def export():
+    # Correct: use streaming to process and return large datasets incrementally
+    def generate():
+        for row in db.stream_logs():
+            yield json.dumps(row) + "\n"
+    return Response(stream_with_context(generate()), mimetype='application/json')

@@ -1,0 +1,13 @@
+# module: orders.py
+# Violation: feature modules circularly importing each other means they are actually one heavily coupled module
+from payments import process_payment
+
+def place_order():
+    process_payment()
+
+
+# module: payments.py
+from orders import update_order_status
+
+def process_payment():
+    update_order_status()

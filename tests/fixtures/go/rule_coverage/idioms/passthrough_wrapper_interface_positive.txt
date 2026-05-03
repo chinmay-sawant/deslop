@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for passthrough_wrapper_interface: risky concrete example for this rule.
+// Rule intent: Wrapper structs that mostly forward one-to-one through an interface field with little added policy.
+type CasePassthroughWrapperInterfaceDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePassthroughWrapperInterfaceModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePassthroughWrapperInterfaceRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePassthroughWrapperInterfaceModel
+}
+
+type CasePassthroughWrapperInterfaceService struct {
+    repo *CasePassthroughWrapperInterfaceRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePassthroughWrapperInterfaceAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+type Worker interface {
+    DoWork(input string) string
+}
+
+type workerImpl struct{}
+
+func (w *workerImpl) DoWork(input string) string { return input }
+
+type WorkerWrapper struct {
+    inner Worker
+}
+
+func (w *WorkerWrapper) DoWork(input string) string {
+    return w.inner.DoWork(input)
+}
+
+func PositivePassthroughWrapperInterface(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePassthroughWrapperInterfaceDTO) error {
+    wrapper := &WorkerWrapper{inner: &workerImpl{}}
+    result := wrapper.DoWork(input)
+    _ = result
+    return nil
+}

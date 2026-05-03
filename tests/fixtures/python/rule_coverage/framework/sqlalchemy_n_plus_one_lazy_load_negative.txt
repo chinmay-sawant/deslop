@@ -1,0 +1,7 @@
+from sqlalchemy.orm import joinedload
+from .models import User
+
+def list_user_bios(session):
+    # Correct: use joinedload to fetch profiles in the initial query
+    for user in session.query(User).options(joinedload(User.profile)).all():
+        print(user.profile.bio)

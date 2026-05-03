@@ -1,0 +1,40 @@
+package service
+
+import (
+	"fmt"
+	"gorm.io/gorm"
+)
+
+// Positive scenario for service_method_returns_map_string_any_output: risky concrete example for this rule.
+// Rule intent: Services that return dynamic maps instead of typed result contracts.
+type CaseServiceMethodReturnsMapStringAnyOutputModel struct {
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string `gorm:"column:status" json:"status"`
+	Amount   int    `gorm:"column:amount" json:"amount"`
+}
+
+type CaseServiceMethodReturnsMapStringAnyOutputRepository struct {
+	db *gorm.DB
+}
+
+type CaseServiceMethodReturnsMapStringAnyOutputService struct {
+	repo *CaseServiceMethodReturnsMapStringAnyOutputRepository
+}
+
+func (s *CaseServiceMethodReturnsMapStringAnyOutputService) GetSummary(id string) (map[string]any, error) {
+	var model CaseServiceMethodReturnsMapStringAnyOutputModel
+	if err := s.repo.db.Where("id = ?", id).First(&model).Error; err != nil {
+		return nil, fmt.Errorf("record not found: %w", err)
+	}
+
+	result := map[string]any{
+		"id":         model.ID,
+		"tenant_id":  model.TenantID,
+		"status":     model.Status,
+		"amount":     model.Amount,
+		"formatted":  fmt.Sprintf("%s - %s", model.ID, model.Status),
+	}
+
+	return result, nil
+}

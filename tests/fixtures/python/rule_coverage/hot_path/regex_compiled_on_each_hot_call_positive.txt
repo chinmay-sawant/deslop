@@ -1,0 +1,5 @@
+import re
+
+def is_valid_email(email):
+    # Violation: using re.match directly inside a hot function relies on an internal cache that can thrash
+    return bool(re.match(r"[^@]+@[^@]+\.[^@]+", email))

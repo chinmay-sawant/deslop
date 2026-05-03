@@ -1,0 +1,8 @@
+import torch
+
+def evaluate_batches(model, dataloader):
+    for batch in dataloader:
+        # Violation: moving the model to the device inside the batch loop
+        model.to("cuda")
+        inputs = batch.to("cuda")
+        outputs = model(inputs)

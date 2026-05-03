@@ -1,0 +1,12 @@
+from unittest import TestCase
+
+class TestAuth(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.db = MockDB()
+
+class TestBilling(TestCase):
+    # Violation: unittest test class duplicates setUp logic instead of using a shared base class
+    def setUp(self):
+        self.client = APIClient()
+        self.db = MockDB()

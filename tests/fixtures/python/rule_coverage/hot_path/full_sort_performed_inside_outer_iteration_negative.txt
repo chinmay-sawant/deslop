@@ -1,0 +1,6 @@
+def apply_updates(data, updates):
+    for update in updates:
+        data.append(update)
+    # Correct: sort the dataset only once after all modifications are complete
+    data.sort()
+    return data

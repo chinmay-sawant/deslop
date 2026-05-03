@@ -1,0 +1,5 @@
+def process_queue(items):
+    while items:
+        # Violation: list.pop(0) is an O(N) operation because it shifts all remaining elements
+        item = items.pop(0)
+        do_work(item)

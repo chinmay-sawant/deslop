@@ -1,0 +1,7 @@
+LOOKUP_CACHE: dict[str, int] = {}
+
+
+def expensive_lookup(key: str) -> int:
+    if key not in LOOKUP_CACHE:
+        LOOKUP_CACHE[key] = len(key) * 7
+    return LOOKUP_CACHE[key]

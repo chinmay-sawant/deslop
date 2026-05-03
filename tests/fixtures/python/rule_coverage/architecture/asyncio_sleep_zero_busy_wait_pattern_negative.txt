@@ -1,0 +1,7 @@
+import asyncio
+
+async def worker():
+    while True:
+        # Non-busy wait with a small delay or event notification
+        await asyncio.sleep(0.1)
+        process_next_batch()

@@ -1,0 +1,7 @@
+from __future__ import annotations
+
+import gzip
+
+
+def python_perf_layer_serialization_gzip_compress_tiny_payloads_positive(payload):
+    return gzip.compress(payload)

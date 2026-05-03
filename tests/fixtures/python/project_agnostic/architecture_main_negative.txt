@@ -1,0 +1,7 @@
+class ServiceConfig:
+    def __init__(self, token):
+        self.token = token
+
+
+def main(customer, repo, cache, client):
+    return customer

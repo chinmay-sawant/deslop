@@ -2,7 +2,10 @@ use std::fmt::Write as _;
 use std::path::PathBuf;
 
 use anyhow::Result;
-use deslop::{RuleLanguage, is_detail_only_rule, rule_metadata_variants};
+use deslop::{
+    RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleStatus, is_detail_only_rule,
+    rule_metadata, rule_metadata_variants,
+};
 use serde::Serialize;
 
 pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> String {
@@ -86,14 +89,23 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
         writeln!(&mut output).ok();
         writeln!(&mut output, "Findings:").ok();
         for finding in findings {
+            let metadata = finding_language(report, finding)
+                .and_then(|language| rule_metadata(finding.rule_id.as_str(), language));
             push_line(
                 &mut output,
                 format!(
-                    "  - {}:{} {} [{}]",
+                    "  - {}:{} {} [{}{}]",
                     finding.path.display(),
                     finding.start_line,
                     finding.message,
-                    finding.rule_id
+                    finding.rule_id,
+                    metadata
+                        .map(|metadata| format!(
+                            " / {} / {}",
+                            metadata.family,
+                            status_label(&metadata.status)
+                        ))
+                        .unwrap_or_default()
                 ),
             );
         }
@@ -164,6 +176,14 @@ fn unique_rule_language(rule_id: &str) -> Option<RuleLanguage> {
         .then_some(first.language)
 }
 
+fn status_label(status: &RuleStatus) -> &'static str {
+    match status {
+        RuleStatus::Stable => "stable",
+        RuleStatus::Experimental => "experimental",
+        RuleStatus::Research => "research",
+    }
+}
+
 pub(crate) fn print_benchmark_report(report: &deslop::BenchmarkReport) {
     println!("deslop bench root: {}", report.root.display());
     println!(
@@ -202,7 +222,7 @@ struct ScanReportSummary<'a> {
     files_analyzed: usize,
     functions_found: usize,
     files: Vec<FileReportSummary<'a>>,
-    findings: Vec<&'a deslop::Finding>,
+    findings: Vec<FindingSummary<'a>>,
     index_summary: &'a deslop::IndexSummary,
     parse_failures: &'a [deslop::ParseFailure],
     timings: &'a deslop::TimingBreakdown,
@@ -216,10 +236,55 @@ impl<'a> From<&'a deslop::ScanReport> for ScanReportSummary<'a> {
             files_analyzed: report.files_analyzed,
             functions_found: report.functions_found,
             files: report.files.iter().map(FileReportSummary::from).collect(),
-            findings: visible_findings(report, false),
+            findings: visible_findings(report, false)
+                .into_iter()
+                .map(|finding| FindingSummary::from_report(report, finding))
+                .collect(),
             index_summary: &report.index_summary,
             parse_failures: &report.parse_failures,
             timings: &report.timings,
+        }
+    }
+}
+
+#[derive(Debug, Serialize)]
+struct FindingSummary<'a> {
+    #[serde(flatten)]
+    finding: &'a deslop::Finding,
+    rule: Option<RuleMetadataSummary<'a>>,
+}
+
+impl<'a> FindingSummary<'a> {
+    fn from_report(report: &'a deslop::ScanReport, finding: &'a deslop::Finding) -> Self {
+        let rule = finding_language(report, finding)
+            .and_then(|language| rule_metadata(finding.rule_id.as_str(), language))
+            .map(RuleMetadataSummary::from);
+
+        Self { finding, rule }
+    }
+}
+
+#[derive(Debug, Serialize)]
+struct RuleMetadataSummary<'a> {
+    language: RuleLanguage,
+    family: &'a str,
+    default_severity: RuleDefaultSeverity,
+    status: RuleStatus,
+    configurability: &'a [RuleConfigurability],
+    description: &'a str,
+    binding_location: &'a str,
+}
+
+impl<'a> From<&'a deslop::RuleMetadata> for RuleMetadataSummary<'a> {
+    fn from(metadata: &'a deslop::RuleMetadata) -> Self {
+        Self {
+            language: metadata.language,
+            family: metadata.family,
+            default_severity: metadata.default_severity,
+            status: metadata.status,
+            configurability: metadata.configurability,
+            description: metadata.description,
+            binding_location: metadata.binding_location,
         }
     }
 }

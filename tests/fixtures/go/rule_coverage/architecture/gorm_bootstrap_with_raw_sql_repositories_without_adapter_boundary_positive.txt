@@ -1,0 +1,59 @@
+package main
+
+import (
+	"database/sql"
+	"fmt"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: Bootstrap mixes gorm.Open and sql.Raw without an adapter boundary.
+// The application initializes both GORM and raw sql.DB and passes them directly
+// to repositories, creating a tangled persistence layer with no abstraction.
+
+func bootstrapDSN(dsn string) (*gorm.DB, *sql.DB, error) {
+	gormDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, nil, fmt.Errorf("gorm open: %w", err)
+	}
+
+	rawDB, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return nil, nil, fmt.Errorf("sql open: %w", err)
+	}
+
+	// Both connections handed out directly — no adapter, no boundary.
+	return gormDB, rawDB, nil
+}
+
+type User struct {
+	ID   uint   `gorm:"primaryKey"`
+	Name string `gorm:"column:name"`
+}
+
+type UserRepository struct {
+	gormDB *gorm.DB
+	rawDB  *sql.DB
+}
+
+func (r *UserRepository) FindByIDGORM(id uint) (User, error) {
+	var u User
+	err := r.gormDB.First(&u, id).Error
+	return u, err
+}
+
+func (r *UserRepository) FindByRawSQL(id uint) (User, error) {
+	var u User
+	row := r.rawDB.QueryRow("SELECT id, name FROM users WHERE id = $1", id)
+	err := row.Scan(&u.ID, &u.Name)
+	return u, err
+}
+
+func main() {
+	dsn := "host=localhost user=postgres password=secret dbname=mydb port=5432 sslmode=disable"
+	gormDB, rawDB, _ := bootstrapDSN(dsn)
+
+	repo := &UserRepository{gormDB: gormDB, rawDB: rawDB}
+	_ = repo
+}

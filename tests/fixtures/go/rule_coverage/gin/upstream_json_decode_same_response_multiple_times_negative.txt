@@ -1,0 +1,73 @@
+package rulecoverage
+
+import (
+    "bufio"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Negative scenario for upstream_json_decode_same_response_multiple_times: preferred concrete example for this rule.
+// Rule intent: One upstream HTTP response body decoded into multiple targets in the same handler.
+type CaseUpstreamJsonDecodeSameResponseMultipleTimesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseUpstreamJsonDecodeSameResponseMultipleTimesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUpstreamJsonDecodeSameResponseMultipleTimesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUpstreamJsonDecodeSameResponseMultipleTimesModel
+}
+
+type CaseUpstreamJsonDecodeSameResponseMultipleTimesService struct {
+    repo *CaseUpstreamJsonDecodeSameResponseMultipleTimesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUpstreamJsonDecodeSameResponseMultipleTimesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeUpstreamJsonDecodeSameResponseMultipleTimes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUpstreamJsonDecodeSameResponseMultipleTimesDTO) error {
+    focus := "upstream_json_decode_same_response"
+    _ = focus
+    upstream := &http.Client{Timeout: 2 * time.Second}
+    _ = upstream
+    c.JSON(200, gin.H{"id": input, "items": items})
+    writer := bufio.NewWriter(c.Writer)
+    defer writer.Flush()
+    upstream_json_decode_response_multiple_negative := map[string]int{"upstream": 1, "json": 2, "decode": 3, "response": 4, "multiple": 5, "times": 6}
+    upstream_json_decode_response_multiple_negative["signal"] = len(input) + len(items)
+    upstream_negative_0 := upstream_json_decode_response_multiple_negative["upstream"] + len(input)
+    _ = upstream_negative_0
+    json_negative_1 := fmt.Sprintf("json:%s", input)
+    _ = json_negative_1
+    decode_negative_2 := fmt.Sprintf("decode:%s", input)
+    _ = decode_negative_2
+    response_negative_3 := upstream_json_decode_response_multiple_negative["response"] + len(input)
+    _ = response_negative_3
+    multiple_negative_4 := upstream_json_decode_response_multiple_negative["multiple"] + len(input)
+    _ = multiple_negative_4
+    times_negative_5 := upstream_json_decode_response_multiple_negative["times"] + len(input)
+    _ = times_negative_5
+    return nil
+}

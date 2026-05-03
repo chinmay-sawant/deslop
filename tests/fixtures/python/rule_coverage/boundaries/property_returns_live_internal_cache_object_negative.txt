@@ -1,0 +1,8 @@
+class DataManager:
+    def __init__(self):
+        self._cache = {}
+
+    @property
+    def cache(self):
+        # Correct: property returns a read-only view or a copy of the cache
+        return dict(self._cache)

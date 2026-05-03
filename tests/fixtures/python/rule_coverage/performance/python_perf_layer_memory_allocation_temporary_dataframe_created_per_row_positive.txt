@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+def python_perf_layer_memory_allocation_temporary_dataframe_created_per_row_positive(rows):
+    normalized = []
+    for row in rows:
+        frame = {"id": [row["id"]], "score": [row["score"]]}
+        normalized.append((frame["id"][0], frame["score"][0]))
+    return normalized

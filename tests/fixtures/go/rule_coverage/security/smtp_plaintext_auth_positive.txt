@@ -1,0 +1,49 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+    "net/smtp"
+)
+
+// Positive scenario for smtp_plaintext_auth: risky concrete example for this rule.
+// Rule intent: `smtp.PlainAuth` used without TLS, sending credentials in plaintext.
+type CaseSmtpPlaintextAuthDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+type CaseSmtpPlaintextAuthModel struct {
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSmtpPlaintextAuthRepository struct {
+    db    *gorm.DB
+    sql   *sql.DB
+    cache map[string]CaseSmtpPlaintextAuthModel
+}
+
+type CaseSmtpPlaintextAuthService struct {
+    repo   *CaseSmtpPlaintextAuthRepository
+    client *http.Client
+}
+
+type CaseSmtpPlaintextAuthAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSmtpPlaintextAuth(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSmtpPlaintextAuthDTO) error {
+    // PlainAuth sends credentials in plaintext without TLS.
+    auth := smtp.PlainAuth("", "user@example.com", "password123", "smtp.example.com")
+    err := smtp.SendMail("smtp.example.com:25", auth, "from@example.com", []string{"to@example.com"}, []byte(input))
+    return err
+}

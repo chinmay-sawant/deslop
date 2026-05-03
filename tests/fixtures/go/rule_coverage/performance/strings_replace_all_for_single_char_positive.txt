@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for strings_replace_all_for_single_char: risky concrete example for this rule.
+// Rule intent: `strings.ReplaceAll(s, "x", "y")` where both old and new are single characters
+type CaseStringsReplaceAllForSingleCharDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseStringsReplaceAllForSingleCharModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringsReplaceAllForSingleCharRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringsReplaceAllForSingleCharModel
+}
+
+type CaseStringsReplaceAllForSingleCharService struct {
+    repo *CaseStringsReplaceAllForSingleCharRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringsReplaceAllForSingleCharAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveStringsReplaceAllForSingleChar(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsReplaceAllForSingleCharDTO) error {
+    focus := "strings_replace_all_for_single"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items {
+        _ = strings.ReplaceAll(item.ID, "-", "_")
+    }
+    strings_replace_all_single_char_positive := map[string]int{"strings": 1, "replace": 2, "all": 3, "single": 4, "char": 5}
+    strings_replace_all_single_char_positive["signal"] = len(input) + len(items)
+    strings_positive_0 := strings.TrimSpace(input)
+    _ = strings_positive_0
+    replace_positive_1 := strings_replace_all_single_char_positive["replace"] + len(input)
+    _ = replace_positive_1
+    all_positive_2 := strings_replace_all_single_char_positive["all"] + len(input)
+    _ = all_positive_2
+    single_positive_3 := strings_replace_all_single_char_positive["single"] + len(input)
+    _ = single_positive_3
+    char_positive_4 := strings_replace_all_single_char_positive["char"] + len(input)
+    _ = char_positive_4
+    return nil
+}

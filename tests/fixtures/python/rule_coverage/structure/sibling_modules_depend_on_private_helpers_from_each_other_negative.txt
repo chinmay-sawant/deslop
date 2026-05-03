@@ -1,0 +1,9 @@
+# shared_core.py
+# Correct: elevate shared logic to a common core package meant for public consumption
+def shared_helper(): pass
+
+# module_b.py
+from shared_core import shared_helper
+
+def do_work():
+    shared_helper()

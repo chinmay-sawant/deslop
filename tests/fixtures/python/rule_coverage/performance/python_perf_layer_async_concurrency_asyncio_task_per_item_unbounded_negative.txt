@@ -1,0 +1,12 @@
+import asyncio
+
+
+async def run_all(items: list[int]) -> list[int]:
+    gate = asyncio.Semaphore(10)
+
+    async def work(x: int) -> int:
+        async with gate:
+            await asyncio.sleep(0.01)
+            return x * 2
+
+    return [await work(item) for item in items]

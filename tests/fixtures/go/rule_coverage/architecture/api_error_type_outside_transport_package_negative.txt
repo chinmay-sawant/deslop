@@ -1,0 +1,82 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for api_error_type_outside_transport_package: preferred concrete example for this rule.
+// Rule intent: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
+type CaseApiErrorTypeOutsideTransportPackageDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseApiErrorTypeOutsideTransportPackageModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseApiErrorTypeOutsideTransportPackageRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseApiErrorTypeOutsideTransportPackageModel
+}
+
+type CaseApiErrorTypeOutsideTransportPackageService struct {
+    repo *CaseApiErrorTypeOutsideTransportPackageRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseApiErrorTypeOutsideTransportPackageAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeApiErrorTypeOutsideTransportPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseApiErrorTypeOutsideTransportPackageDTO) error {
+    focus := "api_error_type_outside_transport"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseApiErrorTypeOutsideTransportPackageDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseApiErrorTypeOutsideTransportPackageRepository{db: db, sql: sqlDB}
+    var model CaseApiErrorTypeOutsideTransportPackageModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseApiErrorTypeOutsideTransportPackageDTO{ID: input, Status: "active"}
+    model := CaseApiErrorTypeOutsideTransportPackageModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
+    api_error_type_outside_transport_negative := map[string]int{"api": 1, "error": 2, "type": 3, "outside": 4, "transport": 5, "package": 6}
+    api_error_type_outside_transport_negative["signal"] = len(input) + len(items)
+    api_negative_0 := c.FullPath() + ":" + input
+    _ = api_negative_0
+    error_negative_1 := api_error_type_outside_transport_negative["error"] + len(input)
+    _ = error_negative_1
+    type_negative_2 := api_error_type_outside_transport_negative["type"] + len(input)
+    _ = type_negative_2
+    outside_negative_3 := api_error_type_outside_transport_negative["outside"] + len(input)
+    _ = outside_negative_3
+    transport_negative_4 := c.FullPath() + ":" + input
+    _ = transport_negative_4
+    package_negative_5 := api_error_type_outside_transport_negative["package"] + len(input)
+    _ = package_negative_5
+    return nil
+}

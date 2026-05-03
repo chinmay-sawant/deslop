@@ -1,0 +1,9 @@
+def get_config():
+    # Violation: file object returned without a clear close path (resource leak)
+    f = open("config.yaml", "r")
+    return f
+
+def process():
+    cfg = get_config()
+    # f is never closed
+    print(cfg.read())

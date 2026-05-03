@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+def list_copy_in_loop_same_source_positive():
+    base = [1, 2, 3]
+    clones = []
+    for _ in range(4):
+        clones.append(list(base))
+    return clones

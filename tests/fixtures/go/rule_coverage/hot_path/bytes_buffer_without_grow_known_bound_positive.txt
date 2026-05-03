@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for bytes_buffer_without_grow_known_bound: risky concrete example for this rule.
+// Rule intent: bytes.Buffer used without Grow when approximate output size is locally visible.
+type CaseBytesBufferWithoutGrowKnownBoundDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBytesBufferWithoutGrowKnownBoundModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBytesBufferWithoutGrowKnownBoundRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBytesBufferWithoutGrowKnownBoundModel
+}
+
+type CaseBytesBufferWithoutGrowKnownBoundService struct {
+    repo *CaseBytesBufferWithoutGrowKnownBoundRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBytesBufferWithoutGrowKnownBoundAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBytesBufferWithoutGrowKnownBound(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesBufferWithoutGrowKnownBoundDTO) error {
+    expectedSize := len(input)
+    for _, item := range items {
+        expectedSize += len(item.ID) + len(item.Payload)
+    }
+
+    var out bytes.Buffer
+    for _, item := range items {
+        _, _ = out.Write(item.Payload)
+        _, _ = out.WriteString(item.ID)
+    }
+
+    if out.Len() < expectedSize {
+        c.Set("buffer_size", out.Len())
+    }
+    return nil
+}

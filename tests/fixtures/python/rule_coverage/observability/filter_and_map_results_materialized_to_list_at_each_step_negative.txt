@@ -1,0 +1,3 @@
+def process_data(data):
+    # Correct: chain iterators and materialize the list exactly once at the end
+    return list(map(lambda x: x * x, filter(lambda x: x > 0, data)))

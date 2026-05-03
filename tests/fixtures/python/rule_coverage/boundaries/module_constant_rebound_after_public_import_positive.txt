@@ -1,0 +1,7 @@
+# settings.py
+DEBUG = False
+
+# Violation: module constant rebound after being publicly imported
+def toggle_debug():
+    global DEBUG
+    DEBUG = True

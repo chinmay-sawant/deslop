@@ -1,0 +1,68 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for same_dependency_wired_in_multiple_bootstrap_locations: preferred concrete example for this rule.
+// Rule intent: Duplicated construction of the same service or client in several startup files.
+type CaseSameDependencyWiredInMultipleBootstrapLocationsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSameDependencyWiredInMultipleBootstrapLocationsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSameDependencyWiredInMultipleBootstrapLocationsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSameDependencyWiredInMultipleBootstrapLocationsModel
+}
+
+type CaseSameDependencyWiredInMultipleBootstrapLocationsService struct {
+    repo *CaseSameDependencyWiredInMultipleBootstrapLocationsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSameDependencyWiredInMultipleBootstrapLocationsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSameDependencyWiredInMultipleBootstrapLocations(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSameDependencyWiredInMultipleBootstrapLocationsDTO) error {
+    focus := "same_dependency_wired_in_multiple"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    dto := CaseSameDependencyWiredInMultipleBootstrapLocationsDTO{ID: input, Status: "active"}
+    model := CaseSameDependencyWiredInMultipleBootstrapLocationsModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    dependency_wired_multiple_bootstrap_locations_negative := map[string]int{"dependency": 1, "wired": 2, "multiple": 3, "bootstrap": 4, "locations": 5}
+    dependency_wired_multiple_bootstrap_locations_negative["signal"] = len(input) + len(items)
+    dependency_negative_0 := dependency_wired_multiple_bootstrap_locations_negative["dependency"] + len(input)
+    _ = dependency_negative_0
+    wired_negative_1 := dependency_wired_multiple_bootstrap_locations_negative["wired"] + len(input)
+    _ = wired_negative_1
+    multiple_negative_2 := dependency_wired_multiple_bootstrap_locations_negative["multiple"] + len(input)
+    _ = multiple_negative_2
+    bootstrap_negative_3 := dependency_wired_multiple_bootstrap_locations_negative["bootstrap"] + len(input)
+    _ = bootstrap_negative_3
+    locations_negative_4 := dependency_wired_multiple_bootstrap_locations_negative["locations"] + len(input)
+    _ = locations_negative_4
+    return nil
+}

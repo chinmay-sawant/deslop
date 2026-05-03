@@ -1,0 +1,3 @@
+def track_login(user_id):
+    # Correct: use a static, stable metric name and append dynamic values as tags/labels
+    statsd.increment("login_success", tags=[f"user_id:{user_id}"])

@@ -1,0 +1,82 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for transaction_error_translation_done_in_repository_and_handler: preferred concrete example for this rule.
+// Rule intent: Both repository and handler layers translating the same transaction errors.
+type CaseTransactionErrorTranslationDoneInRepositoryAndHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTransactionErrorTranslationDoneInRepositoryAndHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTransactionErrorTranslationDoneInRepositoryAndHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTransactionErrorTranslationDoneInRepositoryAndHandlerModel
+}
+
+type CaseTransactionErrorTranslationDoneInRepositoryAndHandlerService struct {
+    repo *CaseTransactionErrorTranslationDoneInRepositoryAndHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTransactionErrorTranslationDoneInRepositoryAndHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTransactionErrorTranslationDoneInRepositoryAndHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTransactionErrorTranslationDoneInRepositoryAndHandlerDTO) error {
+    focus := "transaction_error_translation_done_in"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseTransactionErrorTranslationDoneInRepositoryAndHandlerDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseTransactionErrorTranslationDoneInRepositoryAndHandlerRepository{db: db, sql: sqlDB}
+    var model CaseTransactionErrorTranslationDoneInRepositoryAndHandlerModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    return db.Transaction(func(tx *gorm.DB) error {
+        return tx.WithContext(ctx).Save(&CaseTransactionErrorTranslationDoneInRepositoryAndHandlerModel{ID: input}).Error
+    })
+    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
+    transaction_error_translation_done_repository_negative := map[string]int{"transaction": 1, "error": 2, "translation": 3, "done": 4, "repository": 5, "handler": 6}
+    transaction_error_translation_done_repository_negative["signal"] = len(input) + len(items)
+    transaction_negative_0 := transaction_error_translation_done_repository_negative["transaction"] + len(input)
+    _ = transaction_negative_0
+    error_negative_1 := transaction_error_translation_done_repository_negative["error"] + len(input)
+    _ = error_negative_1
+    translation_negative_2 := transaction_error_translation_done_repository_negative["translation"] + len(input)
+    _ = translation_negative_2
+    done_negative_3 := transaction_error_translation_done_repository_negative["done"] + len(input)
+    _ = done_negative_3
+    repository_negative_4 := db.Where("repository_id = ?", input)
+    _ = repository_negative_4
+    handler_negative_5 := c.FullPath() + ":" + input
+    _ = handler_negative_5
+    return nil
+}

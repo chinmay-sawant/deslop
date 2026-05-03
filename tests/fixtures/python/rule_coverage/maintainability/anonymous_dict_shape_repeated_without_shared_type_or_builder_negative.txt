@@ -1,0 +1,14 @@
+from typing import TypedDict
+
+class UserData(TypedDict):
+    id: int
+    name: str
+    active: bool
+    role: str
+
+def get_user_data(user_id) -> UserData:
+    # Correct: use a shared TypedDict or dataclass to enforce shape consistency
+    return {"id": user_id, "name": "John", "active": True, "role": "user"}
+
+def get_admin_data(admin_id) -> UserData:
+    return {"id": admin_id, "name": "Jane", "active": True, "role": "admin"}

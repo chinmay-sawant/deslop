@@ -1,0 +1,5 @@
+# Violation: test imports a private production module/function
+from app._internal.utils import _secret_hash_algorithm
+
+def test_hash():
+    assert _secret_hash_algorithm("data") is not None

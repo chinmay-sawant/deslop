@@ -1,0 +1,6 @@
+AUTH_EVENTS = {"login", "logout", "signup"}
+
+def process_event(event_type):
+    # Correct: use the 'in' operator with a set for clean, O(1) membership testing
+    if event_type in AUTH_EVENTS:
+        handle_auth_event(event_type)

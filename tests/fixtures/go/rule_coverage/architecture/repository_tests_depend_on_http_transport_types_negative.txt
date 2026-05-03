@@ -1,0 +1,56 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "net/http/httptest"
+    "strings"
+)
+
+// Negative scenario for repository_tests_depend_on_http_transport_types: preferred concrete example for this rule.
+// Rule intent: Repository tests that assert HTTP DTOs or handler-layer types.
+type CaseRepositoryTestsDependOnHttpTransportTypesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepositoryTestsDependOnHttpTransportTypesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepositoryTestsDependOnHttpTransportTypesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryTestsDependOnHttpTransportTypesModel
+}
+
+type CaseRepositoryTestsDependOnHttpTransportTypesService struct {
+    repo *CaseRepositoryTestsDependOnHttpTransportTypesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryTestsDependOnHttpTransportTypesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRepositoryTestsDependOnHttpTransportTypes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryTestsDependOnHttpTransportTypesDTO) error {
+
+    var model CaseRepositoryTestsDependOnHttpTransportTypesModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        return err
+    }
+    return nil
+}

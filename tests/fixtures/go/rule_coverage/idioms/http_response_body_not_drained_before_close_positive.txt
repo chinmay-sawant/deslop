@@ -1,0 +1,53 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "io"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for http_response_body_not_drained_before_close: risky concrete example for this rule.
+// Rule intent: HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored.
+type CaseHttpResponseBodyNotDrainedBeforeCloseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHttpResponseBodyNotDrainedBeforeCloseModel
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseService struct {
+    repo *CaseHttpResponseBodyNotDrainedBeforeCloseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveHttpResponseBodyNotDrainedBeforeClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpResponseBodyNotDrainedBeforeCloseDTO) error {
+    resp, _ := http.Get(input)
+    resp.Body.Close()
+    return nil
+}

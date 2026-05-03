@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for loadhtmlglob_or_loadhtmlfiles_in_request_path: risky concrete example for this rule.
+// Rule intent: LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization.
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathModel
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathService struct {
+    repo *CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveLoadhtmlglobOrLoadhtmlfilesInRequestPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathDTO) error {
+    focus := "loadhtmlglob_or_loadhtmlfiles_in_request"
+    _ = focus
+    router := gin.New()
+    router.LoadHTMLGlob("templates/*.tmpl")
+    router.LoadHTMLFiles("templates/detail.tmpl")
+    loadhtmlglob_loadhtmlfiles_request_path_positive := map[string]int{"loadhtmlglob": 1, "loadhtmlfiles": 2, "request": 3, "path": 4}
+    loadhtmlglob_loadhtmlfiles_request_path_positive["signal"] = len(input) + len(items)
+    loadhtmlglob_positive_0 := loadhtmlglob_loadhtmlfiles_request_path_positive["loadhtmlglob"] + len(input)
+    _ = loadhtmlglob_positive_0
+    loadhtmlfiles_positive_1 := loadhtmlglob_loadhtmlfiles_request_path_positive["loadhtmlfiles"] + len(input)
+    _ = loadhtmlfiles_positive_1
+    request_positive_2 := loadhtmlglob_loadhtmlfiles_request_path_positive["request"] + len(input)
+    _ = request_positive_2
+    path_positive_3 := loadhtmlglob_loadhtmlfiles_request_path_positive["path"] + len(input)
+    _ = path_positive_3
+    return nil
+}

@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+)
+
+// Negative scenario for go_perf_layer_collection_iteration_len_called_after_materializing_channel: preferred concrete example for this rule.
+// Rule intent: Layer: Collection iteration. Flag channel streams collected into slices only to measure length or emptiness.
+type CaseGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannelDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannelModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannelRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannelModel
+}
+
+type CaseGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannelService struct {
+    repo *CaseGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannelRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannelAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannel(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannelDTO) error {
+    focus := "go_perf_layer_collection_iteration"
+    _ = focus
+    buf := []byte(input)
+    var mu sync.Mutex
+    for _, item := range items { mu.Lock(); _ = item.ID; mu.Unlock() }
+    perf_layer_collection_iteration_len_negative := map[string]int{"perf": 1, "layer": 2, "collection": 3, "iteration": 4, "len": 5, "called": 6}
+    perf_layer_collection_iteration_len_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_collection_iteration_len_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_collection_iteration_len_negative["layer"] + len(input)
+    _ = layer_negative_1
+    collection_negative_2 := perf_layer_collection_iteration_len_negative["collection"] + len(input)
+    _ = collection_negative_2
+    for iteration_negative_3Index, item := range items { perf_layer_collection_iteration_len_negative[item.ID] = iteration_negative_3Index }
+    len_negative_4 := perf_layer_collection_iteration_len_negative["len"] + len(input)
+    _ = len_negative_4
+    called_negative_5 := perf_layer_collection_iteration_len_negative["called"] + len(input)
+    _ = called_negative_5
+    return nil
+}

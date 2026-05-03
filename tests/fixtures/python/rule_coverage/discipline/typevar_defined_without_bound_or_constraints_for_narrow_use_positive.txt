@@ -1,0 +1,7 @@
+from typing import TypeVar
+
+# Violation: TypeVar defined without a bound or constraints, even though it's used narrowly
+T = TypeVar("T")
+
+def process_user(user: T) -> T:
+    return user

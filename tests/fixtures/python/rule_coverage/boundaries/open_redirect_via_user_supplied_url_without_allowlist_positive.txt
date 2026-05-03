@@ -1,0 +1,7 @@
+from flask import redirect, request
+
+@app.route("/login")
+def login():
+    target = request.args.get("next")
+    # Violation: open redirect via user-supplied URL without an allowlist
+    return redirect(target)

@@ -1,0 +1,8 @@
+@app.post("/submit")
+def submit():
+    try:
+        data = parse_request(request)
+        validate(data)
+    except (ParseError, ValidationError) as e:
+        # Correct: client-side errors (validation/parsing) return a 400 Bad Request status
+        return {"error": str(e)}, 400

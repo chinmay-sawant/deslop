@@ -1,0 +1,60 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for byte_string_conversion_in_loop: risky concrete example for this rule.
+// Rule intent: Byte-to-string or string-to-byte conversion observed inside loops in short-lived lookup or append paths.
+type CaseByteStringConversionInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseByteStringConversionInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseByteStringConversionInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseByteStringConversionInLoopModel
+}
+
+type CaseByteStringConversionInLoopService struct {
+    repo *CaseByteStringConversionInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseByteStringConversionInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveByteStringConversionInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseByteStringConversionInLoopDTO) error {
+    lookup := make(map[string]int, len(items))
+    var combined []byte
+    for _, item := range items {
+        lookup[string(item.Payload)] += item.Amount
+        combined = append(combined, []byte(item.ID)...)
+    }
+    _ = lookup
+    _ = combined
+    return nil
+}

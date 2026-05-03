@@ -1,0 +1,9 @@
+from typing import Optional
+from models import UserRecord
+
+def fetch_user_record(user_id: int, include_deleted: bool = False) -> Optional[UserRecord]:
+    # Correct: public API uses type hints to document inputs and outputs clearly
+    record = db.query(user_id)
+    if include_deleted or not record.is_deleted:
+        return record
+    return None

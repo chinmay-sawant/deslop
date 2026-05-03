@@ -1,0 +1,13 @@
+def sync_data():
+    # Violation: repeated try-finally-release pattern not extracted into a context manager
+    lock1.acquire()
+    try:
+        perform_a()
+    finally:
+        lock1.release()
+
+    lock2.acquire()
+    try:
+        perform_b()
+    finally:
+        lock2.release()

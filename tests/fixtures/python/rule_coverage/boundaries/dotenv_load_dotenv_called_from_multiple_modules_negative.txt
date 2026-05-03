@@ -1,0 +1,8 @@
+# main.py
+from dotenv import load_dotenv
+load_dotenv() # Correct: load_dotenv() called once at the app entrypoint
+
+# auth.py
+import os
+def get_key():
+    return os.getenv("API_KEY")

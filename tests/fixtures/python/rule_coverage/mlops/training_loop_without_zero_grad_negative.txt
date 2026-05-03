@@ -1,0 +1,9 @@
+import torch
+
+def train_step(model, inputs, targets, optimizer, criterion):
+    # Correct: always clear old gradients before performing a backward pass
+    optimizer.zero_grad()
+    outputs = model(inputs)
+    loss = criterion(outputs, targets)
+    loss.backward()
+    optimizer.step()

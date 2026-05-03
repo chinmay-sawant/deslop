@@ -1,0 +1,8 @@
+from concurrent.futures import ThreadPoolExecutor
+
+POOL = ThreadPoolExecutor(max_workers=4)
+
+
+def handle_request(value: int) -> int:
+    future = POOL.submit(lambda x: x + 1, value)
+    return future.result()

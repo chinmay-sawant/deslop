@@ -1,0 +1,3 @@
+def upgrade():
+    # Correct: migration only contains schema changes
+    op.add_column('users', sa.Column('is_active', sa.Boolean(), server_default='false'))

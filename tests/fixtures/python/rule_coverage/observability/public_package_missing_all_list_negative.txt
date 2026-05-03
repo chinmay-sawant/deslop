@@ -1,0 +1,8 @@
+# __init__.py of public package
+# Correct: explicitly define __all__ to declare the public contract and hide internal/system imports
+from .core import MainClass
+from .utils import helper_func
+import os
+import sys
+
+__all__ = ["MainClass", "helper_func"]

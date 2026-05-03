@@ -1,0 +1,7 @@
+from functools import lru_cache
+
+class DataProvider:
+    @lru_cache(maxsize=32)
+    def get_data(self, key):
+        # Violation: lru_cache applied to an instance method (memory leak, 'self' is cached)
+        return fetch_from_db(key)

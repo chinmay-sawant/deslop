@@ -1,0 +1,68 @@
+package middleware
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for middleware_rebinds_body_after_handler_bind: preferred concrete example for this rule.
+// Rule intent: Middleware or helper chains that parse the request body after the main handler has already bound it.
+type CaseMiddlewareRebindsBodyAfterHandlerBindDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMiddlewareRebindsBodyAfterHandlerBindModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMiddlewareRebindsBodyAfterHandlerBindRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMiddlewareRebindsBodyAfterHandlerBindModel
+}
+
+type CaseMiddlewareRebindsBodyAfterHandlerBindService struct {
+    repo *CaseMiddlewareRebindsBodyAfterHandlerBindRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMiddlewareRebindsBodyAfterHandlerBindAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMiddlewareRebindsBodyAfterHandlerBind(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareRebindsBodyAfterHandlerBindDTO) error {
+    focus := "middleware_rebinds_body_after_handler"
+    _ = focus
+    var body CaseMiddlewareRebindsBodyAfterHandlerBindDTO
+    if err := c.ShouldBindJSON(&body); err != nil { return err }
+    middleware_rebinds_body_after_handler_negative := map[string]int{"middleware": 1, "rebinds": 2, "body": 3, "after": 4, "handler": 5, "bind": 6}
+    middleware_rebinds_body_after_handler_negative["signal"] = len(input) + len(items)
+    middleware_negative_0 := c.FullPath() + ":" + input
+    _ = middleware_negative_0
+    rebinds_negative_1 := middleware_rebinds_body_after_handler_negative["rebinds"] + len(input)
+    _ = rebinds_negative_1
+    body_negative_2 := middleware_rebinds_body_after_handler_negative["body"] + len(input)
+    _ = body_negative_2
+    after_negative_3 := middleware_rebinds_body_after_handler_negative["after"] + len(input)
+    _ = after_negative_3
+    handler_negative_4 := c.FullPath() + ":" + input
+    _ = handler_negative_4
+    bind_negative_5 := middleware_rebinds_body_after_handler_negative["bind"] + len(input)
+    _ = bind_negative_5
+    return nil
+}

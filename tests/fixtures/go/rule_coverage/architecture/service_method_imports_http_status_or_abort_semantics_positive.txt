@@ -1,0 +1,55 @@
+package service
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+)
+
+// Positive scenario for service_method_imports_http_status_or_abort_semantics:
+// service depends on transport-specific status constants and abort helpers.
+type SubscriptionService struct {
+	repo SubscriptionRepository
+}
+
+type SubscriptionRepository interface {
+	Create(ctx context.Context, userID, plan string) (*Subscription, error)
+}
+
+type Subscription struct {
+	ID     string
+	UserID string
+	Plan   string
+	Status string
+}
+
+func NewSubscriptionService(repo SubscriptionRepository) *SubscriptionService {
+	return &SubscriptionService{repo: repo}
+}
+
+func (s *SubscriptionService) Subscribe(ctx context.Context, userID, plan string) (int, error) {
+	if userID == "" {
+		return http.StatusBadRequest, fmt.Errorf("user ID is required")
+	}
+
+	if plan == "" {
+		return http.StatusBadRequest, fmt.Errorf("plan is required")
+	}
+
+	sub, err := s.repo.Create(ctx, userID, plan)
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("failed to create subscription: %w", err)
+	}
+
+	_ = sub
+
+	return http.StatusCreated, nil
+}
+
+func (s *SubscriptionService) ValidatePlan(plan string) int {
+	validPlans := map[string]bool{"free": true, "pro": true, "enterprise": true}
+	if !validPlans[plan] {
+		return http.StatusUnprocessableEntity
+	}
+	return http.StatusOK
+}

@@ -1,0 +1,8 @@
+from typing import Literal
+
+# Correct: use typing.Literal or Enums to explicitly define and restrict the valid set of options
+def configure_logging(mode: Literal["json", "text"]):
+    if mode == "json":
+        setup_json()
+    elif mode == "text":
+        setup_text()

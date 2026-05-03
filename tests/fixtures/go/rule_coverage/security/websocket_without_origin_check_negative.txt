@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "github.com/gorilla/websocket"
+    "gorm.io/gorm"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for websocket_without_origin_check: preferred concrete example for this rule.
+// Rule intent: WebSocket upgrader without origin validation, allowing cross-site WebSocket hijacking.
+type CaseWebsocketWithoutOriginCheckDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+type CaseWebsocketWithoutOriginCheckModel struct {
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseWebsocketWithoutOriginCheckRepository struct {
+    db    *gorm.DB
+    sql   *sql.DB
+    cache map[string]CaseWebsocketWithoutOriginCheckModel
+}
+
+type CaseWebsocketWithoutOriginCheckService struct {
+    repo   *CaseWebsocketWithoutOriginCheckRepository
+    client *http.Client
+}
+
+type CaseWebsocketWithoutOriginCheckAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+var allowedOrigins = []string{"https://example.com", "https://app.example.com"}
+
+var upgraderWithCheck = websocket.Upgrader{
+    CheckOrigin: func(r *http.Request) bool {
+        origin := r.Header.Get("Origin")
+        for _, allowed := range allowedOrigins {
+            if strings.EqualFold(origin, allowed) {
+                return true
+            }
+        }
+        return false
+    },
+}
+
+func NegativeWebsocketWithoutOriginCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWebsocketWithoutOriginCheckDTO) error {
+    // Upgrader validates origin against allowlist — CSWSH mitigated.
+    conn, err := upgraderWithCheck.Upgrade(c.Writer, c.Request, nil)
+    if err != nil {
+        return err
+    }
+    defer conn.Close()
+    _ = conn.WriteMessage(websocket.TextMessage, []byte(input))
+    return nil
+}

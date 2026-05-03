@@ -1,0 +1,5 @@
+def calculate_tax(amount):
+    # Violation: leaving commented-out code in the codebase (causes confusion and clutter)
+    # old_tax = amount * 0.15
+    # return old_tax
+    return amount * 0.20

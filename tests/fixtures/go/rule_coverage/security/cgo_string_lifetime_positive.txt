@@ -1,0 +1,55 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+    "unsafe"
+)
+
+// #include <stdlib.h>
+// #include <string.h>
+import "C"
+
+// Positive scenario for cgo_string_lifetime: risky concrete example for this rule.
+// Rule intent: C.CString allocated without corresponding C.free, leaking memory across the CGo boundary.
+type CaseCgoStringLifetimeDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+type CaseCgoStringLifetimeModel struct {
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCgoStringLifetimeRepository struct {
+    db    *gorm.DB
+    sql   *sql.DB
+    cache map[string]CaseCgoStringLifetimeModel
+}
+
+type CaseCgoStringLifetimeService struct {
+    repo   *CaseCgoStringLifetimeRepository
+    client *http.Client
+}
+
+type CaseCgoStringLifetimeAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCgoStringLifetime(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCgoStringLifetimeDTO) error {
+    // C.CString allocates memory that must be freed — this leaks.
+    cStr := C.CString(input)
+    _ = C.strlen(cStr)
+    // Missing: C.free(unsafe.Pointer(cStr))
+    _ = unsafe.Pointer(cStr)
+    return nil
+}

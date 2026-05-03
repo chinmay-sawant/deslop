@@ -1,0 +1,49 @@
+package repository
+
+import (
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: Repository begins a transaction internally without using
+// Unit of Work pattern or a callback-based transaction API.
+// This hides transaction boundaries from the caller and risks leaked transactions.
+
+type Order struct {
+	ID       string  `gorm:"column:id"`
+	UserID   string  `gorm:"column:user_id"`
+	Amount   float64 `gorm:"column:amount"`
+	Status   string  `gorm:"column:status"`
+}
+
+type OrderRepository struct {
+	db *gorm.DB
+}
+
+// CreateOrder begins a transaction with db.Begin() and does not guarantee
+// commit or rollback if the caller forgets to handle it.
+func (r *OrderRepository) CreateOrder(order *Order) error {
+	tx := r.db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if err := tx.Create(order).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Missing: tx.Commit() is never called, or is called inconsistently.
+	// The transaction may be left open.
+	return nil
+}
+
+// TransferFunds starts another implicit transaction without UoW.
+func (r *OrderRepository) TransferFunds(fromID, toID string, amount float64) error {
+	tx := r.db.Begin()
+
+	tx.Model(&Order{}).Where("id = ?", fromID).Update("amount", gorm.Expr("amount - ?", amount))
+	tx.Model(&Order{}).Where("id = ?", toID).Update("amount", gorm.Expr("amount + ?", amount))
+
+	// No defer tx.Rollback(), no explicit commit - transaction management is unclear.
+	return tx.Commit().Error
+}

@@ -1,0 +1,6 @@
+def get_user_count():
+    try:
+        return db.count_users()
+    except Exception:
+        # Violation: exception handler returns a default value without any logging or tracking
+        return 0

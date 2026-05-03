@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+import tempfile
+
+
+def write_note() -> str:
+    with tempfile.NamedTemporaryFile(mode="w+", delete=True, encoding="utf-8") as tmp:
+        tmp.write("ok")
+        tmp.flush()
+        return tmp.name

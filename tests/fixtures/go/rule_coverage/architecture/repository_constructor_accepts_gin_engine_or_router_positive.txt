@@ -1,0 +1,56 @@
+package repository
+
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: Repository constructor accepts *gin.Engine or *gin.RouterGroup.
+// This tightly couples the repository to the HTTP framework.
+
+type Product struct {
+	ID    string `gorm:"column:id"`
+	Name  string `gorm:"column:name"`
+	Price float64 `gorm:"column:price"`
+}
+
+type ProductRepository struct {
+	db     *gorm.DB
+	engine *gin.Engine
+}
+
+// NewProductRepository accepts *gin.Engine - this is the anti-pattern.
+// A repository constructor should only accept persistence-related dependencies.
+func NewProductRepository(db *gorm.DB, engine *gin.Engine) *ProductRepository {
+	return &ProductRepository{
+		db:     db,
+		engine: engine,
+	}
+}
+
+// NewProductRepositoryWithRouter accepts *gin.RouterGroup - same anti-pattern.
+func NewProductRepositoryWithRouter(db *gorm.DB, router *gin.RouterGroup) *ProductRepository {
+	repo := &ProductRepository{db: db}
+	router.GET("/products", repo.handleList)
+	router.POST("/products", repo.handleCreate)
+	return repo
+}
+
+func (r *ProductRepository) handleList(c *gin.Context) {
+	var products []Product
+	r.db.Find(&products)
+	c.JSON(200, products)
+}
+
+func (r *ProductRepository) handleCreate(c *gin.Context) {
+	var product Product
+	c.ShouldBindJSON(&product)
+	r.db.Create(&product)
+	c.JSON(201, product)
+}
+
+func (r *ProductRepository) FindByID(id string) (*Product, error) {
+	var product Product
+	err := r.db.First(&product, "id = ?", id).Error
+	return &product, err
+}

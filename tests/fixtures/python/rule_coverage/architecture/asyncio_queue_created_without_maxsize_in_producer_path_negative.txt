@@ -1,0 +1,10 @@
+import asyncio
+
+# Bounded queue prevents memory exhaustion
+queue = asyncio.Queue(maxsize=100)
+
+async def producer():
+    while True:
+        item = await produce_item()
+        # This will backpressure the producer when the queue is full
+        await queue.put(item)

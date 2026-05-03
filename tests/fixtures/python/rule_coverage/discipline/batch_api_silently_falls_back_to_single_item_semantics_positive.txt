@@ -1,0 +1,4 @@
+def save_all_users(users):
+    # Violation: batch API silently falls back to single-item semantics (N+1 database calls)
+    for user in users:
+        db.save(user)

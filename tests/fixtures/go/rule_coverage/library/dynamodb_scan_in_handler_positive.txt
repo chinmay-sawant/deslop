@@ -1,0 +1,54 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for dynamodb_scan_in_handler: risky concrete example for this rule.
+// Rule intent: `dynamodb.Scan` in request handler functions
+type CaseDynamodbScanInHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseDynamodbScanInHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDynamodbScanInHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDynamodbScanInHandlerModel
+}
+
+type CaseDynamodbScanInHandlerService struct {
+    repo *CaseDynamodbScanInHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDynamodbScanInHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDynamodbScanInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDynamodbScanInHandlerDTO) error {
+    svc := dynamodb.New(session.Must(session.NewSession()))
+    _, _ = svc.ScanWithContext(ctx, &dynamodb.ScanInput{
+        TableName: aws.String(input),
+    })
+    return nil
+}

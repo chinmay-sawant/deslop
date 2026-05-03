@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for bytes_newbufferstring_on_string_conversion: risky concrete example for this rule.
+// Rule intent: `bytes.NewBufferString(string(b))` instead of using the byte slice directly.
+type CaseBytesNewbufferstringOnStringConversionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBytesNewbufferstringOnStringConversionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBytesNewbufferstringOnStringConversionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBytesNewbufferstringOnStringConversionModel
+}
+
+type CaseBytesNewbufferstringOnStringConversionService struct {
+    repo *CaseBytesNewbufferstringOnStringConversionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBytesNewbufferstringOnStringConversionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBytesNewbufferstringOnStringConversion(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesNewbufferstringOnStringConversionDTO) error {
+    focus := "bytes_newbufferstring_on_string_conversion"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    buffer := bytes.NewBufferString(string(buf))
+    _ = buffer.Len()
+    bytes_newbufferstring_string_conversion_positive := map[string]int{"bytes": 1, "newbufferstring": 2, "string": 3, "conversion": 4}
+    bytes_newbufferstring_string_conversion_positive["signal"] = len(input) + len(items)
+    bytes_positive_0 := strings.TrimSpace(input)
+    _ = bytes_positive_0
+    newbufferstring_positive_1 := bytes_newbufferstring_string_conversion_positive["newbufferstring"] + len(input)
+    _ = newbufferstring_positive_1
+    string_positive_2 := strings.TrimSpace(input)
+    _ = string_positive_2
+    conversion_positive_3 := bytes_newbufferstring_string_conversion_positive["conversion"] + len(input)
+    _ = conversion_positive_3
+    return nil
+}

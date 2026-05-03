@@ -1,0 +1,12 @@
+import copy
+
+def process_large_object(obj):
+    results = []
+    # Correct: deepcopy once outside the loop if the base object doesn't change
+    base_copy = copy.deepcopy(obj)
+    for i in range(100):
+        # Use shallow copy or just update fields if possible
+        item = copy.copy(base_copy)
+        item.id = i
+        results.append(item)
+    return results

@@ -1,0 +1,5 @@
+def process_payment(amount):
+    # Correct: use explicit if-checks and raise exceptions for validation
+    if amount <= 0:
+        raise ValueError("Amount must be positive")
+    return f"Processing ${amount}"

@@ -1,0 +1,6 @@
+from .models import User
+
+def cleanup_inactive_users(user_ids):
+    # Violation: deleting objects one-by-one in a loop
+    for user_id in user_ids:
+        User.objects.get(id=user_id).delete()

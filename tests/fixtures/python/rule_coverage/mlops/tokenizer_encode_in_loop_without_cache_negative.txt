@@ -1,0 +1,3 @@
+def encode_dataset(documents, tokenizer):
+    # Correct: use the tokenizer's batched encode or batch_encode_plus methods for rust-level acceleration
+    return tokenizer.batch_encode_plus(documents)["input_ids"]

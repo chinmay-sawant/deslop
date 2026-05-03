@@ -1,0 +1,7 @@
+from django.core.management import call_command
+from django.http import HttpResponse
+
+def trigger_migration_view(request):
+    # Violation: calling migration commands from within a view
+    call_command("migrate", interactive=False)
+    return HttpResponse("Migrations started")

@@ -1,0 +1,31 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+)
+
+// Positive scenario for repeated_slice_clone_in_loop: the same base slice is cloned on every loop iteration.
+type CaseRepeatedSliceCloneInLoopDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+func PositiveRepeatedSliceCloneInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepeatedSliceCloneInLoopDTO) error {
+    ids := make([]string, 0, len(items))
+    for _, item := range items {
+        ids = append(ids, item.ID)
+    }
+    for _, item := range items {
+        cloned := append([]string(nil), ids...)
+        cloned = append(cloned, item.TenantID)
+        _ = cloned
+    }
+    return nil
+}

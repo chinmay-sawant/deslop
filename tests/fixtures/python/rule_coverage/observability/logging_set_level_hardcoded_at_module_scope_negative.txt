@@ -1,0 +1,10 @@
+import logging
+import os
+
+logger = logging.getLogger(__name__)
+# Correct: read log levels from environment variables to allow dynamic production debugging
+log_level = os.getenv("APP_LOG_LEVEL", "INFO").upper()
+logger.setLevel(getattr(logging, log_level))
+
+def run():
+    logger.debug("This can be exposed dynamically")

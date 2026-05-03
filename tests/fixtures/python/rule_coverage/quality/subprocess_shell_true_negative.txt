@@ -1,0 +1,5 @@
+import subprocess
+
+def list_files(directory_name):
+    # Correct: pass arguments as a list with shell=False (the default) to bypass the shell entirely
+    subprocess.run(["ls", "-l", directory_name], check=True)

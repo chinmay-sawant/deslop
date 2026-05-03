@@ -1,0 +1,5 @@
+def render_rows(template, queryset):
+    html = ""
+    for obj in queryset:
+        html += template.render({"name": obj.name, "orders": obj.orders.count()})
+    return html

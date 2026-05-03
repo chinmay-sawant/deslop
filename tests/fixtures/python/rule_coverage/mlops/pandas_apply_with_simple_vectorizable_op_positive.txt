@@ -1,0 +1,6 @@
+import pandas as pd
+
+def double_column(df):
+    # Violation: using apply with a lambda for a simple operation that pandas can vectorize
+    df['doubled'] = df['value'].apply(lambda x: x * 2)
+    return df

@@ -1,0 +1,6 @@
+def process_items(config, items):
+    # Correct: extract the deeply nested attribute into a local variable before the loop
+    max_limit = config.settings.thresholds.max_limit
+    for item in items:
+        if item.value > max_limit:
+            print("Exceeded")

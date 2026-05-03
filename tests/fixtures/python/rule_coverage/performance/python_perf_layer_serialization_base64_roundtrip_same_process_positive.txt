@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+import base64
+
+
+def python_perf_layer_serialization_base64_roundtrip_same_process_positive(blob):
+    wire = base64.b64encode(blob)
+    return base64.b64decode(wire)

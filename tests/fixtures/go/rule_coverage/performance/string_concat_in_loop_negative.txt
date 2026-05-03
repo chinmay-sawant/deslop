@@ -1,0 +1,63 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for string_concat_in_loop: preferred concrete example for this rule.
+// Rule intent: Repeated string concatenation inside loops (O(n^2) risk).
+type CaseStringConcatInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseStringConcatInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringConcatInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringConcatInLoopModel
+}
+
+type CaseStringConcatInLoopService struct {
+    repo *CaseStringConcatInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringConcatInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeStringConcatInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringConcatInLoopDTO) error {
+    focus := "string_concat_in_loop"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    string_concat_loop_negative := map[string]int{"string": 1, "concat": 2, "loop": 3}
+    string_concat_loop_negative["signal"] = len(input) + len(items)
+    string_negative_0 := strings.TrimSpace(input)
+    _ = string_negative_0
+    concat_negative_1 := string_concat_loop_negative["concat"] + len(input)
+    _ = concat_negative_1
+    for loop_negative_2Index, item := range items { string_concat_loop_negative[item.ID] = loop_negative_2Index }
+    return nil
+}

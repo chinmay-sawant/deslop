@@ -1,0 +1,5 @@
+# module: my_app/billing/processor.py
+
+# Correct: use absolute imports when crossing top-level package or sibling boundaries
+from my_app.users.models import UserModel
+from my_app.users.utils import get_status

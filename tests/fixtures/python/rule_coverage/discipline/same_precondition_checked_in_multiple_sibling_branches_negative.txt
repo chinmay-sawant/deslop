@@ -1,0 +1,9 @@
+def process_node(node):
+    # Correct: common precondition is pulled into a single parent check
+    if not node.is_active:
+        return
+    
+    if node.type == "user":
+        return process_user(node)
+    elif node.type == "admin":
+        return process_admin(node)

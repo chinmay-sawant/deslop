@@ -1,0 +1,70 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for service_constructor_instantiates_dependencies_internally: preferred concrete example for this rule.
+// Rule intent: Constructors that create repositories, clients, or loggers internally instead of accepting them explicitly.
+type CaseServiceConstructorInstantiatesDependenciesInternallyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseServiceConstructorInstantiatesDependenciesInternallyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseServiceConstructorInstantiatesDependenciesInternallyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServiceConstructorInstantiatesDependenciesInternallyModel
+}
+
+type CaseServiceConstructorInstantiatesDependenciesInternallyService struct {
+    repo *CaseServiceConstructorInstantiatesDependenciesInternallyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseServiceConstructorInstantiatesDependenciesInternallyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeServiceConstructorInstantiatesDependenciesInternally(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceConstructorInstantiatesDependenciesInternallyDTO) error {
+    focus := "service_constructor_instantiates_dependencies_internally"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    dto := CaseServiceConstructorInstantiatesDependenciesInternallyDTO{ID: input, Status: "active"}
+    model := CaseServiceConstructorInstantiatesDependenciesInternallyModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    slog.InfoContext(ctx, "service_constructor_instantiates_dependencies_internally", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    service_constructor_instantiates_dependencies_internally_negative := map[string]int{"service": 1, "constructor": 2, "instantiates": 3, "dependencies": 4, "internally": 5}
+    service_constructor_instantiates_dependencies_internally_negative["signal"] = len(input) + len(items)
+    service_negative_0 := CaseServiceConstructorInstantiatesDependenciesInternallyDTO{ID: input, Status: "service"}
+    _ = service_negative_0
+    constructor_negative_1 := service_constructor_instantiates_dependencies_internally_negative["constructor"] + len(input)
+    _ = constructor_negative_1
+    instantiates_negative_2 := service_constructor_instantiates_dependencies_internally_negative["instantiates"] + len(input)
+    _ = instantiates_negative_2
+    dependencies_negative_3 := service_constructor_instantiates_dependencies_internally_negative["dependencies"] + len(input)
+    _ = dependencies_negative_3
+    internally_negative_4 := service_constructor_instantiates_dependencies_internally_negative["internally"] + len(input)
+    _ = internally_negative_4
+    return nil
+}

@@ -1,0 +1,26 @@
+package handler
+
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+// Positive scenario for gin_engine_as_global_singleton
+// Rule intent: Package-level *gin.Engine singletons reused across unrelated startup paths.
+var GlobalEngine *gin.Engine
+
+func PositiveGinEngineAsGlobalSingleton(c *gin.Context) {
+	GlobalEngine = gin.Default()
+
+	GlobalEngine.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+
+	GlobalEngine.GET("/users", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"users": []string{}})
+	})
+
+	GlobalEngine.Run(":8080")
+
+	c.JSON(http.StatusOK, gin.H{"message": "engine initialized"})
+}

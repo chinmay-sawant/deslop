@@ -1,0 +1,6 @@
+from pydantic_settings import BaseSettings
+
+class AppSettings(BaseSettings):
+    api_key: str
+    # Violation: pydantic settings model allows extra fields, which may lead to config typos going unnoticed
+    model_config = {"extra": "allow"}

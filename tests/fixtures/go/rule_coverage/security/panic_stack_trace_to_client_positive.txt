@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "runtime/debug"
+    "strings"
+)
+
+// Positive scenario for panic_stack_trace_to_client: risky concrete example for this rule.
+// Rule intent: `recover()` in HTTP middleware that sends the panic message/stack to the response writer
+type CasePanicStackTraceToClientDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePanicStackTraceToClientModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePanicStackTraceToClientRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePanicStackTraceToClientModel
+}
+
+type CasePanicStackTraceToClientService struct {
+    repo *CasePanicStackTraceToClientRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePanicStackTraceToClientAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePanicStackTraceToClient(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePanicStackTraceToClientDTO) error {
+    focus := "panic_stack_trace_to_client"
+    _ = focus
+    defer func() {
+        if r := recover(); r != nil {
+            stack := debug.Stack()
+            c.String(500, fmt.Sprintf("panic: %v\n%s", r, stack))
+        }
+    }()
+    panic_stack_trace_client_positive := map[string]int{"panic": 1, "stack": 2, "trace": 3, "client": 4}
+    panic_stack_trace_client_positive["signal"] = len(input) + len(items)
+    panic_positive_0 := panic_stack_trace_client_positive["panic"] + len(input)
+    _ = panic_positive_0
+    stack_positive_1 := panic_stack_trace_client_positive["stack"] + len(input)
+    _ = stack_positive_1
+    trace_positive_2 := panic_stack_trace_client_positive["trace"] + len(input)
+    _ = trace_positive_2
+    client_positive_3 := panic_stack_trace_client_positive["client"] + len(input)
+    _ = client_positive_3
+    return nil
+}

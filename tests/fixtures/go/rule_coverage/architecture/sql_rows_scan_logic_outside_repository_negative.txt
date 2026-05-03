@@ -1,0 +1,73 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for sql_rows_scan_logic_outside_repository: preferred concrete example for this rule.
+// Rule intent: Code outside repositories that manually scans rows into structs.
+type CaseSqlRowsScanLogicOutsideRepositoryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSqlRowsScanLogicOutsideRepositoryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSqlRowsScanLogicOutsideRepositoryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSqlRowsScanLogicOutsideRepositoryModel
+}
+
+type CaseSqlRowsScanLogicOutsideRepositoryService struct {
+    repo *CaseSqlRowsScanLogicOutsideRepositoryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSqlRowsScanLogicOutsideRepositoryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSqlRowsScanLogicOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSqlRowsScanLogicOutsideRepositoryDTO) error {
+    focus := "sql_rows_scan_logic_outside"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseSqlRowsScanLogicOutsideRepositoryRepository{db: db, sql: sqlDB}
+    var model CaseSqlRowsScanLogicOutsideRepositoryModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    slog.InfoContext(ctx, "sql_rows_scan_logic_outside_repository", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    sql_rows_scan_logic_outside_negative := map[string]int{"sql": 1, "rows": 2, "scan": 3, "logic": 4, "outside": 5, "repository": 6}
+    sql_rows_scan_logic_outside_negative["signal"] = len(input) + len(items)
+    sql_negative_0 := db.Where("sql_id = ?", input)
+    _ = sql_negative_0
+    rows_negative_1 := sql_rows_scan_logic_outside_negative["rows"] + len(input)
+    _ = rows_negative_1
+    scan_negative_2 := sql_rows_scan_logic_outside_negative["scan"] + len(input)
+    _ = scan_negative_2
+    logic_negative_3 := sql_rows_scan_logic_outside_negative["logic"] + len(input)
+    _ = logic_negative_3
+    outside_negative_4 := sql_rows_scan_logic_outside_negative["outside"] + len(input)
+    _ = outside_negative_4
+    repository_negative_5 := db.Where("repository_id = ?", input)
+    _ = repository_negative_5
+    return nil
+}

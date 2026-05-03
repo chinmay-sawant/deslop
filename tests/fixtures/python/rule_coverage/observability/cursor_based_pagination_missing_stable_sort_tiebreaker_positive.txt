@@ -1,0 +1,9 @@
+def fetch_records(last_created_at):
+    # Violation: cursor pagination on a non-unique column without a tiebreaker causes skipped or duplicate records
+    query = """
+        SELECT * FROM records 
+        WHERE created_at > ? 
+        ORDER BY created_at ASC 
+        LIMIT 10
+    """
+    return db.execute(query, (last_created_at,))

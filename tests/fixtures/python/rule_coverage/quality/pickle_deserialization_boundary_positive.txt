@@ -1,0 +1,6 @@
+import pickle
+
+def handle_inbound_message(raw_bytes):
+    # Violation: deserializing unauthenticated data using pickle allows arbitrary remote code execution (RCE)
+    payload = pickle.loads(raw_bytes)
+    process(payload)

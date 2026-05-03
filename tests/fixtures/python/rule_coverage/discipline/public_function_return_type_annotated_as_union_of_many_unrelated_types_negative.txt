@@ -1,0 +1,8 @@
+class ResourceResponse(BaseModel):
+    value: Any
+    type: str
+
+# Correct: function returns a single, well-defined model
+def get_resource(id: str) -> ResourceResponse:
+    data = fetch_data(id)
+    return ResourceResponse(value=data, type=type(data).__name__)

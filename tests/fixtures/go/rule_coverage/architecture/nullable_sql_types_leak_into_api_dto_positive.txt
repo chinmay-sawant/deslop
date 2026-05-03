@@ -1,0 +1,40 @@
+package transport
+
+import (
+	"database/sql"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Positive scenario for nullable_sql_types_leak_into_api_dto.
+// Anti-pattern: API DTO exposes sql.Null* types, leaking persistence
+// implementation details into the public API contract.
+
+type UserResponse struct {
+	ID        uint           `json:"id"`
+	Username  string         `json:"username"`
+	Email     sql.NullString `json:"email"`
+	Bio       sql.NullString `json:"bio"`
+	LastLogin sql.NullTime   `json:"last_login"`
+	BirthDate sql.NullTime   `json:"birth_date"`
+	Score     sql.NullInt64  `json:"score"`
+	Verified  sql.NullBool   `json:"verified"`
+}
+
+func GetUserHandler(c *gin.Context) {
+	var user UserResponse
+	if err := db.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	// Anti-pattern: response DTO contains sql.Null* types.
+	// JSON serialization produces awkward output like:
+	//   "email": {"String": "user@example.com", "Valid": true}
+	//   "last_login": {"Time": "2024-01-01T00:00:00Z", "Valid": false}
+	// instead of clean API values like:
+	//   "email": "user@example.com"
+	//   "last_login": null
+	c.JSON(http.StatusOK, user)
+}

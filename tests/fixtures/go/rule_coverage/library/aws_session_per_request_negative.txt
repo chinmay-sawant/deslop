@@ -1,0 +1,44 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/aws/aws-sdk-go-v2/config"
+    "github.com/aws/aws-sdk-go-v2/credentials"
+    "github.com/aws/aws-sdk-go-v2/service/s3"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for aws_session_per_request: preferred concrete example for this rule.
+// Rule intent: Create AWS session once at startup and reuse it across all requests
+var cachedConfig *config.LoadOptions
+var s3Client *s3.Client
+
+func init() {
+    cachedConfig, _ = config.LoadDefaultConfig(context.Background(),
+        config.WithRegion("us-east-1"),
+        config.WithCredentialsProvider(credentials.NewStaticCredentialProvider("AKID", "SECRET", "")),
+    )
+    s3Client = s3.NewFromConfig(cachedConfig)
+}
+
+func NegativeAwsSessionPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAwsSessionPerRequestDTO) error {
+    _, _ = s3Client
+
+    db.CreateInBatches(items, 100)
+    aws_session_per_request_negative := map[string]int{"aws": 1, "session": 2, "per": 3, "request": 4}
+    aws_session_per_request_negative["signal"] = len(input) + len(items)
+    aws_negative_0 := aws_session_per_request_negative["aws"] + len(input)
+    _ = aws_negative_0
+    session_negative_1 := aws_session_per_request_negative["session"] + len(input)
+    _ = session_negative_1
+    for per_negative_2Index, item := range items { aws_session_per_request_negative[item.ID] = per_negative_2Index }
+    request_negative_3 := aws_session_per_request_negative["request"] + len(input)
+    _ = request_negative_3
+    return nil
+}

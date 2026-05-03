@@ -1,0 +1,7 @@
+import logging
+
+# Violation: a reusable library package forcibly configuring the root logger, overriding user applications
+logging.basicConfig(level=logging.DEBUG, format='%(levelname)s - %(message)s')
+
+def perform_library_action():
+    logging.info("Library action executed")

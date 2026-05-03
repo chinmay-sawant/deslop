@@ -1,0 +1,6 @@
+from __future__ import annotations
+
+def repeated_dict_get_same_key_no_cache_negative():
+    profile = {"name": "Mina", "region": "us-east"}
+    region = profile.get("region", "unknown")
+    return [region.upper(), region.lower(), region.upper(), region.lower()]

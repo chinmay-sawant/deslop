@@ -1,0 +1,11 @@
+from __future__ import annotations
+
+import subprocess
+
+
+def python_perf_layer_io_operations_subprocess_per_item_positive(values):
+    output = []
+    for value in values:
+        line = subprocess.run(["echo", str(value)], capture_output=True, text=True, check=True)
+        output.append(line.stdout.strip())
+    return output

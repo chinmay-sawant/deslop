@@ -1,0 +1,8 @@
+from contextlib import contextmanager
+
+global_resource = {"state": "ready"}
+
+@contextmanager
+def use_resource():
+    # Violation: context manager yields a global mutable resource directly
+    yield global_resource

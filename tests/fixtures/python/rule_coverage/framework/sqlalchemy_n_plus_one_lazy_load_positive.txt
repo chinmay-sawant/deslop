@@ -1,0 +1,6 @@
+from .models import User
+
+def list_user_bios(session):
+    # Violation: N+1 lazy loading - profile is fetched individually for each user in the loop
+    for user in session.query(User).all():
+        print(user.profile.bio)

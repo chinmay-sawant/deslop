@@ -1,0 +1,7 @@
+import pandas as pd
+
+def stream_dataframe(df):
+    for i in range(10):
+        # Violation: repeatedly calling to_dict('records') inside a loop causes massive serialization overhead
+        records = df.to_dict('records')
+        process_records(records, i)

@@ -1,0 +1,13 @@
+from pydantic import BaseModel
+
+class UserPayload(BaseModel):
+    id: str
+    email: str
+
+def process_external_webhook(payload: dict):
+    # Mapping to a boundary/adapter model first
+    user = UserPayload(
+        id=payload["data"]["user"]["id"],
+        email=payload["data"]["user"]["email_address"]
+    )
+    # ... business logic uses 'user' model

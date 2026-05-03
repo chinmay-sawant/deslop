@@ -1,0 +1,4 @@
+from __future__ import annotations
+
+def temporary_file_used_for_pure_in_memory_transformation_negative(text):
+    return text.upper()

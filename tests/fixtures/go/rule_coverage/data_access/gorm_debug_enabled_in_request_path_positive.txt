@@ -1,0 +1,67 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for gorm_debug_enabled_in_request_path: risky concrete example for this rule.
+// Rule intent: GORM debug logging enabled on request paths.
+type CaseGormDebugEnabledInRequestPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGormDebugEnabledInRequestPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGormDebugEnabledInRequestPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormDebugEnabledInRequestPathModel
+}
+
+type CaseGormDebugEnabledInRequestPathService struct {
+    repo *CaseGormDebugEnabledInRequestPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormDebugEnabledInRequestPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGormDebugEnabledInRequestPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormDebugEnabledInRequestPathDTO) error {
+    focus := "gorm_debug_enabled_in_request"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    debugDB := db.Debug()
+    debugDB.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormDebugEnabledInRequestPathModel{})
+    gorm_debug_enabled_request_path_positive := map[string]int{"gorm": 1, "debug": 2, "enabled": 3, "request": 4, "path": 5}
+    gorm_debug_enabled_request_path_positive["signal"] = len(input) + len(items)
+    gorm_positive_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_0
+    debug_positive_1 := gorm_debug_enabled_request_path_positive["debug"] + len(input)
+    _ = debug_positive_1
+    enabled_positive_2 := gorm_debug_enabled_request_path_positive["enabled"] + len(input)
+    _ = enabled_positive_2
+    request_positive_3 := gorm_debug_enabled_request_path_positive["request"] + len(input)
+    _ = request_positive_3
+    path_positive_4 := gorm_debug_enabled_request_path_positive["path"] + len(input)
+    _ = path_positive_4
+    return nil
+}

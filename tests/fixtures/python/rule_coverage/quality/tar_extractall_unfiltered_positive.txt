@@ -1,0 +1,6 @@
+import tarfile
+
+def unpack_archive(tar_path, dest):
+    with tarfile.open(tar_path) as tar:
+        # Violation: using extractall() blindly allows malicious archives to overwrite arbitrary system files via path traversal
+        tar.extractall(path=dest)

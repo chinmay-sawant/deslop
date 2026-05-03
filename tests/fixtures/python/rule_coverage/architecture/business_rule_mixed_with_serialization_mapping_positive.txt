@@ -1,0 +1,10 @@
+class Order:
+    def to_json(self):
+        # Violation: mixing business rules (tax calculation) with serialization
+        tax = self.amount * 0.15
+        total = self.amount + tax
+        return {
+            "amount": self.amount,
+            "tax": tax,
+            "total": total
+        }

@@ -1,0 +1,9 @@
+from .models import User
+
+def fetch_users(session, user_ids):
+    # Violation: executing a separate database query for each item in a loop
+    results = []
+    for user_id in user_ids:
+        user = session.query(User).filter(User.id == user_id).first()
+        results.append(user)
+    return results

@@ -1,0 +1,60 @@
+package handler_test
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+)
+
+// Positive scenario for tests_assert_raw_json_strings_without_response_dto.
+// Rule intent: Brittle raw-JSON string assertions when typed response DTOs exist.
+
+type UserResponse struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+func GetUserHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, UserResponse{
+		ID:    "123",
+		Name:  "John",
+		Email: "john@example.com",
+	})
+}
+
+func TestGetUserHandler_AssertsRawJSON(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+
+	c.Request = httptest.NewRequest(http.MethodGet, "/users/123", nil)
+	GetUserHandler(c)
+
+	body := w.Body.String()
+
+	// Anti-pattern: asserting raw JSON strings instead of unmarshaling into a typed DTO
+	assert.Contains(t, body, `"name":"John"`)
+	assert.Contains(t, body, `"email":"john@example.com"`)
+	assert.Contains(t, body, `"id":"123"`)
+	assert.True(t, strings.Contains(body, `"name":`) && strings.Contains(body, `"John"`))
+}
+
+func TestCreateUserHandler_AssertsRawJSON(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+
+	c.Request = httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(`{"name":"Jane"}`))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	body := w.Body.String()
+
+	// Anti-pattern: raw substring matching on JSON instead of DTO-based assertions
+	assert.True(t, strings.Contains(body, `"message"`))
+	assert.Contains(t, body, `"created"`)
+}

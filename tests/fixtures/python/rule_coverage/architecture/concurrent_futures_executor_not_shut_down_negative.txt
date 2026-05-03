@@ -1,0 +1,7 @@
+from concurrent.futures import ProcessPoolExecutor
+
+def run_jobs(data):
+    # Correct: executor managed via context manager
+    with ProcessPoolExecutor(max_workers=4) as executor:
+        results = list(executor.map(expensive_work, data))
+    return results

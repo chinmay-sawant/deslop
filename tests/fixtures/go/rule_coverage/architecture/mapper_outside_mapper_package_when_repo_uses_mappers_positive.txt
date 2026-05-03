@@ -1,0 +1,53 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for mapper_outside_mapper_package_when_repo_uses_mappers: risky concrete example for this rule.
+// Rule intent: Mapper functions scattered across handlers and services when the repo already has a dedicated mapping package.
+type CaseMapperOutsideMapperPackageWhenRepoUsesMappersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMapperOutsideMapperPackageWhenRepoUsesMappersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMapperOutsideMapperPackageWhenRepoUsesMappersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMapperOutsideMapperPackageWhenRepoUsesMappersModel
+}
+
+type CaseMapperOutsideMapperPackageWhenRepoUsesMappersService struct {
+    repo *CaseMapperOutsideMapperPackageWhenRepoUsesMappersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMapperOutsideMapperPackageWhenRepoUsesMappersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMapperOutsideMapperPackageWhenRepoUsesMappers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMapperOutsideMapperPackageWhenRepoUsesMappersDTO) error {
+    dto := CaseMapperOutsideMapperPackageWhenRepoUsesMappersDTO{ID: input, Status: "active"}
+    model := CaseMapperOutsideMapperPackageWhenRepoUsesMappersModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    db.Create(&model)
+    return nil
+}

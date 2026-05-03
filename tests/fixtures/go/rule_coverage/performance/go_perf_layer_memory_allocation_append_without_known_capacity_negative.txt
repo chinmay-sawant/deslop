@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_memory_allocation_append_without_known_capacity: preferred concrete example for this rule.
+// Rule intent: Layer: Memory allocation. Flag slice appends in builders where an obvious count is available for make capacity.
+type CaseGoPerfLayerMemoryAllocationAppendWithoutKnownCapacityDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerMemoryAllocationAppendWithoutKnownCapacityModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerMemoryAllocationAppendWithoutKnownCapacityRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerMemoryAllocationAppendWithoutKnownCapacityModel
+}
+
+type CaseGoPerfLayerMemoryAllocationAppendWithoutKnownCapacityService struct {
+    repo *CaseGoPerfLayerMemoryAllocationAppendWithoutKnownCapacityRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerMemoryAllocationAppendWithoutKnownCapacityAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerMemoryAllocationAppendWithoutKnownCapacity(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerMemoryAllocationAppendWithoutKnownCapacityDTO) error {
+    focus := "go_perf_layer_memory_allocation"
+    _ = focus
+    buf := []byte(input)
+    copied := make([]CaseGoPerfLayerMemoryAllocationAppendWithoutKnownCapacityDTO, 0, len(items))
+    copied = append(copied, items...)
+    perf_layer_memory_allocation_append_negative := map[string]int{"perf": 1, "layer": 2, "memory": 3, "allocation": 4, "append": 5, "known": 6}
+    perf_layer_memory_allocation_append_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_memory_allocation_append_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_memory_allocation_append_negative["layer"] + len(input)
+    _ = layer_negative_1
+    memory_negative_2 := perf_layer_memory_allocation_append_negative["memory"] + len(input)
+    _ = memory_negative_2
+    allocation_negative_3 := perf_layer_memory_allocation_append_negative["allocation"] + len(input)
+    _ = allocation_negative_3
+    append_negative_4 := perf_layer_memory_allocation_append_negative["append"] + len(input)
+    _ = append_negative_4
+    known_negative_5 := perf_layer_memory_allocation_append_negative["known"] + len(input)
+    _ = known_negative_5
+    return nil
+}

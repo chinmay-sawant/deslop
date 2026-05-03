@@ -1,0 +1,9 @@
+# Correct: decompose God Classes into highly cohesive, domain-specific services
+class PayrollCalculator:
+    def calculate_tax(self): pass
+
+class NotificationService:
+    def send_sms(self): pass
+
+class ImageProcessor:
+    def compress(self): pass

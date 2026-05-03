@@ -1,0 +1,8 @@
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class User:
+    # Correct: dataclass provides better type annotations and configuration
+    id: int
+    name: str
+    email: str

@@ -1,0 +1,8 @@
+def calculate_discount(user_status):
+    if user_status == "premium":
+        return 0.20
+    elif user_status == "basic":
+        return 0.05
+    else:
+        # Correct: unknown or illegal states must crash the process loudly so the bug can be fixed
+        raise ValueError(f"Invariant violation: Unknown user status '{user_status}'")

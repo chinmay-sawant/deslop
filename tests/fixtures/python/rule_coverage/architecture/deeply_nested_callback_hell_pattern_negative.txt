@@ -1,0 +1,7 @@
+async def process_data(data):
+    # Correct: flat logic using async/await
+    user = await fetch_user(data.user_id)
+    posts = await fetch_posts(user.id)
+    filtered = await filter_posts(posts)
+    formatted = await format_data(filtered)
+    return formatted

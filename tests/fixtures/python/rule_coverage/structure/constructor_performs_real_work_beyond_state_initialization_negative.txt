@@ -1,0 +1,13 @@
+import network
+
+class DataProcessor:
+    # Correct: constructors should only assign state; use classmethods for complex initialization routines
+    def __init__(self, data, model):
+        self.data = data
+        self.model = model
+        
+    @classmethod
+    def create_from_network(cls):
+        data = network.download_massive_dataset()
+        model = train_model(data)
+        return cls(data, model)

@@ -1,0 +1,7 @@
+def read_config(path):
+    try:
+        with open(path) as f:
+            return f.read()
+    except OSError:
+        # Violation: OSError caught without inspecting errno (may swallow unrelated issues)
+        return "{}"

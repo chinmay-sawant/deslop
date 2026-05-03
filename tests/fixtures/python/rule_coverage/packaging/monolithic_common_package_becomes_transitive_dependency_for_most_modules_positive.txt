@@ -1,0 +1,6 @@
+# src/feature_a.py
+# Violation: importing everything from a monolithic 'common' package creates tight coupling and circular dependency hell
+from src.common import *
+
+def do_work():
+    return DatabaseConnection()

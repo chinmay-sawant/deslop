@@ -1,0 +1,11 @@
+# Correct: prefer flat composition over deep inheritance to construct complex entities
+class Button:
+    def __init__(self, action_handler, renderer):
+        self.action_handler = action_handler
+        self.renderer = renderer
+
+def create_async_submit_button():
+    return Button(
+        action_handler=AsyncSubmitHandler(),
+        renderer=PrimaryButtonRenderer()
+    )

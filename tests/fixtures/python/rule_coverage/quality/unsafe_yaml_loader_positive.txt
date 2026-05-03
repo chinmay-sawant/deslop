@@ -1,0 +1,5 @@
+import yaml
+
+def parse_config(data):
+    # Violation: using yaml.load() on untrusted data allows arbitrary python object instantiation and code execution
+    return yaml.load(data, Loader=yaml.Loader)

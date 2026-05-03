@@ -1,0 +1,8 @@
+# Violation: relying on global mutable state makes the code thread-unsafe and impossible to test reliably
+ACTIVE_USERS = set()
+
+def login_user(user_id):
+    ACTIVE_USERS.add(user_id)
+
+def logout_user(user_id):
+    ACTIVE_USERS.discard(user_id)

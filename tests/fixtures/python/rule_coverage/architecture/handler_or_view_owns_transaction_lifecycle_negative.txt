@@ -1,0 +1,4 @@
+@app.post("/transfer")
+@transactional  # Correct: transaction managed via decorator or service layer
+def transfer_funds(amount: float, to_user: str, service: BankingService = Depends()):
+    service.transfer(current_user.id, to_user, amount)

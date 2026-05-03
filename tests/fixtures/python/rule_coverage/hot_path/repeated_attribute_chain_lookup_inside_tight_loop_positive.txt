@@ -1,0 +1,5 @@
+def process_items(config, items):
+    for item in items:
+        # Violation: repeated deep attribute chain lookup inside a tight loop (unnecessary overhead)
+        if item.value > config.settings.thresholds.max_limit:
+            print("Exceeded")

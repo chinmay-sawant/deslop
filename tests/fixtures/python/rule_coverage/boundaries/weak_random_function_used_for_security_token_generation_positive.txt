@@ -1,0 +1,7 @@
+from __future__ import annotations
+
+import random
+
+
+def issue_token() -> str:
+    return hex(random.getrandbits(64))[2:]

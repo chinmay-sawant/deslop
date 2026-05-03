@@ -1,0 +1,27 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+)
+
+// Positive scenario for make_slice_inside_hot_loop_same_shape: same-shape scratch slices are made inside a hot loop.
+type CaseMakeSliceInsideHotLoopSameShapeDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+func PositiveMakeSliceInsideHotLoopSameShape(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMakeSliceInsideHotLoopSameShapeDTO) error {
+    for _, item := range items {
+        scratch := make([]string, 0, 3)
+        scratch = append(scratch, item.ID, item.TenantID, item.Status)
+        c.Set(item.ID, scratch)
+    }
+    return nil
+}

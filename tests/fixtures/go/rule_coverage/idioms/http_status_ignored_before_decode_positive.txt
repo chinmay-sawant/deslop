@@ -1,0 +1,53 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "io"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for http_status_ignored_before_decode: risky concrete example for this rule.
+// Rule intent: Response decoding or body consumption that happens without an observed StatusCode check.
+type CaseHttpStatusIgnoredBeforeDecodeDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseHttpStatusIgnoredBeforeDecodeModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHttpStatusIgnoredBeforeDecodeRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHttpStatusIgnoredBeforeDecodeModel
+}
+
+type CaseHttpStatusIgnoredBeforeDecodeService struct {
+    repo *CaseHttpStatusIgnoredBeforeDecodeRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHttpStatusIgnoredBeforeDecodeAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveHttpStatusIgnoredBeforeDecode(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpStatusIgnoredBeforeDecodeDTO) error {
+    resp, _ := http.Get(input)
+    io.ReadAll(resp.Body)
+    return nil
+}

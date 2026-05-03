@@ -1,0 +1,6 @@
+def process_batch(batch):
+    # Correct: return processed items functionally rather than mutating global state
+    processed_items = []
+    for item in batch:
+        processed_items.append(item * 2)
+    return processed_items

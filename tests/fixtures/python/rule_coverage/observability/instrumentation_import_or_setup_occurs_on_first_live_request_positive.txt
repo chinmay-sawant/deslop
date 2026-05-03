@@ -1,0 +1,8 @@
+tracer = None
+
+def handle_request(req):
+    global tracer
+    # Violation: setting up observability clients on the first live request causes huge latency spikes for that user
+    if tracer is None:
+        tracer = initialize_heavy_telemetry_client()
+    return tracer.trace(req)

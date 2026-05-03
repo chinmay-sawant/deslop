@@ -1,0 +1,35 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for mixed_receiver_kinds: preferred concrete example for this rule.
+// Rule intent: Use consistent pointer receivers for all methods on a type
+type Account struct {
+    ID   string
+    Name string
+}
+
+func (a *Account) GetName() string {
+    return a.Name
+}
+
+func (a *Account) SetName(name string) {
+    a.Name = name
+}
+
+func (a *Account) GetID() string {
+    return a.ID
+}
+
+func (a *Account) SetID(id string) {
+    a.ID = id
+}

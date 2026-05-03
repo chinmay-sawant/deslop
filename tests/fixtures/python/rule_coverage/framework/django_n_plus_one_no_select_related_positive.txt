@@ -1,0 +1,6 @@
+from .models import User
+
+def list_user_bios():
+    # Violation: N+1 query issue - accessing foreign key 'profile' in a loop without select_related
+    for user in User.objects.all():
+        print(user.profile.bio)

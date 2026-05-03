@@ -1,0 +1,12 @@
+import pytest
+from tenacity import retry, stop_after_delay, wait_fixed
+
+def test_async_task():
+    task.start()
+    
+    # Correct: use a retry/wait loop with a timeout to wait for the task to complete
+    @retry(stop=stop_after_delay(5), wait=wait_fixed(0.1))
+    def wait_for_done():
+        assert task.is_done()
+    
+    wait_for_done()

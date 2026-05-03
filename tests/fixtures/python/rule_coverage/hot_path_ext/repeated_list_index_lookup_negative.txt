@@ -1,0 +1,7 @@
+from __future__ import annotations
+
+def repeated_list_index_lookup_negative():
+    values = [10, 20, 30]
+    i = 1
+    current = values[i]
+    return current * current + current

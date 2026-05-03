@@ -1,0 +1,9 @@
+def process():
+    try:
+        perform_task()
+    finally:
+        # Violation: exception silenced in a 'finally' block
+        try:
+            cleanup()
+        except:
+            pass

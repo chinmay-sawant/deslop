@@ -1,0 +1,24 @@
+from dataclasses import dataclass
+
+@dataclass
+class TlsConfig:
+    use_tls: bool
+    cert_path: str
+    key_path: str
+
+@dataclass
+class DatabaseConfig:
+    host: str
+    port: int
+    user: str
+    password: str
+
+class ServerConfiguration:
+    # Correct: group related fields into composite sub-objects to maintain cohesion and readability
+    def __init__(self, tls: TlsConfig, db: DatabaseConfig):
+        self.host = "localhost"
+        self.port = 8080
+        self.tls = tls
+        self.db = db
+        self.timeout = 30
+        self.retries = 3

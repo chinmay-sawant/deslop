@@ -1,0 +1,10 @@
+from typing import Optional
+
+class User:
+    pass
+
+# Correct: use Optional[T] or T | None to force consumers to handle the null case explicitly
+def find_user(user_id: int) -> Optional[User]:
+    if user_id <= 0:
+        return None
+    return User()

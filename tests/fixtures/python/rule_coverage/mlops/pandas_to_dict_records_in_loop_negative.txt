@@ -1,0 +1,7 @@
+import pandas as pd
+
+def stream_dataframe(df):
+    # Correct: convert the DataFrame to a dictionary once outside the loop
+    records = df.to_dict('records')
+    for i in range(10):
+        process_records(records, i)

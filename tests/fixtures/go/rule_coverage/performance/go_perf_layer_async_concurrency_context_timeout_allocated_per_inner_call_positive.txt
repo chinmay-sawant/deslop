@@ -1,0 +1,61 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call: risky concrete example for this rule.
+// Rule intent: Layer: Async and concurrency. Flag context.WithTimeout creation inside tight retry loops when an outer deadline would suffice.
+type CaseGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCallModel
+}
+
+type CaseGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCallService struct {
+    repo *CaseGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerAsyncConcurrencyContextTimeoutAllocatedPerInnerCallDTO) error {
+    focus := "go_perf_layer_async_concurrency"
+    _ = focus
+    for _, item := range items {
+        ctx2, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
+        defer cancel()
+        _ = ctx2
+        _ = item
+    }
+    return nil
+}

@@ -1,0 +1,5 @@
+def apply_transformation(df):
+    # Violation: copying an entire large DataFrame just to modify one column
+    df_new = df.copy()
+    df_new["normalized"] = df_new["value"] / 100.0
+    return df_new

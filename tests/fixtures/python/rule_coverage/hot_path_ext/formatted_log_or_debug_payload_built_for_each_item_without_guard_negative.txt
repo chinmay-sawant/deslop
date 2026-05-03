@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+def formatted_log_or_debug_payload_built_for_each_item_without_guard_negative():
+    debug_enabled = False
+    events = [("login", 1), ("logout", 2)]
+    logs = []
+    for action, user_id in events:
+        if debug_enabled:
+            logs.append(f"event={action} user={user_id} trace={action}:{user_id * 100}")
+    return logs

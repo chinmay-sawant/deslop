@@ -1,0 +1,5 @@
+@app.get("/users/{id}")
+def get_user(id: int):
+    # Violation: view/handler constructing ORM query directly
+    user = session.query(User).filter(User.id == id).one_or_none()
+    return user

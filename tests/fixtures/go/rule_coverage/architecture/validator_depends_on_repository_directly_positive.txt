@@ -1,0 +1,55 @@
+package validator
+
+import (
+	"fmt"
+
+	"example.com/app/repository"
+)
+
+// Positive scenario for validator_depends_on_repository_directly.
+// Rule intent: Reusable validator code that reaches into repositories instead of
+// receiving precomputed facts or focused services.
+
+type UserValidator struct {
+	userRepo *repository.UserRepository
+}
+
+func NewUserValidator(repo *repository.UserRepository) *UserValidator {
+	return &UserValidator{userRepo: repo}
+}
+
+// ValidateEmailUniqueness directly queries the repository to check uniqueness.
+// This couples the validator to the data layer.
+func (v *UserValidator) ValidateEmailUniqueness(email string) error {
+	exists, err := v.userRepo.ExistsByEmail(email)
+	if err != nil {
+		return fmt.Errorf("failed to check email uniqueness: %w", err)
+	}
+	if exists {
+		return fmt.Errorf("email %s is already taken", email)
+	}
+	return nil
+}
+
+// ValidateUsernameUniqueness also directly queries the repository.
+func (v *UserValidator) ValidateUsernameUniqueness(username string) error {
+	exists, err := v.userRepo.ExistsByUsername(username)
+	if err != nil {
+		return fmt.Errorf("failed to check username uniqueness: %w", err)
+	}
+	if exists {
+		return fmt.Errorf("username %s is already taken", username)
+	}
+	return nil
+}
+
+// ValidateUser performs full validation by calling repository methods directly.
+func (v *UserValidator) ValidateUser(email, username string) error {
+	if err := v.ValidateEmailUniqueness(email); err != nil {
+		return err
+	}
+	if err := v.ValidateUsernameUniqueness(username); err != nil {
+		return err
+	}
+	return nil
+}

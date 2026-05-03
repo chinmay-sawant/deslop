@@ -1,0 +1,6 @@
+def risky_operation():
+    try:
+        perform_task()
+    except Exception:
+        # Correct: catch Exception only, allowing SystemExit to propagate
+        print("A handleable error occurred")

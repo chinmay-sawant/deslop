@@ -1,0 +1,5 @@
+def update_user_email(user, new_email):
+    # Violation: mutating the object before validating causes corrupted state if validation fails mid-flight
+    user.email = new_email
+    validate_email_format(user.email)
+    user.save()

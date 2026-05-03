@@ -1,0 +1,72 @@
+package domain
+
+import "time"
+
+// Positive scenario for giant_model_struct_spans_multiple_subdomains.
+// Rule intent: Oversized model structs that merge multiple bounded contexts
+// (billing, shipping, inventory, users, etc.) into one persistence shape.
+
+// Order is a god model that spans billing, shipping, inventory, user management,
+// analytics, and notifications subdomains. It should be split into separate
+// aggregates per bounded context.
+type Order struct {
+	// Primary key
+	ID string
+
+	// Billing subdomain fields
+	BillingAmount       float64
+	BillingCurrency     string
+	BillingAddress      string
+	BillingCity         string
+	BillingState        string
+	BillingZipCode      string
+	BillingCountry      string
+	BillingTaxAmount    float64
+	BillingDiscountCode string
+	BillingInvoiceID    string
+	BillingPaymentMethod string
+
+	// Shipping subdomain fields
+	ShippingAddress     string
+	ShippingCity        string
+	ShippingState       string
+	ShippingZipCode     string
+	ShippingCountry     string
+	ShippingCarrier     string
+	ShippingTrackingNum string
+	ShippingWeight      float64
+	ShippingCost        float64
+	ShippingMethod      string
+	ShippingEstimatedDelivery time.Time
+
+	// Inventory subdomain fields
+	InventorySKU        string
+	InventoryWarehouse  string
+	InventoryStockLevel int
+	InventoryReorderPoint int
+	InventoryBatchID    string
+	InventoryExpiryDate time.Time
+
+	// User/Account subdomain fields
+	UserEmail           string
+	UserFirstName       string
+	UserLastName        string
+	UserPhone           string
+	UserDateOfBirth     string
+	UserLoyaltyPoints   int
+	UserMembershipTier  string
+
+	// Analytics subdomain fields
+	AnalyticsSource      string
+	AnalyticsCampaignID  string
+	AnalyticsReferrerURL string
+	AnalyticsSessionID   string
+	AnalyticsDeviceType  string
+
+	// Notification subdomain fields
+	NotificationEmailSent   bool
+	NotificationSMSSent     bool
+	NotificationPushSent    bool
+	NotificationPreference  string
+	NotificationLanguage    string
+}

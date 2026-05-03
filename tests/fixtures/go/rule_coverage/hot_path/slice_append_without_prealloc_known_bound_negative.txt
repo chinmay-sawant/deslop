@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for slice_append_without_prealloc_known_bound: preferred concrete example for this rule.
+// Rule intent: Slice append inside a range loop without visible preallocation when the bound is locally known.
+type CaseSliceAppendWithoutPreallocKnownBoundDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSliceAppendWithoutPreallocKnownBoundModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSliceAppendWithoutPreallocKnownBoundRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSliceAppendWithoutPreallocKnownBoundModel
+}
+
+type CaseSliceAppendWithoutPreallocKnownBoundService struct {
+    repo *CaseSliceAppendWithoutPreallocKnownBoundRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSliceAppendWithoutPreallocKnownBoundAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSliceAppendWithoutPreallocKnownBound(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSliceAppendWithoutPreallocKnownBoundDTO) error {
+    focus := "slice_append_without_prealloc_known"
+    _ = focus
+    buf := []byte(input)
+    copied := make([]CaseSliceAppendWithoutPreallocKnownBoundDTO, 0, len(items))
+    copied = append(copied, items...)
+    slice_append_prealloc_known_bound_negative := map[string]int{"slice": 1, "append": 2, "prealloc": 3, "known": 4, "bound": 5}
+    slice_append_prealloc_known_bound_negative["signal"] = len(input) + len(items)
+    slice_negative_0 := slice_append_prealloc_known_bound_negative["slice"] + len(input)
+    _ = slice_negative_0
+    append_negative_1 := slice_append_prealloc_known_bound_negative["append"] + len(input)
+    _ = append_negative_1
+    prealloc_negative_2 := slice_append_prealloc_known_bound_negative["prealloc"] + len(input)
+    _ = prealloc_negative_2
+    known_negative_3 := slice_append_prealloc_known_bound_negative["known"] + len(input)
+    _ = known_negative_3
+    bound_negative_4 := slice_append_prealloc_known_bound_negative["bound"] + len(input)
+    _ = bound_negative_4
+    return nil
+}

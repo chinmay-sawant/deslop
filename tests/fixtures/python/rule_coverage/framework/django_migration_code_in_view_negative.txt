@@ -1,0 +1,5 @@
+from django.http import HttpResponse
+
+def health_check_view(request):
+    # Correct: view handles its own request-response logic; migrations are handled in CI/CD
+    return HttpResponse("System healthy")

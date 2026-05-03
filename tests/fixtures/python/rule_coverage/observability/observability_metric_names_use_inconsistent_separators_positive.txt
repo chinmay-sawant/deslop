@@ -1,0 +1,5 @@
+def run_jobs():
+    # Violation: using inconsistent naming conventions and separators (hyphens, dots, underscores) across metrics
+    statsd.increment("api-requests.total")
+    statsd.increment("db_queries")
+    statsd.increment("cache.miss_count")

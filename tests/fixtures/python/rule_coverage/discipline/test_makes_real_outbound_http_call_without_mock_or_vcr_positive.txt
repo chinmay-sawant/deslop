@@ -1,0 +1,6 @@
+import requests
+
+def test_fetch_prices():
+    # Violation: test makes a real outbound HTTP call without mocking
+    resp = requests.get("https://api.coinbase.com/v2/prices/BTC-USD/spot")
+    assert resp.status_code == 200

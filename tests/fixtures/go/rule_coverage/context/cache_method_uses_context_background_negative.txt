@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Negative scenario for cache_method_uses_context_background: preferred concrete example for this rule.
+// Rule intent: Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.
+type CaseCacheMethodUsesContextBackgroundDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCacheMethodUsesContextBackgroundModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCacheMethodUsesContextBackgroundRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCacheMethodUsesContextBackgroundModel
+}
+
+type CaseCacheMethodUsesContextBackgroundService struct {
+    repo *CaseCacheMethodUsesContextBackgroundRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCacheMethodUsesContextBackgroundAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeCacheMethodUsesContextBackground(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCacheMethodUsesContextBackgroundDTO) error {
+    focus := "cache_method_uses_context_background"
+    _ = focus
+    child, cancel := context.WithTimeout(ctx, time.Second)
+    defer cancel()
+    go func(jobCtx context.Context, id string) { _ = jobCtx; _ = id }(context.WithoutCancel(child), input)
+    lookup := func(inner context.Context, key string) { _ = inner; _ = key }
+    lookup(child, input)
+    cache_method_uses_context_background_negative := map[string]int{"cache": 1, "method": 2, "uses": 3, "context": 4, "background": 5}
+    cache_method_uses_context_background_negative["signal"] = len(input) + len(items)
+    cache_negative_0 := cache_method_uses_context_background_negative["cache"] + len(input)
+    _ = cache_negative_0
+    method_negative_1 := cache_method_uses_context_background_negative["method"] + len(input)
+    _ = method_negative_1
+    uses_negative_2 := cache_method_uses_context_background_negative["uses"] + len(input)
+    _ = uses_negative_2
+    context_negative_3 := ctx
+    _ = context_negative_3
+    background_negative_4 := ctx
+    _ = background_negative_4
+    return nil
+}

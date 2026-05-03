@@ -1,0 +1,8 @@
+def handle_request(req):
+    # Violation: function body contains setup, validation, execution, and formatting all at once
+    db_conn = connect_db()
+    if not req.user_id:
+        return "Invalid", 400
+    user = db_conn.query(f"SELECT * FROM users WHERE id={req.user_id}")
+    result = {"name": user.name.upper(), "email": user.email.lower()}
+    return f"User: {result['name']} <{result['email']}>"

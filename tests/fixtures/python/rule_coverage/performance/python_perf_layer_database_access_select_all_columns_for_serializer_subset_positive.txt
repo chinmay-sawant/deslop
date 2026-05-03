@@ -1,0 +1,3 @@
+def fetch_cards(cursor) -> list[dict[str, object]]:
+    cursor.execute("SELECT * FROM cards")
+    return [{"id": row[0], "name": row[1]} for row in cursor.fetchall()]

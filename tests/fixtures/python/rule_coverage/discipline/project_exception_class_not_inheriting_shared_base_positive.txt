@@ -1,0 +1,3 @@
+# Violation: project exception class not inheriting from the shared project base exception
+class UserNotFoundError(Exception):
+    pass

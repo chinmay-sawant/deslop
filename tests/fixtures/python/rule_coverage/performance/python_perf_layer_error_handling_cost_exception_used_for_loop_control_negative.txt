@@ -1,0 +1,6 @@
+def flatten(rows: list[list[int]]) -> list[int]:
+    out: list[int] = []
+    for row in rows:
+        for value in row:
+            out.append(value)
+    return out

@@ -1,0 +1,6 @@
+def process_user_signup(user_data):
+    with tracer.start_as_current_span("signup") as span:
+        # Correct: use opaque identifiers (like UUIDs) to trace requests securely without leaking PII
+        span.set_attribute("user_id", user_data["id"])
+        span.set_attribute("tenant_id", user_data["tenant"])
+        db.save(user_data)

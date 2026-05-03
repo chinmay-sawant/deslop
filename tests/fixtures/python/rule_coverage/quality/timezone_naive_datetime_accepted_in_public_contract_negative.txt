@@ -1,0 +1,7 @@
+import datetime
+
+# Correct: enforce that all datetimes crossing the API boundary are explicitly timezone-aware
+def schedule_job(run_at: datetime.datetime):
+    if run_at.tzinfo is None or run_at.tzinfo.utcoffset(run_at) is None:
+        raise ValueError("run_at must be a timezone-aware datetime object")
+    save_to_database(run_at.isoformat())

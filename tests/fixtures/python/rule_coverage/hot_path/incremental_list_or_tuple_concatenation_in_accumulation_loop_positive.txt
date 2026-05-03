@@ -1,0 +1,6 @@
+def build_sequence(items):
+    result = []
+    for item in items:
+        # Violation: using list concatenation (+=) inside a loop creates temporary lists and performs O(N^2) copies
+        result += [item * 2]
+    return result

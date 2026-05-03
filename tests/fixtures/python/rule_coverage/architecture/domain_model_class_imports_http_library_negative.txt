@@ -1,0 +1,8 @@
+# domain/user.py
+class User:
+    def __init__(self, user_id):
+        self.id = user_id
+    
+    # Correct: pure domain model with no external dependencies
+    def get_data(self):
+        return {"id": self.id}

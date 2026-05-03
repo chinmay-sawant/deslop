@@ -1,0 +1,8 @@
+from collections import deque
+
+
+def drain(queue: deque[int]) -> list[int]:
+    out: list[int] = []
+    while queue:
+        out.append(queue.popleft())
+    return out

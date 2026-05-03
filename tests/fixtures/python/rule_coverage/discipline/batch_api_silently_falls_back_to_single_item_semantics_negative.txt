@@ -1,0 +1,3 @@
+def save_all_users(users):
+    # Correct: use a dedicated batch save method
+    db.save_many(users)

@@ -1,0 +1,9 @@
+from flask import redirect, request, url_for
+
+@app.route("/login")
+def login():
+    target = request.args.get("next")
+    # Correct: only redirect to internal relative paths or trusted domains
+    if not target or not target.startswith("/"):
+        target = url_for("dashboard")
+    return redirect(target)

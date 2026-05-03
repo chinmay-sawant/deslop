@@ -1,0 +1,5 @@
+def process_db_results(rows):
+    for row in rows:
+        do_work(row)
+        # Violation: emitting telemetry inside a data-processing loop over DB results is extremely inefficient
+        metrics.increment("rows_processed")

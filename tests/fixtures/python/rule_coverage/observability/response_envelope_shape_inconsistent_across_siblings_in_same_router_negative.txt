@@ -1,0 +1,12 @@
+from fastapi import APIRouter
+
+router = APIRouter()
+
+# Correct: enforce a consistent, predictable response envelope shape across all endpoints in the API
+@router.get("/users")
+def get_users():
+    return {"data": [{"id": 1}], "meta": {"count": 1}}
+
+@router.get("/products")
+def get_products():
+    return {"data": [{"id": 99}], "meta": {"count": 1}}

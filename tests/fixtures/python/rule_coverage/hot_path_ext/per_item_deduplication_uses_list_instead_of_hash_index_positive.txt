@@ -1,0 +1,11 @@
+from __future__ import annotations
+
+def per_item_deduplication_uses_list_instead_of_hash_index_positive():
+    events = ["a", "b", "a", "c"]
+    seen = []
+    unique = []
+    for event in events:
+        if event not in seen:
+            seen.append(event)
+            unique.append(event)
+    return unique

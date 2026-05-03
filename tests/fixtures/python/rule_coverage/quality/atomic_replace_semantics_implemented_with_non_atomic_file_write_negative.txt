@@ -1,0 +1,14 @@
+import json
+import os
+import tempfile
+
+def save_config(data):
+    # Correct: write to a temporary file first, then atomically replace the target using os.replace
+    fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname("config.json"))
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(data, f)
+        os.replace(tmp_path, "config.json")
+    except Exception:
+        os.remove(tmp_path)
+        raise

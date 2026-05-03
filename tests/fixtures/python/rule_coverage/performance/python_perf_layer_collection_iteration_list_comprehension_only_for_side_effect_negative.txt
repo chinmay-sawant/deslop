@@ -1,0 +1,3 @@
+def push_all(values: list[int], sink: list[int]) -> None:
+    for value in values:
+        sink.append(value * 2)

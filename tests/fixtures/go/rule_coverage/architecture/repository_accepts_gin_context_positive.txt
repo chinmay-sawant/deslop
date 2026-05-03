@@ -1,0 +1,44 @@
+package repository
+
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: Repository method accepts *gin.Context instead of context.Context.
+// This couples the data layer to the HTTP transport layer.
+
+type User struct {
+	ID   string `gorm:"column:id"`
+	Name string `gorm:"column:name"`
+}
+
+type UserRepository struct {
+	db *gorm.DB
+}
+
+// Find accepts gin.Context - this is the anti-pattern.
+// Repositories should accept context.Context, not framework-specific context types.
+func (r *UserRepository) Find(c *gin.Context, id string) (*User, error) {
+	tenantID := c.GetHeader("X-Tenant-ID")
+	var user User
+	err := r.db.Where("id = ? AND tenant_id = ?", id, tenantID).First(&user).Error
+	return &user, err
+}
+
+// List also accepts gin.Context and extracts query params directly.
+func (r *UserRepository) List(c *gin.Context) ([]User, error) {
+	page := c.DefaultQuery("page", "1")
+	limit := c.DefaultQuery("limit", "10")
+	var users []User
+	err := r.db.Offset((pageToInt(page) - 1) * limitToInt(limit)).Limit(limitToInt(limit)).Find(&users).Error
+	return users, err
+}
+
+func pageToInt(s string) int {
+	return 1
+}
+
+func limitToInt(s string) int {
+	return 10
+}

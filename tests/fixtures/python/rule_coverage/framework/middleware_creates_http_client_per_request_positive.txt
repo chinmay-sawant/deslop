@@ -1,0 +1,8 @@
+import httpx
+
+class AnalyticsMiddleware:
+    def process_response(self, request, response):
+        # Violation: creating a new HTTP client instance inside a middleware (high overhead)
+        with httpx.Client() as client:
+            client.post("https://analytics.internal/event", json={"path": request.path})
+        return response

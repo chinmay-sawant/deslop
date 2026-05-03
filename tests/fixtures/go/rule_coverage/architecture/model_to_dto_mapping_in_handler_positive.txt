@@ -1,0 +1,68 @@
+package models
+
+import (
+    "context"
+    "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for model_to_dto_mapping_in_handler: risky concrete example for this rule.
+// Rule intent: Handlers that manually shape every response from persistence structs rather than using dedicated mapping helpers.
+type CaseModelToDtoMappingInHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseModelToDtoMappingInHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseModelToDtoMappingInHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseModelToDtoMappingInHandlerModel
+}
+
+type CaseModelToDtoMappingInHandlerService struct {
+    repo *CaseModelToDtoMappingInHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseModelToDtoMappingInHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveModelToDtoMappingInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseModelToDtoMappingInHandlerDTO) error {
+    repo := &CaseModelToDtoMappingInHandlerRepository{db: db, sql: sqlDB}
+    var model CaseModelToDtoMappingInHandlerModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+        return err
+    }
+    dto := CaseModelToDtoMappingInHandlerDTO{
+        ID:       model.ID,
+        TenantID: model.TenantID,
+        Status:   model.Status,
+        Amount:   0,
+        Payload:  nil,
+    }
+    if model.DeletedAt.Valid {
+        dto.Status = "deleted"
+    }
+    c.JSON(http.StatusOK, gin.H{"data": dto})
+    return nil
+}

@@ -1,0 +1,6 @@
+from typing import Protocol
+
+class Reader(Protocol):
+    # Violation: protocol method lacks type annotations
+    def read(self, amount):
+        ...

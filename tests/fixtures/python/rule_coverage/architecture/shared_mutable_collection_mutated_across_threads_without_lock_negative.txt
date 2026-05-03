@@ -1,0 +1,12 @@
+import threading
+
+shared_data = []
+lock = threading.Lock()
+
+def worker():
+    # Correct: access to shared mutable collection is protected by a lock
+    with lock:
+        shared_data.append(1)
+
+threads = [threading.Thread(target=worker) for _ in range(10)]
+for t in threads: t.start()

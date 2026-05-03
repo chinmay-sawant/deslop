@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "net/http/httptest"
+    "strings"
+)
+
+// Negative scenario for test_fixture_builders_live_in_production_packages: preferred concrete example for this rule.
+// Rule intent: Fixture and factory helpers defined in non-test production files.
+type CaseTestFixtureBuildersLiveInProductionPackagesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTestFixtureBuildersLiveInProductionPackagesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTestFixtureBuildersLiveInProductionPackagesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTestFixtureBuildersLiveInProductionPackagesModel
+}
+
+type CaseTestFixtureBuildersLiveInProductionPackagesService struct {
+    repo *CaseTestFixtureBuildersLiveInProductionPackagesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTestFixtureBuildersLiveInProductionPackagesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTestFixtureBuildersLiveInProductionPackages(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestFixtureBuildersLiveInProductionPackagesDTO) error {
+    focus := "test_fixture_builders_live_in"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    recorder := httptest.NewRecorder()
+    _ = recorder
+    test_fixture_builders_live_production_negative := map[string]int{"test": 1, "fixture": 2, "builders": 3, "live": 4, "production": 5, "packages": 6}
+    test_fixture_builders_live_production_negative["signal"] = len(input) + len(items)
+    test_negative_0 := test_fixture_builders_live_production_negative["test"] + len(input)
+    _ = test_negative_0
+    fixture_negative_1 := test_fixture_builders_live_production_negative["fixture"] + len(input)
+    _ = fixture_negative_1
+    builders_negative_2 := test_fixture_builders_live_production_negative["builders"] + len(input)
+    _ = builders_negative_2
+    live_negative_3 := test_fixture_builders_live_production_negative["live"] + len(input)
+    _ = live_negative_3
+    production_negative_4 := test_fixture_builders_live_production_negative["production"] + len(input)
+    _ = production_negative_4
+    packages_negative_5 := test_fixture_builders_live_production_negative["packages"] + len(input)
+    _ = packages_negative_5
+    return nil
+}

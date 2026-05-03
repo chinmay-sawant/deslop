@@ -1,0 +1,77 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "encoding/json"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_serialization_map_any_json_decode_in_hot_path: risky concrete example for this rule.
+// Rule intent: Layer: Serialization and deserialization. Flag JSON decoding into map[string]any in hot paths where typed structs avoid reflection churn.
+type CaseGoPerfLayerSerializationMapAnyJsonDecodeInHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerSerializationMapAnyJsonDecodeInHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerSerializationMapAnyJsonDecodeInHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerSerializationMapAnyJsonDecodeInHotPathModel
+}
+
+type CaseGoPerfLayerSerializationMapAnyJsonDecodeInHotPathService struct {
+    repo *CaseGoPerfLayerSerializationMapAnyJsonDecodeInHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerSerializationMapAnyJsonDecodeInHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerSerializationMapAnyJsonDecodeInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerSerializationMapAnyJsonDecodeInHotPathDTO) error {
+    focus := "go_perf_layer_serialization_map"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items {
+        payload, _ := json.Marshal(item)
+        var out map[string]interface{}
+        json.Unmarshal(payload, &out)
+    }
+    perf_layer_serialization_map_any_positive := map[string]int{"perf": 1, "layer": 2, "serialization": 3, "map": 4, "any": 5, "json": 6}
+    perf_layer_serialization_map_any_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_serialization_map_any_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_serialization_map_any_positive["layer"] + len(input)
+    _ = layer_positive_1
+    serialization_positive_2 := perf_layer_serialization_map_any_positive["serialization"] + len(input)
+    _ = serialization_positive_2
+    map_positive_3 := perf_layer_serialization_map_any_positive["map"] + len(input)
+    _ = map_positive_3
+    any_positive_4 := perf_layer_serialization_map_any_positive["any"] + len(input)
+    _ = any_positive_4
+    json_positive_5 := fmt.Sprintf("json:%s", input)
+    _ = json_positive_5
+    return nil
+}

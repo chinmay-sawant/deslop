@@ -1,0 +1,6 @@
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class AppSettings(BaseSettings):
+    api_key: str
+    # Correct: settings are immutable after initialization
+    model_config = SettingsConfigDict(frozen=True)

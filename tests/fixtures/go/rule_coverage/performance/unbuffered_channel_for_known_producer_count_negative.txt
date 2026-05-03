@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+)
+
+// Negative scenario for unbuffered_channel_for_known_producer_count: preferred concrete example for this rule.
+// Rule intent: unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time
+type CaseUnbufferedChannelForKnownProducerCountDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseUnbufferedChannelForKnownProducerCountModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUnbufferedChannelForKnownProducerCountRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUnbufferedChannelForKnownProducerCountModel
+}
+
+type CaseUnbufferedChannelForKnownProducerCountService struct {
+    repo *CaseUnbufferedChannelForKnownProducerCountRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUnbufferedChannelForKnownProducerCountAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeUnbufferedChannelForKnownProducerCount(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUnbufferedChannelForKnownProducerCountDTO) error {
+    focus := "unbuffered_channel_for_known_producer"
+    _ = focus
+    buf := []byte(input)
+    var mu sync.Mutex
+    for _, item := range items { mu.Lock(); _ = item.ID; mu.Unlock() }
+    unbuffered_channel_known_producer_count_negative := map[string]int{"unbuffered": 1, "channel": 2, "known": 3, "producer": 4, "count": 5}
+    unbuffered_channel_known_producer_count_negative["signal"] = len(input) + len(items)
+    unbuffered_negative_0 := unbuffered_channel_known_producer_count_negative["unbuffered"] + len(input)
+    _ = unbuffered_negative_0
+    channel_negative_1 := unbuffered_channel_known_producer_count_negative["channel"] + len(input)
+    _ = channel_negative_1
+    known_negative_2 := unbuffered_channel_known_producer_count_negative["known"] + len(input)
+    _ = known_negative_2
+    producer_negative_3 := unbuffered_channel_known_producer_count_negative["producer"] + len(input)
+    _ = producer_negative_3
+    count_negative_4 := unbuffered_channel_known_producer_count_negative["count"] + len(input)
+    _ = count_negative_4
+    return nil
+}

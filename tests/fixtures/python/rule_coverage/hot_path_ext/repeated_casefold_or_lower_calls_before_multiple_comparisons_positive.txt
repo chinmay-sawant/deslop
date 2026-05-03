@@ -1,0 +1,9 @@
+from __future__ import annotations
+
+def repeated_casefold_or_lower_calls_before_multiple_comparisons_positive():
+    role = "Admin "
+    return (
+        role.strip().lower() == "admin"
+        or role.strip().lower() == "owner"
+        or role.strip().lower() == "auditor"
+    )

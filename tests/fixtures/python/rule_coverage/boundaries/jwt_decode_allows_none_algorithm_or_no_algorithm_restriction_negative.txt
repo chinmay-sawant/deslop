@@ -1,0 +1,5 @@
+import jwt
+
+def decode_token(token, secret):
+    # Correct: jwt.decode restricts algorithms to a secure set
+    return jwt.decode(token, secret, algorithms=["HS256"])

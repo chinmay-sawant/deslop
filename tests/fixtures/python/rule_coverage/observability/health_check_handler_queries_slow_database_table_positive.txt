@@ -1,0 +1,4 @@
+def health_check():
+    # Violation: querying a massive, slow application table as a health check will cause load balancer timeouts during traffic spikes
+    count = db.execute("SELECT COUNT(*) FROM massive_user_table")
+    return {"status": "ok", "users": count}

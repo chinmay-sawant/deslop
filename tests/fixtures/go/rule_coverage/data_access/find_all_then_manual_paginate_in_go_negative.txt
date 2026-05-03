@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for find_all_then_manual_paginate_in_go: preferred concrete example for this rule.
+// Rule intent: All rows fetched and then sliced in Go instead of using database-level pagination.
+type CaseFindAllThenManualPaginateInGoDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFindAllThenManualPaginateInGoModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFindAllThenManualPaginateInGoRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFindAllThenManualPaginateInGoModel
+}
+
+type CaseFindAllThenManualPaginateInGoService struct {
+    repo *CaseFindAllThenManualPaginateInGoRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFindAllThenManualPaginateInGoAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeFindAllThenManualPaginateInGo(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFindAllThenManualPaginateInGoDTO) error {
+    focus := "find_all_then_manual_paginate"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Select("id", "status").Where("tenant_id = ?", c.Query("tenant")).Limit(100).Find(&[]CaseFindAllThenManualPaginateInGoModel{})
+    find_all_then_manual_paginate_negative := map[string]int{"find": 1, "all": 2, "then": 3, "manual": 4, "paginate": 5}
+    find_all_then_manual_paginate_negative["signal"] = len(input) + len(items)
+    find_negative_0 := find_all_then_manual_paginate_negative["find"] + len(input)
+    _ = find_negative_0
+    all_negative_1 := find_all_then_manual_paginate_negative["all"] + len(input)
+    _ = all_negative_1
+    then_negative_2 := find_all_then_manual_paginate_negative["then"] + len(input)
+    _ = then_negative_2
+    manual_negative_3 := find_all_then_manual_paginate_negative["manual"] + len(input)
+    _ = manual_negative_3
+    paginate_negative_4 := find_all_then_manual_paginate_negative["paginate"] + len(input)
+    _ = paginate_negative_4
+    return nil
+}

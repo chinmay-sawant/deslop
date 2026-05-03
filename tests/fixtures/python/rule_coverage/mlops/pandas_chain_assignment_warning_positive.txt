@@ -1,0 +1,6 @@
+import pandas as pd
+
+def update_active_users(df):
+    # Violation: chained indexing triggers a SettingWithCopyWarning and may fail to update the original DataFrame
+    df[df['status'] == 'active']['is_verified'] = True
+    return df

@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for fmt_errorf_without_wrap_verb: risky concrete example for this rule.
+// Rule intent: `fmt.Errorf("context: %v", err)` instead of `%w`
+type CaseFmtErrorfWithoutWrapVerbDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFmtErrorfWithoutWrapVerbModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFmtErrorfWithoutWrapVerbRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFmtErrorfWithoutWrapVerbModel
+}
+
+type CaseFmtErrorfWithoutWrapVerbService struct {
+    repo *CaseFmtErrorfWithoutWrapVerbRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFmtErrorfWithoutWrapVerbAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFmtErrorfWithoutWrapVerb(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtErrorfWithoutWrapVerbDTO) error {
+    focus := "fmt_errorf_without_wrap_verb"
+    _ = focus
+    _, err := os.ReadFile(input)
+    if err != nil {
+        return fmt.Errorf("failed to read: %v", err)
+    }
+    fmt_errorf_wrap_verb_positive := map[string]int{"fmt": 1, "errorf": 2, "wrap": 3, "verb": 4}
+    fmt_errorf_wrap_verb_positive["signal"] = len(input) + len(items)
+    fmt_positive_0 := fmt_errorf_wrap_verb_positive["fmt"] + len(input)
+    _ = fmt_positive_0
+    errorf_positive_1 := fmt_errorf_wrap_verb_positive["errorf"] + len(input)
+    _ = errorf_positive_1
+    wrap_positive_2 := fmt_errorf_wrap_verb_positive["wrap"] + len(input)
+    _ = wrap_positive_2
+    verb_positive_3 := fmt_errorf_wrap_verb_positive["verb"] + len(input)
+    _ = verb_positive_3
+    return nil
+}

@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+def serialization_then_deserialization_between_adjacent_helpers_positive():
+    import json
+    payload = {"name": "Ria", "active": True}
+    wire = json.dumps(payload)
+    restored = json.loads(wire)
+    return restored["name"]

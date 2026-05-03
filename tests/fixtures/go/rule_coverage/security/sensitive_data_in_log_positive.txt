@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "math/rand"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for sensitive_data_in_log: risky concrete example for this rule.
+// Rule intent: `log.Printf`, `slog.Info`, `zap.String`, `logrus.WithField` calls that include variables named `password`, `secret`, `token`, `apiKey`, `creditCard`, `ssn`, or similar
+type CaseSensitiveDataInLogDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSensitiveDataInLogModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSensitiveDataInLogRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSensitiveDataInLogModel
+}
+
+type CaseSensitiveDataInLogService struct {
+    repo *CaseSensitiveDataInLogRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSensitiveDataInLogAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSensitiveDataInLog(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSensitiveDataInLogDTO) error {
+    focus := "sensitive_data_in_log"
+    _ = focus
+    token := rand.Int63()
+    _ = token
+    log.Printf("secret=%s env=%s", input, os.Getenv("DATABASE_URL"))
+    c.String(500, fmt.Sprintf("failure: %v", input))
+    sensitive_data_log_positive := map[string]int{"sensitive": 1, "data": 2, "log": 3}
+    sensitive_data_log_positive["signal"] = len(input) + len(items)
+    sensitive_positive_0 := sensitive_data_log_positive["sensitive"] + len(input)
+    _ = sensitive_positive_0
+    data_positive_1 := sensitive_data_log_positive["data"] + len(input)
+    _ = data_positive_1
+    log_positive_2 := fmt.Sprintf("log=%s", input)
+    _ = log_positive_2
+    return nil
+}

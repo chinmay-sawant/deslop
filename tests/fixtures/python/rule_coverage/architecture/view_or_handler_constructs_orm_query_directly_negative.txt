@@ -1,0 +1,5 @@
+@app.get("/users/{id}")
+def get_user(id: int, repo: UserRepository = Depends()):
+    # Correct: view delegates query construction to a repository
+    user = repo.find_by_id(id)
+    return user

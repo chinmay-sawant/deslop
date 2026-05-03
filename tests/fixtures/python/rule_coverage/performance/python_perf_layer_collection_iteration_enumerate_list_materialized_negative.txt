@@ -1,0 +1,2 @@
+def index_nonempty(lines):
+    return [(idx, value) for idx, value in enumerate(lines) if value]

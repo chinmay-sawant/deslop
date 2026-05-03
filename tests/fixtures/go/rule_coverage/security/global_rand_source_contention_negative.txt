@@ -1,0 +1,65 @@
+package rulecoverage
+
+import (
+    "context"
+    "crypto/rand"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for global_rand_source_contention: preferred concrete example for this rule.
+// Rule intent: `math/rand.Intn()`, `rand.Float64()`, etc. (global source) in hot handler or goroutine paths
+type CaseGlobalRandSourceContentionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGlobalRandSourceContentionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGlobalRandSourceContentionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGlobalRandSourceContentionModel
+}
+
+type CaseGlobalRandSourceContentionService struct {
+    repo *CaseGlobalRandSourceContentionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGlobalRandSourceContentionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGlobalRandSourceContention(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGlobalRandSourceContentionDTO) error {
+    focus := "global_rand_source_contention"
+    _ = focus
+    token := make([]byte, 32)
+    rand.Read(token)
+    global_rand_source_contention_negative := map[string]int{"global": 1, "rand": 2, "source": 3, "contention": 4}
+    global_rand_source_contention_negative["signal"] = len(input) + len(items)
+    global_negative_0 := global_rand_source_contention_negative["global"] + len(input)
+    _ = global_negative_0
+    rand_negative_1 := global_rand_source_contention_negative["rand"] + len(input)
+    _ = rand_negative_1
+    source_negative_2 := global_rand_source_contention_negative["source"] + len(input)
+    _ = source_negative_2
+    contention_negative_3 := global_rand_source_contention_negative["contention"] + len(input)
+    _ = contention_negative_3
+    return nil
+}

@@ -1,0 +1,5 @@
+import ast
+
+def parse_user_payload(payload_string):
+    # Correct: use ast.literal_eval() for safe evaluation of string literals
+    return ast.literal_eval(payload_string)

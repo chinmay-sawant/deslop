@@ -1,0 +1,3 @@
+def count_active(users):
+    # Correct: use a generator expression with sum() to count items without allocating a list
+    return sum(1 for user in users if user.is_active)

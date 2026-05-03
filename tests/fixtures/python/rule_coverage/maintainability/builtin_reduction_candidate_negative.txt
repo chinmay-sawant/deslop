@@ -1,0 +1,3 @@
+def calculate_total(numbers):
+    # Correct: use the built-in sum() reduction for clarity and performance
+    return sum(numbers)

@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for package_name_role_drift: preferred concrete example for this rule.
+// Rule intent: Packages whose names advertise one role, such as `service` or `model`, but whose exported symbols primarily belong to another role.
+type CasePackageNameRoleDriftDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePackageNameRoleDriftModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePackageNameRoleDriftRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePackageNameRoleDriftModel
+}
+
+type CasePackageNameRoleDriftService struct {
+    repo *CasePackageNameRoleDriftRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePackageNameRoleDriftAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativePackageNameRoleDrift(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePackageNameRoleDriftDTO) error {
+    focus := "package_name_role_drift"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    dto := CasePackageNameRoleDriftDTO{ID: input, Status: "active"}
+    model := CasePackageNameRoleDriftModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    package_name_role_drift_negative := map[string]int{"package": 1, "name": 2, "role": 3, "drift": 4}
+    package_name_role_drift_negative["signal"] = len(input) + len(items)
+    package_negative_0 := package_name_role_drift_negative["package"] + len(input)
+    _ = package_negative_0
+    name_negative_1 := package_name_role_drift_negative["name"] + len(input)
+    _ = name_negative_1
+    role_negative_2 := package_name_role_drift_negative["role"] + len(input)
+    _ = role_negative_2
+    drift_negative_3 := package_name_role_drift_negative["drift"] + len(input)
+    _ = drift_negative_3
+    return nil
+}

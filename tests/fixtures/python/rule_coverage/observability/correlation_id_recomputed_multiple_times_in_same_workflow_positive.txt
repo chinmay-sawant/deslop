@@ -1,0 +1,8 @@
+import uuid
+import logging
+
+def process_job(job_data):
+    # Violation: generating new correlation IDs repeatedly within the same workflow context
+    logging.info(f"[{uuid.uuid4()}] Starting job processing")
+    do_work(job_data)
+    logging.info(f"[{uuid.uuid4()}] Job finished successfully")

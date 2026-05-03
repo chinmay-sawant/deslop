@@ -1,0 +1,5 @@
+from .models import User
+
+def get_count():
+    # Correct: use .count() for efficient database-level counting
+    return User.objects.all().count()

@@ -1,0 +1,4 @@
+def save_text(filename, text):
+    # Violation: text to bytes boundary relies on implicit default encoding (platform dependent)
+    with open(filename, "w") as f:
+        f.write(text)

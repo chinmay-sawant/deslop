@@ -1,0 +1,53 @@
+package handler
+
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// Anti-pattern: Repository type is defined outside the repository package.
+// Here, AccountRepository is defined in the handler package instead of a
+// dedicated repository/repo/store package.
+
+type Account struct {
+	ID      string `gorm:"column:id"`
+	Name    string `gorm:"column:name"`
+	Balance int    `gorm:"column:balance"`
+}
+
+// AccountRepository is defined in the handler package - anti-pattern.
+// Repository types should live in a repository, repo, or store package.
+type AccountRepository struct {
+	db *gorm.DB
+}
+
+func (r *AccountRepository) FindByID(id string) (*Account, error) {
+	var account Account
+	err := r.db.First(&account, "id = ?", id).Error
+	return &account, err
+}
+
+func (r *AccountRepository) Create(account *Account) error {
+	return r.db.Create(account).Error
+}
+
+// AccountHandler uses the repository defined in the same (handler) package.
+type AccountHandler struct {
+	repo *AccountRepository
+}
+
+func NewAccountHandler(db *gorm.DB) *AccountHandler {
+	return &AccountHandler{
+		repo: &AccountRepository{db: db},
+	}
+}
+
+func (h *AccountHandler) GetAccount(c *gin.Context) {
+	id := c.Param("id")
+	account, err := h.repo.FindByID(id)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+	c.JSON(200, account)
+}

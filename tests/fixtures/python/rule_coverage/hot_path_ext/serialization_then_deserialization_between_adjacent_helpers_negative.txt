@@ -1,0 +1,5 @@
+from __future__ import annotations
+
+def serialization_then_deserialization_between_adjacent_helpers_negative():
+    payload = {"name": "Ria", "active": True}
+    return payload["name"]

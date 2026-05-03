@@ -1,0 +1,6 @@
+from .models import User
+
+def mark_verified(user_ids):
+    # Violation: calling .update() in a loop instead of once on the full queryset
+    for user_id in user_ids:
+        User.objects.filter(id=user_id).update(verified=True)

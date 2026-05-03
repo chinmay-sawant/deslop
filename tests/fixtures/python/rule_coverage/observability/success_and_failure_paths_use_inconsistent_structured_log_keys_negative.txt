@@ -1,0 +1,10 @@
+import structlog
+
+logger = structlog.get_logger()
+
+def authenticate(user):
+    # Correct: use strict, consistent structured logging keys so queries work across all paths
+    if user.is_valid():
+        logger.info("auth_success", user_identifier=user.email)
+    else:
+        logger.warning("auth_failed", user_identifier=user.email)

@@ -1,0 +1,4 @@
+def test_user_initialization():
+    user = User(id=1)
+    # Correct: test asserts public behavior or state
+    assert user.is_pending() is True

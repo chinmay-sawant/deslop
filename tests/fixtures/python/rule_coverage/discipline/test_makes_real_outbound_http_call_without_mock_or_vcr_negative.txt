@@ -1,0 +1,10 @@
+import responses
+
+@responses.activate
+def test_fetch_prices():
+    # Correct: outbound HTTP calls are mocked to ensure test reliability
+    responses.add(responses.GET, "https://api.coinbase.com/v2/prices/BTC-USD/spot",
+                  json={"data": {"amount": "50000"}}, status=200)
+    
+    resp = requests.get("https://api.coinbase.com/v2/prices/BTC-USD/spot")
+    assert resp.json()["data"]["amount"] == "50000"

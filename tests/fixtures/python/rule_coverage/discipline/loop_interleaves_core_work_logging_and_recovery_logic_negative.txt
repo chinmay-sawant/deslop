@@ -1,0 +1,17 @@
+def process_items(items):
+    for item in items:
+        # Correct: core work is isolated, loop handles high-level orchestration/errors
+        try:
+            process_single_item(item)
+        except Exception:
+            handle_item_failure(item)
+
+def process_single_item(item):
+    logging.info(f"Processing {item.id}")
+    result = item.execute()
+    db.save(result)
+
+def handle_item_failure(item):
+    logging.error(f"Failed {item.id}")
+    db.rollback()
+    recovery_queue.put(item)

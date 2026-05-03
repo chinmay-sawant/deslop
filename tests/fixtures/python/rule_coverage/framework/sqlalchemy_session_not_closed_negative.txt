@@ -1,0 +1,7 @@
+from sqlalchemy.orm import Session
+
+def get_user_data():
+    # Correct: use a context manager to ensure the session is always closed
+    with Session(bind=engine) as session:
+        user = session.query(User).first()
+        return user.data

@@ -1,0 +1,9 @@
+# Correct: large static data is moved to module level to avoid recreation per request
+APP_CONFIG = {
+    "feature_a": {"enabled": True, "timeout": 30, "retries": 3, "buffer": 1024},
+    "feature_b": {"enabled": False, "timeout": 60, "retries": 1, "buffer": 2048},
+}
+
+@app.get("/config")
+def get_config():
+    return APP_CONFIG

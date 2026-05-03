@@ -1,0 +1,59 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for transaction_object_crosses_more_than_one_layer_boundary: risky concrete example for this rule.
+// Rule intent: Transaction handles passed through multiple layers as ordinary arguments.
+type CaseTransactionObjectCrossesMoreThanOneLayerBoundaryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTransactionObjectCrossesMoreThanOneLayerBoundaryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTransactionObjectCrossesMoreThanOneLayerBoundaryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTransactionObjectCrossesMoreThanOneLayerBoundaryModel
+}
+
+type CaseTransactionObjectCrossesMoreThanOneLayerBoundaryService struct {
+    repo *CaseTransactionObjectCrossesMoreThanOneLayerBoundaryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTransactionObjectCrossesMoreThanOneLayerBoundaryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTransactionObjectCrossesMoreThanOneLayerBoundary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTransactionObjectCrossesMoreThanOneLayerBoundaryDTO) error {
+    tx := db.Begin()
+    handlerFunc := func(tx *gorm.DB) {
+        serviceFunc := func(tx *gorm.DB) {
+            _ = tx.Where("id = ?", input).Find(&items)
+        }
+        serviceFunc(tx)
+    }
+    handlerFunc(tx)
+    _ = tx.Commit().Error
+    return nil
+}

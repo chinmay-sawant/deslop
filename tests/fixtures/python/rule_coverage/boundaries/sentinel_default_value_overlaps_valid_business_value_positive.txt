@@ -1,0 +1,7 @@
+def find_user_index(user_list, target_name):
+    # Violation: sentinel default value (-1) overlaps with valid business value or common error code
+    index = -1
+    for i, name in enumerate(user_list):
+        if name == target_name:
+            index = i
+    return index

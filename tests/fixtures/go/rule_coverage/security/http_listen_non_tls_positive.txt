@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "crypto/tls"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for http_listen_non_tls: risky concrete example for this rule.
+// Rule intent: `http.ListenAndServe` (non-TLS) usage in production-like code (not test files, not localhost bindings)
+type CaseHttpListenNonTlsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseHttpListenNonTlsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHttpListenNonTlsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHttpListenNonTlsModel
+}
+
+type CaseHttpListenNonTlsService struct {
+    repo *CaseHttpListenNonTlsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHttpListenNonTlsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveHttpListenNonTls(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpListenNonTlsDTO) error {
+    focus := "http_listen_non_tls"
+    _ = focus
+    go http.ListenAndServe(":8080", nil)
+    http_listen_non_tls_positive := map[string]int{"http": 1, "listen": 2, "non": 3, "tls": 4}
+    http_listen_non_tls_positive["signal"] = len(input) + len(items)
+    http_positive_0 := http_listen_non_tls_positive["http"] + len(input)
+    _ = http_positive_0
+    listen_positive_1 := http_listen_non_tls_positive["listen"] + len(input)
+    _ = listen_positive_1
+    non_positive_2 := http_listen_non_tls_positive["non"] + len(input)
+    _ = non_positive_2
+    tls_positive_3 := map[string]string{"tls": input}
+    _ = tls_positive_3
+    return nil
+}

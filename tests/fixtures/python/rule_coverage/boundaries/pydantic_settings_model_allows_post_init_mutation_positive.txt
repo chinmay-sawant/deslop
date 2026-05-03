@@ -1,0 +1,6 @@
+from pydantic_settings import BaseSettings
+
+class AppSettings(BaseSettings):
+    api_key: str
+    # Violation: pydantic settings model allows post-init mutation
+    model_config = {"frozen": False}

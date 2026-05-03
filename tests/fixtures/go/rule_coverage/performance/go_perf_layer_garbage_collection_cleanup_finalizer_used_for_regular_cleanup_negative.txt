@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_garbage_collection_cleanup_finalizer_used_for_regular_cleanup: preferred concrete example for this rule.
+// Rule intent: Layer: Garbage collection and cleanup. Flag runtime.SetFinalizer use for ordinary resource cleanup instead of explicit Close ownership.
+type CaseGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanupDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanupModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanupRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanupModel
+}
+
+type CaseGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanupService struct {
+    repo *CaseGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanupRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanupAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanup(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanupDTO) error {
+    focus := "go_perf_layer_garbage_collection"
+    _ = focus
+    buf := []byte(input)
+    perf_layer_garbage_collection_cleanup_negative := map[string]int{"perf": 1, "layer": 2, "garbage": 3, "collection": 4, "cleanup": 5, "finalizer": 6}
+    perf_layer_garbage_collection_cleanup_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_garbage_collection_cleanup_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_garbage_collection_cleanup_negative["layer"] + len(input)
+    _ = layer_negative_1
+    garbage_negative_2 := perf_layer_garbage_collection_cleanup_negative["garbage"] + len(input)
+    _ = garbage_negative_2
+    collection_negative_3 := perf_layer_garbage_collection_cleanup_negative["collection"] + len(input)
+    _ = collection_negative_3
+    cleanup_negative_4 := perf_layer_garbage_collection_cleanup_negative["cleanup"] + len(input)
+    _ = cleanup_negative_4
+    finalizer_negative_5 := perf_layer_garbage_collection_cleanup_negative["finalizer"] + len(input)
+    _ = finalizer_negative_5
+    return nil
+}

@@ -1,0 +1,11 @@
+import logging
+
+def process_data(records):
+    results = []
+    for record in records:
+        # Correct: use a try-except block to handle and log individual record failures gracefully
+        try:
+            results.append(complex_transform(record))
+        except Exception as e:
+            logging.error(f"Failed to process record {record}: {e}")
+    return results

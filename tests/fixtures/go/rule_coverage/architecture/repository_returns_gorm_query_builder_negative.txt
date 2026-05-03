@@ -1,0 +1,54 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for repository_returns_gorm_query_builder: preferred concrete example for this rule.
+// Rule intent: Repositories that return partially built `*gorm.DB` chains for callers to finish.
+type CaseRepositoryReturnsGormQueryBuilderDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepositoryReturnsGormQueryBuilderModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepositoryReturnsGormQueryBuilderRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryReturnsGormQueryBuilderModel
+}
+
+type CaseRepositoryReturnsGormQueryBuilderService struct {
+    repo *CaseRepositoryReturnsGormQueryBuilderRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryReturnsGormQueryBuilderAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRepositoryReturnsGormQueryBuilder(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsGormQueryBuilderDTO) error {
+    var model CaseRepositoryReturnsGormQueryBuilderModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
+        return err
+    }
+    return nil
+}

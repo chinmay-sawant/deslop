@@ -1,0 +1,7 @@
+def parse_config(filepath):
+    with open(filepath, "r") as f:
+        # Violation: calling readlines() loads the entire file into a list of strings
+        for line in f.readlines():
+            if line.startswith("#"):
+                continue
+            print(line)

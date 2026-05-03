@@ -1,0 +1,4 @@
+@app.get("/search")
+def search(q: str, repo: ProductRepository = Depends()):
+    # Correct: view delegates data access to a repository
+    return repo.search_by_name(q)

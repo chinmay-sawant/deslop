@@ -1,0 +1,3 @@
+def normalize(df):
+    df["pct"] = df.apply(lambda row: row["used"] / row["total"], axis=1)
+    return df

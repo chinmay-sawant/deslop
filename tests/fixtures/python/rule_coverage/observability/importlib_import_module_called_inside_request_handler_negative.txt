@@ -1,0 +1,11 @@
+import importlib
+
+# Correct: load dynamic modules once at startup and cache them in a registry
+PLUGINS = {
+    "auth": importlib.import_module("plugins.auth"),
+    "audit": importlib.import_module("plugins.audit"),
+}
+
+def handle_api_request(plugin_name):
+    plugin = PLUGINS[plugin_name]
+    return plugin.execute()

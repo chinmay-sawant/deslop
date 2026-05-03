@@ -1,0 +1,8 @@
+def validate_and_process(items):
+    # Violation: iterator argument consumed by list() then reused in for loop
+    # If 'items' is a generator, the for loop will be empty
+    if not list(items):
+        return "Empty"
+    
+    for item in items:
+        process(item)

@@ -1,0 +1,7 @@
+def process():
+    try:
+        call_service()
+    except Exception as e:
+        # Violation: exception logged and then re-raised redundantly (clutters logs)
+        logger.error(f"Error in process: {e}")
+        raise e

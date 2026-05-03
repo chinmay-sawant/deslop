@@ -1,0 +1,5 @@
+from .models import User
+
+def fetch_details(user_ids):
+    # Correct: use the ORM or a single raw query with the IN operator
+    return User.objects.filter(id__in=user_ids)

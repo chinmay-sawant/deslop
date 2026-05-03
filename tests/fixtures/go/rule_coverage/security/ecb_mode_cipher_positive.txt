@@ -1,0 +1,57 @@
+package rulecoverage
+
+import (
+    "context"
+    "crypto/aes"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+)
+
+// Positive scenario for ecb_mode_cipher: risky concrete example for this rule.
+// Rule intent: Direct use of cipher.Block.Encrypt without a stream/block mode, effectively using ECB.
+type CaseEcbModeCipherDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+type CaseEcbModeCipherModel struct {
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseEcbModeCipherRepository struct {
+    db    *gorm.DB
+    sql   *sql.DB
+    cache map[string]CaseEcbModeCipherModel
+}
+
+type CaseEcbModeCipherService struct {
+    repo   *CaseEcbModeCipherRepository
+    client *http.Client
+}
+
+type CaseEcbModeCipherAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveEcbModeCipher(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEcbModeCipherDTO) error {
+    key := []byte("0123456789abcdef")
+    block, err := aes.NewCipher(key)
+    if err != nil {
+        return err
+    }
+    // Direct block encrypt without mode (effectively ECB) — insecure.
+    plaintext := make([]byte, aes.BlockSize)
+    copy(plaintext, []byte(input))
+    ciphertext := make([]byte, aes.BlockSize)
+    block.Encrypt(ciphertext, plaintext)
+    c.Data(http.StatusOK, "application/octet-stream", ciphertext)
+    return nil
+}

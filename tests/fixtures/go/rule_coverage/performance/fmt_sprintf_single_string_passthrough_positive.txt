@@ -1,0 +1,57 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for fmt_sprintf_single_string_passthrough: risky concrete example for this rule.
+// Rule intent: `fmt.Sprintf("%s", s)` instead of returning or writing the string directly.
+type CaseFmtSprintfSingleStringPassthroughDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFmtSprintfSingleStringPassthroughModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFmtSprintfSingleStringPassthroughRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFmtSprintfSingleStringPassthroughModel
+}
+
+type CaseFmtSprintfSingleStringPassthroughService struct {
+    repo *CaseFmtSprintfSingleStringPassthroughRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFmtSprintfSingleStringPassthroughAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFmtSprintfSingleStringPassthrough(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtSprintfSingleStringPassthroughDTO) error {
+    focus := "fmt_sprintf_single_string_passthrough"
+    _ = focus
+    someString := "hello"
+    str := fmt.Sprintf("%s", someString)
+    _ = str
+    return nil
+}

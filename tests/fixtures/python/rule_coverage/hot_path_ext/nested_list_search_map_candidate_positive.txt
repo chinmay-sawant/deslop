@@ -1,0 +1,12 @@
+from __future__ import annotations
+
+def nested_list_search_map_candidate_positive():
+    users = [{"id": 10, "name": "Ana"}, {"id": 11, "name": "Bo"}]
+    target_ids = [11, 10]
+    names = []
+    for target in target_ids:
+        for user in users:
+            if user["id"] == target:
+                names.append(user["name"])
+                break
+    return names

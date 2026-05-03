@@ -1,0 +1,4 @@
+def validate_api_key(key):
+    if len(key) < 32:
+        # Violation: error message embeds sensitive data (the key itself)
+        raise ValueError(f"API key '{key}' is too short")

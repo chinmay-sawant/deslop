@@ -1,0 +1,5 @@
+# my_package/__init__.py
+# Correct: explicitly select only the public interfaces intended for external consumption
+from .complex_submodule import PublicService
+
+__all__ = ["PublicService"]

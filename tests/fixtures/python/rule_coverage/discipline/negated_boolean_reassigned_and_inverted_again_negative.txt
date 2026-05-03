@@ -1,0 +1,5 @@
+def check_availability(item):
+    # Correct: use the boolean directly for clearer logic
+    if item.is_available:
+        return "Available"
+    return "Unavailable"

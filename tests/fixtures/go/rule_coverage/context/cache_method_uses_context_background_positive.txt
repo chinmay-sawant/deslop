@@ -1,0 +1,56 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for cache_method_uses_context_background: risky concrete example for this rule.
+// Rule intent: Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.
+type CaseCacheMethodUsesContextBackgroundDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCacheMethodUsesContextBackgroundModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCacheMethodUsesContextBackgroundRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCacheMethodUsesContextBackgroundModel
+}
+
+type CaseCacheMethodUsesContextBackgroundService struct {
+    repo *CaseCacheMethodUsesContextBackgroundRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCacheMethodUsesContextBackgroundAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCacheMethodUsesContextBackground(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCacheMethodUsesContextBackgroundDTO) error {
+    getFromCache := func(key string) string {
+        _ = context.Background()
+        return key
+    }
+    _ = getFromCache(input)
+    _ = db.Where("id = ?", input).Find(&items)
+    return nil
+}

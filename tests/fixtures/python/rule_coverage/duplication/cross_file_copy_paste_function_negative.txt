@@ -1,0 +1,10 @@
+# utils.py
+def calculate_discount(price):
+    return price * 0.9
+
+# file_a.py
+from .utils import calculate_discount
+
+# file_b.py
+# Correct: shared logic is imported from a single source
+from .utils import calculate_discount

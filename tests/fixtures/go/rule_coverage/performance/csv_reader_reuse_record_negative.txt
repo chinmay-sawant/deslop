@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "bufio"
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Negative scenario for csv_reader_reuse_record: preferred concrete example for this rule.
+// Rule intent: `csv.NewReader(r)` without `ReuseRecord = true` when records are processed one at a time and not stored
+type CaseCsvReaderReuseRecordDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCsvReaderReuseRecordModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCsvReaderReuseRecordRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCsvReaderReuseRecordModel
+}
+
+type CaseCsvReaderReuseRecordService struct {
+    repo *CaseCsvReaderReuseRecordRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCsvReaderReuseRecordAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeCsvReaderReuseRecord(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCsvReaderReuseRecordDTO) error {
+    focus := "csv_reader_reuse_record"
+    _ = focus
+    buf := []byte(input)
+    file, _ := os.Open(input)
+    reader := bufio.NewReader(file)
+    _ = reader
+    csv_reader_reuse_record_negative := map[string]int{"csv": 1, "reader": 2, "reuse": 3, "record": 4}
+    csv_reader_reuse_record_negative["signal"] = len(input) + len(items)
+    csv_negative_0 := csv_reader_reuse_record_negative["csv"] + len(input)
+    _ = csv_negative_0
+    reader_negative_1 := csv_reader_reuse_record_negative["reader"] + len(input)
+    _ = reader_negative_1
+    reuse_negative_2 := csv_reader_reuse_record_negative["reuse"] + len(input)
+    _ = reuse_negative_2
+    record_negative_3 := csv_reader_reuse_record_negative["record"] + len(input)
+    _ = record_negative_3
+    return nil
+}

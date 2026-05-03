@@ -122,7 +122,7 @@ pub(crate) fn resolve_rust_module_file(
             .rust_crate_roots
             .get(current_file_path)
             .cloned()
-            .unwrap_or_default(),
+            .unwrap_or_else(|| rust_layout_candidates(index, &index.root, &[])),
         "self" => vec![current_file_path.to_path_buf()],
         "super" => {
             let super_count = segments
@@ -138,7 +138,11 @@ pub(crate) fn resolve_rust_module_file(
                     }
                 }
                 if next.is_empty() {
-                    return RustModuleFileResolution::Unresolved;
+                    return rust_layout_resolution(
+                        index,
+                        &rust_super_base_dirs(index, current_file_path, super_count),
+                        &segments[super_count..],
+                    );
                 }
                 next.sort();
                 next.dedup();
@@ -150,7 +154,7 @@ pub(crate) fn resolve_rust_module_file(
     };
 
     if current_files.is_empty() {
-        return RustModuleFileResolution::Unresolved;
+        return rust_layout_resolution(index, std::slice::from_ref(&index.root), &segments[1..]);
     }
 
     let start_index = if head == "super" {
@@ -171,7 +175,23 @@ pub(crate) fn resolve_rust_module_file(
             }
         }
         if next_files.is_empty() {
-            return RustModuleFileResolution::Unresolved;
+            return match head {
+                "crate" => {
+                    rust_layout_resolution(index, std::slice::from_ref(&index.root), &segments[1..])
+                }
+                "self" => current_file_path
+                    .parent()
+                    .map(|parent| {
+                        rust_layout_resolution(index, &[parent.to_path_buf()], &segments[1..])
+                    })
+                    .unwrap_or(RustModuleFileResolution::Unresolved),
+                "super" => rust_layout_resolution(
+                    index,
+                    &rust_super_base_dirs(index, current_file_path, start_index),
+                    &segments[start_index..],
+                ),
+                _ => RustModuleFileResolution::Unresolved,
+            };
         }
         next_files.sort();
         next_files.dedup();
@@ -183,6 +203,96 @@ pub(crate) fn resolve_rust_module_file(
         1 => RustModuleFileResolution::Resolved(current_files.remove(0)),
         _ => RustModuleFileResolution::Ambiguous(current_files),
     }
+}
+
+fn rust_layout_resolution(
+    index: &RepositoryIndex,
+    base_dirs: &[PathBuf],
+    segments: &[&str],
+) -> RustModuleFileResolution {
+    let mut candidates = Vec::new();
+    for base_dir in base_dirs {
+        candidates.extend(rust_layout_candidates(index, base_dir, segments));
+    }
+    candidates.sort();
+    candidates.dedup();
+
+    match candidates.len() {
+        0 => RustModuleFileResolution::Unresolved,
+        1 => RustModuleFileResolution::Resolved(candidates.remove(0)),
+        _ => RustModuleFileResolution::Ambiguous(candidates),
+    }
+}
+
+fn rust_layout_candidates(
+    index: &RepositoryIndex,
+    base_dir: &Path,
+    segments: &[&str],
+) -> Vec<PathBuf> {
+    let module_dir = segments
+        .iter()
+        .fold(base_dir.to_path_buf(), |path, segment| path.join(segment));
+    let mut candidates = Vec::new();
+
+    if segments.is_empty() {
+        for candidate in [base_dir.join("lib.rs"), base_dir.join("main.rs")] {
+            if index.rust_package_names_by_file.contains_key(&candidate) {
+                candidates.push(candidate);
+            }
+        }
+        return candidates;
+    }
+
+    let file_candidate = module_dir.with_extension("rs");
+    if index
+        .rust_package_names_by_file
+        .contains_key(&file_candidate)
+    {
+        candidates.push(file_candidate);
+    }
+
+    let mod_candidate = module_dir.join("mod.rs");
+    if index
+        .rust_package_names_by_file
+        .contains_key(&mod_candidate)
+    {
+        candidates.push(mod_candidate);
+    }
+
+    candidates
+}
+
+fn rust_super_base_dirs(
+    index: &RepositoryIndex,
+    current_file_path: &Path,
+    super_count: usize,
+) -> Vec<PathBuf> {
+    let mut current = vec![current_file_path.to_path_buf()];
+    for _ in 0..super_count {
+        let mut next = Vec::new();
+        for path in &current {
+            if let Some(parents) = index.rust_parent_modules.get(path) {
+                next.extend(parents.iter().cloned());
+            } else if let Some(parent_dir) = path.parent().and_then(Path::parent) {
+                next.extend(rust_layout_candidates(index, parent_dir, &[]));
+            }
+        }
+        next.sort();
+        next.dedup();
+        if next.is_empty() {
+            break;
+        }
+        current = next;
+    }
+
+    current
+        .iter()
+        .filter_map(|path| rust_module_base_dir(path))
+        .collect()
+}
+
+fn rust_module_base_dir(module_file: &Path) -> Option<PathBuf> {
+    module_file.parent().map(Path::to_path_buf)
 }
 
 fn legacy_resolve_rust_import<'a>(

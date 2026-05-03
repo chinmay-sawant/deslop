@@ -1,0 +1,6 @@
+async def get_large_dataset():
+    # Correct: using an async generator for non-blocking iteration
+    for i in range(1000000):
+        yield i
+        if i % 1000 == 0:
+            await asyncio.sleep(0)

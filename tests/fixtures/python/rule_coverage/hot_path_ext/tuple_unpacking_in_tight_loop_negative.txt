@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+def tuple_unpacking_in_tight_loop_negative():
+    rows = [{"id": 1, "qty": 2}, {"id": 2, "qty": 3}]
+    products = []
+    for row in rows:
+        item_id = row["id"]
+        qty = row["qty"]
+        products.append(item_id * qty)
+    return products

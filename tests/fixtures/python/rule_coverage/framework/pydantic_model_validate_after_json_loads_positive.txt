@@ -1,0 +1,11 @@
+import json
+from pydantic import BaseModel
+
+class User(BaseModel):
+    id: int
+    name: str
+
+def load_user(json_data: str):
+    # Violation: using json.loads() and then model_validate() manually
+    data = json.loads(json_data)
+    return User.model_validate(data)

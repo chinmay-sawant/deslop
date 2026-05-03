@@ -1,0 +1,6 @@
+def apply_updates(data, updates):
+    for update in updates:
+        data.append(update)
+        # Violation: performing a full sort on the dataset inside every iteration of the loop
+        data.sort()
+    return data

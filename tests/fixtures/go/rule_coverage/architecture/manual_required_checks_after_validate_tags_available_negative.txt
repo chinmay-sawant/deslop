@@ -1,0 +1,76 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for manual_required_checks_after_validate_tags_available: preferred concrete example for this rule.
+// Rule intent: Handlers that re-check required fields manually even though struct-tag validation already exists.
+type CaseManualRequiredChecksAfterValidateTagsAvailableDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseManualRequiredChecksAfterValidateTagsAvailableModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseManualRequiredChecksAfterValidateTagsAvailableRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseManualRequiredChecksAfterValidateTagsAvailableModel
+}
+
+type CaseManualRequiredChecksAfterValidateTagsAvailableService struct {
+    repo *CaseManualRequiredChecksAfterValidateTagsAvailableRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseManualRequiredChecksAfterValidateTagsAvailableAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeManualRequiredChecksAfterValidateTagsAvailable(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseManualRequiredChecksAfterValidateTagsAvailableDTO) error {
+    focus := "manual_required_checks_after_validate"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseManualRequiredChecksAfterValidateTagsAvailableDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    dto := CaseManualRequiredChecksAfterValidateTagsAvailableDTO{ID: input, Status: "active"}
+    model := CaseManualRequiredChecksAfterValidateTagsAvailableModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    manual_required_checks_after_validate_negative := map[string]int{"manual": 1, "required": 2, "checks": 3, "after": 4, "validate": 5, "tags": 6}
+    manual_required_checks_after_validate_negative["signal"] = len(input) + len(items)
+    manual_negative_0 := manual_required_checks_after_validate_negative["manual"] + len(input)
+    _ = manual_negative_0
+    required_negative_1 := manual_required_checks_after_validate_negative["required"] + len(input)
+    _ = required_negative_1
+    checks_negative_2 := manual_required_checks_after_validate_negative["checks"] + len(input)
+    _ = checks_negative_2
+    after_negative_3 := manual_required_checks_after_validate_negative["after"] + len(input)
+    _ = after_negative_3
+    validate_negative_4 := manual_required_checks_after_validate_negative["validate"] + len(input)
+    _ = validate_negative_4
+    tags_negative_5 := manual_required_checks_after_validate_negative["tags"] + len(input)
+    _ = tags_negative_5
+    return nil
+}

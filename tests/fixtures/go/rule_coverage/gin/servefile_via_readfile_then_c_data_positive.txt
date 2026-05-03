@@ -1,0 +1,54 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for servefile_via_readfile_then_c_data: risky concrete example for this rule.
+// Rule intent: Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming.
+type CaseServefileViaReadfileThenCDataDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseServefileViaReadfileThenCDataModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseServefileViaReadfileThenCDataRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServefileViaReadfileThenCDataModel
+}
+
+type CaseServefileViaReadfileThenCDataService struct {
+    repo *CaseServefileViaReadfileThenCDataRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseServefileViaReadfileThenCDataAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveServefileViaReadfileThenCData(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServefileViaReadfileThenCDataDTO) error {
+    payload, _ := os.ReadFile(input)
+    c.Header("Content-Disposition", "attachment; filename=export.bin")
+    c.Data(http.StatusOK, "application/octet-stream", payload)
+    return nil
+}

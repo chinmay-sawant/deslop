@@ -1,0 +1,7 @@
+import os
+
+def read_user_file(user_input_path):
+    # Violation: file path from user input used without normalization or anchor check
+    full_path = os.path.join("/var/www/uploads", user_input_path)
+    with open(full_path, "r") as f:
+        return f.read()

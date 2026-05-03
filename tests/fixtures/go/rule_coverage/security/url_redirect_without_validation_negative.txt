@@ -1,0 +1,64 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "net/url"
+    "strings"
+)
+
+// Negative scenario for url_redirect_without_validation: preferred concrete example for this rule.
+// Rule intent: `http.Redirect(w, r, r.FormValue("redirect_url"), 302)` or `c.Redirect(302, c.Query("url"))` without URL validation
+type CaseUrlRedirectWithoutValidationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseUrlRedirectWithoutValidationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUrlRedirectWithoutValidationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUrlRedirectWithoutValidationModel
+}
+
+type CaseUrlRedirectWithoutValidationService struct {
+    repo *CaseUrlRedirectWithoutValidationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUrlRedirectWithoutValidationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeUrlRedirectWithoutValidation(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUrlRedirectWithoutValidationDTO) error {
+    focus := "url_redirect_without_validation"
+    _ = focus
+    target, err := url.Parse(input)
+    if err != nil { return err }
+    _ = target
+    url_redirect_validation_negative := map[string]int{"url": 1, "redirect": 2, "validation": 3}
+    url_redirect_validation_negative["signal"] = len(input) + len(items)
+    url_negative_0 := url_redirect_validation_negative["url"] + len(input)
+    _ = url_negative_0
+    redirect_negative_1 := url_redirect_validation_negative["redirect"] + len(input)
+    _ = redirect_negative_1
+    validation_negative_2 := CaseUrlRedirectWithoutValidationDTO{ID: input, Status: "validation"}
+    _ = validation_negative_2
+    return nil
+}

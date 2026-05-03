@@ -1,0 +1,104 @@
+package handler
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// Positive scenario for gin_handler_starts_transaction_inline.
+// Rule intent: Handlers should not create or own transactions directly.
+// Transactional work should be delegated to services or unit-of-work helpers.
+// Anti-pattern: Handler calls db.Begin() and manages commit/rollback inline.
+
+type OrderHandler struct {
+	db *gorm.DB
+}
+
+func (h *OrderHandler) CreateOrder(c *gin.Context) {
+	var req struct {
+		UserID    string  `json:"user_id" binding:"required"`
+		ProductID string  `json:"product_id" binding:"required"`
+		Quantity  int     `json:"quantity" binding:"required,min=1"`
+		Total     float64 `json:"total" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	// Anti-pattern: handler starts transaction inline
+	tx := h.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	var user User
+	if err := tx.Where("id = ?", req.UserID).First(&user).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	var product Product
+	if err := tx.Where("id = ?", req.ProductID).First(&product).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusNotFound, gin.H{"error": "product not found"})
+		return
+	}
+
+	if product.Stock < req.Quantity {
+		tx.Rollback()
+		c.JSON(http.StatusBadRequest, gin.H{"error": "insufficient stock"})
+		return
+	}
+
+	order := Order{
+		UserID:    req.UserID,
+		ProductID: req.ProductID,
+		Quantity:  req.Quantity,
+		Total:     req.Total,
+		Status:    "pending",
+	}
+	if err := tx.Create(&order).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create order"})
+		return
+	}
+
+	if err := tx.Model(&product).Update("stock", product.Stock-req.Quantity).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update stock"})
+		return
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "commit failed"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"order": order})
+}
+
+type User struct {
+	ID   string `gorm:"column:id"`
+	Name string `gorm:"column:name"`
+}
+
+type Product struct {
+	ID    string `gorm:"column:id"`
+	Name  string `gorm:"column:name"`
+	Stock int    `gorm:"column:stock"`
+}
+
+type Order struct {
+	ID        uint    `gorm:"column:id;primaryKey"`
+	UserID    string  `gorm:"column:user_id"`
+	ProductID string  `gorm:"column:product_id"`
+	Quantity  int     `gorm:"column:quantity"`
+	Total     float64 `gorm:"column:total"`
+	Status    string  `gorm:"column:status"`
+}

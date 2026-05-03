@@ -1,0 +1,4 @@
+def summarize(values):
+    total = sum(values)
+    largest = max(values)
+    return total, largest

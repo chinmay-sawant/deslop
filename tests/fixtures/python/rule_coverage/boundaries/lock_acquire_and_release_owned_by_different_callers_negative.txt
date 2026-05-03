@@ -1,0 +1,8 @@
+import threading
+
+lock = threading.Lock()
+
+def process():
+    # Correct: lock acquisition and release are contained within the same scope
+    with lock:
+        perform_task()

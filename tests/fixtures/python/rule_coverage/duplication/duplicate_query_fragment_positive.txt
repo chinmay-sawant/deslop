@@ -1,0 +1,6 @@
+def get_active_users():
+    # Violation: duplicate query fragment repeated across multiple repository methods
+    return db.query("SELECT * FROM users WHERE status = 'active' AND deleted = 0")
+
+def count_active_users():
+    return db.query("SELECT COUNT(*) FROM users WHERE status = 'active' AND deleted = 0")

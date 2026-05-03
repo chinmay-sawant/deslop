@@ -1,0 +1,6 @@
+import logging
+
+def handle_webhook(payload):
+    if not payload.get("valid"):
+        # Violation: dumping unbounded, untrusted request payloads into warning logs risks OOMs and storage exhaustion
+        logging.warning(f"Invalid webhook payload received: {payload}")

@@ -1,0 +1,44 @@
+package service
+
+import (
+	"gorm.io/gorm"
+)
+
+// Positive scenario for service_write_passthrough_without_domain_validation: risky concrete example for this rule.
+// Rule intent: Write-style service methods that mostly forward to repositories without visible domain guard checks.
+type CaseServiceWritePassthroughWithoutDomainValidationDTO struct {
+	ID       string `json:"id"`
+	TenantID string `json:"tenant_id"`
+	Status   string `json:"status"`
+	Amount   int    `json:"amount"`
+}
+
+type CaseServiceWritePassthroughWithoutDomainValidationModel struct {
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string `gorm:"column:status" json:"status"`
+	Amount   int    `gorm:"column:amount" json:"amount"`
+}
+
+type CaseServiceWritePassthroughWithoutDomainValidationRepository struct {
+	db *gorm.DB
+}
+
+type CaseServiceWritePassthroughWithoutDomainValidationService struct {
+	repo *CaseServiceWritePassthroughWithoutDomainValidationRepository
+}
+
+func (s *CaseServiceWritePassthroughWithoutDomainValidationService) Create(dto CaseServiceWritePassthroughWithoutDomainValidationDTO) error {
+	model := CaseServiceWritePassthroughWithoutDomainValidationModel{
+		ID:       dto.ID,
+		TenantID: dto.TenantID,
+		Status:   dto.Status,
+		Amount:   dto.Amount,
+	}
+
+	if err := s.repo.db.Create(&model).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -1,0 +1,6 @@
+def process_fifo(items: list[int]) -> list[int]:
+    queue = list(items)
+    seen: list[int] = []
+    while queue:
+        seen.append(queue.pop(0))
+    return seen

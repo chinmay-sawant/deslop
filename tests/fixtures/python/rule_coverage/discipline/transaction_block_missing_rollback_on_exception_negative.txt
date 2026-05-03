@@ -1,0 +1,9 @@
+def save_user(user):
+    # Correct: ensure transaction is rolled back on any error
+    db.begin()
+    try:
+        db.insert(user)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise

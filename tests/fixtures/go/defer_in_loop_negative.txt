@@ -1,0 +1,19 @@
+package sample
+
+import "os"
+
+func processFile(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	return nil
+}
+
+func Process(paths []string) {
+	for _, path := range paths {
+		processFile(path)
+	}
+}

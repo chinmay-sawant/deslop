@@ -1,0 +1,16 @@
+from fastapi import BackgroundTasks, FastAPI
+import logging
+
+app = FastAPI()
+
+def sync_data():
+    # Correct: background tasks wrap logic in try-except to ensure errors are logged
+    try:
+        perform_risky_sync()
+    except Exception as e:
+        logging.error(f"Background sync failed: {e}")
+
+@app.post("/sync")
+def trigger_sync(background_tasks: BackgroundTasks):
+    background_tasks.add_task(sync_data)
+    return {"message": "Started"}

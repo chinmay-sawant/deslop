@@ -1,0 +1,89 @@
+package handler_test
+
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+)
+
+// Positive scenario for tests_stub_gin_context_instead_of_httptest_boundary.
+// Rule intent: Handler tests that mock Gin internals directly instead of using httptest
+// when boundary behavior matters.
+
+type CreateUserRequest struct {
+	Name  string `json:"name" binding:"required"`
+	Email string `json:"email" binding:"required"`
+}
+
+func CreateUserHandler(c *gin.Context) {
+	var req CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.Header("X-Request-ID", "req-123")
+	c.JSON(http.StatusCreated, gin.H{"id": 1, "name": req.Name})
+}
+
+// Anti-pattern: manually stubbing gin.Context instead of using httptest.NewRecorder.
+func TestCreateUserHandler_StubbedGinContext(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	// Anti-pattern: constructing gin.Context manually with internal fields
+	w := &testResponseWriter{
+		headers:  make(http.Header),
+		body:     &bytes.Buffer{},
+		status:   0,
+	}
+	c := &gin.Context{
+		Request: nil,
+		Writer:  w,
+		Params:  gin.Params{},
+	}
+
+	body := `{"name":"John","email":"john@example.com"}`
+	c.Request, _ = http.NewRequest(http.MethodPost, "/users", bytes.NewReader([]byte(body)))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	CreateUserHandler(c)
+
+	assert.Equal(t, http.StatusCreated, w.status)
+	assert.Contains(t, w.body.String(), `"name":"John"`)
+}
+
+// testResponseWriter is a manual stub of http.ResponseWriter — anti-pattern.
+type testResponseWriter struct {
+	headers  http.Header
+	body     *bytes.Buffer
+	status   int
+}
+
+func (w *testResponseWriter) Header() http.Header         { return w.headers }
+func (w *testResponseWriter) Write(b []byte) (int, error) { return w.body.Write(b) }
+func (w *testResponseWriter) WriteHeader(code int)        { w.status = code }
+
+// Another test with the same anti-pattern.
+func TestCreateUserHandler_InvalidInput_StubbedContext(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	w := &testResponseWriter{
+		headers:  make(http.Header),
+		body:     &bytes.Buffer{},
+		status:   0,
+	}
+	c := &gin.Context{
+		Request: nil,
+		Writer:  w,
+	}
+
+	c.Request, _ = http.NewRequest(http.MethodPost, "/users", bytes.NewReader([]byte(`{"name":""}`)))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	CreateUserHandler(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.status)
+}

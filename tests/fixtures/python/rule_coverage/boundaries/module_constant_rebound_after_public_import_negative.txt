@@ -1,0 +1,10 @@
+# settings.py
+_DEBUG = False
+
+def is_debug_enabled():
+    return _DEBUG
+
+# Correct: use a function or a property to manage mutable module state
+def set_debug(value: bool):
+    global _DEBUG
+    _DEBUG = value

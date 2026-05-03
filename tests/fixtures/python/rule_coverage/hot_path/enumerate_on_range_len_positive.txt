@@ -1,0 +1,5 @@
+def process_items(items):
+    # Violation: using range(len()) for indexing instead of enumerate or direct iteration
+    for i in range(len(items)):
+        item = items[i]
+        print(f"Item {i}: {item}")

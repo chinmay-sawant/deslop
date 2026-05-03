@@ -1,0 +1,7 @@
+import json
+
+def handle_message(payload):
+    # Correct: parse the JSON payload once and reuse the resulting dictionary
+    msg = json.loads(payload)
+    if msg.get("type") == "update":
+        print(msg.get("data"))

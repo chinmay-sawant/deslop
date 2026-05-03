@@ -1,0 +1,9 @@
+import wandb
+
+def train_model(epochs, batches):
+    for epoch in range(epochs):
+        for step, batch in enumerate(batches):
+            loss = compute_loss(batch)
+            # Correct: throttle logging to only fire periodically (e.g., every 100 steps)
+            if step % 100 == 0:
+                wandb.log({"loss": loss, "step": step})

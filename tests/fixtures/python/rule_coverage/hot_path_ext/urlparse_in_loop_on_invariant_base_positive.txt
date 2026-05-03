@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+def urlparse_in_loop_on_invariant_base_positive():
+    from urllib.parse import urlparse
+    paths = ["/a", "/b", "/c"]
+    hosts = []
+    for _ in paths:
+        parsed = urlparse("https://api.example.com/root")
+        hosts.append(parsed.netloc)
+    return hosts

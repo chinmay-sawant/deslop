@@ -1,0 +1,5 @@
+import yaml
+
+def load_config(config_stream):
+    # Correct: use safe_load to prevent execution of arbitrary code in YAML
+    return yaml.safe_load(config_stream)

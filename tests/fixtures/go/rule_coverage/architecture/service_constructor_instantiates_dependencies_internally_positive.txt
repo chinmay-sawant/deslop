@@ -1,0 +1,48 @@
+package service
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+// Positive scenario for service_constructor_instantiates_dependencies_internally:
+// constructor creates repositories, clients, or loggers internally instead of
+// accepting them explicitly.
+type OrderService struct {
+	db     *gorm.DB
+	client *http.Client
+	logger *log.Logger
+}
+
+func NewOrderService(dsn string) (*OrderService, error) {
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect database: %w", err)
+	}
+
+	client := &http.Client{}
+	logger := log.New(nil, "[order-service] ", log.LstdFlags)
+
+	return &OrderService{
+		db:     db,
+		client: client,
+		logger: logger,
+	}, nil
+}
+
+type Order struct {
+	ID     string
+	Status string
+	Amount int
+}
+
+func (s *OrderService) CreateOrder(ctx context.Context, order *Order) error {
+	s.logger.Printf("creating order for %s", order.ID)
+	result := s.db.WithContext(ctx).Create(order)
+	return result.Error
+}

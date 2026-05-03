@@ -1,0 +1,5 @@
+def create_reporter():
+    large_data = [i for i in range(1000000)]
+    count = len(large_data)
+    # Correct: closure only captures the small necessary piece of data
+    return lambda: f"Data size: {count}"

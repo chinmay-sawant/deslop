@@ -1,0 +1,53 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for send_after_local_close_risk: risky concrete example for this rule.
+// Rule intent: A locally owned channel is closed and later used in a send expression.
+type CaseSendAfterLocalCloseRiskDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSendAfterLocalCloseRiskModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSendAfterLocalCloseRiskRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSendAfterLocalCloseRiskModel
+}
+
+type CaseSendAfterLocalCloseRiskService struct {
+    repo *CaseSendAfterLocalCloseRiskRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSendAfterLocalCloseRiskAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSendAfterLocalCloseRisk(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSendAfterLocalCloseRiskDTO) error {
+    ch := make(chan string)
+    close(ch)
+    ch <- input
+    return nil
+}

@@ -1,0 +1,7 @@
+def load_config():
+    config = {}
+    # Violation: multiple sources merged without clear precedence or documentation
+    config.update(load_from_yaml("default.yaml"))
+    config.update(load_from_env())
+    config.update(load_from_yaml("overrides.yaml"))
+    return config

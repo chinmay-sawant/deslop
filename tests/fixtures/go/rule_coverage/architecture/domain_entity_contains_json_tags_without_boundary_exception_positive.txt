@@ -1,0 +1,37 @@
+package domain
+
+// Positive scenario for domain_entity_contains_json_tags_without_boundary_exception.
+// Rule intent: Core domain entities that are directly annotated for API serialization
+// without a deliberate boundary exception (e.g., DTO layer).
+
+// User is a core domain entity that leaks API serialization concerns via json tags.
+// Domain entities should not know about transport-layer concerns like json encoding.
+type User struct {
+	ID        string `json:"id"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+	Role      string `json:"role"`
+	IsActive  bool   `json:"is_active"`
+}
+
+// Order is another domain entity with json tags, mixing persistence and API concerns.
+type Order struct {
+	ID          string  `json:"id"`
+	UserID      string  `json:"user_id"`
+	TotalAmount float64 `json:"total_amount"`
+	Currency    string  `json:"currency"`
+	Status      string  `json:"status"`
+	Items       []Item  `json:"items"`
+	CreatedAt   string  `json:"created_at"`
+}
+
+// Item is a value object within the Order aggregate, also leaking json tags.
+type Item struct {
+	ProductID string  `json:"product_id"`
+	Name      string  `json:"name"`
+	Quantity  int     `json:"quantity"`
+	Price     float64 `json:"price"`
+}

@@ -1,0 +1,6 @@
+from functools import lru_cache
+
+# Correct: use lru_cache with a defined maxsize to prevent memory leaks
+@lru_cache(maxsize=128)
+def get_user(user_id):
+    return fetch_user_from_db(user_id)

@@ -1,0 +1,8 @@
+def validate_user_data(data):
+    # Correct: validation logic is centralized in a single reusable function
+    if not data.get("username"): raise ValueError("Missing username")
+    if len(data["username"]) < 3: raise ValueError("Username too short")
+
+def create_user(data):
+    validate_user_data(data)
+    db.save_user(data)

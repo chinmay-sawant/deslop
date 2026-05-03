@@ -1,0 +1,7 @@
+from subprocess import Popen, PIPE
+
+def get_large_output():
+    # Correct: use communicate() to safely read large output from a subprocess
+    p = Popen(["cat", "large_file.txt"], stdout=PIPE)
+    output, error = p.communicate()
+    return output

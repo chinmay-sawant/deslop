@@ -1,0 +1,6 @@
+from .models import User
+
+def fetch_details(user_ids):
+    # Violation: executing raw SQL queries in a loop
+    for user_id in user_ids:
+        User.objects.raw("SELECT * FROM users WHERE id = %s", [user_id])

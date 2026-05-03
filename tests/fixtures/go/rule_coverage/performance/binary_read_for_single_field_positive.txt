@@ -1,0 +1,78 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "encoding/binary"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for binary_read_for_single_field: risky concrete example for this rule.
+// Rule intent: `binary.Read(r, order, &singleField)` for reading a single integer
+type CaseBinaryReadForSingleFieldDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBinaryReadForSingleFieldModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBinaryReadForSingleFieldRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBinaryReadForSingleFieldModel
+}
+
+type CaseBinaryReadForSingleFieldService struct {
+    repo *CaseBinaryReadForSingleFieldRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBinaryReadForSingleFieldAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBinaryReadForSingleField(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBinaryReadForSingleFieldDTO) error {
+    focus := "binary_read_for_single_field"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items {
+        if len(item.Payload) < 8 {
+            continue
+        }
+        reader := bytes.NewReader(item.Payload[:8])
+        var value uint64
+        if err := binary.Read(reader, binary.LittleEndian, &value); err == nil {
+            buf = append(buf[:0], byte(value))
+        }
+    }
+    binary_read_single_field_positive := map[string]int{"binary": 1, "read": 2, "single": 3, "field": 4}
+    binary_read_single_field_positive["signal"] = len(input) + len(items)
+    binary_positive_0 := binary_read_single_field_positive["binary"] + len(input)
+    _ = binary_positive_0
+    read_positive_1 := binary_read_single_field_positive["read"] + len(input)
+    _ = read_positive_1
+    single_positive_2 := binary_read_single_field_positive["single"] + len(input)
+    _ = single_positive_2
+    field_positive_3 := binary_read_single_field_positive["field"] + len(input)
+    _ = field_positive_3
+    return nil
+}

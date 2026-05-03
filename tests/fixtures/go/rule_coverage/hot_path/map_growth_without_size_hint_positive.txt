@@ -1,0 +1,27 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+)
+
+// Positive scenario for map_growth_without_size_hint: a map grows in a loop without an upfront capacity hint.
+type CaseMapGrowthWithoutSizeHintDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+func PositiveMapGrowthWithoutSizeHint(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMapGrowthWithoutSizeHintDTO) error {
+    counts := make(map[string]int)
+    for _, item := range items {
+        counts[item.ID] += item.Amount
+    }
+    _ = counts
+    return nil
+}

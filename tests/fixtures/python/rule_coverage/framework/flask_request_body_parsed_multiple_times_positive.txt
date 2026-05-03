@@ -1,0 +1,11 @@
+import json
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route("/process", methods=["POST"])
+def process():
+    # Violation: request body parsed multiple times (once by .json, once by loads(data))
+    data1 = request.json
+    data2 = json.loads(request.data)
+    return "ok"

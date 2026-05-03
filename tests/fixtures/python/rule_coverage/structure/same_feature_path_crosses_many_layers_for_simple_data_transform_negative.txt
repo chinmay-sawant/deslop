@@ -1,0 +1,3 @@
+# Correct: collapse unnecessary abstraction layers when the operation is simple and direct
+def view_handler():
+    return "ok"

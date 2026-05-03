@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+def repeated_isinstance_chain_same_object_negative():
+    value = 7
+    is_int = isinstance(value, int)
+    if is_int and value > 0:
+        return "positive-int"
+    if isinstance(value, float):
+        return "float"
+    return "other"

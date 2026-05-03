@@ -1,0 +1,2 @@
+def top_score(scores: list[int]) -> int:
+    return sorted(scores, reverse=True)[0]

@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+from collections import deque
+
+history = deque(maxlen=1000)
+
+
+def record_event(event: str) -> int:
+    history.append(event)
+    return len(history)

@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "crypto/sha1"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for sha1_sum_in_loop: preferred concrete example for this rule.
+// Rule intent: `sha1.Sum(...)` inside loops.
+type CaseSha1SumInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSha1SumInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSha1SumInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSha1SumInLoopModel
+}
+
+type CaseSha1SumInLoopService struct {
+    repo *CaseSha1SumInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSha1SumInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSha1SumInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSha1SumInLoopDTO) error {
+    focus := "sha1_sum_in_loop"
+    _ = focus
+    buf := []byte(input)
+    hasher := sha1.New()
+    for _, item := range items { hasher.Write(item.Payload) }
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    sha1_sum_loop_negative := map[string]int{"sha1": 1, "sum": 2, "loop": 3}
+    sha1_sum_loop_negative["signal"] = len(input) + len(items)
+    sha1_negative_0 := sha1_sum_loop_negative["sha1"] + len(input)
+    _ = sha1_negative_0
+    sum_negative_1 := sha1_sum_loop_negative["sum"] + len(input)
+    _ = sum_negative_1
+    for loop_negative_2Index, item := range items { sha1_sum_loop_negative[item.ID] = loop_negative_2Index }
+    return nil
+}

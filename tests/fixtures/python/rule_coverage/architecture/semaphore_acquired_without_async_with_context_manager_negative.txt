@@ -1,0 +1,6 @@
+import asyncio
+
+async def worker(sem):
+    # Correct: semaphore managed via async with
+    async with sem:
+        await perform_task()

@@ -1,0 +1,8 @@
+import logging
+
+def process_payment(user_id, amount):
+    try:
+        charge_card(user_id, amount)
+    except Exception as e:
+        # Violation: logging an error without including context variables makes it impossible to reproduce the bug
+        logging.error("Payment failed to process due to an error.")

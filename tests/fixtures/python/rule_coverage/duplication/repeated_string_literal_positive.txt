@@ -1,0 +1,6 @@
+def process_status(status):
+    # Violation: repeated string literal used multiple times in the same function/module
+    if status == "PENDING_APPROVAL":
+        log("Status is PENDING_APPROVAL")
+        return "Waiting for PENDING_APPROVAL"
+    return "Complete"

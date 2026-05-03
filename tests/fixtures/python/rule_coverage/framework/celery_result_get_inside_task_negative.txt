@@ -1,0 +1,7 @@
+from celery import shared_task, chain
+from .other_tasks import sub_task, finalize_task
+
+@shared_task
+def parent_task():
+    # Correct: use a chain to handle dependent tasks without blocking
+    return chain(sub_task.s(), finalize_task.s()).apply_async()

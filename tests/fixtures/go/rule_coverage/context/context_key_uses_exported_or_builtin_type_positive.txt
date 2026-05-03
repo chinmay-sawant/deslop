@@ -1,0 +1,50 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+)
+
+// Positive scenario for context_key_uses_exported_or_builtin_type: risky concrete example for this rule.
+// Rule intent: context.WithValue keys or exported key declarations that use built-in scalar types instead of unexported key types.
+type CaseContextKeyUsesExportedOrBuiltinTypeDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+type CaseContextKeyUsesExportedOrBuiltinTypeModel struct {
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseContextKeyUsesExportedOrBuiltinTypeRepository struct {
+    db    *gorm.DB
+    sql   *sql.DB
+    cache map[string]CaseContextKeyUsesExportedOrBuiltinTypeModel
+}
+
+type CaseContextKeyUsesExportedOrBuiltinTypeService struct {
+    repo   *CaseContextKeyUsesExportedOrBuiltinTypeRepository
+    client *http.Client
+}
+
+type CaseContextKeyUsesExportedOrBuiltinTypeAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveContextKeyUsesExportedOrBuiltinType(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseContextKeyUsesExportedOrBuiltinTypeDTO) error {
+    // Using a builtin string as context key — risks collision with other packages.
+    ctx = context.WithValue(ctx, "user_id", input)
+    ctx = context.WithValue(ctx, "tenant", items[0].TenantID)
+    userID := ctx.Value("user_id").(string)
+    c.JSON(http.StatusOK, gin.H{"user_id": userID})
+    return nil
+}

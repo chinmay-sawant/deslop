@@ -1,0 +1,58 @@
+package handler
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Positive scenario for create_and_update_share_same_dto_despite_conflicting_requiredness.
+// Anti-pattern: A single DTO is reused for both Create and Update operations,
+// but fields that are required on create should be optional on update.
+
+type ProductDTO struct {
+	ID          uint    `json:"id"`
+	Name        string  `json:"name" binding:"required"`
+	Description string  `json:"description" binding:"required"`
+	Price       float64 `json:"price" binding:"required"`
+	CategoryID  uint    `json:"category_id" binding:"required"`
+}
+
+func CreateProductHandler(c *gin.Context) {
+	var dto ProductDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	product := Product{
+		Name:        dto.Name,
+		Description: dto.Description,
+		Price:       dto.Price,
+		CategoryID:  dto.CategoryID,
+	}
+
+	db.Create(&product)
+	c.JSON(http.StatusCreated, product)
+}
+
+func UpdateProductHandler(c *gin.Context) {
+	var dto ProductDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Anti-pattern: Update requires all fields because it shares the same DTO.
+	// Client cannot partially update (e.g., only change Price) without
+	// sending Name, Description, and CategoryID again.
+	updates := map[string]interface{}{
+		"name":        dto.Name,
+		"description": dto.Description,
+		"price":       dto.Price,
+		"category_id": dto.CategoryID,
+	}
+
+	db.Model(&Product{}).Where("id = ?", c.Param("id")).Updates(updates)
+	c.JSON(http.StatusOK, dto)
+}

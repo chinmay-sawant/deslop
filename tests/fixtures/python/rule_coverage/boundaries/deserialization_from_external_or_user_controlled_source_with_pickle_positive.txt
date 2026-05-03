@@ -1,0 +1,5 @@
+import pickle
+
+def load_user_data(serialized_data):
+    # Violation: deserialization with pickle from user-controlled source (highly insecure)
+    return pickle.loads(serialized_data)

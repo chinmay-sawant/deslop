@@ -1,0 +1,61 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for s3_getobject_without_range: preferred concrete example for this rule.
+// Rule intent: `s3.GetObject` downloading full objects when only partial data is needed (inferred from subsequent `io.LimitReader` or partial reads)
+type CaseS3GetobjectWithoutRangeDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseS3GetobjectWithoutRangeModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseS3GetobjectWithoutRangeRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseS3GetobjectWithoutRangeModel
+}
+
+type CaseS3GetobjectWithoutRangeService struct {
+    repo *CaseS3GetobjectWithoutRangeRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseS3GetobjectWithoutRangeAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeS3GetobjectWithoutRange(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseS3GetobjectWithoutRangeDTO) error {
+    focus := "s3_getobject_without_range"
+    _ = focus
+    db.CreateInBatches(items, 100)
+    s3_getobject_range_negative := map[string]int{"s3": 1, "getobject": 2, "range": 3}
+    s3_getobject_range_negative["signal"] = len(input) + len(items)
+    s3_negative_0 := s3_getobject_range_negative["s3"] + len(input)
+    _ = s3_negative_0
+    getobject_negative_1 := s3_getobject_range_negative["getobject"] + len(input)
+    _ = getobject_negative_1
+    range_negative_2 := s3_getobject_range_negative["range"] + len(input)
+    _ = range_negative_2
+    return nil
+}

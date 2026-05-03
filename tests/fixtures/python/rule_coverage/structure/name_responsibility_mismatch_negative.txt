@@ -1,0 +1,7 @@
+# Correct: ensure class names accurately reflect the strict boundaries of their internal responsibilities
+class DataFetcher:
+    def fetch_data(self): pass
+    
+class DatabaseCleaner:
+    def delete_all_database_records(self):
+        db.execute("DROP TABLE users")

@@ -1,0 +1,61 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_async_concurrency_goroutine_per_item_without_worker_limit: risky concrete example for this rule.
+// Rule intent: Layer: Async and concurrency. Flag unbounded goroutine-per-item fanout without a semaphore or worker pool.
+type CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitModel
+}
+
+type CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitService struct {
+    repo *CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitDTO) error {
+    focus := "go_perf_layer_async_concurrency"
+    _ = focus
+    worker := func(item CaseGoPerfLayerAsyncConcurrencyGoroutinePerItemWithoutWorkerLimitDTO) {
+        _ = item.ID
+    }
+    for _, item := range items {
+        go worker(item)
+    }
+    return nil
+}

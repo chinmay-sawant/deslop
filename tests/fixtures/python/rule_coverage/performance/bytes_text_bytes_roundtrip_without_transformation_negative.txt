@@ -1,0 +1,2 @@
+def has_png_signature(data: bytes) -> bool:
+    return data.startswith(b"\x89PNG")

@@ -1,0 +1,6 @@
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class AppSettings(BaseSettings):
+    api_key: str
+    # Correct: extra fields are forbidden to ensure strict configuration
+    model_config = SettingsConfigDict(extra="forbid")

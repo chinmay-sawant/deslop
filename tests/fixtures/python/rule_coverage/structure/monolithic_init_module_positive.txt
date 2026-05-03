@@ -1,0 +1,12 @@
+# my_package/__init__.py
+# Violation: cramming hundreds of lines of implementation logic into the package root '__init__.py'
+import os
+import sys
+
+class MainApplication:
+    def start(self): pass
+    def stop(self): pass
+
+def utility_function(): pass
+def another_utility(): pass
+def internal_helper(): pass

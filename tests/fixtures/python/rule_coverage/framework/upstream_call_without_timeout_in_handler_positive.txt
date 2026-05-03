@@ -1,0 +1,7 @@
+import requests
+
+@app.get("/proxy")
+def proxy():
+    # Violation: outbound HTTP call without a timeout (can hang the application)
+    resp = requests.get("https://upstream.api/data")
+    return resp.json()

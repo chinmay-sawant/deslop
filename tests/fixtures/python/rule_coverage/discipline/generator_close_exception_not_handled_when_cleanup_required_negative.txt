@@ -1,0 +1,10 @@
+def data_generator():
+    resource = acquire_resource()
+    try:
+        yield "data"
+    finally:
+        # Correct: handle potential errors during cleanup to ensure generator closing doesn't crash
+        try:
+            resource.release()
+        except Exception as e:
+            logger.error(f"Cleanup failed: {e}")

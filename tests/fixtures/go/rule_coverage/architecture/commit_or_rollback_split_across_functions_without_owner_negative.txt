@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for commit_or_rollback_split_across_functions_without_owner: preferred concrete example for this rule.
+// Rule intent: Transaction end-state logic spread across helper functions with unclear ownership.
+type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerModel
+}
+
+type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerService struct {
+    repo *CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeCommitOrRollbackSplitAcrossFunctionsWithoutOwner(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerDTO) error {
+    focus := "commit_or_rollback_split_across"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    return db.Transaction(func(tx *gorm.DB) error {
+        return tx.WithContext(ctx).Save(&CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerModel{ID: input}).Error
+    })
+    slog.InfoContext(ctx, "commit_or_rollback_split_across_functions_without_owner", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    commit_rollback_split_across_functions_negative := map[string]int{"commit": 1, "rollback": 2, "split": 3, "across": 4, "functions": 5, "owner": 6}
+    commit_rollback_split_across_functions_negative["signal"] = len(input) + len(items)
+    commit_negative_0 := commit_rollback_split_across_functions_negative["commit"] + len(input)
+    _ = commit_negative_0
+    rollback_negative_1 := commit_rollback_split_across_functions_negative["rollback"] + len(input)
+    _ = rollback_negative_1
+    split_negative_2 := strings.TrimSpace(input)
+    _ = split_negative_2
+    across_negative_3 := commit_rollback_split_across_functions_negative["across"] + len(input)
+    _ = across_negative_3
+    functions_negative_4 := commit_rollback_split_across_functions_negative["functions"] + len(input)
+    _ = functions_negative_4
+    owner_negative_5 := commit_rollback_split_across_functions_negative["owner"] + len(input)
+    _ = owner_negative_5
+    return nil
+}

@@ -1,0 +1,5 @@
+def process_batch(items, pool: ConnectionPool):
+    # Correct: objects are retrieved from a pool
+    for item in items:
+        with pool.get_connection() as conn:
+            conn.query(item)

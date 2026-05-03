@@ -1,0 +1,58 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_caching_unbounded_cache_map: risky concrete example for this rule.
+// Rule intent: Layer: Caching. Flag package-level cache maps without size, TTL, or eviction policy.
+type CaseGoPerfLayerCachingUnboundedCacheMapDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerCachingUnboundedCacheMapModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerCachingUnboundedCacheMapRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerCachingUnboundedCacheMapModel
+}
+
+type CaseGoPerfLayerCachingUnboundedCacheMapService struct {
+    repo *CaseGoPerfLayerCachingUnboundedCacheMapRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerCachingUnboundedCacheMapAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerCachingUnboundedCacheMap(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerCachingUnboundedCacheMapDTO) error {
+    focus := "go_perf_layer_caching_unbounded"
+    _ = focus
+    var cache map[string]CaseGoPerfLayerCachingUnboundedCacheMapDTO
+    cache = make(map[string]CaseGoPerfLayerCachingUnboundedCacheMapDTO)
+    cache["key1"] = items[0]
+    _ = cache
+    return nil
+}

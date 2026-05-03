@@ -1,0 +1,7 @@
+def process_payload(payload):
+    try:
+        # Correct: catch only the specific, expected structural errors, allowing logical bugs to crash loudly
+        value = payload["count"] + 10
+        return value
+    except (KeyError, TypeError):
+        return 0

@@ -1,0 +1,7 @@
+def main():
+    service = ProcessingService()
+    service.run()
+
+if __name__ == "__main__":
+    # Correct: entrypoint only calls a main function or service
+    main()

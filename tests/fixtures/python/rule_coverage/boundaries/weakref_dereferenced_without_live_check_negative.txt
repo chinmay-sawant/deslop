@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+import weakref
+
+
+def read_name(ref: "weakref.ReferenceType[object]") -> str | None:
+    obj = ref()
+    if obj is None:
+        return None
+    return obj.name

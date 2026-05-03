@@ -1,0 +1,6 @@
+import openai
+
+def get_answer(question):
+    # Violation: no caching layer for LLM responses, meaning duplicate questions incur API costs repeatedly
+    resp = openai.Completion.create(model="gpt-3.5-turbo", prompt=question)
+    return resp.choices[0].text

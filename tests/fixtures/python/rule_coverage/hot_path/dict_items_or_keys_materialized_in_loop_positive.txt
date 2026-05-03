@@ -1,0 +1,5 @@
+def count_keys(data):
+    # Violation: materializing dictionary keys/items as a list inside a loop unnecessarily
+    for key in list(data.keys()):
+        if key.startswith("internal_"):
+            print(f"Found: {key}")

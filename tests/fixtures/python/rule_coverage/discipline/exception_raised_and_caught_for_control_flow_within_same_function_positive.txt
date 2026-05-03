@@ -1,0 +1,9 @@
+def find_item(items, target):
+    # Violation: exception raised and caught for control flow within the same function
+    try:
+        for item in items:
+            if item == target:
+                raise FoundException()
+    except FoundException:
+        return True
+    return False

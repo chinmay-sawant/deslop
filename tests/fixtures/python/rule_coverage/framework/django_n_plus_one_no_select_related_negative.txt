@@ -1,0 +1,6 @@
+from .models import User
+
+def list_user_bios():
+    # Correct: use select_related to join the profile table and avoid multiple queries
+    for user in User.objects.select_related('profile').all():
+        print(user.profile.bio)

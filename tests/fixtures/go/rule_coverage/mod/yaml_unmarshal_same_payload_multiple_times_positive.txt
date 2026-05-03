@@ -1,0 +1,56 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gopkg.in/yaml.v3"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for yaml_unmarshal_same_payload_multiple_times: risky concrete example for this rule.
+// Rule intent: The same local YAML payload binding is unmarshaled into multiple targets in one function.
+type CaseYamlUnmarshalSamePayloadMultipleTimesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseYamlUnmarshalSamePayloadMultipleTimesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseYamlUnmarshalSamePayloadMultipleTimesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseYamlUnmarshalSamePayloadMultipleTimesModel
+}
+
+type CaseYamlUnmarshalSamePayloadMultipleTimesService struct {
+    repo *CaseYamlUnmarshalSamePayloadMultipleTimesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseYamlUnmarshalSamePayloadMultipleTimesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveYamlUnmarshalSamePayloadMultipleTimes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseYamlUnmarshalSamePayloadMultipleTimesDTO) error {
+    var v1, v2 CaseYamlUnmarshalSamePayloadMultipleTimesDTO
+    yaml.Unmarshal([]byte(input), &v1)
+    yaml.Unmarshal([]byte(input), &v2)
+    _ = v1
+    _ = v2
+    return nil
+}

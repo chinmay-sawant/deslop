@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+def path_resolve_or_expanduser_in_loop_positive():
+    from pathlib import Path
+    files = ["a.log", "b.log", "c.log"]
+    resolved = []
+    for name in files:
+        base = Path("~/logs").expanduser()
+        resolved.append((base / name).resolve())
+    return resolved

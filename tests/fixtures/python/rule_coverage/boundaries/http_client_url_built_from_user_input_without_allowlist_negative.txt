@@ -1,0 +1,10 @@
+import requests
+
+ALLOWED_DOMAINS = {"trusted.com", "partner.io"}
+
+def fetch_external_data(user_domain):
+    # Correct: URL is checked against an allowlist before making a request
+    if user_domain not in ALLOWED_DOMAINS:
+        raise ValueError("Untrusted domain")
+    url = f"https://{user_domain}/metadata"
+    return requests.get(url).json()

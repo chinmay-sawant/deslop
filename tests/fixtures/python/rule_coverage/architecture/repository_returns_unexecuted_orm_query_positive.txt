@@ -1,0 +1,4 @@
+class UserRepository:
+    def get_active_users(self):
+        # Violation: repository returns an unexecuted ORM query
+        return self.session.query(User).filter(User.is_active == True)

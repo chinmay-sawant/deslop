@@ -1,0 +1,9 @@
+def fetch_records(last_created_at, last_id):
+    # Correct: always include a unique, sequential ID column as a tiebreaker in the ORDER BY clause
+    query = """
+        SELECT * FROM records 
+        WHERE (created_at, id) > (?, ?) 
+        ORDER BY created_at ASC, id ASC 
+        LIMIT 10
+    """
+    return db.execute(query, (last_created_at, last_id))

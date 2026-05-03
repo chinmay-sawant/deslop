@@ -1,0 +1,85 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen_set: risky concrete example for this rule.
+// Rule intent: Layer: Algorithmic complexity. Flag recursive graph or tree walks that do not track visited nodes for cyclic or shared inputs.
+type CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetModel
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetService struct {
+    repo *CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSet(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetDTO) error {
+    focus := "go_perf_layer_algorithmic_complexity"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    var walk func(node string) int
+    walk = func(node string) int {
+        count := 0
+        for _, item := range items {
+            if item.ID == node {
+                count++
+                for _, other := range items {
+                    _ = walk(other.ID)
+                }
+            }
+        }
+        return count
+    }
+    _ = walk("root")
+    perf_layer_algorithmic_complexity_recursive_positive := map[string]int{"perf": 1, "layer": 2, "algorithmic": 3, "complexity": 4, "recursive": 5, "graph": 6}
+    perf_layer_algorithmic_complexity_recursive_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_algorithmic_complexity_recursive_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_algorithmic_complexity_recursive_positive["layer"] + len(input)
+    _ = layer_positive_1
+    algorithmic_positive_2 := perf_layer_algorithmic_complexity_recursive_positive["algorithmic"] + len(input)
+    _ = algorithmic_positive_2
+    complexity_positive_3 := perf_layer_algorithmic_complexity_recursive_positive["complexity"] + len(input)
+    _ = complexity_positive_3
+    recursive_positive_4 := perf_layer_algorithmic_complexity_recursive_positive["recursive"] + len(input)
+    _ = recursive_positive_4
+    graph_positive_5 := perf_layer_algorithmic_complexity_recursive_positive["graph"] + len(input)
+    _ = graph_positive_5
+    return nil
+}

@@ -1,0 +1,59 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for repository_single_record_write_without_rows_affected_check: preferred concrete example for this rule.
+// Rule intent: Single-record-oriented repository updates or deletes that never inspect `RowsAffected` or an equivalent write-outcome signal.
+type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckModel
+}
+
+type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckService struct {
+    repo *CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRepositorySingleRecordWriteWithoutRowsAffectedCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckDTO) error {
+
+    record := CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckModel{ID: input, Status: "active"}
+    result := db.WithContext(ctx).Create(&record)
+    if result.Error != nil {
+        return result.Error
+    }
+    if result.RowsAffected == 0 {
+        return fmt.Errorf("no rows affected")
+    }
+    return nil
+}

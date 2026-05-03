@@ -1,0 +1,5 @@
+def process_metrics(latency):
+    # Violation: hardcoding an alerting threshold directly in the application logic
+    if latency > 500:
+        send_alert_to_slack(f"High latency detected: {latency}ms")
+    return latency

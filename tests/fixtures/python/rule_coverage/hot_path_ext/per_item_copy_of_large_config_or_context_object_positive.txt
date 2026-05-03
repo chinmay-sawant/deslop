@@ -1,0 +1,11 @@
+from __future__ import annotations
+
+def per_item_copy_of_large_config_or_context_object_positive():
+    config = {"region": "us", "timeout": 30, "retries": 5, "feature_x": True}
+    jobs = [1, 2, 3]
+    work_items = []
+    for job in jobs:
+        local = dict(config)
+        local["job_id"] = job
+        work_items.append(local)
+    return work_items

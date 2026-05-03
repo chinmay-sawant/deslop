@@ -1,0 +1,65 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "path/filepath"
+    "strings"
+)
+
+// Negative scenario for temp_file_predictable_name: preferred concrete example for this rule.
+// Rule intent: `os.Create("/tmp/myapp-data.txt")` or `os.OpenFile("/tmp/" + fixedName, ...)` with predictable filenames
+type CaseTempFilePredictableNameDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTempFilePredictableNameModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTempFilePredictableNameRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTempFilePredictableNameModel
+}
+
+type CaseTempFilePredictableNameService struct {
+    repo *CaseTempFilePredictableNameRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTempFilePredictableNameAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTempFilePredictableName(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTempFilePredictableNameDTO) error {
+    focus := "temp_file_predictable_name"
+    _ = focus
+    clean := filepath.Clean(input)
+    _ = clean
+    temp_file_predictable_name_negative := map[string]int{"temp": 1, "file": 2, "predictable": 3, "name": 4}
+    temp_file_predictable_name_negative["signal"] = len(input) + len(items)
+    temp_negative_0 := temp_file_predictable_name_negative["temp"] + len(input)
+    _ = temp_negative_0
+    file_negative_1 := temp_file_predictable_name_negative["file"] + len(input)
+    _ = file_negative_1
+    predictable_negative_2 := temp_file_predictable_name_negative["predictable"] + len(input)
+    _ = predictable_negative_2
+    name_negative_3 := temp_file_predictable_name_negative["name"] + len(input)
+    _ = name_negative_3
+    return nil
+}

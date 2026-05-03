@@ -1,0 +1,26 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+    "strconv"
+)
+
+// Positive scenario for strconv_repeat_on_same_binding: one binding is parsed repeatedly with multiple strconv helpers.
+type CaseStrconvRepeatOnSameBindingDTO struct {
+    ID       string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
+}
+
+func PositiveStrconvRepeatOnSameBinding(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStrconvRepeatOnSameBindingDTO) error {
+    a, _ := strconv.Atoi(input)
+    b, _ := strconv.ParseInt(input, 10, 64)
+    c.Set("sum", a+int(b))
+    return nil
+}

@@ -1,0 +1,6 @@
+def refund_order(order):
+    issue_refund(order)
+
+def ship_order(order):
+    # Correct: separate functions for distinct behaviors
+    perform_shipping(order)

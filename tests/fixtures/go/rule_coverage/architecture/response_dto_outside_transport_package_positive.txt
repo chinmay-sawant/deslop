@@ -1,0 +1,37 @@
+package repository
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Positive scenario for response_dto_outside_transport_package.
+// Anti-pattern: Response DTO is defined in the repository package
+// instead of the transport/handler package, violating layer boundaries.
+
+// Anti-pattern: This response DTO lives in the repository package but is
+// serialized directly into HTTP responses.
+type InvoiceResponse struct {
+	ID         uint    `json:"id"`
+	OrderID    uint    `json:"order_id"`
+	Amount     float64 `json:"amount"`
+	DueDate    string  `json:"due_date"`
+	Currency   string  `json:"currency"`
+	Status     string  `json:"status"`
+}
+
+type InvoiceRepository struct {
+	db *gorm.DB
+}
+
+func (r *InvoiceRepository) GetInvoice(c *gin.Context) {
+	var invoice InvoiceResponse
+	if err := r.db.Where("id = ?", c.Param("id")).First(&invoice).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "invoice not found"})
+		return
+	}
+
+	// Anti-pattern: repository defines and returns the HTTP response DTO
+	c.JSON(http.StatusOK, invoice)
+}

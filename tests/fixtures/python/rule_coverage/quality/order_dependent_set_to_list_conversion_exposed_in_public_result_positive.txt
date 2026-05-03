@@ -1,0 +1,6 @@
+def get_unique_tags(articles):
+    tags = set()
+    for a in articles:
+        tags.update(a.tags)
+    # Violation: converting a set to a list yields unpredictable, non-deterministic ordering in the API response
+    return list(tags)
