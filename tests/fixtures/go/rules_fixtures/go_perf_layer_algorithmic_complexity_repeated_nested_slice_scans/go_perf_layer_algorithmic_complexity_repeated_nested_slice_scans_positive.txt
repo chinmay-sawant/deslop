@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans: Layer: Algorithmic complexity. Flag nested slice scans that should be indexed or mapped before joining large collections.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule502PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario502Positive(records []Rule502PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for log_level_check_after_format: `zap.S().Debugf("expensive %v", computeDebug())` or `logrus.Debugf("data: %v", expensiveCall())` where the expensive computation happens regardless of log level
+// fixture polarity: negative; family: library; severity: info.
+type Rule415NegativeRecord struct {
+	client *http.Client
+}
+
+func scenario415Negative(ctx context.Context, holder Rule415NegativeRecord, url string) (*http.Response, error) {
+	client := holder.client
+	if client == nil {
+		client = &http.Client{Timeout: 2 * time.Second}
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

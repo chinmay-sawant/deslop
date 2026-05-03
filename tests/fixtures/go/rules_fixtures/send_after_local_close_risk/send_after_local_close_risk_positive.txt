@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for send_after_local_close_risk: A locally owned channel is closed and later used in a send expression.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario395Positive(paths []string) error {
+	for _, path := range paths {
+		file, err := os.Open(path)
+		if err != nil { return err }
+		defer file.Close()
+	}
+	return nil
+}

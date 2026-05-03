@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write: Layer: Memory allocation. Flag []byte(string) conversions used only to write strings to writers.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule568PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario568Positive(records []Rule568PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

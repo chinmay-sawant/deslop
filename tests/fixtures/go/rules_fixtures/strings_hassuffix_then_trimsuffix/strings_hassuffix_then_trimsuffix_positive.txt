@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_hassuffix_then_trimsuffix: `if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`
+// fixture polarity: positive; family: performance; severity: info.
+func scenario657Positive(haystack string, needle string, left string, right string) bool {
+	return len(haystack) >= len(needle) && haystack[len(haystack)-len(needle):] == needle
+}

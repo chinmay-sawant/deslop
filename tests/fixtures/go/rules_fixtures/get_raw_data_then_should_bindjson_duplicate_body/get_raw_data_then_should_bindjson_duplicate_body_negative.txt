@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for get_raw_data_then_should_bindjson_duplicate_body: Gin handlers that read GetRawData() and later bind JSON from the same request body.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule315NegativeRecord struct {
+	Name string
+}
+
+type Rule315NegativeService interface {
+	Handle(context.Context, Rule315NegativeRecord) (Rule315NegativeRecord, error)
+}
+
+func scenario315Negative(ctx context.Context, service Rule315NegativeService, input Rule315NegativeRecord) (Rule315NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule315NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

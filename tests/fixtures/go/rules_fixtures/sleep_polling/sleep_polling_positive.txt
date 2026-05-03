@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for sleep_polling: time.Sleep inside loops - often indicates polling or busy-wait style code.
+// fixture polarity: positive; family: context; severity: contextual.
+func scenario244Positive(ready func() bool) {
+	for !ready() {
+		time.Sleep(10 * time.Millisecond)
+	}
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for shared_package_named_common_base_utils_with_mixed_exports: Generic packages that mix services, models, DTOs, validators, and queries behind one broad shared namespace.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule187NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule187NegativeService interface {
+	Run(context.Context, Rule187NegativeRecord) error
+}
+
+func scenario187Negative(ctx context.Context, service Rule187NegativeService, input Rule187NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

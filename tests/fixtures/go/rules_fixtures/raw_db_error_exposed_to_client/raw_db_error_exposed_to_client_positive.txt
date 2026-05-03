@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for raw_db_error_exposed_to_client: Direct serialization of SQL or GORM error text into API responses.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule117PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario117Positive(w http.ResponseWriter, r *http.Request, repo Rule117PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for application_lifecycle_missing_shutdown_owner: Shared resources with visible startup paths but no obvious shutdown owner or lifecycle wrapper.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule003PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario003Positive(w http.ResponseWriter, r *http.Request, repo Rule003PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

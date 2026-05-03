@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	proto "google.golang.org/protobuf/proto"
+)
+
+// scenario for proto_unmarshal_same_payload_multiple_times: The same local protobuf payload binding is unmarshaled into multiple targets in one function.
+// fixture polarity: negative; family: mod; severity: contextual.
+func scenario433Negative(payload []byte, target proto.Message) error {
+	return proto.Unmarshal(payload, target)
+}

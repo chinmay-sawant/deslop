@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for map_growth_without_size_hint: Map insertions inside loops without a visible size hint on the initial make call.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule356PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario356Positive(records []Rule356PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

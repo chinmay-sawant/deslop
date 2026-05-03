@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"hash/adler32"
+)
+
+// scenario for adler32_checksum_in_loop: `adler32.Checksum(...)` inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario436Positive(chunks [][]byte) uint32 {
+	var total uint32
+	for _, payload := range chunks {
+		total += adler32.Checksum(payload)
+	}
+	return total
+}

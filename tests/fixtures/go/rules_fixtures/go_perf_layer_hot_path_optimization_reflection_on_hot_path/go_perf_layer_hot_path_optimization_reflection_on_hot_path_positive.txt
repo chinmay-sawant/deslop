@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_hot_path_optimization_reflection_on_hot_path: Layer: Hot path optimization. Flag reflect-based field access in hot loops where typed access is available.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule547PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario547Positive(records []Rule547PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

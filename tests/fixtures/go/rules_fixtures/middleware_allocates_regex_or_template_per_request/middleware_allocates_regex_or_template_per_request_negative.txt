@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for middleware_allocates_regex_or_template_per_request: Regexp compilation inside Gin handlers instead of using precompiled patterns.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule326NegativeRecord struct {
+	Name string
+}
+
+type Rule326NegativeService interface {
+	Handle(context.Context, Rule326NegativeRecord) (Rule326NegativeRecord, error)
+}
+
+func scenario326Negative(ctx context.Context, service Rule326NegativeService, input Rule326NegativeRecord) (Rule326NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule326NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

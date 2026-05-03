@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+)
+
+// scenario for json_marshal_then_write: `data, _ := json.Marshal(v); w.Write(data)` when `json.NewEncoder(w).Encode(v)` would stream directly
+// fixture polarity: negative; family: performance; severity: info.
+type Rule607NegativeRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario607Negative(writer io.Writer, value Rule607NegativeRecord) error {
+	return json.NewEncoder(writer).Encode(value)
+}

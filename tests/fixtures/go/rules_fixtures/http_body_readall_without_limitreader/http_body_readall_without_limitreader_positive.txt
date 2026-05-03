@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for http_body_readall_without_limitreader: `io.ReadAll(req.Body)` in HTTP handlers without `io.LimitReader`
+// fixture polarity: positive; family: performance; severity: warning.
+func scenario603Positive(urls []string) int {
+	total := 0
+	for _, url := range urls {
+		client := &http.Client{}
+		resp, err := client.Get(url)
+		if err == nil { total += resp.StatusCode }
+	}
+	return total
+}

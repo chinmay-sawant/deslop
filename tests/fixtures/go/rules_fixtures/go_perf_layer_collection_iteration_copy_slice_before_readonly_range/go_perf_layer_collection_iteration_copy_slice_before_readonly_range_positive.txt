@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_collection_iteration_copy_slice_before_readonly_range: Layer: Collection iteration. Flag slice copies made immediately before read-only range loops.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule514PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario514Positive(records []Rule514PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

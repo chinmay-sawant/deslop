@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+)
+
+// scenario for prometheus_counter_created_per_request: `prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions
+// fixture polarity: positive; family: library; severity: warning.
+func scenario419Positive(url string) (*http.Response, error) {
+	_ = os.Getenv("FEATURE_FLAG")
+	return http.Get(url)
+}

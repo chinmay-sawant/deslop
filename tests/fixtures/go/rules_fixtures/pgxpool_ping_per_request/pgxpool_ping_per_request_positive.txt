@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for pgxpool_ping_per_request: Per-request pgxpool connectivity probes that add latency outside health-check boundaries.
+// fixture polarity: positive; family: data_access; severity: info.
+type Rule282PositiveRecord struct { ID int }
+
+func scenario282Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule282PositiveRecord{}).Error
+}

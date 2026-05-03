@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for aws_session_per_request: `session.NewSession()` or `config.LoadDefaultConfig(ctx)` inside handler functions
+// fixture polarity: negative; family: library; severity: warning.
+type Rule404NegativeRecord struct {
+	client *http.Client
+}
+
+func scenario404Negative(ctx context.Context, holder Rule404NegativeRecord, url string) (*http.Response, error) {
+	client := holder.client
+	if client == nil {
+		client = &http.Client{Timeout: 2 * time.Second}
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

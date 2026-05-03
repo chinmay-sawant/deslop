@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"crypto/md5"
+)
+
+// scenario for md5_sum_in_loop: `md5.Sum(...)` inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario618Positive(chunks [][]byte) uint32 {
+	var total uint32
+	for _, payload := range chunks {
+		total += uint32(md5.Sum(payload)[0])
+	}
+	return total
+}

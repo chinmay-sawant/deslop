@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for external_http_call_inside_transaction_scope: Network calls performed while a DB transaction is open.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule032NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule032NegativeService interface {
+	Run(context.Context, Rule032NegativeRecord) error
+}
+
+func scenario032Negative(ctx context.Context, service Rule032NegativeService, input Rule032NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

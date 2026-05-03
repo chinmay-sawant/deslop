@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_error_handling_cost_error_string_built_before_error_needed: Layer: Error handling cost. Flag error message formatting before the code knows an error will be returned.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule529NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario529Negative(records []Rule529NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

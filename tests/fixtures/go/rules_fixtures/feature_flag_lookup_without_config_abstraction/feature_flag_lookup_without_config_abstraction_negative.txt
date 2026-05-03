@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for feature_flag_lookup_without_config_abstraction: Handlers or services that query feature flags directly without a focused flag interface.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule033NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule033NegativeService interface {
+	Run(context.Context, Rule033NegativeRecord) error
+}
+
+func scenario033Negative(ctx context.Context, service Rule033NegativeService, input Rule033NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

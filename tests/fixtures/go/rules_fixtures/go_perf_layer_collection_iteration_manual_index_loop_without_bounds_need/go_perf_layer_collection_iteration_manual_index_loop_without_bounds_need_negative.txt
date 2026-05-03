@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need: Layer: Collection iteration. Flag manual index loops over slices where range would avoid repeated bounds-sensitive indexing.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule516NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario516Negative(records []Rule516NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

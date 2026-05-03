@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for string_to_byte_for_single_char_check: `[]byte(s)[0]` or `string(b) == "x"` for single-character comparisons
+// fixture polarity: positive; family: performance; severity: info.
+func scenario648Positive(haystack string, needle string, left string, right string) bool {
+	return strings.Index(haystack, needle) != -1
+}

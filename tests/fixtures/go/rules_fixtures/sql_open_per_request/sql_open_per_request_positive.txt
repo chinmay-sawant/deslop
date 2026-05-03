@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+)
+
+// scenario for sql_open_per_request: database/sql pools opened on request paths instead of process-level setup.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule298PositiveRecord struct { ID int }
+
+func scenario298Positive(ctx context.Context, db *sql.DB, ids []int) error {
+	for _, id := range ids {
+		row := db.QueryRowContext(ctx, "select count(*) from orders where account_id=$1", id)
+		var count int
+		if err := row.Scan(&count); err != nil {
+			return err
+		}
+	}
+	return nil
+}

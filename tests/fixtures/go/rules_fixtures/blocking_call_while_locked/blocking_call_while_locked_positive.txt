@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"sync"
+)
+
+// scenario for blocking_call_while_locked: Potentially blocking calls observed between Lock and Unlock.
+// fixture polarity: positive; family: concurrency; severity: contextual.
+type Rule221PositiveRecord struct {
+	mu sync.Mutex
+	lastStatus string
+}
+
+func scenario221Positive(state *Rule221PositiveRecord, url string) error {
+	state.mu.Lock()
+	defer state.mu.Unlock()
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	state.lastStatus = resp.Status
+	return nil
+}

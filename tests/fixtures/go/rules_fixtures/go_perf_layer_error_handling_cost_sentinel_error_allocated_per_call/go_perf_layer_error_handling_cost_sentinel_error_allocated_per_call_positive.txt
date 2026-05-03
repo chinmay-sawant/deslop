@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_error_handling_cost_sentinel_error_allocated_per_call: Layer: Error handling cost. Flag identical sentinel errors allocated inside functions instead of package-level variables.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule533PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario533Positive(records []Rule533PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"os/exec"
+)
+
+// scenario for os_exec_command_with_user_input: `exec.Command(userInput)` or `exec.Command("sh", "-c", variable)` where the command string appears to come from a function parameter or request binding
+// fixture polarity: positive; family: security; severity: error.
+func scenario726Positive(userInput string) error {
+	return exec.Command(userInput).Run()
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_io_operations_small_writes_without_bufio_writer: Layer: I/O operations. Flag many Write calls to files or network connections without bufio buffering.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule551PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario551Positive(records []Rule551PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for middleware_and_handler_translate_same_error_domain: Double translation layers where middleware and handlers both map the same error family to responses.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule085PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario085Positive(w http.ResponseWriter, r *http.Request, repo Rule085PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

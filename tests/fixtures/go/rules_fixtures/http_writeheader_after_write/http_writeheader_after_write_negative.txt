@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for http_writeheader_after_write: Handlers that write the response body before calling WriteHeader(...).
+// fixture polarity: negative; family: idioms; severity: info.
+func scenario386Negative(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+	if client == nil { client = &http.Client{Timeout: time.Second} }
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil { return nil, err }
+	return client.Do(req)
+}

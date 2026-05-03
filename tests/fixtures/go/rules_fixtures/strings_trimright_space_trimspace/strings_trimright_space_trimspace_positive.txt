@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_trimright_space_trimspace: `strings.TrimRight(..., whitespace)` instead of `strings.TrimSpace(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario674Positive(haystack string, needle string, left string, right string) bool {
+	return strings.TrimRight(haystack, " \t\n") == needle
+}

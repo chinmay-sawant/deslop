@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for file_upload_validation_mixed_with_storage_write: Functions that validate upload metadata and also persist the upload in the same boundary step.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule034NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule034NegativeService interface {
+	Run(context.Context, Rule034NegativeRecord) error
+}
+
+func scenario034Negative(ctx context.Context, service Rule034NegativeService, input Rule034NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

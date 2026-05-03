@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for mapping_logic_duplicated_across_handlers: Repeated field mapping blocks across multiple handlers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule083NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule083NegativeService interface {
+	Run(context.Context, Rule083NegativeRecord) error
+}
+
+func scenario083Negative(ctx context.Context, service Rule083NegativeService, input Rule083NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

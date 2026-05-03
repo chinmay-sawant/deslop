@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for api_error_type_outside_transport_package: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule001NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule001NegativeService interface {
+	Run(context.Context, Rule001NegativeRecord) error
+}
+
+func scenario001Negative(ctx context.Context, service Rule001NegativeService, input Rule001NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

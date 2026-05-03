@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for update_single_row_in_loop_without_batch: GORM Update(...), UpdateColumn(...), or Updates(...) calls observed inside loops one row at a time.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule302PositiveRecord struct { ID int }
+
+func scenario302Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule302PositiveRecord{}).Error
+}

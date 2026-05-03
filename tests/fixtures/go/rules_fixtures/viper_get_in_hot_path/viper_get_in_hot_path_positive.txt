@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+)
+
+// scenario for viper_get_in_hot_path: `viper.GetString("key")` or `viper.GetInt("key")` inside handler functions or loops
+// fixture polarity: positive; family: library; severity: warning.
+func scenario431Positive(url string) (*http.Response, error) {
+	_ = os.Getenv("FEATURE_FLAG")
+	return http.Get(url)
+}

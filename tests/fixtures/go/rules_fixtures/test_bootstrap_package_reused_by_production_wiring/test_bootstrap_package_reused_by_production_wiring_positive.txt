@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for test_bootstrap_package_reused_by_production_wiring: Production startup code that imports test-only bootstrap helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule199PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario199Positive(w http.ResponseWriter, r *http.Request, repo Rule199PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

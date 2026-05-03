@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for placeholder_seed_function_in_production: Seed entrypoints in production code that are still TODO-shaped or effectively no-ops.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule114NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule114NegativeService interface {
+	Run(context.Context, Rule114NegativeRecord) error
+}
+
+func scenario114Negative(ctx context.Context, service Rule114NegativeService, input Rule114NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

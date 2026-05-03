@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for go_perf_layer_hot_path_optimization_time_now_called_many_times_per_item: Layer: Hot path optimization. Flag repeated time.Now calls inside per-item loops where one timestamp would suffice.
+// fixture polarity: negative; family: performance; severity: contextual.
+func scenario548Negative(items []string) int {
+	started := time.Now()
+	total := 0
+	for _, item := range items {
+		if !started.IsZero() { total += len(item) }
+	}
+	return total
+}

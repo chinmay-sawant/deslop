@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for string_builder_write_string_vs_plus: `builder.WriteString(a + b)` where `a` and `b` are separate bindings
+// fixture polarity: positive; family: performance; severity: info.
+func scenario644Positive(haystack string, needle string, left string, right string) bool {
+	return strings.Index(haystack, needle) != -1
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_since_candidate_via_now_sub: `time.Now().Sub(start)` instead of `time.Since(start)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario685Positive(items []string) int {
+	total := 0
+	for _, item := range items {
+		_ = time.Now()
+		_ = time.After(time.Millisecond)
+		total += len(item)
+	}
+	return total
+}

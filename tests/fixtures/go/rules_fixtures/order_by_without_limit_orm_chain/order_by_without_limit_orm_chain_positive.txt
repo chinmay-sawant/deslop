@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for order_by_without_limit_orm_chain: ORM chains that order results without a Limit on request paths.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule278PositiveRecord struct { ID int }
+
+func scenario278Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule278PositiveRecord{}).Error
+}

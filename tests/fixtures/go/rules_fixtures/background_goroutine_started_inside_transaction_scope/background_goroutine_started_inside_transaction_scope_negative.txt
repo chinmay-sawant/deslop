@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for background_goroutine_started_inside_transaction_scope: Goroutines launched while relying on open transaction state.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule006NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule006NegativeService interface {
+	Run(context.Context, Rule006NegativeRecord) error
+}
+
+func scenario006Negative(ctx context.Context, service Rule006NegativeService, input Rule006NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

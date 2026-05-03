@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+)
+
+// scenario for json_marshalindent_in_loop: `json.MarshalIndent(...)` inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+type Rule608PositiveRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario608Positive(values []Rule608PositiveRecord) (int, error) {
+	total := 0
+	for _, value := range values {
+		data, err := json.Marshal(value)
+		if err != nil { return 0, err }
+		total += len(data)
+	}
+	return total, nil
+}

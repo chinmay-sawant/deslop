@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for gorm_model_hook_calls_service_or_repository: Model hooks that depend on higher-layer services or repositories.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule063PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario063Positive(w http.ResponseWriter, r *http.Request, repo Rule063PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

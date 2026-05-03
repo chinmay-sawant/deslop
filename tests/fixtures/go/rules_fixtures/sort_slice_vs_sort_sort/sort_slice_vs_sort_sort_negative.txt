@@ -1,0 +1,12 @@
+package rulefixtures
+
+// scenario for sort_slice_vs_sort_sort: `sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types
+// fixture polarity: negative; family: performance; severity: info.
+func scenario640Negative(values []string) string {
+	if len(values) == 0 { return "" }
+	best := values[0]
+	for _, value := range values[1:] {
+		if value < best { best = value }
+	}
+	return best
+}

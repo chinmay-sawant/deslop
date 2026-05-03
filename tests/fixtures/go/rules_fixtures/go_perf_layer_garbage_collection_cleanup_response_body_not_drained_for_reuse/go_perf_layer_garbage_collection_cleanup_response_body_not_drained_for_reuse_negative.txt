@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse: Layer: Garbage collection and cleanup. Flag HTTP response handling that closes bodies without draining when connection reuse matters.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule541NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario541Negative(records []Rule541NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

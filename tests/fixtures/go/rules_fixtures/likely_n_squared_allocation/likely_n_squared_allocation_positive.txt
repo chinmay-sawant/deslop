@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for likely_n_squared_allocation: Opt-in deeper semantic signal for allocations that also sit inside nested loop structure.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule612PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario612Positive(records []Rule612PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

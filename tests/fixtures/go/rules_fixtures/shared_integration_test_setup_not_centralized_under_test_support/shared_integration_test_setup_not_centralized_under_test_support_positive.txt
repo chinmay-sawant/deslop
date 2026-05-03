@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for shared_integration_test_setup_not_centralized_under_test_support: Repeated app, DB, or router bootstrapping that is not moved into shared test support.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule186PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario186Positive(w http.ResponseWriter, r *http.Request, repo Rule186PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

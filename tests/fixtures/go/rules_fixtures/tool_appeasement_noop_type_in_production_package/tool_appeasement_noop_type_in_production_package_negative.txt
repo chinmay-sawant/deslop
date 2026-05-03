@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for tool_appeasement_noop_type_in_production_package: Production no-op or dummy types that appear to exist mainly to satisfy tooling instead of runtime behavior.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule205NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule205NegativeService interface {
+	Run(context.Context, Rule205NegativeRecord) error
+}
+
+func scenario205Negative(ctx context.Context, service Rule205NegativeService, input Rule205NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

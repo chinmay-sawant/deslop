@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for external_http_call_inside_transaction_scope: Network calls performed while a DB transaction is open.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule032PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario032Positive(w http.ResponseWriter, r *http.Request, repo Rule032PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

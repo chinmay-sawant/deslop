@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for regexp_compile_in_hot_path: regexp.Compile or regexp.MustCompile observed inside obvious iterative paths.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule360PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario360Positive(records []Rule360PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

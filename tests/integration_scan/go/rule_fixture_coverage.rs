@@ -1,28 +1,18 @@
 use std::{collections::BTreeMap, fs, path::Path};
 
-use deslop::{RuleLanguage, rule_registry};
+use deslop::{rule_registry, RuleLanguage};
 
 use super::FixtureWorkspace;
 
 #[test]
 fn every_go_rule_has_positive_and_negative_fixture_text() {
-    let fixture_root = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests")
-        .join("fixtures")
-        .join("go")
-        .join("rule_coverage");
-
     let missing = rule_registry()
         .iter()
         .filter(|metadata| metadata.language == RuleLanguage::Go)
         .flat_map(|metadata| {
             [
-                fixture_root
-                    .join(metadata.family)
-                    .join(format!("{}_positive.txt", metadata.id)),
-                fixture_root
-                    .join(metadata.family)
-                    .join(format!("{}_negative.txt", metadata.id)),
+                go_rule_fixture_path(metadata, "positive"),
+                go_rule_fixture_path(metadata, "negative"),
             ]
         })
         .filter(|path| !path.is_file())
@@ -37,16 +27,11 @@ fn every_go_rule_has_positive_and_negative_fixture_text() {
 
 #[test]
 fn go_rule_fixtures_do_not_reuse_identical_text() {
-    let fixture_root = go_rule_fixture_root();
     let mut fixture_texts: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
     for metadata in go_rules() {
-        let positive_path = fixture_root
-            .join(metadata.family)
-            .join(format!("{}_positive.txt", metadata.id));
-        let negative_path = fixture_root
-            .join(metadata.family)
-            .join(format!("{}_negative.txt", metadata.id));
+        let positive_path = go_rule_fixture_path(metadata, "positive");
+        let negative_path = go_rule_fixture_path(metadata, "negative");
         let positive = read_fixture(&positive_path);
         let negative = read_fixture(&negative_path);
 
@@ -78,14 +63,11 @@ fn go_rule_fixtures_do_not_reuse_identical_text() {
 
 #[test]
 fn go_rule_fixtures_do_not_reuse_normalized_scenario_shape() {
-    let fixture_root = go_rule_fixture_root();
     let mut fixture_shapes: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
     for metadata in go_rules() {
         for polarity in ["positive", "negative"] {
-            let path = fixture_root
-                .join(metadata.family)
-                .join(format!("{}_{}.txt", metadata.id, polarity));
+            let path = go_rule_fixture_path(metadata, polarity);
             let fixture = read_fixture(&path);
 
             fixture_shapes
@@ -146,7 +128,6 @@ fn go_rule_fixture_batch_700_752_is_parseable_scenario_code() {
 }
 
 fn assert_go_rule_fixture_batch(start: usize, end: usize) {
-    let fixture_root = go_rule_fixture_root();
     let go_rules = go_rules();
     let end = end.min(go_rules.len());
     assert!(start < end, "empty Go rule fixture batch {start}..{end}");
@@ -155,9 +136,7 @@ fn assert_go_rule_fixture_batch(start: usize, end: usize) {
     let mut expected_files = 0;
     for (index, metadata) in go_rules[start..end].iter().enumerate() {
         for polarity in ["positive", "negative"] {
-            let path = fixture_root
-                .join(metadata.family)
-                .join(format!("{}_{}.txt", metadata.id, polarity));
+            let path = go_rule_fixture_path(metadata, polarity);
             let fixture = read_fixture(&path);
 
             assert!(
@@ -218,7 +197,13 @@ fn go_rule_fixture_root() -> std::path::PathBuf {
         .join("tests")
         .join("fixtures")
         .join("go")
-        .join("rule_coverage")
+        .join("rules_fixtures")
+}
+
+fn go_rule_fixture_path(metadata: &deslop::RuleMetadata, polarity: &str) -> std::path::PathBuf {
+    go_rule_fixture_root()
+        .join(metadata.id)
+        .join(format!("{}_{}.txt", metadata.id, polarity))
 }
 
 fn go_rules() -> Vec<&'static deslop::RuleMetadata> {

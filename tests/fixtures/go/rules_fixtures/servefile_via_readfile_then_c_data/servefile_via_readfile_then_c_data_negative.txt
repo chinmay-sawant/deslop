@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for servefile_via_readfile_then_c_data: Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule336NegativeRecord struct {
+	Name string
+}
+
+type Rule336NegativeService interface {
+	Handle(context.Context, Rule336NegativeRecord) (Rule336NegativeRecord, error)
+}
+
+func scenario336Negative(ctx context.Context, service Rule336NegativeService, input Rule336NegativeRecord) (Rule336NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule336NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

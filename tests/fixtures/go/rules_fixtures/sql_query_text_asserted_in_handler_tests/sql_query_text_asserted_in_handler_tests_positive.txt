@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for sql_query_text_asserted_in_handler_tests: SQL-shape assertions written at handler level instead of repository tests.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule192PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario192Positive(w http.ResponseWriter, r *http.Request, repo Rule192PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

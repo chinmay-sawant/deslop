@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for go_perf_layer_caching_cache_key_built_with_fmt: Layer: Caching. Flag cache keys built with fmt.Sprintf in hot paths where append/Builder or structured keys are cheaper.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario509Positive(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, fmt.Sprintf("%d", value))
+	}
+	return out
+}

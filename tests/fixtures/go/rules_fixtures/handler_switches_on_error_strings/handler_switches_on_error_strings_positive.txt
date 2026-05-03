@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for handler_switches_on_error_strings: Handlers that branch on `err.Error()` text rather than typed errors.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule073PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario073Positive(w http.ResponseWriter, r *http.Request, repo Rule073PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for grpc_unary_interceptor_per_rpc: interceptor/middleware construction inside RPC handler methods instead of at server setup
+// fixture polarity: negative; family: library; severity: info.
+type Rule414NegativeRecord struct {
+	client *http.Client
+}
+
+func scenario414Negative(ctx context.Context, holder Rule414NegativeRecord, url string) (*http.Response, error) {
+	client := holder.client
+	if client == nil {
+		client = &http.Client{Timeout: 2 * time.Second}
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

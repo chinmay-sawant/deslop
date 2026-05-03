@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for http_handler_without_csrf_protection: POST/PUT/DELETE handler registration without evidence of CSRF token middleware
+// fixture polarity: positive; family: security; severity: warning.
+func scenario719Positive(mux *http.ServeMux) {
+	mux.HandleFunc("POST /transfer", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusAccepted) })
+}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for handler_and_service_both_log_same_error_chain: Duplicated logging ownership where both service and handler log the same failure.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule068PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario068Positive(w http.ResponseWriter, r *http.Request, repo Rule068PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

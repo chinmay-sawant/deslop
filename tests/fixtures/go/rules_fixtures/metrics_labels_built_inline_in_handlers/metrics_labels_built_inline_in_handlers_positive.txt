@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for metrics_labels_built_inline_in_handlers: Handlers that hand-build metric labels repeatedly instead of using focused observation helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule084PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario084Positive(w http.ResponseWriter, r *http.Request, repo Rule084PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

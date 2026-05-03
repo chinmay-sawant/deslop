@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for swagger_or_openapi_annotations_on_persistence_models: Persistence structs used as the public docs contract instead of transport DTOs.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule195NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule195NegativeService interface {
+	Run(context.Context, Rule195NegativeRecord) error
+}
+
+func scenario195Negative(ctx context.Context, service Rule195NegativeService, input Rule195NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

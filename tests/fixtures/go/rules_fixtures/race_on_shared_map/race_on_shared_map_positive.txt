@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"sync"
+)
+
+// scenario for race_on_shared_map: map reads/writes from multiple goroutines without mutex or `sync.Map` protection (detect goroutine launches + shared map access patterns)
+// fixture polarity: positive; family: security; severity: warning.
+func scenario729Positive(items []string) map[string]int {
+	counts := map[string]int{}
+	var wg sync.WaitGroup
+	for _, item := range items {
+		wg.Add(1)
+		go func(value string) { defer wg.Done(); counts[value]++ }(item)
+	}
+	wg.Wait()
+	return counts
+}

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_count_gt_zero_contains: `bytes.Count(...) > 0` instead of `bytes.Contains(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario450Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.Count(haystack, needle) > 0
+}

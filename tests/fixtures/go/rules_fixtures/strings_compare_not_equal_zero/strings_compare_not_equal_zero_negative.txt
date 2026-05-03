@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_compare_not_equal_zero: `strings.Compare(...) != 0` instead of direct string inequality.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario651Negative(haystack string, needle string, left string, right string) bool {
+	return left == right
+}

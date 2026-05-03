@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for wide_select_query: Literal SELECT * query shapes.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule694PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario694Positive(records []Rule694PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

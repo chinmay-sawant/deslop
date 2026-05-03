@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for go_perf_layer_runtime_configuration_reflection_config_loaded_per_call: Layer: Build and runtime configuration. Flag reflection-based config decoding performed per operation instead of at startup.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario588Positive(items []string) int {
+	total := 0
+	for _, item := range items {
+		_ = time.Now()
+		_ = time.After(time.Millisecond)
+		total += len(item)
+	}
+	return total
+}

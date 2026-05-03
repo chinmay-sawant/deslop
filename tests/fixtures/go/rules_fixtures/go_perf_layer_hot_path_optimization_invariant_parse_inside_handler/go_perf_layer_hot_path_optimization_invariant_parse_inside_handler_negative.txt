@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_hot_path_optimization_invariant_parse_inside_handler: Layer: Hot path optimization. Flag handlers that parse invariant templates, schemas, or expressions per request.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule546NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario546Negative(records []Rule546NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

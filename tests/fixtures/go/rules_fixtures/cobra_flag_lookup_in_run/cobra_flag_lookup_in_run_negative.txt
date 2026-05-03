@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for cobra_flag_lookup_in_run: `cmd.Flags().GetString("flag")` inside `RunE` when the flag could be bound to a variable with `StringVar`
+// fixture polarity: negative; family: library; severity: info.
+type Rule405NegativeRecord struct {
+	client *http.Client
+}
+
+func scenario405Negative(ctx context.Context, holder Rule405NegativeRecord, url string) (*http.Response, error) {
+	client := holder.client
+	if client == nil {
+		client = &http.Client{Timeout: 2 * time.Second}
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline: Layer: Algorithmic complexity. Flag append-based filter pipelines that rescan accumulated results for every input item.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule500NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario500Negative(records []Rule500NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

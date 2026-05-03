@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for request_context_value_extraction_duplicated_across_handlers: Repeated current-user, tenant, locale, or auth extraction logic.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule139NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule139NegativeService interface {
+	Run(context.Context, Rule139NegativeRecord) error
+}
+
+func scenario139Negative(ctx context.Context, service Rule139NegativeService, input Rule139NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

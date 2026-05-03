@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for unnecessary_slice_copy_for_readonly: `copy := append([]T(nil), original...)` when `copy` is only read, never mutated
+// fixture polarity: positive; family: performance; severity: info.
+type Rule692PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario692Positive(records []Rule692PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

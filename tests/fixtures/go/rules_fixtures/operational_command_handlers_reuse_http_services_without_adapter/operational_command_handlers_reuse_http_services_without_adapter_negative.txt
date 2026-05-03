@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for operational_command_handlers_reuse_http_services_without_adapter: CLI or cron entrypoints that import Gin-only service contracts instead of neutral application services.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule104NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule104NegativeService interface {
+	Run(context.Context, Rule104NegativeRecord) error
+}
+
+func scenario104Negative(ctx context.Context, service Rule104NegativeService, input Rule104NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

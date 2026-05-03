@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_splitaftern_two_index_one_cut: `bytes.SplitAfterN(..., 2)[1]` instead of a two-part `bytes.Cut(...)` flow.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario462Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return len(bytes.SplitN(haystack, needle, 2)[0]) >= 0
+}

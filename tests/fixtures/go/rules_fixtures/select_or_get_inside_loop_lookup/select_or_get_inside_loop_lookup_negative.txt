@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for select_or_get_inside_loop_lookup: ORM lookups (Select, Get, First, etc.) executed inside loops.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule297NegativeRecord struct { ID int }
+
+func scenario297Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule297NegativeRecord{}).Error
+}

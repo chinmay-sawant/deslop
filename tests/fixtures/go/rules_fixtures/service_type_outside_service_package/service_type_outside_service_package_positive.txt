@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for service_type_outside_service_package: Concrete use-case services declared outside `service` or `services` packages in layered web-service repos.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule183PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario183Positive(w http.ResponseWriter, r *http.Request, repo Rule183PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

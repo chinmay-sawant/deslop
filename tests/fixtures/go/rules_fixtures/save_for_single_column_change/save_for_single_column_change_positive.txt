@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for save_for_single_column_change: GORM Save used for a single-column update instead of a targeted Update call.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule294PositiveRecord struct { ID int }
+
+func scenario294Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule294PositiveRecord{}).Error
+}

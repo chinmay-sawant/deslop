@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_profiling_benchmarking_pprof_endpoint_enabled_without_sampling_plan: Layer: Profiling and benchmarking. Flag always-on profiling endpoints in production services without access or sampling controls.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule578NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario578Negative(records []Rule578NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

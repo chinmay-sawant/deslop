@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	yaml "gopkg.in/yaml.v2"
+)
+
+// scenario for yaml_unmarshal_untrusted_input: `yaml.Unmarshal(untrustedInput, &target)` using `gopkg.in/yaml.v2` without size limits
+// fixture polarity: negative; family: security; severity: warning.
+func scenario750Negative(input []byte, target any) error {
+	if len(input) > 1<<20 { return nil }
+	return yaml.Unmarshal(input, target)
+}

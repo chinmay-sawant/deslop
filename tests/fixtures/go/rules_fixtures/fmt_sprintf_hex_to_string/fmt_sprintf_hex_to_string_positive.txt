@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"encoding/hex"
+)
+
+// scenario for fmt_sprintf_hex_to_string: `fmt.Sprintf("%x", ...)` instead of a direct hex formatter when only the string is needed.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario494Positive(values [][]byte) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, hex.EncodeToString(value))
+	}
+	return out
+}

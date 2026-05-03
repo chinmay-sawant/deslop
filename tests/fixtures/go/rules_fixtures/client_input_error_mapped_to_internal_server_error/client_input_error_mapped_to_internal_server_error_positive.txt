@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for client_input_error_mapped_to_internal_server_error: Request parsing or binding errors that are translated into `500` responses instead of client-error status codes.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule013PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario013Positive(w http.ResponseWriter, r *http.Request, repo Rule013PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

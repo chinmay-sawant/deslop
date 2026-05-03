@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for package_level_mutable_config_used_by_handlers_services: Mutable package globals used as live config in request paths.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule107NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule107NegativeService interface {
+	Run(context.Context, Rule107NegativeRecord) error
+}
+
+func scenario107Negative(ctx context.Context, service Rule107NegativeService, input Rule107NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for response_dto_contains_gorm_tags: Response payload structs that carry persistence-only `gorm` tags.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule144NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule144NegativeService interface {
+	Run(context.Context, Rule144NegativeRecord) error
+}
+
+func scenario144Negative(ctx context.Context, service Rule144NegativeService, input Rule144NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

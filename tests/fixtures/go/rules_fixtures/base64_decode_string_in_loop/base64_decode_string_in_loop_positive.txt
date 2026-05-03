@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"encoding/base64"
+)
+
+// scenario for base64_decode_string_in_loop: Base64 decode from string inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario438Positive(values []string) int {
+	total := 0
+	for _, value := range values {
+		decoded, _ := base64.StdEncoding.DecodeString(value)
+		total += len(decoded)
+	}
+	return total
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_database_access_count_query_before_paged_fetch: Layer: Database access. Flag count queries paired with page fetches on every request without cache or user-visible need.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule524PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario524Positive(records []Rule524PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

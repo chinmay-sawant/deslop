@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for tests_couple_to_gorm_model_for_api_contract_assertions: API tests that assert persistence model shapes instead of response contracts.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule203NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule203NegativeService interface {
+	Run(context.Context, Rule203NegativeRecord) error
+}
+
+func scenario203Negative(ctx context.Context, service Rule203NegativeService, input Rule203NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

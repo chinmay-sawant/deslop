@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for nested_transaction_in_request_path: Multiple transactions started on a single request path.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule275PositiveRecord struct { ID int }
+
+func scenario275Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule275PositiveRecord{}).Error
+}

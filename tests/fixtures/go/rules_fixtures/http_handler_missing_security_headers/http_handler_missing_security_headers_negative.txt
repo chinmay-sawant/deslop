@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for http_handler_missing_security_headers: HTTP handler functions that write responses without setting `X-Content-Type-Options`, `X-Frame-Options`, or `Content-Security-Policy` headers (or without security header middleware)
+// fixture polarity: negative; family: security; severity: warning.
+func scenario718Negative(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("X-Frame-Options", "DENY")
+	w.WriteHeader(http.StatusOK)
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for buffer_write_rune_ascii_literal: `bytes.Buffer.WriteRune('x')` for ASCII literals instead of `WriteByte`.
+// fixture polarity: negative; family: performance; severity: info.
+type Rule441NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario441Negative(records []Rule441NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

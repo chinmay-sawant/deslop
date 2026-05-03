@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for request_dto_contains_gorm_tags: Request DTOs that carry persistence-only `gorm` tags.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule140PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario140Positive(w http.ResponseWriter, r *http.Request, repo Rule140PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for tests_assert_raw_json_strings_without_response_dto: Brittle raw-JSON string assertions when typed response DTOs exist.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule202NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule202NegativeService interface {
+	Run(context.Context, Rule202NegativeRecord) error
+}
+
+func scenario202Negative(ctx context.Context, service Rule202NegativeService, input Rule202NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

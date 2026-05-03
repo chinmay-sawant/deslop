@@ -1,0 +1,7 @@
+package rulefixtures
+
+// scenario for unsafe_pointer_cast: `unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`
+// fixture polarity: negative; family: security; severity: warning.
+func scenario743Negative(data []byte) int {
+	return len(data)
+}

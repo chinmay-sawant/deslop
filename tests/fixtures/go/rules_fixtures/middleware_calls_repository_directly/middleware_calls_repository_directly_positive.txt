@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for middleware_calls_repository_directly: Middleware that reaches into repositories instead of delegating through focused services or auth abstractions.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule086PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario086Positive(w http.ResponseWriter, r *http.Request, repo Rule086PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

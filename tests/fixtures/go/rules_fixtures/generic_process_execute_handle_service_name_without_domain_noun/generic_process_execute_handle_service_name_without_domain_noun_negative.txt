@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for generic_process_execute_handle_service_name_without_domain_noun: Generic service names and methods that hide business intent instead of naming the actual use case.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule036NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule036NegativeService interface {
+	Run(context.Context, Rule036NegativeRecord) error
+}
+
+func scenario036Negative(ctx context.Context, service Rule036NegativeService, input Rule036NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for transaction_helper_outside_repository_or_uow_package: Transaction helpers buried in handlers or services instead of a repository or unit-of-work package.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule208PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario208Positive(w http.ResponseWriter, r *http.Request, repo Rule208PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

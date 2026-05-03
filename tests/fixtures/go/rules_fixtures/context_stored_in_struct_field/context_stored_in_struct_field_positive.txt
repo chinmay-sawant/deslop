@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for context_stored_in_struct_field: Struct fields that store context.Context instead of keeping context request-scoped through method parameters.
+// fixture polarity: positive; family: context; severity: warning.
+type Rule238PositiveRecord struct {
+	ctx context.Context
+}
+
+func scenario238Positive(worker *Rule238PositiveRecord, ctx context.Context) {
+	worker.ctx = ctx
+}

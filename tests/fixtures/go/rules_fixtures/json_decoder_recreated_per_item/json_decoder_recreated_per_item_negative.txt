@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+)
+
+// scenario for json_decoder_recreated_per_item: json.NewDecoder(...) constructed repeatedly inside loops instead of reusing a stable decoder per stream.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule352NegativeRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario352Negative(writer io.Writer, value Rule352NegativeRecord) error {
+	return json.NewEncoder(writer).Encode(value)
+}

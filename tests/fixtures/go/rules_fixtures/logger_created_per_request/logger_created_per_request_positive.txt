@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"log"
+)
+
+// scenario for logger_created_per_request: `zap.NewProduction()` or `logrus.New()` inside handler functions
+// fixture polarity: positive; family: library; severity: warning.
+func scenario417Positive(values []string) {
+	for _, value := range values {
+		log.Print(fmt.Sprintf("value=%s", value))
+	}
+}

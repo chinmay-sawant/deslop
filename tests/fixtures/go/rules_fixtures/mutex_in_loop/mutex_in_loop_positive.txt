@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"sync"
+)
+
+// scenario for mutex_in_loop: Repeated Lock or RLock acquisition inside loops.
+// fixture polarity: positive; family: concurrency; severity: contextual.
+type Rule226PositiveRecord struct {
+	mu sync.Mutex
+	lastStatus string
+}
+
+func scenario226Positive(state *Rule226PositiveRecord, url string) error {
+	state.mu.Lock()
+	defer state.mu.Unlock()
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	state.lastStatus = resp.Status
+	return nil
+}

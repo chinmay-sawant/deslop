@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_find_without_limit_on_handler_path: Request-path GORM Find(...) chains with no visible Limit(...) step.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule266NegativeRecord struct { ID int }
+
+func scenario266Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule266NegativeRecord{}).Error
+}

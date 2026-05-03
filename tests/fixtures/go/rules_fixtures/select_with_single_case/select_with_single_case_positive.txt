@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for select_with_single_case: `select { case v := <-ch: ... }` with only one case and no default
+// fixture polarity: positive; family: performance; severity: info.
+type Rule635PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario635Positive(records []Rule635PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

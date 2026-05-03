@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for strconv_repeat_on_same_binding: The same string binding is converted with strconv parsing helpers multiple times in one function.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule367PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario367Positive(records []Rule367PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

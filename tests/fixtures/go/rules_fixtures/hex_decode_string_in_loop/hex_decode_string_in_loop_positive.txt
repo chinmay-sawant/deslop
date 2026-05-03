@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"encoding/hex"
+)
+
+// scenario for hex_decode_string_in_loop: `hex.DecodeString(...)` inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario600Positive(values []string) int {
+	total := 0
+	for _, value := range values {
+		decoded, _ := hex.DecodeString(value)
+		total += len(decoded)
+	}
+	return total
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for sync_once_do_inside_loop: `sync.Once.Do(...)` inside loops.
+// fixture polarity: negative; family: performance; severity: info.
+type Rule677NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario677Negative(records []Rule677NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

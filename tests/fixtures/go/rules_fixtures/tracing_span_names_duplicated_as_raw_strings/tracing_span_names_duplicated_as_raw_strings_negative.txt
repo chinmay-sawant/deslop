@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for tracing_span_names_duplicated_as_raw_strings: Repeated raw span-name literals across handlers and services.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule206NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule206NegativeService interface {
+	Run(context.Context, Rule206NegativeRecord) error
+}
+
+func scenario206Negative(ctx context.Context, service Rule206NegativeService, input Rule206NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

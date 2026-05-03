@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for fmt_fprint_to_bytes_buffer: `fmt.Fprint(&buf, ...)` instead of direct buffer writes.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario484Positive(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, fmt.Sprintf("%d", value))
+	}
+	return out
+}

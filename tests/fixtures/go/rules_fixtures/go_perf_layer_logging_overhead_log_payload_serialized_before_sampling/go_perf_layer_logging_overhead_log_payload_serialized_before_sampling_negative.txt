@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_logging_overhead_log_payload_serialized_before_sampling: Layer: Logging overhead. Flag payload serialization for logs before sampling or level filters run.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule561NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario561Negative(records []Rule561NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

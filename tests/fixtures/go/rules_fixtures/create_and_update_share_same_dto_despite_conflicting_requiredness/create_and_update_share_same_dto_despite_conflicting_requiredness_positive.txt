@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for create_and_update_share_same_dto_despite_conflicting_requiredness: A single DTO reused for create and update when validation rules clearly differ.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule018PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario018Positive(w http.ResponseWriter, r *http.Request, repo Rule018PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

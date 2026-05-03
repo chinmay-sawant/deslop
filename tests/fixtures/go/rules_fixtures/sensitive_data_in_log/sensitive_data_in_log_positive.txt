@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"log"
+)
+
+// scenario for sensitive_data_in_log: `log.Printf`, `slog.Info`, `zap.String`, `logrus.WithField` calls that include variables named `password`, `secret`, `token`, `apiKey`, `creditCard`, `ssn`, or similar
+// fixture polarity: positive; family: security; severity: warning.
+func scenario731Positive(password string, token string) {
+	log.Printf("password=%s token=%s", password, token)
+}

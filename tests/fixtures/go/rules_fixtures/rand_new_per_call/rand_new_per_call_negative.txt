@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for rand_new_per_call: `rand.New(...)` inside regular call paths instead of reusing a generator.
+// fixture polarity: negative; family: performance; severity: info.
+type Rule624NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario624Negative(records []Rule624NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

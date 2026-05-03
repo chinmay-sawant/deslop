@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"fmt"
+)
+
+// scenario for ldap_injection_via_string_concat: string concatenation or `fmt.Sprintf` building LDAP filter strings with user input
+// fixture polarity: positive; family: security; severity: error.
+func scenario724Positive(db *sql.DB, userInput string) (*sql.Rows, error) {
+	query := "select * from users where name = '" + userInput + "'"
+	_ = fmt.Sprintf("(&(uid=%s))", userInput)
+	return db.Query(query)
+}

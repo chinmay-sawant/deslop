@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_replace_neg_one_replaceall: `bytes.Replace(..., -1)` instead of `bytes.ReplaceAll(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario457Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.Index(haystack, needle) != -1
+}

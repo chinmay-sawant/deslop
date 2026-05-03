@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_binds_directly_into_model: Handlers that bind request bodies directly into GORM or persistence structs.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule041NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule041NegativeService interface {
+	Run(context.Context, Rule041NegativeRecord) error
+}
+
+func scenario041Negative(ctx context.Context, service Rule041NegativeService, input Rule041NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_memory_allocation_append_without_known_capacity: Layer: Memory allocation. Flag slice appends in builders where an obvious count is available for make capacity.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule564NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario564Negative(records []Rule564NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

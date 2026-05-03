@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for stmt_without_close: Prepared statements or similar DB handles without an observed Close() call.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario398Positive(paths []string) error {
+	for _, path := range paths {
+		file, err := os.Open(path)
+		if err != nil { return err }
+		defer file.Close()
+	}
+	return nil
+}

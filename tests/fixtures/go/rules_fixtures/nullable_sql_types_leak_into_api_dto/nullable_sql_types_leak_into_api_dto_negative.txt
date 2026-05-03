@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for nullable_sql_types_leak_into_api_dto: Response or request DTOs that expose `sql.Null*` types instead of boundary-friendly contract types.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule103NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule103NegativeService interface {
+	Run(context.Context, Rule103NegativeRecord) error
+}
+
+func scenario103Negative(ctx context.Context, service Rule103NegativeService, input Rule103NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

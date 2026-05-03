@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for router_setup_runs_migrations: Gin router or handler setup code that also performs migrations.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule155NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule155NegativeService interface {
+	Run(context.Context, Rule155NegativeRecord) error
+}
+
+func scenario155Negative(ctx context.Context, service Rule155NegativeService, input Rule155NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

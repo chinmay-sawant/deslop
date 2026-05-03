@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+)
+
+// scenario for repeated_json_marshaling: encoding/json.Marshal or MarshalIndent inside loops - repeated allocation and serialization hot spots.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule631NegativeRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario631Negative(writer io.Writer, value Rule631NegativeRecord) error {
+	return json.NewEncoder(writer).Encode(value)
+}

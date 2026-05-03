@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for query_path_and_body_merge_performed_in_handler: Handlers that merge several request sources inline instead of normalizing inputs before service calls.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule116PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario116Positive(w http.ResponseWriter, r *http.Request, repo Rule116PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

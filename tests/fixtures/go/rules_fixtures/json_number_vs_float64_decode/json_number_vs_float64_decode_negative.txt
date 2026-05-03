@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+)
+
+// scenario for json_number_vs_float64_decode: `json.Unmarshal` into `map[string]any` for numeric data without `UseNumber()`
+// fixture polarity: negative; family: performance; severity: warning.
+type Rule609NegativeRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario609Negative(writer io.Writer, value Rule609NegativeRecord) error {
+	return json.NewEncoder(writer).Encode(value)
+}

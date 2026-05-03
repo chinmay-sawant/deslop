@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for config_file_read_per_request: `os.ReadFile("config.json")` or `viper.ReadInConfig()` inside handler or loop code
+// fixture polarity: negative; family: library; severity: warning.
+type Rule406NegativeRecord struct {
+	client *http.Client
+}
+
+func scenario406Negative(ctx context.Context, holder Rule406NegativeRecord, url string) (*http.Response, error) {
+	client := holder.client
+	if client == nil {
+		client = &http.Client{Timeout: 2 * time.Second}
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for context_background_used: Functions or request handlers that already have a caller-owned context available but still create context.Background() or context.TODO() locally.
+// fixture polarity: negative; family: context; severity: contextual.
+func scenario235Negative(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+	child, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(child, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

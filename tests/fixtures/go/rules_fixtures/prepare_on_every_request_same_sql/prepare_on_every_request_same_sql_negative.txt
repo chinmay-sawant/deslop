@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+)
+
+// scenario for prepare_on_every_request_same_sql: The same literal SQL is prepared multiple times on one request path.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule285NegativeRecord struct { ID int }
+
+func scenario285Negative(ctx context.Context, db *sql.DB, ids []int) (*sql.Rows, error) {
+	return db.QueryContext(ctx, "select id from orders where account_id = any($1) limit 100", ids)
+}

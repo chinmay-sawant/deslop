@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for giant_model_struct_spans_multiple_subdomains: Oversized model structs that appear to merge multiple bounded contexts into one persistence shape.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule037PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario037Positive(w http.ResponseWriter, r *http.Request, repo Rule037PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

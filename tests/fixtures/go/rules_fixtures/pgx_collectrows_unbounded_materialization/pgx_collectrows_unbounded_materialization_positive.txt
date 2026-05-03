@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for pgx_collectrows_unbounded_materialization: pgx.CollectRows used on request paths without a visible LIMIT in the query.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule279PositiveRecord struct { ID int }
+
+func scenario279Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule279PositiveRecord{}).Error
+}

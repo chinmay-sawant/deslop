@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for env_or_config_lookup_per_request: Environment variable reads observed on request paths instead of cached configuration.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule311NegativeRecord struct {
+	Name string
+}
+
+type Rule311NegativeService interface {
+	Handle(context.Context, Rule311NegativeRecord) (Rule311NegativeRecord, error)
+}
+
+func scenario311Negative(ctx context.Context, service Rule311NegativeService, input Rule311NegativeRecord) (Rule311NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule311NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"C"
+	"unsafe"
+)
+
+// scenario for cgo_string_lifetime: `C.CString(goString)` without a corresponding `C.free` in the same function, or deferred `C.free`
+// fixture polarity: negative; family: security; severity: warning.
+func scenario698Negative(value string) {
+	ptr := C.CString(value)
+	C.free(unsafe.Pointer(ptr))
+}

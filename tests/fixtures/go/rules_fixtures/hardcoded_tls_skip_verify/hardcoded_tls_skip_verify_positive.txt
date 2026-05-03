@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"crypto/tls"
+)
+
+// scenario for hardcoded_tls_skip_verify: `tls.Config{InsecureSkipVerify: true}` in non-test code
+// fixture polarity: positive; family: security; severity: error.
+func scenario716Positive() *tls.Config {
+	return &tls.Config{InsecureSkipVerify: true, MinVersion: tls.VersionTLS10}
+}

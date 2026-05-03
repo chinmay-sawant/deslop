@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for reflection_hot_path: reflect package calls inside loops.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule630PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario630Positive(records []Rule630PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

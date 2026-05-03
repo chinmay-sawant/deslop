@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_serialization_gzip_writer_created_per_small_payload: Layer: Serialization and deserialization. Flag gzip writers created for tiny payloads where compression overhead can dominate.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule590PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario590Positive(records []Rule590PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for range_over_string_by_index: `for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes
+// fixture polarity: negative; family: performance; severity: info.
+type Rule629NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario629Negative(records []Rule629NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

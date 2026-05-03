@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for cache_method_uses_context_background: Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.
+// fixture polarity: positive; family: context; severity: warning.
+func scenario234Positive(url string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return http.DefaultClient.Do(req)
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_single_record_write_without_rows_affected_check: Single-record-oriented repository updates or deletes that never inspect `RowsAffected` or an equivalent write-outcome signal.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule136NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule136NegativeService interface {
+	Run(context.Context, Rule136NegativeRecord) error
+}
+
+func scenario136Negative(ctx context.Context, service Rule136NegativeService, input Rule136NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

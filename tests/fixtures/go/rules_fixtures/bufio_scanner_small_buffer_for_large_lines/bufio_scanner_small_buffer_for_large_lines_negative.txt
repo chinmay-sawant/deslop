@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for bufio_scanner_small_buffer_for_large_lines: `bufio.NewScanner(r)` without `scanner.Buffer()` when processing files with lines > 64KB
+// fixture polarity: negative; family: performance; severity: warning.
+type Rule443NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario443Negative(records []Rule443NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

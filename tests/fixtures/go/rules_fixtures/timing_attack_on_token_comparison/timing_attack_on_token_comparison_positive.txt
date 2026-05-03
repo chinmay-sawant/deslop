@@ -1,0 +1,7 @@
+package rulefixtures
+
+// scenario for timing_attack_on_token_comparison: `token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values
+// fixture polarity: positive; family: security; severity: warning.
+func scenario741Positive(token string, expected string) bool {
+	return token == expected
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for findinbatches_candidate_for_large_scan: Unbounded result sets that could use FindInBatches or cursor iteration.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule263PositiveRecord struct { ID int }
+
+func scenario263Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule263PositiveRecord{}).Error
+}

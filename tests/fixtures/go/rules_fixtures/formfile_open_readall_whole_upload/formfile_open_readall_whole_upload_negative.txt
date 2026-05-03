@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for formfile_open_readall_whole_upload: Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...).
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule314NegativeRecord struct {
+	Name string
+}
+
+type Rule314NegativeService interface {
+	Handle(context.Context, Rule314NegativeRecord) (Rule314NegativeRecord, error)
+}
+
+func scenario314Negative(ctx context.Context, service Rule314NegativeService, input Rule314NegativeRecord) (Rule314NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule314NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

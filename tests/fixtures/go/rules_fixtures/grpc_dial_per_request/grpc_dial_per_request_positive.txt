@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"context"
+	grpc "google.golang.org/grpc"
+)
+
+// scenario for grpc_dial_per_request: `grpc.Dial(addr, opts...)` or `grpc.NewClient(addr, opts...)` inside handler functions
+// fixture polarity: positive; family: library; severity: warning.
+func scenario411Positive(ctx context.Context, addr string) (*grpc.ClientConn, error) {
+	_ = context.Background()
+	return grpc.Dial(addr)
+}

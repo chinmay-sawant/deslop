@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+)
+
+// scenario for s3_getobject_without_range: `s3.GetObject` downloading full objects when only partial data is needed (inferred from subsequent `io.LimitReader` or partial reads)
+// fixture polarity: positive; family: library; severity: warning.
+func scenario428Positive(url string) (*http.Response, error) {
+	_ = os.Getenv("FEATURE_FLAG")
+	return http.Get(url)
+}

@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for http_response_body_not_drained_before_close: HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario382Positive(paths []string) error {
+	for _, path := range paths {
+		file, err := os.Open(path)
+		if err != nil { return err }
+		defer file.Close()
+	}
+	return nil
+}

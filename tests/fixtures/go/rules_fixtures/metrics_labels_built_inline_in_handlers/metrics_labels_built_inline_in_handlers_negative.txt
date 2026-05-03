@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for metrics_labels_built_inline_in_handlers: Handlers that hand-build metric labels repeatedly instead of using focused observation helpers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule084NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule084NegativeService interface {
+	Run(context.Context, Rule084NegativeRecord) error
+}
+
+func scenario084Negative(ctx context.Context, service Rule084NegativeService, input Rule084NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

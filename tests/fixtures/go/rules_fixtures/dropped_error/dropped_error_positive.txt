@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"strconv"
+)
+
+// scenario for dropped_error: Blank identifier assignments that discard an err-like value.
+// fixture polarity: positive; family: errors; severity: warning.
+func scenario304Positive(raw string) int {
+	value, _ := strconv.Atoi(raw)
+	return value
+}

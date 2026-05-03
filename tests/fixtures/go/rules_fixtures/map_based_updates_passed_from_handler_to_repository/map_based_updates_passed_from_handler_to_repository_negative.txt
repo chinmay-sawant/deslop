@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for map_based_updates_passed_from_handler_to_repository: Update maps built from request payloads and passed through layers without typed ownership.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule081NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule081NegativeService interface {
+	Run(context.Context, Rule081NegativeRecord) error
+}
+
+func scenario081Negative(ctx context.Context, service Rule081NegativeService, input Rule081NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for main_or_cmd_mixes_cli_parsing_server_bootstrap_and_business_config: Entrypoints that do too much without startup composition helpers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule079NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule079NegativeService interface {
+	Run(context.Context, Rule079NegativeRecord) error
+}
+
+func scenario079Negative(ctx context.Context, service Rule079NegativeService, input Rule079NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

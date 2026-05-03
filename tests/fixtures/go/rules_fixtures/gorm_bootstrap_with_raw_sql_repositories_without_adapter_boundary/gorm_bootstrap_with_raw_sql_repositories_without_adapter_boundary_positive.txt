@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary: Codebases that bootstrap persistence with GORM but run repository queries through raw SQL without a clear adapter boundary.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule056PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario056Positive(w http.ResponseWriter, r *http.Request, repo Rule056PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

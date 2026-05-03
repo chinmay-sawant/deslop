@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for init_registers_routes_or_dependencies: `init()` functions that register handlers, routes, or runtime dependencies.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule077PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario077Positive(w http.ResponseWriter, r *http.Request, repo Rule077PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

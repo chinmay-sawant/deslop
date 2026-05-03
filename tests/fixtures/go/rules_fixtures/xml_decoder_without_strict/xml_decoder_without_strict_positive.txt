@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for xml_decoder_without_strict: `xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML
+// fixture polarity: positive; family: performance; severity: info.
+type Rule696PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario696Positive(records []Rule696PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

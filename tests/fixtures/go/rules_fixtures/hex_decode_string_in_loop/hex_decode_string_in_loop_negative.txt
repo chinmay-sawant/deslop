@@ -1,0 +1,11 @@
+package rulefixtures
+
+// scenario for hex_decode_string_in_loop: `hex.DecodeString(...)` inside loops.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario600Negative(decodedValues [][]byte) int {
+	total := 0
+	for _, value := range decodedValues {
+		total += len(value)
+	}
+	return total
+}

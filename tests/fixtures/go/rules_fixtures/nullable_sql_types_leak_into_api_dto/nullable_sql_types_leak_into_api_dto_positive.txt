@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for nullable_sql_types_leak_into_api_dto: Response or request DTOs that expose `sql.Null*` types instead of boundary-friendly contract types.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule103PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario103Positive(w http.ResponseWriter, r *http.Request, repo Rule103PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

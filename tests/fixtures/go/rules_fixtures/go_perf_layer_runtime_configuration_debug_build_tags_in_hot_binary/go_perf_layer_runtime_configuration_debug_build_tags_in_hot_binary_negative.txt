@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for go_perf_layer_runtime_configuration_debug_build_tags_in_hot_binary: Layer: Build and runtime configuration. Flag performance-sensitive binaries that keep debug/profiling build tags enabled by default.
+// fixture polarity: negative; family: performance; severity: contextual.
+func scenario584Negative(items []string) int {
+	started := time.Now()
+	total := 0
+	for _, item := range items {
+		if !started.IsZero() { total += len(item) }
+	}
+	return total
+}

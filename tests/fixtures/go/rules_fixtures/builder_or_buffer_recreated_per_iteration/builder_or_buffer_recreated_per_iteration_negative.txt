@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for builder_or_buffer_recreated_per_iteration: strings.Builder, bytes.Buffer, or bytes.NewBuffer(...) constructions observed inside loops instead of being reset or reused.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule345NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario345Negative(records []Rule345NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for tests_stub_gin_context_instead_of_httptest_boundary: Handler tests that mock Gin internals directly instead of using `httptest` when boundary behavior matters.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule204NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule204NegativeService interface {
+	Run(context.Context, Rule204NegativeRecord) error
+}
+
+func scenario204Negative(ctx context.Context, service Rule204NegativeService, input Rule204NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

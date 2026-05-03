@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_data_structure_choice_map_string_bool_for_membership: Layer: Data structure choice. Flag map[string]bool membership sets where map[string]struct{} avoids unnecessary value storage.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule521PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario521Positive(records []Rule521PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

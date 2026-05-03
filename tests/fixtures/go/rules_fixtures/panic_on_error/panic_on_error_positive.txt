@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for panic_on_error: err != nil branches that jump straight to panic or log.Fatal style exits.
+// fixture polarity: positive; family: errors; severity: warning.
+func scenario306Positive(path string) []byte {
+	data, err := os.ReadFile(path)
+	if err != nil { panic(err) }
+	return data
+}

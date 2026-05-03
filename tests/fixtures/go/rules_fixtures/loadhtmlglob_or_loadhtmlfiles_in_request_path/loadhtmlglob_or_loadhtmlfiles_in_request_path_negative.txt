@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for loadhtmlglob_or_loadhtmlfiles_in_request_path: LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule323NegativeRecord struct {
+	Name string
+}
+
+type Rule323NegativeService interface {
+	Handle(context.Context, Rule323NegativeRecord) (Rule323NegativeRecord, error)
+}
+
+func scenario323Negative(ctx context.Context, service Rule323NegativeService, input Rule323NegativeRecord) (Rule323NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule323NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

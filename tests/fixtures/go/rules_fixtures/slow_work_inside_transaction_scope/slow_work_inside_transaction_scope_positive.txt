@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for slow_work_inside_transaction_scope: Loop-heavy or slow work performed while a transaction appears open.
+// fixture polarity: positive; family: idioms; severity: warning.
+func scenario397Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for placeholder_seed_function_in_production: Seed entrypoints in production code that are still TODO-shaped or effectively no-ops.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule114PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario114Positive(w http.ResponseWriter, r *http.Request, repo Rule114PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

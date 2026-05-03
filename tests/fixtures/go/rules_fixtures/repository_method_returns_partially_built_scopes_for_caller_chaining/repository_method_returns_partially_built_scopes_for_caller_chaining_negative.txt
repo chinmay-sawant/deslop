@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_method_returns_partially_built_scopes_for_caller_chaining: Repositories that expose scope-building fragments instead of complete query APIs.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule129NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule129NegativeService interface {
+	Run(context.Context, Rule129NegativeRecord) error
+}
+
+func scenario129Negative(ctx context.Context, service Rule129NegativeService, input Rule129NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

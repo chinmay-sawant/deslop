@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"strings"
+)
+
+// scenario for header_injection_via_user_input: `w.Header().Set(name, userInput)` or `w.Header().Add(name, userInput)` where the value contains unvalidated user input that could contain `\r\n`
+// fixture polarity: negative; family: security; severity: warning.
+func scenario717Negative(w http.ResponseWriter, r *http.Request) {
+	value := strings.Map(func(ch rune) rune { if ch == '\r' || ch == '\n' { return -1 }; return ch }, r.FormValue("name"))
+	w.Header().Set("X-Display-Name", value)
+}

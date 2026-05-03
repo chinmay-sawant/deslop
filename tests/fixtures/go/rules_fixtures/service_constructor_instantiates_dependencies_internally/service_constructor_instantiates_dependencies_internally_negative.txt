@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_constructor_instantiates_dependencies_internally: Constructors that create repositories, clients, or loggers internally instead of accepting them explicitly.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule163NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule163NegativeService interface {
+	Run(context.Context, Rule163NegativeRecord) error
+}
+
+func scenario163Negative(ctx context.Context, service Rule163NegativeService, input Rule163NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

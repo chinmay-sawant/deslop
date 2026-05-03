@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	websocket "github.com/gorilla/websocket"
+	"net/http"
+)
+
+// scenario for websocket_without_origin_check: `websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}` or missing `CheckOrigin`
+// fixture polarity: negative; family: security; severity: warning.
+func scenario747Negative(allowed string) websocket.Upgrader {
+	return websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return r.Host == allowed }}
+}

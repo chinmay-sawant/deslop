@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for error_logged_and_returned: `log.Error(err); return err` or `logger.Error("failed", zap.Error(err)); return fmt.Errorf("failed: %w", err)` - logging the error then returning it
+// fixture polarity: negative; family: library; severity: info.
+type Rule409NegativeRecord struct {
+	client *http.Client
+}
+
+func scenario409Negative(ctx context.Context, holder Rule409NegativeRecord, url string) (*http.Response, error) {
+	client := holder.client
+	if client == nil {
+		client = &http.Client{Timeout: 2 * time.Second}
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

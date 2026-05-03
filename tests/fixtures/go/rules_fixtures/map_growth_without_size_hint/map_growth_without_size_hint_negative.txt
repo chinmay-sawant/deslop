@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for map_growth_without_size_hint: Map insertions inside loops without a visible size hint on the initial make call.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule356NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario356Negative(records []Rule356NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

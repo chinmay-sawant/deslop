@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for preload_rules_scattered_across_layers: Preload decisions spread across handlers, services, and repositories instead of one query owner.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule115PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario115Positive(w http.ResponseWriter, r *http.Request, repo Rule115PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

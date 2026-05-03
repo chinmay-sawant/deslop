@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for select_or_get_inside_loop_lookup: ORM lookups (Select, Get, First, etc.) executed inside loops.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule297PositiveRecord struct { ID int }
+
+func scenario297Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule297PositiveRecord{}).Error
+}

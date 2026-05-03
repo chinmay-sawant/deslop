@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_runs_authorization_business_rules_inline: Handlers that contain complex permission matrices instead of delegating to policy or service logic.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule049NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule049NegativeService interface {
+	Run(context.Context, Rule049NegativeRecord) error
+}
+
+func scenario049Negative(ctx context.Context, service Rule049NegativeService, input Rule049NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

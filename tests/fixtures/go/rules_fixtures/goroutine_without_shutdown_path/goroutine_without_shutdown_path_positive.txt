@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for goroutine_without_shutdown_path: Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path.
+// fixture polarity: positive; family: concurrency; severity: contextual.
+func scenario225Positive(items []string) chan int {
+	results := make(chan int)
+	for _, item := range items {
+		go func() {
+			time.Sleep(time.Millisecond)
+			results <- len(item)
+		}()
+	}
+	return results
+}

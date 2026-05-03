@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for updates_with_struct_used_for_patch_without_field_intent_helper: PATCH-style repository writes that rely on struct zero-value semantics without explicit field intent.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule214NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule214NegativeService interface {
+	Run(context.Context, Rule214NegativeRecord) error
+}
+
+func scenario214Negative(ctx context.Context, service Rule214NegativeService, input Rule214NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for nested_linear_join_map_candidate: Nested-loop lookups or joins that could use a map index for O(1) access.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule358NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario358Negative(records []Rule358NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

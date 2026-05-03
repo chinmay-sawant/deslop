@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_model_contains_binding_or_validate_tags: GORM models that accumulate transport validation and binding concerns.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule061NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule061NegativeService interface {
+	Run(context.Context, Rule061NegativeRecord) error
+}
+
+func scenario061Negative(ctx context.Context, service Rule061NegativeService, input Rule061NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

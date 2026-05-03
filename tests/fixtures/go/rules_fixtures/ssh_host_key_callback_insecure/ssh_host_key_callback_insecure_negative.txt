@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	ssh "golang.org/x/crypto/ssh"
+)
+
+// scenario for ssh_host_key_callback_insecure: `ssh.ClientConfig{HostKeyCallback: ssh.InsecureIgnoreHostKey()}` in non-test code
+// fixture polarity: negative; family: security; severity: warning.
+func scenario735Negative(user string, callback ssh.HostKeyCallback) *ssh.ClientConfig {
+	return &ssh.ClientConfig{User: user, HostKeyCallback: callback}
+}

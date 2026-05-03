@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for raw_sql_literal_in_service: Literal SQL strings executed from services instead of repositories or query packages.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule119NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule119NegativeService interface {
+	Run(context.Context, Rule119NegativeRecord) error
+}
+
+func scenario119Negative(ctx context.Context, service Rule119NegativeService, input Rule119NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

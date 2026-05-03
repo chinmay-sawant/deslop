@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for validation_logic_duplicated_across_handlers: Repeated required-field or enum-validation blocks across multiple handler files.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule217PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario217Positive(w http.ResponseWriter, r *http.Request, repo Rule217PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

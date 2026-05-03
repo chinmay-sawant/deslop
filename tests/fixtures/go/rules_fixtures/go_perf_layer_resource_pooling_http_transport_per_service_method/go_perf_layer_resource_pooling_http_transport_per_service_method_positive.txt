@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for go_perf_layer_resource_pooling_http_transport_per_service_method: Layer: Resource pooling. Flag new transports per service method instead of shared clients per upstream.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario581Positive(urls []string) int {
+	total := 0
+	for _, url := range urls {
+		client := &http.Client{}
+		resp, err := client.Get(url)
+		if err == nil { total += resp.StatusCode }
+	}
+	return total
+}

@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for rows_without_close: Query result handles that appear locally owned but have no observed rows.Close() call.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario394Positive(paths []string) error {
+	for _, path := range paths {
+		file, err := os.Open(path)
+		if err != nil { return err }
+		defer file.Close()
+	}
+	return nil
+}

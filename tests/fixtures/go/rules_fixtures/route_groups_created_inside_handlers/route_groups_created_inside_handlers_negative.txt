@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for route_groups_created_inside_handlers: Code that constructs or mutates route groups outside the startup router layer.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule149NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule149NegativeService interface {
+	Run(context.Context, Rule149NegativeRecord) error
+}
+
+func scenario149Negative(ctx context.Context, service Rule149NegativeService, input Rule149NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

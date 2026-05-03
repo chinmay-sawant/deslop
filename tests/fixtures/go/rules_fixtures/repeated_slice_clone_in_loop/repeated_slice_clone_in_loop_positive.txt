@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for repeated_slice_clone_in_loop: slices.Clone(...) or similar whole-slice cloning observed inside loops.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule362PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario362Positive(records []Rule362PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

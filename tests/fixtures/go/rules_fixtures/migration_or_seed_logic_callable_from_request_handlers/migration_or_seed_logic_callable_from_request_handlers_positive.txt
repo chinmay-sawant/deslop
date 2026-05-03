@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for migration_or_seed_logic_callable_from_request_handlers: Request handlers that can trigger migration or seed workflows.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule094PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario094Positive(w http.ResponseWriter, r *http.Request, repo Rule094PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

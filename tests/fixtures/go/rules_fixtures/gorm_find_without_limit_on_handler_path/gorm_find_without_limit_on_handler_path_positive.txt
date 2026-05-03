@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_find_without_limit_on_handler_path: Request-path GORM Find(...) chains with no visible Limit(...) step.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule266PositiveRecord struct { ID int }
+
+func scenario266Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule266PositiveRecord{}).Error
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_method_handles_pagination_or_query_parsing: Services that parse page, sort, filter, or URL values that should already be normalized at the transport boundary.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule171NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule171NegativeService interface {
+	Run(context.Context, Rule171NegativeRecord) error
+}
+
+func scenario171Negative(ctx context.Context, service Rule171NegativeService, input Rule171NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

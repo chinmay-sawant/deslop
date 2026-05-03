@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_memory_allocation_closure_capture_allocates_in_loop: Layer: Memory allocation. Flag loop-local closures that capture variables in high-frequency paths and may force heap allocation.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule566PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario566Positive(records []Rule566PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

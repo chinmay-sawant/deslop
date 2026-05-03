@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_logging_overhead_per_record_debug_log_in_batch: Layer: Logging overhead. Flag debug logging per batch record on hot ingestion paths.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule563PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario563Positive(records []Rule563PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

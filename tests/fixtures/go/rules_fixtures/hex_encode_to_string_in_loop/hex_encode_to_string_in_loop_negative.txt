@@ -1,0 +1,11 @@
+package rulefixtures
+
+// scenario for hex_encode_to_string_in_loop: `hex.EncodeToString(...)` inside loops.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario601Negative(encodedValues []string) int {
+	total := 0
+	for _, value := range encodedValues {
+		total += len(value)
+	}
+	return total
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for slice_grow_without_cap_hint: `var result []T` followed by `append` in a loop where the iteration count is visible from a `len()` or range source
+// fixture polarity: positive; family: performance; severity: warning.
+type Rule639PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario639Positive(records []Rule639PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

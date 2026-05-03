@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for panic_stack_trace_to_client: `recover()` in HTTP middleware that sends the panic message/stack to the response writer
+// fixture polarity: negative; family: security; severity: warning.
+func scenario727Negative(w http.ResponseWriter) {
+	defer func() { if recover() != nil { http.Error(w, "internal error", http.StatusInternalServerError) } }()
+}

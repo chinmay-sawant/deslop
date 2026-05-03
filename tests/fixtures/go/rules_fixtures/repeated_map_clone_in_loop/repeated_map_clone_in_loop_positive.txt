@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for repeated_map_clone_in_loop: maps.Clone or equivalent map-copy calls observed inside loops.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule361PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario361Positive(records []Rule361PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

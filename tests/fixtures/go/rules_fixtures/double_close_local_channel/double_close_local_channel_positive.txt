@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for double_close_local_channel: The same locally created channel appears to be closed more than once in one function body.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario377Positive(paths []string) error {
+	for _, path := range paths {
+		file, err := os.Open(path)
+		if err != nil { return err }
+		defer file.Close()
+	}
+	return nil
+}

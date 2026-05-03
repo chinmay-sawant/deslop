@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for multiple_bind_sources_into_same_struct_without_precedence_contract: One DTO being filled from body, query, and path without a clear precedence policy.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule100PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario100Positive(w http.ResponseWriter, r *http.Request, repo Rule100PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

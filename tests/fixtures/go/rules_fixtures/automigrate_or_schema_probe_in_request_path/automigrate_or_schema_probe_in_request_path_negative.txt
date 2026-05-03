@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for automigrate_or_schema_probe_in_request_path: AutoMigrate or schema probes running on request paths instead of startup.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule246NegativeRecord struct { ID int }
+
+func scenario246Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule246NegativeRecord{}).Error
+}

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_splitaftern_two_index_one_cut: `strings.SplitAfterN(..., 2)[1]` instead of a two-part `strings.Cut(...)` flow.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario667Negative(haystack string, needle string, left string, right string) bool {
+	return func() bool { _, _, ok := strings.Cut(haystack, needle); return ok }()
+}

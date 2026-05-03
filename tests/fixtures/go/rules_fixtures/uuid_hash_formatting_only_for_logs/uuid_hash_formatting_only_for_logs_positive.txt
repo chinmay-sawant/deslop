@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for uuid_hash_formatting_only_for_logs: UUID or hash formatting observed inside loops only for log output.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario373Positive(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, fmt.Sprintf("%d", value))
+	}
+	return out
+}

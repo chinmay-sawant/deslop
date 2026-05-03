@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for background_goroutine_started_inside_transaction_scope: Goroutines launched while relying on open transaction state.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule006PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario006Positive(w http.ResponseWriter, r *http.Request, repo Rule006PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

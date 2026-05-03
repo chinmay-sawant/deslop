@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	bcrypt "golang.org/x/crypto/bcrypt"
+)
+
+// scenario for bcrypt_cost_too_low: `bcrypt.GenerateFromPassword(pw, cost)` where `cost` is literally `< 10` or `bcrypt.MinCost`
+// fixture polarity: negative; family: security; severity: warning.
+func scenario697Negative(password []byte) ([]byte, error) {
+	return bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+}

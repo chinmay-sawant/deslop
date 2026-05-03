@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_scopes_defined_inline_repeatedly: Repeated ad hoc scope functions instead of shared named scopes.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule066NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule066NegativeService interface {
+	Run(context.Context, Rule066NegativeRecord) error
+}
+
+func scenario066Negative(ctx context.Context, service Rule066NegativeService, input Rule066NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

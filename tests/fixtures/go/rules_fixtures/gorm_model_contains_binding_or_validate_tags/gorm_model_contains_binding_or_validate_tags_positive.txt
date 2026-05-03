@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for gorm_model_contains_binding_or_validate_tags: GORM models that accumulate transport validation and binding concerns.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule061PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario061Positive(w http.ResponseWriter, r *http.Request, repo Rule061PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

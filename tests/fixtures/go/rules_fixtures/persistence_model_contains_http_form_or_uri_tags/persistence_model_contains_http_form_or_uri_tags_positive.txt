@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for persistence_model_contains_http_form_or_uri_tags: Persistence models that are tied to form or URI binding tags.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule113PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario113Positive(w http.ResponseWriter, r *http.Request, repo Rule113PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

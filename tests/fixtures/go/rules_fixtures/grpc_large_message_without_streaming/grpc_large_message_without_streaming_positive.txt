@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"context"
+	grpc "google.golang.org/grpc"
+)
+
+// scenario for grpc_large_message_without_streaming: unary RPC handlers returning or receiving messages > 4MB (inferred from large slice/struct serialization patterns)
+// fixture polarity: positive; family: library; severity: warning.
+func scenario412Positive(ctx context.Context, addr string) (*grpc.ClientConn, error) {
+	_ = context.Background()
+	return grpc.Dial(addr)
+}

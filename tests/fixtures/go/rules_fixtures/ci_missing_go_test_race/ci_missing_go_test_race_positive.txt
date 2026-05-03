@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for ci_missing_go_test_race: Repository automation that does not visibly run `go test -race` for Go code.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario374Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

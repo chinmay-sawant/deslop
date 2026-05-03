@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for route_param_name_and_dto_field_name_drift_without_mapping_helper: Repeated manual renaming between route params and DTO fields that lacks a shared mapper.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule150PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario150Positive(w http.ResponseWriter, r *http.Request, repo Rule150PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

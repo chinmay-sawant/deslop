@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for passthrough_wrapper_interface: Wrapper structs that mostly forward one-to-one through an interface field with little added policy.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario389Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

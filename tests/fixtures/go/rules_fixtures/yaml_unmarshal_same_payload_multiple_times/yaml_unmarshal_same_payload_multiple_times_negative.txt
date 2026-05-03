@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	yaml "gopkg.in/yaml.v3"
+)
+
+// scenario for yaml_unmarshal_same_payload_multiple_times: The same local YAML payload binding is unmarshaled into multiple targets in one function.
+// fixture polarity: negative; family: mod; severity: contextual.
+type Rule435NegativeRecord struct {
+	Name string
+	Count int
+}
+
+func scenario435Negative(payload []byte) (Rule435NegativeRecord, error) {
+	var output Rule435NegativeRecord
+	err := yaml.Unmarshal(payload, &output)
+	return output, err
+}

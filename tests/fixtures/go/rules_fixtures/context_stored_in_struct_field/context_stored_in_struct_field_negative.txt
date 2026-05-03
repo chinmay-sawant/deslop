@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for context_stored_in_struct_field: Struct fields that store context.Context instead of keeping context request-scoped through method parameters.
+// fixture polarity: negative; family: context; severity: warning.
+func scenario238Negative(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+	child, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(child, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

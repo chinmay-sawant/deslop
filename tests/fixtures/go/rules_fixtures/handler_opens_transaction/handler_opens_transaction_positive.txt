@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for handler_opens_transaction: Handlers that call `Begin`, `Transaction`, or unit-of-work start helpers directly.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule072PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario072Positive(w http.ResponseWriter, r *http.Request, repo Rule072PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

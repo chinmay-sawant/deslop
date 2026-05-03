@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for fmt_fprintln_to_strings_builder: `fmt.Fprintln(&builder, ...)` instead of direct builder writes.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario489Positive(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, fmt.Sprintf("%d", value))
+	}
+	return out
+}

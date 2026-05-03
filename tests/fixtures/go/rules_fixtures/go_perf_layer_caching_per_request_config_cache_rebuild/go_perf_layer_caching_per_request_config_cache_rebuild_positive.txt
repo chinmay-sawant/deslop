@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_caching_per_request_config_cache_rebuild: Layer: Caching. Flag request-scoped caches rebuilt from config or environment on every call.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule512PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario512Positive(records []Rule512PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

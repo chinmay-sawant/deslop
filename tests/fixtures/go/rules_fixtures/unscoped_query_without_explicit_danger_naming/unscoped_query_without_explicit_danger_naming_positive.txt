@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for unscoped_query_without_explicit_danger_naming: `Unscoped()` usage in generic repository methods without a clearly dangerous or admin-only name.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule213PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario213Positive(w http.ResponseWriter, r *http.Request, repo Rule213PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

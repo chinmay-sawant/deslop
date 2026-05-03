@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for patch_dto_uses_non_pointer_fields_for_optional_updates: PATCH-like DTOs that cannot distinguish omitted fields from zero values.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule111PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario111Positive(w http.ResponseWriter, r *http.Request, repo Rule111PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

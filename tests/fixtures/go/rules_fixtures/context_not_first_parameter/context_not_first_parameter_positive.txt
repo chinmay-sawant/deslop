@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for context_not_first_parameter: Functions that accept context.Context but not as the first non-receiver parameter on context-aware call paths.
+// fixture polarity: positive; family: context; severity: info.
+func scenario237Positive(url string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return http.DefaultClient.Do(req)
+}

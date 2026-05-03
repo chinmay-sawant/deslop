@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for route_registration_contains_business_logic: Router setup files that build queries, mutate models, or execute business actions while registering routes.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule151NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule151NegativeService interface {
+	Run(context.Context, Rule151NegativeRecord) error
+}
+
+func scenario151Negative(ctx context.Context, service Rule151NegativeService, input Rule151NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

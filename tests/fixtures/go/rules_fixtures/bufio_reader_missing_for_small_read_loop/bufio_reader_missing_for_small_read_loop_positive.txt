@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for bufio_reader_missing_for_small_read_loop: File or socket reads inside loops without visible bufio buffering.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule343PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario343Positive(records []Rule343PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

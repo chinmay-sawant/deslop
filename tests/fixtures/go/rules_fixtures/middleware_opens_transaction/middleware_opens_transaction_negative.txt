@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for middleware_opens_transaction: Middleware that owns transaction lifetime for all downstream business logic.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule089NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule089NegativeService interface {
+	Run(context.Context, Rule089NegativeRecord) error
+}
+
+func scenario089Negative(ctx context.Context, service Rule089NegativeService, input Rule089NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

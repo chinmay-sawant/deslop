@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for create_single_in_loop_instead_of_batches: GORM .Create(...) used inside loops with no visible CreateInBatches(...) path in the same function.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule252PositiveRecord struct { ID int }
+
+func scenario252Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule252PositiveRecord{}).Error
+}

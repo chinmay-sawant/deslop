@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_collection_iteration_multiple_passes_for_independent_counts: Layer: Collection iteration. Flag multiple full passes over the same slice for independent counters that can be combined.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule517NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario517Negative(records []Rule517NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

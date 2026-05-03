@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_constructor_accepts_untyped_config_map: Services configured by `map[string]any` or similar untyped blobs.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule162NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule162NegativeService interface {
+	Run(context.Context, Rule162NegativeRecord) error
+}
+
+func scenario162Negative(ctx context.Context, service Rule162NegativeService, input Rule162NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

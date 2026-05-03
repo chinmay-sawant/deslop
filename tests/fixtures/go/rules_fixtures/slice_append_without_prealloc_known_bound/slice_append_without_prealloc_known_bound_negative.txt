@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for slice_append_without_prealloc_known_bound: Slice append inside a range loop without visible preallocation when the bound is locally known.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule363NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario363Negative(records []Rule363NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

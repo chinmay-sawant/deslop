@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for filepath_split_dir_only: `filepath.Split(...)` when only the directory is used.
+// fixture polarity: negative; family: performance; severity: info.
+type Rule482NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario482Negative(records []Rule482NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

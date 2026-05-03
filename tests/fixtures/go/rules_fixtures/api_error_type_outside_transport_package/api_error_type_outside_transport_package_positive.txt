@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for api_error_type_outside_transport_package: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule001PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario001Positive(w http.ResponseWriter, r *http.Request, repo Rule001PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

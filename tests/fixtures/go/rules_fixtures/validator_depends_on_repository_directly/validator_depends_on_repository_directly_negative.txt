@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for validator_depends_on_repository_directly: Reusable validator code that reaches into repositories instead of receiving precomputed facts or focused services.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule218NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule218NegativeService interface {
+	Run(context.Context, Rule218NegativeRecord) error
+}
+
+func scenario218Negative(ctx context.Context, service Rule218NegativeService, input Rule218NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

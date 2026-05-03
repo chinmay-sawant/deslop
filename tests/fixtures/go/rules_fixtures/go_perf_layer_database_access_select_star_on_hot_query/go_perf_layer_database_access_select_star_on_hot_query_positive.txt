@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_database_access_select_star_on_hot_query: Layer: Database access. Flag SELECT * in hot queries where narrow projections reduce scan and decode cost.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule527PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario527Positive(records []Rule527PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

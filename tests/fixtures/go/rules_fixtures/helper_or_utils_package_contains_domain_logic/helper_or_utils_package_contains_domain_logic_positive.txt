@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for helper_or_utils_package_contains_domain_logic: Generic `helper`, `common`, or `utils` packages that host concrete domain decisions.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule076PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario076Positive(w http.ResponseWriter, r *http.Request, repo Rule076PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

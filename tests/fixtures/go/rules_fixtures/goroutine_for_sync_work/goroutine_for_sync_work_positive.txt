@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for goroutine_for_sync_work: `go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited
+// fixture polarity: positive; family: performance; severity: info.
+type Rule599PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario599Positive(records []Rule599PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

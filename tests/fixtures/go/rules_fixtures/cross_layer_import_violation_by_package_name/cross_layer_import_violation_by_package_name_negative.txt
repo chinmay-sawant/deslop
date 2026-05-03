@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for cross_layer_import_violation_by_package_name: Imports where package names clearly violate a layered direction such as `repository -> handler` or `model -> gin`.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule019NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule019NegativeService interface {
+	Run(context.Context, Rule019NegativeRecord) error
+}
+
+func scenario019Negative(ctx context.Context, service Rule019NegativeService, input Rule019NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

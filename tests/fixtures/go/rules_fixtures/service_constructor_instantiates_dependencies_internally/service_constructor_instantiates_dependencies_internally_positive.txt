@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for service_constructor_instantiates_dependencies_internally: Constructors that create repositories, clients, or loggers internally instead of accepting them explicitly.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule163PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario163Positive(w http.ResponseWriter, r *http.Request, repo Rule163PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

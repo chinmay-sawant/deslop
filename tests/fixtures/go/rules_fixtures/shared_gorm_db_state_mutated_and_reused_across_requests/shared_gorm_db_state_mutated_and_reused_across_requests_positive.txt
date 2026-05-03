@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for shared_gorm_db_state_mutated_and_reused_across_requests: Code that mutates shared `*gorm.DB` state and reuses it as if it were immutable configuration.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule185PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario185Positive(w http.ResponseWriter, r *http.Request, repo Rule185PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

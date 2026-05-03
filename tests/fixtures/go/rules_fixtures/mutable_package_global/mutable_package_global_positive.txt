@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for mutable_package_global: Package-level variables that are mutated from function bodies instead of kept immutable.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario388Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

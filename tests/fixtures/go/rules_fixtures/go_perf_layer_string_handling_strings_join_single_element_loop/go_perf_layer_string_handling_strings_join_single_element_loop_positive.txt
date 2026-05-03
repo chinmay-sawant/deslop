@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for go_perf_layer_string_handling_strings_join_single_element_loop: Layer: String handling. Flag repeated strings.Join calls in loops where one builder outside the loop would do.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario598Positive(haystack string, needle string, left string, right string) bool {
+	return strings.Index(haystack, needle) != -1
+}

@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for go_perf_layer_runtime_configuration_race_detector_assumed_in_benchmark_numbers: Layer: Build and runtime configuration. Flag benchmark guidance or scripts that compare race-enabled and normal builds directly.
+// fixture polarity: negative; family: performance; severity: contextual.
+func scenario587Negative(items []string) int {
+	started := time.Now()
+	total := 0
+	for _, item := range items {
+		if !started.IsZero() { total += len(item) }
+	}
+	return total
+}

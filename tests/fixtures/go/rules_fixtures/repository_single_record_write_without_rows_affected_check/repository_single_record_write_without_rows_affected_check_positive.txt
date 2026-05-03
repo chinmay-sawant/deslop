@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for repository_single_record_write_without_rows_affected_check: Single-record-oriented repository updates or deletes that never inspect `RowsAffected` or an equivalent write-outcome signal.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule136PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario136Positive(w http.ResponseWriter, r *http.Request, repo Rule136PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

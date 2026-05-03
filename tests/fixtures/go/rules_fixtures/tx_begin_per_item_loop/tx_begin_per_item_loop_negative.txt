@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for tx_begin_per_item_loop: Transactions started inside loops instead of once around the wider batch.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule300NegativeRecord struct { ID int }
+
+func scenario300Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule300NegativeRecord{}).Error
+}

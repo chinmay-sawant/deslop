@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for error_code_literals_duplicated_across_handlers: Repeated string error codes without a centralized catalog.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule030PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario030Positive(w http.ResponseWriter, r *http.Request, repo Rule030PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

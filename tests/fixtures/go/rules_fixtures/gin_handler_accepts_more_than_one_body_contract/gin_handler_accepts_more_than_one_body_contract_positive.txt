@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for gin_handler_accepts_more_than_one_body_contract: Handlers that try to bind or manually parse multiple body DTOs in one request path.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule040PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario040Positive(w http.ResponseWriter, r *http.Request, repo Rule040PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}
