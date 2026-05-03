@@ -1,57 +1,48 @@
 package rulecoverage
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "os"
-    "strings"
+	"context"
+	"os"
 )
 
-// Positive scenario for constructor_reads_env_directly: risky concrete example for this rule.
-// Rule intent: Constructors that call `os.Getenv` instead of receiving normalized config.
-type CaseConstructorReadsEnvDirectlyDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for constructor_reads_env_directly.
+// Rule intent: Constructors that call os.Getenv instead of receiving normalized config.
+type OrderService struct {
+	dbURL    string
+	redisURL string
+	apiKey   string
 }
 
-type CaseConstructorReadsEnvDirectlyModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+// NewOrderService reads environment variables directly in the constructor
+// instead of accepting a config struct or injected values.
+func NewOrderService(ctx context.Context) *OrderService {
+	dbURL := os.Getenv("DATABASE_URL")
+	redisURL := os.Getenv("REDIS_URL")
+	apiKey := os.Getenv("STRIPE_API_KEY")
+
+	if dbURL == "" {
+		dbURL = "postgres://localhost:5432/orders"
+	}
+
+	return &OrderService{
+		dbURL:    dbURL,
+		redisURL: redisURL,
+		apiKey:   apiKey,
+	}
 }
 
-type CaseConstructorReadsEnvDirectlyRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseConstructorReadsEnvDirectlyModel
+// NewPaymentService demonstrates the same anti-pattern in a different constructor.
+func NewPaymentService() *PaymentService {
+	secretKey := os.Getenv("PAYMENT_SECRET_KEY")
+	webhookURL := os.Getenv("PAYMENT_WEBHOOK_URL")
+
+	return &PaymentService{
+		secretKey:  secretKey,
+		webhookURL: webhookURL,
+	}
 }
 
-type CaseConstructorReadsEnvDirectlyService struct {
-    repo *CaseConstructorReadsEnvDirectlyRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseConstructorReadsEnvDirectlyAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveConstructorReadsEnvDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseConstructorReadsEnvDirectlyDTO) error {
-    dbURL := os.Getenv("DATABASE_URL")
-    redisURL := os.Getenv("REDIS_URL")
-    if dbURL == "" {
-        dbURL = "postgres://localhost:5432/mydb"
-    }
-    _, _ = dbURL, redisURL
-    return nil
+type PaymentService struct {
+	secretKey  string
+	webhookURL string
 }

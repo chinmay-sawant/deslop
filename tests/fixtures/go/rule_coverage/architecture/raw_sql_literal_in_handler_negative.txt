@@ -1,4 +1,4 @@
-package repository
+package handler
 
 import (
     "context"
@@ -28,46 +28,26 @@ type CaseRawSqlLiteralInHandlerModel struct {
     DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type CaseRawSqlLiteralInHandlerRepository struct {
+type CaseRawSqlLiteralInHandlerHandler struct {
     db *gorm.DB
     sql *sql.DB
-    cache map[string]CaseRawSqlLiteralInHandlerModel
-}
-
-type CaseRawSqlLiteralInHandlerService struct {
-    repo *CaseRawSqlLiteralInHandlerRepository
-    client *http.Client
     logger *log.Logger
-    cfg map[string]string
 }
 
-type CaseRawSqlLiteralInHandlerAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+type CaseRawSqlLiteralInHandlerService interface {
+    FindByID(context.Context, string) (*CaseRawSqlLiteralInHandlerModel, error)
 }
 
-func NegativeRawSqlLiteralInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRawSqlLiteralInHandlerDTO) error {
-    focus := "raw_sql_literal_in_handler"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseRawSqlLiteralInHandlerDTO
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return nil
-    }
-    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
-    repo := &CaseRawSqlLiteralInHandlerRepository{db: db, sql: sqlDB}
-    var model CaseRawSqlLiteralInHandlerModel
-    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
-    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
-    raw_sql_literal_handler_negative := map[string]int{"raw": 1, "sql": 2, "literal": 3, "handler": 4}
-    raw_sql_literal_handler_negative["signal"] = len(input) + len(items)
-    raw_negative_0 := raw_sql_literal_handler_negative["raw"] + len(input)
-    _ = raw_negative_0
-    sql_negative_1 := db.Where("sql_id = ?", input)
-    _ = sql_negative_1
-    literal_negative_2 := raw_sql_literal_handler_negative["literal"] + len(input)
-    _ = literal_negative_2
-    handler_negative_3 := c.FullPath() + ":" + input
-    _ = handler_negative_3
-    return nil
+func (h *CaseRawSqlLiteralInHandlerHandler) NegativeRawSqlLiteralInHandler(c *gin.Context) {
+    input := c.Query("name")
+    var result []CaseRawSqlLiteralInHandlerModel
+    h.db.WithContext(c.Request.Context()).Where("name = ?", input).Find(&result)
+    c.JSON(http.StatusOK, gin.H{"data": result})
+}
+
+func (h *CaseRawSqlLiteralInHandlerHandler) NegativeRawSqlLiteralInHandlerSearch(c *gin.Context) {
+    status := c.Query("status")
+    var results []CaseRawSqlLiteralInHandlerModel
+    h.db.WithContext(c.Request.Context()).Where("status = ? AND deleted_at IS NULL", status).Find(&results)
+    c.JSON(http.StatusOK, gin.H{"count": len(results)})
 }

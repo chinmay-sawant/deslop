@@ -1,76 +1,49 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for repository_begins_transaction_without_uow_or_callback: risky concrete example for this rule.
-// Rule intent: Repositories that quietly start transactions inside generic CRUD methods.
-type CaseRepositoryBeginsTransactionWithoutUowOrCallbackDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Repository begins a transaction internally without using
+// Unit of Work pattern or a callback-based transaction API.
+// This hides transaction boundaries from the caller and risks leaked transactions.
+
+type Order struct {
+	ID       string  `gorm:"column:id"`
+	UserID   string  `gorm:"column:user_id"`
+	Amount   float64 `gorm:"column:amount"`
+	Status   string  `gorm:"column:status"`
 }
 
-type CaseRepositoryBeginsTransactionWithoutUowOrCallbackModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type OrderRepository struct {
+	db *gorm.DB
 }
 
-type CaseRepositoryBeginsTransactionWithoutUowOrCallbackRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRepositoryBeginsTransactionWithoutUowOrCallbackModel
+// CreateOrder begins a transaction with db.Begin() and does not guarantee
+// commit or rollback if the caller forgets to handle it.
+func (r *OrderRepository) CreateOrder(order *Order) error {
+	tx := r.db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if err := tx.Create(order).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Missing: tx.Commit() is never called, or is called inconsistently.
+	// The transaction may be left open.
+	return nil
 }
 
-type CaseRepositoryBeginsTransactionWithoutUowOrCallbackService struct {
-    repo *CaseRepositoryBeginsTransactionWithoutUowOrCallbackRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+// TransferFunds starts another implicit transaction without UoW.
+func (r *OrderRepository) TransferFunds(fromID, toID string, amount float64) error {
+	tx := r.db.Begin()
 
-type CaseRepositoryBeginsTransactionWithoutUowOrCallbackAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	tx.Model(&Order{}).Where("id = ?", fromID).Update("amount", gorm.Expr("amount - ?", amount))
+	tx.Model(&Order{}).Where("id = ?", toID).Update("amount", gorm.Expr("amount + ?", amount))
 
-func PositiveRepositoryBeginsTransactionWithoutUowOrCallback(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryBeginsTransactionWithoutUowOrCallbackDTO) error {
-    focus := "repository_begins_transaction_without_uow"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseRepositoryBeginsTransactionWithoutUowOrCallbackDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    repo := &CaseRepositoryBeginsTransactionWithoutUowOrCallbackRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryBeginsTransactionWithoutUowOrCallbackModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    tx := db.Begin()
-    tx.Create(&CaseRepositoryBeginsTransactionWithoutUowOrCallbackModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
-    repository_begins_transaction_uow_callback_positive := map[string]int{"repository": 1, "begins": 2, "transaction": 3, "uow": 4, "callback": 5}
-    repository_begins_transaction_uow_callback_positive["signal"] = len(input) + len(items)
-    repository_positive_0 := db.Where("repository_id = ?", input)
-    _ = repository_positive_0
-    begins_positive_1 := repository_begins_transaction_uow_callback_positive["begins"] + len(input)
-    _ = begins_positive_1
-    transaction_positive_2 := repository_begins_transaction_uow_callback_positive["transaction"] + len(input)
-    _ = transaction_positive_2
-    uow_positive_3 := repository_begins_transaction_uow_callback_positive["uow"] + len(input)
-    _ = uow_positive_3
-    callback_positive_4 := repository_begins_transaction_uow_callback_positive["callback"] + len(input)
-    _ = callback_positive_4
-    return nil
+	// No defer tx.Rollback(), no explicit commit - transaction management is unclear.
+	return tx.Commit().Error
 }

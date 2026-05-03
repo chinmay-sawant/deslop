@@ -1,65 +1,42 @@
-package handler
+package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for request_dto_outside_transport_package: risky concrete example for this rule.
-// Rule intent: Request binding structs that live in repositories or service packages instead of transport-facing packages.
-type CaseRequestDtoOutsideTransportPackageDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for request_dto_outside_transport_package.
+// Anti-pattern: Request DTO is defined in the service package
+// instead of the transport/handler package, violating layer boundaries.
+
+// Anti-pattern: This request DTO lives in the service package but is
+// used for HTTP request binding in the handler.
+type CreateInvoiceRequest struct {
+	OrderID    uint    `json:"order_id" binding:"required"`
+	Amount     float64 `json:"amount" binding:"required"`
+	DueDate    string  `json:"due_date" binding:"required"`
+	Currency   string  `json:"currency"`
 }
 
-type CaseRequestDtoOutsideTransportPackageModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type InvoiceService struct {
+	db *gorm.DB
 }
 
-type CaseRequestDtoOutsideTransportPackageRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRequestDtoOutsideTransportPackageModel
-}
+func (s *InvoiceService) CreateInvoice(c *gin.Context) {
+	var req CreateInvoiceRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-type CaseRequestDtoOutsideTransportPackageService struct {
-    repo *CaseRequestDtoOutsideTransportPackageRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	invoice := Invoice{
+		OrderID:  req.OrderID,
+		Amount:   req.Amount,
+		DueDate:  req.DueDate,
+		Currency: req.Currency,
+	}
 
-type CaseRequestDtoOutsideTransportPackageAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveRequestDtoOutsideTransportPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestDtoOutsideTransportPackageDTO) error {
-
-    type CreateAccountRequest struct {
-        Name     string `json:"name" binding:"required"`
-        TenantID string `json:"tenant_id" binding:"required"`
-    }
-    var req CreateAccountRequest
-    if err := c.ShouldBindJSON(&req); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return nil
-    }
-    var model CaseRequestDtoOutsideTransportPackageModel
-    if err := db.WithContext(ctx).Where("tenant_id = ?", req.TenantID).First(&model).Error; err != nil {
-        return err
-    }
-    c.JSON(http.StatusOK, gin.H{"id": model.ID})
-    return nil
+	s.db.Create(&invoice)
+	c.JSON(http.StatusCreated, invoice)
 }

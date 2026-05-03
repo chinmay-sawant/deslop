@@ -1,56 +1,36 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "os"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"os"
+	"strconv"
 )
 
-// Positive scenario for gin_handler_parses_config_or_feature_flags_inline: risky concrete example for this rule.
-// Rule intent: Handlers that read feature flags, tenant configuration, or rollout toggles directly instead of using injected policy/config abstractions.
-type CaseGinHandlerParsesConfigOrFeatureFlagsInlineDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
+// Positive scenario for gin_handler_parses_config_or_feature_flags_inline
+// Rule intent: Handlers that read feature flags, tenant configuration, or rollout toggles
+// directly instead of using injected policy/config abstractions.
+func PositiveGinHandlerParsesConfigOrFeatureFlagsInline(c *gin.Context) {
+	featureFlag := os.Getenv("FEATURE_FLAG")
+	maxItems := os.Getenv("MAX_ITEMS")
+	debugMode := os.Getenv("DEBUG_MODE")
 
-type CaseGinHandlerParsesConfigOrFeatureFlagsInlineModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+	limit := 100
+	if maxItems != "" {
+		if parsed, err := strconv.Atoi(maxItems); err == nil {
+			limit = parsed
+		}
+	}
 
-type CaseGinHandlerParsesConfigOrFeatureFlagsInlineRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGinHandlerParsesConfigOrFeatureFlagsInlineModel
-}
+	if featureFlag == "enabled" && debugMode == "true" {
+		c.JSON(http.StatusOK, gin.H{
+			"data":      []string{},
+			"limit":     limit,
+			"debug":     true,
+			"flag":      featureFlag,
+		})
+		return
+	}
 
-type CaseGinHandlerParsesConfigOrFeatureFlagsInlineService struct {
-    repo *CaseGinHandlerParsesConfigOrFeatureFlagsInlineRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseGinHandlerParsesConfigOrFeatureFlagsInlineAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveGinHandlerParsesConfigOrFeatureFlagsInline(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerParsesConfigOrFeatureFlagsInlineDTO) error {
-    maxItems := os.Getenv("MAX_ITEMS")
-    if maxItems == "" {
-        maxItems = "100"
-    }
-    c.JSON(http.StatusOK, gin.H{"max_items": maxItems, "input": input})
-    return nil
+	c.JSON(http.StatusOK, gin.H{"data": []string{}, "limit": limit})
 }

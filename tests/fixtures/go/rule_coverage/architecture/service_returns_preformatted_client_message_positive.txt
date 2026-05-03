@@ -1,76 +1,61 @@
 package service
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"fmt"
 )
 
-// Positive scenario for service_returns_preformatted_client_message: risky concrete example for this rule.
-// Rule intent: Services that return final client-facing message strings instead of typed domain errors.
-type CaseServiceReturnsPreformattedClientMessageDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for service_returns_preformatted_client_message:
+// service returns final client-facing message strings instead of typed domain errors.
+type CartService struct {
+	repo CartRepository
 }
 
-type CaseServiceReturnsPreformattedClientMessageModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type CartRepository interface {
+	AddItem(ctx context.Context, cartID, productID string, quantity int) error
+	GetCart(ctx context.Context, cartID string) (*Cart, error)
 }
 
-type CaseServiceReturnsPreformattedClientMessageRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseServiceReturnsPreformattedClientMessageModel
+type Cart struct {
+	ID    string
+	Items []CartItem
 }
 
-type CaseServiceReturnsPreformattedClientMessageService struct {
-    repo *CaseServiceReturnsPreformattedClientMessageRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+type CartItem struct {
+	ProductID string
+	Quantity  int
 }
 
-type CaseServiceReturnsPreformattedClientMessageAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func NewCartService(repo CartRepository) *CartService {
+	return &CartService{repo: repo}
 }
 
-func PositiveServiceReturnsPreformattedClientMessage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceReturnsPreformattedClientMessageDTO) error {
-    focus := "service_returns_preformatted_client_message"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseServiceReturnsPreformattedClientMessageService{repo: &CaseServiceReturnsPreformattedClientMessageRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseServiceReturnsPreformattedClientMessageModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    cacheKey := "account:" + input
-    db.Exec("UPDATE cache_events SET payload = ?", cacheKey)
-    _ = cacheKey
-    err := errors.New("sql: no rows in result set for " + input)
-    if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
-    service_returns_preformatted_client_message_positive := map[string]int{"service": 1, "returns": 2, "preformatted": 3, "client": 4, "message": 5}
-    service_returns_preformatted_client_message_positive["signal"] = len(input) + len(items)
-    service_positive_0 := CaseServiceReturnsPreformattedClientMessageDTO{ID: input, Status: "service"}
-    _ = service_positive_0
-    returns_positive_1 := service_returns_preformatted_client_message_positive["returns"] + len(input)
-    _ = returns_positive_1
-    preformatted_positive_2 := service_returns_preformatted_client_message_positive["preformatted"] + len(input)
-    _ = preformatted_positive_2
-    client_positive_3 := service_returns_preformatted_client_message_positive["client"] + len(input)
-    _ = client_positive_3
-    message_positive_4 := service_returns_preformatted_client_message_positive["message"] + len(input)
-    _ = message_positive_4
-    return nil
+func (s *CartService) AddItem(ctx context.Context, cartID, productID string, quantity int) (string, error) {
+	if quantity <= 0 {
+		return fmt.Sprintf("Error: Cannot add %d items. Quantity must be greater than zero.", quantity), fmt.Errorf("invalid quantity")
+	}
+
+	if quantity > 100 {
+		return fmt.Sprintf("Error: Maximum order quantity is 100. You requested %d items for product %s.", quantity, productID), fmt.Errorf("quantity exceeds maximum")
+	}
+
+	err := s.repo.AddItem(ctx, cartID, productID, quantity)
+	if err != nil {
+		return fmt.Sprintf("Sorry, we were unable to add the item to your cart. Please try again later. Details: %v", err), err
+	}
+
+	return fmt.Sprintf("Success! %d item(s) of product '%s' have been added to your cart.", quantity, productID), nil
+}
+
+func (s *CartService) GetCartSummary(ctx context.Context, cartID string) string {
+	cart, err := s.repo.GetCart(ctx, cartID)
+	if err != nil {
+		return "Your cart could not be retrieved. Please refresh the page or contact support."
+	}
+
+	if len(cart.Items) == 0 {
+		return "Your cart is currently empty. Start shopping to add items!"
+	}
+
+	return fmt.Sprintf("Your cart contains %d item(s).", len(cart.Items))
 }

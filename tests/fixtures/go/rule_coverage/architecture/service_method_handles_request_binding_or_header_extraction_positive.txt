@@ -1,76 +1,59 @@
 package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"fmt"
+	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for service_method_handles_request_binding_or_header_extraction: risky concrete example for this rule.
-// Rule intent: Services that extract headers, cookies, forms, or route params directly.
-type CaseServiceMethodHandlesRequestBindingOrHeaderExtractionDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for service_method_handles_request_binding_or_header_extraction:
+// service extracts headers, cookies, forms, or route params directly.
+type AuthService struct {
+	repo AuthRepository
 }
 
-type CaseServiceMethodHandlesRequestBindingOrHeaderExtractionModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type AuthRepository interface {
+	Authenticate(ctx context.Context, email, password string) (*Session, error)
 }
 
-type CaseServiceMethodHandlesRequestBindingOrHeaderExtractionRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseServiceMethodHandlesRequestBindingOrHeaderExtractionModel
+type Session struct {
+	Token     string
+	ExpiresAt string
 }
 
-type CaseServiceMethodHandlesRequestBindingOrHeaderExtractionService struct {
-    repo *CaseServiceMethodHandlesRequestBindingOrHeaderExtractionRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func NewAuthService(repo AuthRepository) *AuthService {
+	return &AuthService{repo: repo}
 }
 
-type CaseServiceMethodHandlesRequestBindingOrHeaderExtractionAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func (s *AuthService) Login(c *gin.Context) error {
+	var req LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "invalid request body"})
+		return err
+	}
+
+	apiKey := c.GetHeader("X-API-Key")
+	tenantID := c.GetHeader("X-Tenant-ID")
+	authBearer := strings.TrimPrefix(c.GetHeader("Authorization"), "Bearer ")
+
+	session, err := s.repo.Authenticate(c.Request.Context(), req.Email, req.Password)
+	if err != nil {
+		c.JSON(401, gin.H{"error": "authentication failed"})
+		return err
+	}
+
+	_ = apiKey
+	_ = tenantID
+	_ = authBearer
+
+	c.Header("X-Session-Token", session.Token)
+	c.JSON(200, gin.H{"token": session.Token, "expires_at": session.ExpiresAt})
+	return nil
 }
 
-func PositiveServiceMethodHandlesRequestBindingOrHeaderExtraction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceMethodHandlesRequestBindingOrHeaderExtractionDTO) error {
-    focus := "service_method_handles_request_binding"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseServiceMethodHandlesRequestBindingOrHeaderExtractionDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseServiceMethodHandlesRequestBindingOrHeaderExtractionService{repo: &CaseServiceMethodHandlesRequestBindingOrHeaderExtractionRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseServiceMethodHandlesRequestBindingOrHeaderExtractionModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    service_method_handles_request_binding_positive := map[string]int{"service": 1, "method": 2, "handles": 3, "request": 4, "binding": 5, "header": 6}
-    service_method_handles_request_binding_positive["signal"] = len(input) + len(items)
-    service_positive_0 := CaseServiceMethodHandlesRequestBindingOrHeaderExtractionDTO{ID: input, Status: "service"}
-    _ = service_positive_0
-    method_positive_1 := service_method_handles_request_binding_positive["method"] + len(input)
-    _ = method_positive_1
-    handles_positive_2 := service_method_handles_request_binding_positive["handles"] + len(input)
-    _ = handles_positive_2
-    request_positive_3 := service_method_handles_request_binding_positive["request"] + len(input)
-    _ = request_positive_3
-    binding_positive_4 := service_method_handles_request_binding_positive["binding"] + len(input)
-    _ = binding_positive_4
-    header_positive_5 := service_method_handles_request_binding_positive["header"] + len(input)
-    _ = header_positive_5
-    return nil
+type LoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
 }

@@ -1,72 +1,39 @@
 package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"fmt"
+
+	"example.com/app/handler"
+	"example.com/app/model"
 )
 
-// Positive scenario for service_calls_handler_helper: risky concrete example for this rule.
-// Rule intent: Service packages that reach upward into handler helpers for parsing, rendering, or Gin-specific utilities.
-type CaseServiceCallsHandlerHelperDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for service_calls_handler_helper: service reaches upward
+// into handler helpers for parsing, rendering, or gin-specific utilities.
+type AccountService struct {
+	repo AccountRepository
 }
 
-type CaseServiceCallsHandlerHelperModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type AccountRepository interface {
+	FindByID(ctx context.Context, id string) (*model.Account, error)
 }
 
-type CaseServiceCallsHandlerHelperRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseServiceCallsHandlerHelperModel
+func NewAccountService(repo AccountRepository) *AccountService {
+	return &AccountService{repo: repo}
 }
 
-type CaseServiceCallsHandlerHelperService struct {
-    repo *CaseServiceCallsHandlerHelperRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+func (s *AccountService) GetAccount(ctx context.Context, id string) (string, error) {
+	acct, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return "", fmt.Errorf("account not found: %w", err)
+	}
 
-type CaseServiceCallsHandlerHelperAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	resp := handler.FormatAccountResponse(acct)
 
-func PositiveServiceCallsHandlerHelper(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceCallsHandlerHelperDTO) error {
-    focus := "service_calls_handler_helper"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseServiceCallsHandlerHelperDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseServiceCallsHandlerHelperService{repo: &CaseServiceCallsHandlerHelperRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseServiceCallsHandlerHelperModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    service_calls_handler_helper_positive := map[string]int{"service": 1, "calls": 2, "handler": 3, "helper": 4}
-    service_calls_handler_helper_positive["signal"] = len(input) + len(items)
-    service_positive_0 := CaseServiceCallsHandlerHelperDTO{ID: input, Status: "service"}
-    _ = service_positive_0
-    calls_positive_1 := service_calls_handler_helper_positive["calls"] + len(input)
-    _ = calls_positive_1
-    handler_positive_2 := c.FullPath() + ":" + input
-    _ = handler_positive_2
-    helper_positive_3 := service_calls_handler_helper_positive["helper"] + len(input)
-    _ = helper_positive_3
-    return nil
+	jsonBytes, err := handler.MarshalToJSON(resp)
+	if err != nil {
+		return "", err
+	}
+
+	return string(jsonBytes), nil
 }

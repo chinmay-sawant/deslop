@@ -1,62 +1,81 @@
-package main
+package service_test
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-    "testing"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-// Positive scenario for table_driven_tests_mix_multiple_domains_in_one_cases_slice: risky concrete example for this rule.
+// Positive scenario for table_driven_tests_mix_multiple_domains_in_one_cases_slice.
 // Rule intent: Oversized case tables that mix unrelated behaviors into one monolithic test.
-type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+
+type User struct {
+	Name  string
+	Email string
 }
 
-type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type Order struct {
+	Product string
+	Amount  float64
 }
 
-type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel
+type Payment struct {
+	OrderID string
+	Method  string
+	Status  string
 }
 
-type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceService struct {
-    repo *CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+// Anti-pattern: a single table-driven test mixing User, Order, and Payment domains
+// in one cases slice — these are unrelated behaviors that should be tested separately.
+func TestMixedDomains(t *testing.T) {
+	cases := []struct {
+		name    string
+		user    User
+		order   Order
+		payment Payment
+	}{
+		{
+			name: "user creates account",
+			user: User{Name: "Alice", Email: "alice@example.com"},
+		},
+		{
+			name:  "order is placed",
+			order: Order{Product: "Widget", Amount: 29.99},
+		},
+		{
+			name: "user updates profile",
+			user: User{Name: "Alice Updated", Email: "alice.new@example.com"},
+		},
+		{
+			name:    "payment is processed",
+			payment: Payment{OrderID: "ord-1", Method: "credit_card", Status: "success"},
+		},
+		{
+			name:  "order is cancelled",
+			order: Order{Product: "Gadget", Amount: 49.99},
+		},
+		{
+			name:    "payment is refunded",
+			payment: Payment{OrderID: "ord-2", Method: "paypal", Status: "refunded"},
+		},
+		{
+			name: "user is deleted",
+			user: User{Name: "Bob", Email: "bob@example.com"},
+		},
+	}
 
-type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveTableDrivenTestsMixMultipleDomainsInOneCasesSlice(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceDTO) error {
-    tests := []struct {
-        name string
-        user string
-        order string
-    }{
-        {"user creates account", "user1", ""},
-        {"order is placed", "", "order1"},
-        {"user deletes account", "user2", ""},
-    }
-    _ = tests
-    _ = db.Where("id = ?", input).Find(&items)
-    return nil
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Anti-pattern: branching logic to handle multiple unrelated domains
+			if tc.user.Name != "" {
+				assert.NotEmpty(t, tc.user.Email)
+			}
+			if tc.order.Product != "" {
+				assert.Greater(t, tc.order.Amount, 0.0)
+			}
+			if tc.payment.OrderID != "" {
+				assert.Contains(t, []string{"success", "refunded", "pending"}, tc.payment.Status)
+			}
+		})
+	}
 }

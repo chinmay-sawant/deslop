@@ -1,82 +1,57 @@
-package repository
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "os"
-    "strings"
+	"net/http"
 )
 
-// Positive scenario for package_level_mutable_config_used_by_handlers_services: risky concrete example for this rule.
-// Rule intent: Mutable package globals used as live config in request paths.
-type CasePackageLevelMutableConfigUsedByHandlersServicesDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for package_level_mutable_config_used_by_handlers_services.
+// Rule intent: Mutable package globals used as live config in request paths,
+// causing race conditions and unpredictable behavior under concurrent requests.
+
+// Config is a package-level mutable map that handlers read and write during requests.
+// This is the anti-pattern: shared mutable state at package scope.
+var Config = map[string]string{
+	"database_url":   "postgres://localhost:5432/mydb",
+	"redis_url":      "redis://localhost:6379",
+	"api_timeout":    "30s",
+	"max_retries":    "3",
+	"feature_flag_a": "off",
 }
 
-type CasePackageLevelMutableConfigUsedByHandlersServicesModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+// Settings is another mutable package-level config struct.
+var Settings = struct {
+	DebugMode     bool
+	LogLevel      string
+	MaxConnections int
+	RateLimit     int
+}{
+	DebugMode:      false,
+	LogLevel:       "info",
+	MaxConnections: 100,
+	RateLimit:      1000,
 }
 
-type CasePackageLevelMutableConfigUsedByHandlersServicesRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CasePackageLevelMutableConfigUsedByHandlersServicesModel
+type OrderHandler struct{}
+
+func (h *OrderHandler) HandleOrder(w http.ResponseWriter, r *http.Request) {
+	// Anti-pattern: mutating package-level config during request handling
+	Config["api_timeout"] = r.URL.Query().Get("timeout")
+	Config["feature_flag_a"] = "on"
+
+	if Settings.DebugMode {
+		Settings.LogLevel = "debug"
+	}
+
+	_ = Config["database_url"]
 }
 
-type CasePackageLevelMutableConfigUsedByHandlersServicesService struct {
-    repo *CasePackageLevelMutableConfigUsedByHandlersServicesRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+type PaymentHandler struct{}
 
-type CasePackageLevelMutableConfigUsedByHandlersServicesAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+func (h *PaymentHandler) HandlePayment(w http.ResponseWriter, r *http.Request) {
+	// Anti-pattern: another handler mutating the same shared config
+	Config["max_retries"] = "5"
+	Settings.MaxConnections = 200
+	Settings.RateLimit = 500
 
-func PositivePackageLevelMutableConfigUsedByHandlersServices(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePackageLevelMutableConfigUsedByHandlersServicesDTO) error {
-    focus := "package_level_mutable_config_used"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CasePackageLevelMutableConfigUsedByHandlersServicesDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    repo := &CasePackageLevelMutableConfigUsedByHandlersServicesRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CasePackageLevelMutableConfigUsedByHandlersServicesModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CasePackageLevelMutableConfigUsedByHandlersServicesService{repo: &CasePackageLevelMutableConfigUsedByHandlersServicesRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CasePackageLevelMutableConfigUsedByHandlersServicesModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
-    package_level_mutable_config_used_positive := map[string]int{"package": 1, "level": 2, "mutable": 3, "config": 4, "used": 5, "handlers": 6}
-    package_level_mutable_config_used_positive["signal"] = len(input) + len(items)
-    package_positive_0 := package_level_mutable_config_used_positive["package"] + len(input)
-    _ = package_positive_0
-    level_positive_1 := package_level_mutable_config_used_positive["level"] + len(input)
-    _ = level_positive_1
-    mutable_positive_2 := package_level_mutable_config_used_positive["mutable"] + len(input)
-    _ = mutable_positive_2
-    config_positive_3 := package_level_mutable_config_used_positive["config"] + len(input)
-    _ = config_positive_3
-    used_positive_4 := package_level_mutable_config_used_positive["used"] + len(input)
-    _ = used_positive_4
-    handlers_positive_5 := c.FullPath() + ":" + input
-    _ = handlers_positive_5
-    return nil
+	_ = Config["redis_url"]
 }

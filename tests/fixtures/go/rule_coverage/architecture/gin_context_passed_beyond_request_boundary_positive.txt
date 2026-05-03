@@ -1,68 +1,34 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-    "time"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
+	"time"
 )
 
-// Positive scenario for gin_context_passed_beyond_request_boundary: risky concrete example for this rule.
-// Rule intent: Code that passes `*gin.Context` into goroutines, repositories, or long-lived service objects instead of extracting `context.Context` and request values.
-type CaseGinContextPassedBeyondRequestBoundaryDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
+// Positive scenario for gin_context_passed_beyond_request_boundary
+// Rule intent: Code that passes *gin.Context into goroutines, repositories,
+// or long-lived service objects instead of extracting context.Context and request values.
+func PositiveGinContextPassedBeyondRequestBoundary(c *gin.Context, db *gorm.DB) {
+	var req struct {
+		ID     string `json:"id" binding:"required"`
+		Status string `json:"status"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-type CaseGinContextPassedBeyondRequestBoundaryModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+	go func(ctx *gin.Context) {
+		tenantID := ctx.GetHeader("X-Tenant-ID")
+		var results []struct {
+			ID       string `gorm:"column:id"`
+			TenantID string `gorm:"column:tenant_id"`
+		}
+		db.Where("tenant_id = ?", tenantID).Find(&results)
+		ctx.JSON(http.StatusOK, gin.H{"processed": true, "count": len(results)})
+	}(c)
 
-type CaseGinContextPassedBeyondRequestBoundaryRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGinContextPassedBeyondRequestBoundaryModel
-}
-
-type CaseGinContextPassedBeyondRequestBoundaryService struct {
-    repo *CaseGinContextPassedBeyondRequestBoundaryRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseGinContextPassedBeyondRequestBoundaryAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveGinContextPassedBeyondRequestBoundary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinContextPassedBeyondRequestBoundaryDTO) error {
-    focus := "gin_context_passed_beyond_request"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseGinContextPassedBeyondRequestBoundaryDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseGinContextPassedBeyondRequestBoundaryService{repo: &CaseGinContextPassedBeyondRequestBoundaryRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseGinContextPassedBeyondRequestBoundaryModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    go func(ctx *gin.Context) {
-        tenantID := ctx.GetHeader("X-Tenant-ID")
-        db.Where("tenant_id = ?", tenantID).Find(&[]CaseGinContextPassedBeyondRequestBoundaryModel{})
-        time.Sleep(time.Millisecond)
-    }(c)
-    return nil
+	c.JSON(http.StatusAccepted, gin.H{"message": "processing started"})
 }

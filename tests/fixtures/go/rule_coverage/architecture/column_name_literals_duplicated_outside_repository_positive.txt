@@ -1,52 +1,54 @@
-package repository
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for column_name_literals_duplicated_outside_repository: risky concrete example for this rule.
+// Positive scenario for column_name_literals_duplicated_outside_repository.
 // Rule intent: Repeated column-name strings outside repository or query packages.
-type CaseColumnNameLiteralsDuplicatedOutsideRepositoryDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Raw column literals like "deleted_at IS NULL" appear in both handler and service layers.
+
+type Article struct {
+	ID        uint      `gorm:"primaryKey"`
+	Title     string    `gorm:"column:title"`
+	Content   string    `gorm:"column:content"`
+	Published bool      `gorm:"column:published"`
+	DeletedAt time.Time `gorm:"column:deleted_at"`
+	CreatedAt time.Time `gorm:"column:created_at"`
 }
 
-type CaseColumnNameLiteralsDuplicatedOutsideRepositoryModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+// Handler layer using raw column literals
+func GetActiveArticlesHandler(c *gin.Context, db *gorm.DB) {
+	var articles []Article
+	db.Where("deleted_at IS NULL").
+		Where("published = ?", true).
+		Where("created_at > ?", time.Now().AddDate(0, -1, 0)).
+		Find(&articles)
+	c.JSON(http.StatusOK, articles)
 }
 
-type CaseColumnNameLiteralsDuplicatedOutsideRepositoryRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseColumnNameLiteralsDuplicatedOutsideRepositoryModel
+func SearchArticlesHandler(c *gin.Context, db *gorm.DB) {
+	query := c.Query("q")
+	var articles []Article
+	db.Where("deleted_at IS NULL").
+		Where("title LIKE ? OR content LIKE ?", "%"+query+"%", "%"+query+"%").
+		Find(&articles)
+	c.JSON(http.StatusOK, articles)
 }
 
-type CaseColumnNameLiteralsDuplicatedOutsideRepositoryService struct {
-    repo *CaseColumnNameLiteralsDuplicatedOutsideRepositoryRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// Service layer also using the same raw column literals
+func GetArticleByID(id uint, db *gorm.DB) (*Article, error) {
+	var article Article
+	err := db.Where("id = ? AND deleted_at IS NULL", id).First(&article).Error
+	return &article, err
 }
 
-type CaseColumnNameLiteralsDuplicatedOutsideRepositoryAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveColumnNameLiteralsDuplicatedOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseColumnNameLiteralsDuplicatedOutsideRepositoryDTO) error {
-    db.Where("deleted_at IS NULL").Where("created_at > ?", "2024-01-01").Find(&[]CaseColumnNameLiteralsDuplicatedOutsideRepositoryModel{})
-    db.Where("updated_at < ?", "2024-06-01").Find(&[]CaseColumnNameLiteralsDuplicatedOutsideRepositoryModel{})
-    return nil
+func ArchiveArticle(id uint, db *gorm.DB) error {
+	return db.Model(&Article{}).
+		Where("id = ? AND deleted_at IS NULL", id).
+		Update("deleted_at", time.Now()).Error
 }

@@ -1,59 +1,88 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for api_examples_embedded_in_handlers_instead_of_transport_docs_helpers: risky concrete example for this rule.
-// Rule intent: Long example payload blocks hardcoded in handlers rather than doc or example helpers.
-type CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for api_examples_embedded_in_handlers_instead_of_transport_docs_helpers.
+// Rule intent: Long example payload blocks should live in docs or example helpers,
+// not hardcoded as comments inside handler functions.
+// Anti-pattern: Request/response examples embedded directly in handler comments.
+
+type UserHandler struct{}
+
+// CreateUser handles POST /users
+//
+// Example: POST /users
+// Request:
+//
+//	{
+//	  "name": "John Doe",
+//	  "email": "john@example.com",
+//	  "role": "admin",
+//	  "metadata": {
+//	    "department": "engineering",
+//	    "location": "NYC"
+//	  }
+//	}
+//
+// Response 201:
+//
+//	{
+//	  "id": "usr_123",
+//	  "name": "John Doe",
+//	  "email": "john@example.com",
+//	  "role": "admin",
+//	  "created_at": "2024-01-15T10:30:00Z"
+//	}
+//
+// Response 400:
+//
+//	{
+//	  "error": "validation_failed",
+//	  "fields": ["email"]
+//	}
+func (h *UserHandler) CreateUser(c *gin.Context) {
+	var req struct {
+		Name  string `json:"name" binding:"required"`
+		Email string `json:"email" binding:"required,email"`
+		Role  string `json:"role" binding:"oneof=admin user moderator"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "validation_failed"})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"id": "usr_123", "name": req.Name})
 }
 
-type CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
-
-type CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersModel
-}
-
-type CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersService struct {
-    repo *CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersDTO) error {
-    // Example: POST /api/users
-    // Request: {"name": "John", "email": "john@example.com"}
-    // Response 201: {"id": "123", "name": "John", "email": "john@example.com"}
-    var req CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersDTO
-    if err := c.ShouldBindJSON(&req); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return nil
-    }
-    c.JSON(http.StatusCreated, gin.H{"id": input, "name": req.TenantID})
-    return nil
+// UpdateOrder handles PATCH /orders/:id
+//
+// Example: PATCH /orders/ord_456
+// Request:
+//
+//	{
+//	  "status": "shipped",
+//	  "tracking_number": "1Z999AA10123456784",
+//	  "carrier": "ups"
+//	}
+//
+// Response 200:
+//
+//	{
+//	  "id": "ord_456",
+//	  "status": "shipped",
+//	  "tracking_number": "1Z999AA10123456784"
+//	}
+func (h *UserHandler) UpdateOrder(c *gin.Context) {
+	var req struct {
+		Status         string `json:"status" binding:"required"`
+		TrackingNumber string `json:"tracking_number"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"id": c.Param("id"), "status": req.Status})
 }

@@ -1,69 +1,40 @@
-package rulecoverage
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "os"
-    "strings"
+	"net/http"
+	"os"
 )
 
-// Positive scenario for feature_flag_lookup_without_config_abstraction: risky concrete example for this rule.
-// Rule intent: Handlers or services that query feature flags directly without a focused flag interface.
-type CaseFeatureFlagLookupWithoutConfigAbstractionDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for feature_flag_lookup_without_config_abstraction.
+// Rule intent: Handlers or services that query feature flags directly via
+// os.Getenv instead of using a focused flag interface or config abstraction.
+
+type CheckoutHandler struct{}
+
+func (h *CheckoutHandler) ProcessCheckout(w http.ResponseWriter, r *http.Request) {
+	// Anti-pattern: direct os.Getenv for feature flags scattered in handler logic
+	if os.Getenv("FEATURE_NEW_CHECKOUT") == "enabled" {
+		h.processNewCheckout(w, r)
+		return
+	}
+	h.processLegacyCheckout(w, r)
 }
 
-type CaseFeatureFlagLookupWithoutConfigAbstractionModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func (h *CheckoutHandler) GetPaymentMethods(w http.ResponseWriter, r *http.Request) {
+	// Anti-pattern: another direct env lookup for a different flag
+	useStripe := os.Getenv("FEATURE_STRIPE") == "true"
+	usePaypal := os.Getenv("FEATURE_PAYPAL") == "true"
+	_ = useStripe
+	_ = usePaypal
 }
 
-type CaseFeatureFlagLookupWithoutConfigAbstractionRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseFeatureFlagLookupWithoutConfigAbstractionModel
+func (h *CheckoutHandler) ApplyDiscount(w http.ResponseWriter, r *http.Request) {
+	// Anti-pattern: yet another direct env lookup
+	if os.Getenv("FEATURE_DYNAMIC_PRICING") == "on" {
+		h.applyDynamicDiscount(w, r)
+	}
 }
 
-type CaseFeatureFlagLookupWithoutConfigAbstractionService struct {
-    repo *CaseFeatureFlagLookupWithoutConfigAbstractionRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseFeatureFlagLookupWithoutConfigAbstractionAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveFeatureFlagLookupWithoutConfigAbstraction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFeatureFlagLookupWithoutConfigAbstractionDTO) error {
-    focus := "feature_flag_lookup_without_config"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseFeatureFlagLookupWithoutConfigAbstractionDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    repo := &CaseFeatureFlagLookupWithoutConfigAbstractionRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseFeatureFlagLookupWithoutConfigAbstractionModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseFeatureFlagLookupWithoutConfigAbstractionService{repo: &CaseFeatureFlagLookupWithoutConfigAbstractionRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseFeatureFlagLookupWithoutConfigAbstractionModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
-    if os.Getenv("DARK_MODE") == "true" { input = input + ":dark" }
-    return nil
-}
+func (h *CheckoutHandler) processNewCheckout(w http.ResponseWriter, r *http.Request) {}
+func (h *CheckoutHandler) processLegacyCheckout(w http.ResponseWriter, r *http.Request) {}
+func (h *CheckoutHandler) applyDynamicDiscount(w http.ResponseWriter, r *http.Request) {}

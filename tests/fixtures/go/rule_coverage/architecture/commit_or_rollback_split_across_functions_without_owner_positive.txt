@@ -1,59 +1,34 @@
 package rulecoverage
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for commit_or_rollback_split_across_functions_without_owner: risky concrete example for this rule.
+// Positive scenario for commit_or_rollback_split_across_functions_without_owner.
 // Rule intent: Transaction end-state logic spread across helper functions with unclear ownership.
-type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type SplitTxModel struct {
+	ID     string `gorm:"column:id" json:"id"`
+	Status string `gorm:"column:status" json:"status"`
 }
 
-type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func commitTx(tx *gorm.DB) {
+	tx.Commit()
 }
 
-type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerModel
+func rollbackTx(tx *gorm.DB) {
+	tx.Rollback()
 }
 
-type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerService struct {
-    repo *CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+func PositiveCommitOrRollbackSplitAcrossFunctionsWithoutOwner(c *gin.Context, db *gorm.DB, input string) error {
+	tx := db.Begin()
+	tx.Create(&SplitTxModel{ID: input, Status: "pending"})
 
-type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	if input == "" {
+		rollbackTx(tx)
+		return nil
+	}
 
-func PositiveCommitOrRollbackSplitAcrossFunctionsWithoutOwner(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerDTO) error {
-    commitFn := func(tx *gorm.DB) { tx.Commit() }
-    rollbackFn := func(tx *gorm.DB) { tx.Rollback() }
-    tx := db.Begin()
-    tx.Create(&CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerModel{ID: input})
-    if input == "" {
-        rollbackFn(tx)
-    } else {
-        commitFn(tx)
-    }
-    return nil
+	commitTx(tx)
+	return nil
 }

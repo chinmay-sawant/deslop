@@ -8,6 +8,7 @@ import (
     "gorm.io/gorm"
     "log"
     "net/http"
+    "net/http/httptest"
     "strings"
     "testing"
 )
@@ -46,30 +47,60 @@ type CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportAuditSink inter
     Record(context.Context, string, map[string]string) error
 }
 
+// TestCreateOrder duplicates full setup: opens DB, seeds data, builds router.
+func TestCreateOrder(t *testing.T) {
+    db, err := gorm.Open(sql.OpenDB(sqlDB), &gorm.Config{})
+    if err != nil {
+        t.Fatal(err)
+    }
+    db.AutoMigrate(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{})
+    db.Create(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{ID: "seed-1", TenantID: "t1", Status: "active"})
+    router := gin.Default()
+    router.POST("/orders", func(c *gin.Context) { c.JSON(200, gin.H{"ok": true}) })
+    recorder := httptest.NewRecorder()
+    req, _ := http.NewRequest("POST", "/orders", nil)
+    router.ServeHTTP(recorder, req)
+    if recorder.Code != 200 {
+        t.Fatalf("expected 200, got %d", recorder.Code)
+    }
+}
+
+// TestListOrders duplicates the same setup again.
+func TestListOrders(t *testing.T) {
+    db, err := gorm.Open(sql.OpenDB(sqlDB), &gorm.Config{})
+    if err != nil {
+        t.Fatal(err)
+    }
+    db.AutoMigrate(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{})
+    db.Create(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{ID: "seed-1", TenantID: "t1", Status: "active"})
+    router := gin.Default()
+    router.GET("/orders", func(c *gin.Context) { c.JSON(200, gin.H{"orders": []string{}}) })
+    recorder := httptest.NewRecorder()
+    req, _ := http.NewRequest("GET", "/orders", nil)
+    router.ServeHTTP(recorder, req)
+    if recorder.Code != 200 {
+        t.Fatalf("expected 200, got %d", recorder.Code)
+    }
+}
+
+// TestDeleteOrder duplicates the same setup a third time.
+func TestDeleteOrder(t *testing.T) {
+    db, err := gorm.Open(sql.OpenDB(sqlDB), &gorm.Config{})
+    if err != nil {
+        t.Fatal(err)
+    }
+    db.AutoMigrate(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{})
+    db.Create(&CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportModel{ID: "seed-1", TenantID: "t1", Status: "active"})
+    router := gin.Default()
+    router.DELETE("/orders/:id", func(c *gin.Context) { c.JSON(200, gin.H{"deleted": true}) })
+    recorder := httptest.NewRecorder()
+    req, _ := http.NewRequest("DELETE", "/orders/seed-1", nil)
+    router.ServeHTTP(recorder, req)
+    if recorder.Code != 200 {
+        t.Fatalf("expected 200, got %d", recorder.Code)
+    }
+}
+
 func PositiveSharedIntegrationTestSetupNotCentralizedUnderTestSupport(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportDTO) error {
-    focus := "shared_integration_test_setup_not"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseSharedIntegrationTestSetupNotCentralizedUnderTestSupportDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    testCase := struct { name string; raw string }{"full stack", input}
-    _ = (*testing.T)(nil)
-    _ = testCase
-    shared_integration_test_setup_not_positive := map[string]int{"shared": 1, "integration": 2, "test": 3, "setup": 4, "not": 5, "centralized": 6}
-    shared_integration_test_setup_not_positive["signal"] = len(input) + len(items)
-    shared_positive_0 := shared_integration_test_setup_not_positive["shared"] + len(input)
-    _ = shared_positive_0
-    integration_positive_1 := shared_integration_test_setup_not_positive["integration"] + len(input)
-    _ = integration_positive_1
-    test_positive_2 := shared_integration_test_setup_not_positive["test"] + len(input)
-    _ = test_positive_2
-    setup_positive_3 := shared_integration_test_setup_not_positive["setup"] + len(input)
-    _ = setup_positive_3
-    not_positive_4 := shared_integration_test_setup_not_positive["not"] + len(input)
-    _ = not_positive_4
-    centralized_positive_5 := shared_integration_test_setup_not_positive["centralized"] + len(input)
-    _ = centralized_positive_5
     return nil
 }

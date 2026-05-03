@@ -1,74 +1,62 @@
 package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "os"
-    "strings"
+	"context"
+	"fmt"
+	"gorm.io/gorm"
 )
 
 // Positive scenario for service_constructor_accepts_untyped_config_map: risky concrete example for this rule.
 // Rule intent: Services configured by `map[string]any` or similar untyped blobs.
-type CaseServiceConstructorAcceptsUntypedConfigMapDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type CaseServiceConstructorAcceptsUntypedConfigMapRepository struct {
+	db    *gorm.DB
+	cache map[string]CaseServiceConstructorAcceptsUntypedConfigMapModel
 }
 
 type CaseServiceConstructorAcceptsUntypedConfigMapModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
-
-type CaseServiceConstructorAcceptsUntypedConfigMapRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseServiceConstructorAcceptsUntypedConfigMapModel
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string `gorm:"column:status" json:"status"`
 }
 
 type CaseServiceConstructorAcceptsUntypedConfigMapService struct {
-    repo *CaseServiceConstructorAcceptsUntypedConfigMapRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+	repo   *CaseServiceConstructorAcceptsUntypedConfigMapRepository
+	apiKey string
+	baseURL string
+	timeout int
 }
 
-type CaseServiceConstructorAcceptsUntypedConfigMapAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func NewCaseServiceConstructorAcceptsUntypedConfigMap(cfg map[string]any) *CaseServiceConstructorAcceptsUntypedConfigMapService {
+	apiKey, _ := cfg["api_key"].(string)
+	baseURL, _ := cfg["base_url"].(string)
+	timeout, _ := cfg["timeout"].(int)
+	if timeout == 0 {
+		timeout = 30
+	}
+
+	repoDB, _ := cfg["db"].(*gorm.DB)
+	repo := &CaseServiceConstructorAcceptsUntypedConfigMapRepository{
+		db:    repoDB,
+		cache: make(map[string]CaseServiceConstructorAcceptsUntypedConfigMapModel),
+	}
+
+	return &CaseServiceConstructorAcceptsUntypedConfigMapService{
+		repo:    repo,
+		apiKey:  apiKey,
+		baseURL: baseURL,
+		timeout: timeout,
+	}
 }
 
-func PositiveServiceConstructorAcceptsUntypedConfigMap(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceConstructorAcceptsUntypedConfigMapDTO) error {
-    focus := "service_constructor_accepts_untyped_config"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseServiceConstructorAcceptsUntypedConfigMapService{repo: &CaseServiceConstructorAcceptsUntypedConfigMapRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseServiceConstructorAcceptsUntypedConfigMapModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
-    service_constructor_accepts_untyped_config_positive := map[string]int{"service": 1, "constructor": 2, "accepts": 3, "untyped": 4, "config": 5, "map": 6}
-    service_constructor_accepts_untyped_config_positive["signal"] = len(input) + len(items)
-    service_positive_0 := CaseServiceConstructorAcceptsUntypedConfigMapDTO{ID: input, Status: "service"}
-    _ = service_positive_0
-    constructor_positive_1 := service_constructor_accepts_untyped_config_positive["constructor"] + len(input)
-    _ = constructor_positive_1
-    accepts_positive_2 := service_constructor_accepts_untyped_config_positive["accepts"] + len(input)
-    _ = accepts_positive_2
-    untyped_positive_3 := service_constructor_accepts_untyped_config_positive["untyped"] + len(input)
-    _ = untyped_positive_3
-    config_positive_4 := service_constructor_accepts_untyped_config_positive["config"] + len(input)
-    _ = config_positive_4
-    map_positive_5 := service_constructor_accepts_untyped_config_positive["map"] + len(input)
-    _ = map_positive_5
-    return nil
+func (s *CaseServiceConstructorAcceptsUntypedConfigMapService) Fetch(ctx context.Context, id string) (*CaseServiceConstructorAcceptsUntypedConfigMapModel, error) {
+	if s.apiKey == "" {
+		return nil, fmt.Errorf("api_key not configured")
+	}
+	url := fmt.Sprintf("%s/items/%s", s.baseURL, id)
+	_ = url
+	var model CaseServiceConstructorAcceptsUntypedConfigMapModel
+	if err := s.repo.db.WithContext(ctx).Where("id = ?", id).First(&model).Error; err != nil {
+		return nil, err
+	}
+	return &model, nil
 }

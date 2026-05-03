@@ -1,59 +1,60 @@
-package handler
+package handler_test
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-    "testing"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
-// Positive scenario for tests_assert_raw_json_strings_without_response_dto: risky concrete example for this rule.
+// Positive scenario for tests_assert_raw_json_strings_without_response_dto.
 // Rule intent: Brittle raw-JSON string assertions when typed response DTOs exist.
-type CaseTestsAssertRawJsonStringsWithoutResponseDtoDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+
+type UserResponse struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
-type CaseTestsAssertRawJsonStringsWithoutResponseDtoModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func GetUserHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, UserResponse{
+		ID:    "123",
+		Name:  "John",
+		Email: "john@example.com",
+	})
 }
 
-type CaseTestsAssertRawJsonStringsWithoutResponseDtoRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseTestsAssertRawJsonStringsWithoutResponseDtoModel
+func TestGetUserHandler_AssertsRawJSON(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+
+	c.Request = httptest.NewRequest(http.MethodGet, "/users/123", nil)
+	GetUserHandler(c)
+
+	body := w.Body.String()
+
+	// Anti-pattern: asserting raw JSON strings instead of unmarshaling into a typed DTO
+	assert.Contains(t, body, `"name":"John"`)
+	assert.Contains(t, body, `"email":"john@example.com"`)
+	assert.Contains(t, body, `"id":"123"`)
+	assert.True(t, strings.Contains(body, `"name":`) && strings.Contains(body, `"John"`))
 }
 
-type CaseTestsAssertRawJsonStringsWithoutResponseDtoService struct {
-    repo *CaseTestsAssertRawJsonStringsWithoutResponseDtoRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+func TestCreateUserHandler_AssertsRawJSON(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
 
-type CaseTestsAssertRawJsonStringsWithoutResponseDtoAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	c.Request = httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(`{"name":"Jane"}`))
+	c.Request.Header.Set("Content-Type", "application/json")
 
-func PositiveTestsAssertRawJsonStringsWithoutResponseDto(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestsAssertRawJsonStringsWithoutResponseDtoDTO) error {
-    bodyString := `{"name":""}`
-    if len(input) > 0 {
-        bodyString = `{"name":"` + input + `"}`
-    }
-    _ = bodyString
-    _ = c
-    _ = db.Where("id = ?", input).Find(&items)
-    return nil
+	body := w.Body.String()
+
+	// Anti-pattern: raw substring matching on JSON instead of DTO-based assertions
+	assert.True(t, strings.Contains(body, `"message"`))
+	assert.Contains(t, body, `"created"`)
 }

@@ -1,56 +1,66 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for repository_returns_transport_dto: risky concrete example for this rule.
-// Rule intent: Repositories that know about response contracts instead of returning persistence or domain results.
-type CaseRepositoryReturnsTransportDtoDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Repository returns a transport DTO with json: tags
+// instead of returning domain models or persistence entities.
+
+// UserResponse is a transport DTO meant for HTTP responses.
+type UserResponse struct {
+	ID        string `json:"id"`
+	FullName  string `json:"full_name"`
+	Email     string `json:"email"`
+	IsAdmin   bool   `json:"is_admin"`
+	CreatedAt string `json:"created_at"`
 }
 
-type CaseRepositoryReturnsTransportDtoModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type User struct {
+	ID        string `gorm:"column:id"`
+	FirstName string `gorm:"column:first_name"`
+	LastName  string `gorm:"column:last_name"`
+	Email     string `gorm:"column:email"`
+	IsAdmin   bool   `gorm:"column:is_admin"`
+	CreatedAt string `gorm:"column:created_at"`
+	Password  string `gorm:"column:password"`
 }
 
-type CaseRepositoryReturnsTransportDtoRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRepositoryReturnsTransportDtoModel
+type UserRepository struct {
+	db *gorm.DB
 }
 
-type CaseRepositoryReturnsTransportDtoService struct {
-    repo *CaseRepositoryReturnsTransportDtoRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// FindByID returns a transport DTO - anti-pattern.
+// The repository should return the domain model, not an HTTP response shape.
+func (r *UserRepository) FindByID(id string) (*UserResponse, error) {
+	var user User
+	if err := r.db.First(&user, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return &UserResponse{
+		ID:        user.ID,
+		FullName:  user.FirstName + " " + user.LastName,
+		Email:     user.Email,
+		IsAdmin:   user.IsAdmin,
+		CreatedAt: user.CreatedAt,
+	}, nil
 }
 
-type CaseRepositoryReturnsTransportDtoAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveRepositoryReturnsTransportDto(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsTransportDtoDTO) error {
-
-    var model CaseRepositoryReturnsTransportDtoModel
-    if err := db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
-        return CaseRepositoryReturnsTransportDtoDTO{}, err
-    }
-    return CaseRepositoryReturnsTransportDtoDTO{ID: model.ID, TenantID: model.TenantID, Status: model.Status}, nil
+// List returns a slice of transport DTOs - anti-pattern.
+func (r *UserRepository) List() ([]UserResponse, error) {
+	var users []User
+	if err := r.db.Find(&users).Error; err != nil {
+		return nil, err
+	}
+	responses := make([]UserResponse, len(users))
+	for i, u := range users {
+		responses[i] = UserResponse{
+			ID:        u.ID,
+			FullName:  u.FirstName + " " + u.LastName,
+			Email:     u.Email,
+			IsAdmin:   u.IsAdmin,
+			CreatedAt: u.CreatedAt,
+		}
+	}
+	return responses, nil
 }

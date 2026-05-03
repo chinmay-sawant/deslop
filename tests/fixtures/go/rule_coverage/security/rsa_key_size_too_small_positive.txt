@@ -2,6 +2,8 @@ package rulecoverage
 
 import (
     "context"
+    "crypto/rand"
+    "crypto/rsa"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"

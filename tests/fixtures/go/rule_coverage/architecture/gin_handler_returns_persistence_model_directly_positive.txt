@@ -1,54 +1,33 @@
-package models
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"database/sql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
 )
 
-// Positive scenario for gin_handler_returns_persistence_model_directly: risky concrete example for this rule.
-// Rule intent: Handlers that serialize database models directly to the client instead of mapping to response DTOs.
-type CaseGinHandlerReturnsPersistenceModelDirectlyDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for gin_handler_returns_persistence_model_directly
+// Rule intent: Handlers that serialize database models directly to the client
+// instead of mapping to response DTOs.
+type OrderModel struct {
+	ID        uint         `gorm:"primaryKey" json:"id"`
+	UserID    uint         `gorm:"column:user_id" json:"user_id"`
+	Amount    int          `gorm:"column:amount" json:"amount"`
+	Status    string       `gorm:"column:status" json:"status"`
+	Internal  string       `gorm:"column:internal_notes" json:"internal_notes"`
+	DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type CaseGinHandlerReturnsPersistenceModelDirectlyModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+func PositiveGinHandlerReturnsPersistenceModelDirectly(c *gin.Context, db *gorm.DB) {
+	id := c.Param("id")
 
-type CaseGinHandlerReturnsPersistenceModelDirectlyRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGinHandlerReturnsPersistenceModelDirectlyModel
-}
+	var model OrderModel
+	if err := db.Where("id = ?", id).First(&model).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "order not found"})
+		return
+	}
 
-type CaseGinHandlerReturnsPersistenceModelDirectlyService struct {
-    repo *CaseGinHandlerReturnsPersistenceModelDirectlyRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseGinHandlerReturnsPersistenceModelDirectlyAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveGinHandlerReturnsPersistenceModelDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerReturnsPersistenceModelDirectlyDTO) error {
-    var model CaseGinHandlerReturnsPersistenceModelDirectlyModel
-    db.Where("id = ?", input).First(&model)
-    c.JSON(http.StatusOK, model)
-    return nil
+	c.JSON(http.StatusOK, model)
 }

@@ -1,56 +1,65 @@
 package main
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"log"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for cmd_or_main_contains_domain_rules: risky concrete example for this rule.
-// Rule intent: `main` or `cmd` packages that contain business-rule branches instead of wiring and startup concerns.
-type CaseCmdOrMainContainsDomainRulesDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for cmd_or_main_contains_domain_rules.
+// Rule intent: main or cmd packages that contain business-rule branches instead of wiring and startup concerns.
+// Anti-pattern: Business logic (discount rules, approval thresholds) embedded in main.go.
+
+type Order struct {
+	ID       uint    `gorm:"primaryKey"`
+	Total    float64 `gorm:"column:total"`
+	Status   string  `gorm:"column:status"`
+	Customer string  `gorm:"column:customer"`
 }
 
-type CaseCmdOrMainContainsDomainRulesModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func ApplyDiscount(order *Order) {
+	if order.Total > 1000 {
+		order.Total *= 0.9
+		log.Printf("applied 10%% bulk discount, new total: %.2f", order.Total)
+	}
+	if order.Total > 5000 {
+		order.Total *= 0.95
+		log.Printf("applied additional 5%% VIP discount, new total: %.2f", order.Total)
+	}
 }
 
-type CaseCmdOrMainContainsDomainRulesRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseCmdOrMainContainsDomainRulesModel
+func DetermineApprovalLevel(order *Order) string {
+	if order.Total < 100 {
+		return "auto-approved"
+	}
+	if order.Total < 1000 {
+		return "manager-approval"
+	}
+	if order.Total < 10000 {
+		return "director-approval"
+	}
+	return "executive-approval"
 }
 
-type CaseCmdOrMainContainsDomainRulesService struct {
-    repo *CaseCmdOrMainContainsDomainRulesRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+func main() {
+	r := gin.Default()
 
-type CaseCmdOrMainContainsDomainRulesAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	r.POST("/orders", func(c *gin.Context, db *gorm.DB) {
+		var order Order
+		if err := c.ShouldBindJSON(&order); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-func PositiveCmdOrMainContainsDomainRules(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCmdOrMainContainsDomainRulesDTO) error {
-    var model CaseCmdOrMainContainsDomainRulesModel
-    db.Where("id = ?", input).First(&model)
-    if model.Status == "confirmed" {
-        log.Printf("order %s is confirmed, applying discount", model.ID)
-        db.Model(&model).Update("amount", 100)
-    }
-    return nil
+		// Domain rules in main package instead of a service layer
+		ApplyDiscount(&order)
+		order.Status = DetermineApprovalLevel(&order)
+
+		db.Create(&order)
+		c.JSON(http.StatusCreated, order)
+	})
+
+	r.Run(":8080")
 }

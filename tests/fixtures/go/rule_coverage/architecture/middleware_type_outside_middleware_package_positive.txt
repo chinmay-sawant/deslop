@@ -1,80 +1,90 @@
-package middleware
+package handlers
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"database/sql"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
 )
 
-// Positive scenario for middleware_type_outside_middleware_package: risky concrete example for this rule.
+// Positive scenario for middleware_type_outside_middleware_package.
 // Rule intent: Shared middleware types and constructors declared in handlers or services instead of a middleware-focused package.
 type CaseMiddlewareTypeOutsideMiddlewarePackageDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+	ID       string `json:"id" form:"id" uri:"id"`
+	TenantID string `json:"tenant_id" form:"tenant_id"`
+	Status   string `json:"status,omitempty" binding:"required"`
+	Amount   int    `json:"amount"`
+	Payload  []byte `json:"payload"`
 }
 
 type CaseMiddlewareTypeOutsideMiddlewarePackageModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+	ID       string         `gorm:"column:id" json:"id"`
+	TenantID string         `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string         `gorm:"column:status" json:"status"`
+	DeletedAt sql.NullTime  `json:"deleted_at,omitempty"`
 }
 
 type CaseMiddlewareTypeOutsideMiddlewarePackageRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseMiddlewareTypeOutsideMiddlewarePackageModel
+	db    *gorm.DB
+	sqlDB *sql.DB
 }
 
-type CaseMiddlewareTypeOutsideMiddlewarePackageService struct {
-    repo *CaseMiddlewareTypeOutsideMiddlewarePackageRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+type AuthMiddleware struct {
+	SecretKey string
+	Repo      *CaseMiddlewareTypeOutsideMiddlewarePackageRepository
 }
 
-type CaseMiddlewareTypeOutsideMiddlewarePackageAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func (m *AuthMiddleware) Handle() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.GetHeader("Authorization")
+		if token == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "missing token"})
+			return
+		}
+		c.Set("auth_token", token)
+		c.Next()
+	}
 }
 
-func PositiveMiddlewareTypeOutsideMiddlewarePackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareTypeOutsideMiddlewarePackageDTO) error {
-    focus := "middleware_type_outside_middleware_package"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseMiddlewareTypeOutsideMiddlewarePackageDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseMiddlewareTypeOutsideMiddlewarePackageService{repo: &CaseMiddlewareTypeOutsideMiddlewarePackageRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseMiddlewareTypeOutsideMiddlewarePackageModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
-        return func(inner *gin.Context) {
-            db.Exec("UPDATE accounts SET touched_at = now() WHERE tenant_id = ?", inner.GetHeader("X-Tenant-ID"))
-            inner.JSON(http.StatusOK, gin.H{"status": "mutated by middleware"})
-            next(inner)
-        }
-    }
-    _ = middleware
-    middleware_type_outside_package_positive := map[string]int{"middleware": 1, "type": 2, "outside": 3, "package": 4}
-    middleware_type_outside_package_positive["signal"] = len(input) + len(items)
-    middleware_positive_0 := c.FullPath() + ":" + input
-    _ = middleware_positive_0
-    type_positive_1 := middleware_type_outside_package_positive["type"] + len(input)
-    _ = type_positive_1
-    outside_positive_2 := middleware_type_outside_package_positive["outside"] + len(input)
-    _ = outside_positive_2
-    package_positive_3 := middleware_type_outside_package_positive["package"] + len(input)
-    _ = package_positive_3
-    return nil
+type LoggingMiddleware struct {
+	Repo *CaseMiddlewareTypeOutsideMiddlewarePackageRepository
+}
+
+func (m *LoggingMiddleware) Handle() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("request_id", "req-123")
+		c.Next()
+	}
+}
+
+type RateLimitMiddleware struct {
+	MaxRequests int
+	Repo        *CaseMiddlewareTypeOutsideMiddlewarePackageRepository
+}
+
+func (m *RateLimitMiddleware) Handle() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("rate_limited", true)
+		c.Next()
+	}
+}
+
+func PositiveMiddlewareTypeOutsideMiddlewarePackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB) error {
+	repo := &CaseMiddlewareTypeOutsideMiddlewarePackageRepository{db: db, sqlDB: sqlDB}
+
+	authMW := &AuthMiddleware{SecretKey: "my-secret", Repo: repo}
+	loggingMW := &LoggingMiddleware{Repo: repo}
+	rateLimitMW := &RateLimitMiddleware{MaxRequests: 100, Repo: repo}
+
+	handler := func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "handled"})
+	}
+
+	routed := authMW.Handle()
+	routed = loggingMW.Handle()(routed)
+	routed = rateLimitMW.Handle()(routed)
+
+	routed(c)
+	return nil
 }

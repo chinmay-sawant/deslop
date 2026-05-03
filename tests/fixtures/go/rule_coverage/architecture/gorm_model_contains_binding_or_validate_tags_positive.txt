@@ -1,53 +1,16 @@
-package repository
+package models
 
-import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-)
+import "time"
 
-// Positive scenario for gorm_model_contains_binding_or_validate_tags: risky concrete example for this rule.
-// Rule intent: GORM models that accumulate transport validation and binding concerns.
-type CaseGormModelContainsBindingOrValidateTagsDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
+// Anti-pattern: GORM model accumulates transport-layer binding and validation tags.
+// The persistence struct carries `binding:"required"` (Gin) and `validate:"..."` (go-playground/validator)
+// concerns that belong in a separate request DTO.
 
-type CaseGormModelContainsBindingOrValidateTagsModel struct {
-    ID string `gorm:"column:id" json:"id" binding:"required"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status" validate:"required"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
-
-type CaseGormModelContainsBindingOrValidateTagsRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGormModelContainsBindingOrValidateTagsModel
-}
-
-type CaseGormModelContainsBindingOrValidateTagsService struct {
-    repo *CaseGormModelContainsBindingOrValidateTagsRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseGormModelContainsBindingOrValidateTagsAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveGormModelContainsBindingOrValidateTags(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormModelContainsBindingOrValidateTagsDTO) error {
-    var model CaseGormModelContainsBindingOrValidateTagsModel
-    db.Where("id = ?", input).First(&model)
-    c.JSON(http.StatusOK, gin.H{"data": model})
-    return nil
+type User struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	Email     string    `gorm:"column:email;uniqueIndex" json:"email" binding:"required" validate:"required,email"`
+	Password  string    `gorm:"column:password" json:"-" binding:"required" validate:"required,min=8"`
+	Name      string    `gorm:"column:name" json:"name" binding:"required" validate:"required,min=2"`
+	Age       int       `gorm:"column:age" json:"age" validate:"omitempty,min=0,max=150"`
+	CreatedAt time.Time `gorm:"column:created_at" json:"created_at"`
 }

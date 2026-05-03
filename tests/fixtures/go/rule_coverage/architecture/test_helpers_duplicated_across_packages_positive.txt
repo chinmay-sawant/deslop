@@ -1,54 +1,99 @@
-package rulecoverage
+package handler_test
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-    "testing"
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for test_helpers_duplicated_across_packages: risky concrete example for this rule.
+// Positive scenario for test_helpers_duplicated_across_packages.
 // Rule intent: Near-identical helper builders or setup code duplicated across test packages.
-type CaseTestHelpersDuplicatedAcrossPackagesDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+
+// Anti-pattern: createTestRequest is duplicated — same helper exists in order_test.go below.
+func createTestRequest(t *testing.T, method, path string, body interface{}) *http.Request {
+	t.Helper()
+	var reader *bytes.Reader
+	if body != nil {
+		data, err := json.Marshal(body)
+		if err != nil {
+			t.Fatalf("failed to marshal body: %v", err)
+		}
+		reader = bytes.NewReader(data)
+	} else {
+		reader = bytes.NewReader(nil)
+	}
+	req := httptest.NewRequest(method, path, reader)
+	req.Header.Set("Content-Type", "application/json")
+	return req
 }
 
-type CaseTestHelpersDuplicatedAcrossPackagesModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func TestCreateUser(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+
+	c.Request = createTestRequest(t, http.MethodPost, "/users", map[string]string{
+		"name":  "Alice",
+		"email": "alice@example.com",
+	})
+
+	assertResponse := func(status int) {
+		if w.Code != status {
+			t.Errorf("expected status %d, got %d", status, w.Code)
+		}
+	}
+	assertResponse(http.StatusCreated)
 }
 
-type CaseTestHelpersDuplicatedAcrossPackagesRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseTestHelpersDuplicatedAcrossPackagesModel
+
+package order_test
+
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Anti-pattern: createTestRequest is DUPLICATED — identical to the one in handler_test above.
+func createTestRequest(t *testing.T, method, path string, body interface{}) *http.Request {
+	t.Helper()
+	var reader *bytes.Reader
+	if body != nil {
+		data, err := json.Marshal(body)
+		if err != nil {
+			t.Fatalf("failed to marshal body: %v", err)
+		}
+		reader = bytes.NewReader(data)
+	} else {
+		reader = bytes.NewReader(nil)
+	}
+	req := httptest.NewRequest(method, path, reader)
+	req.Header.Set("Content-Type", "application/json")
+	return req
 }
 
-type CaseTestHelpersDuplicatedAcrossPackagesService struct {
-    repo *CaseTestHelpersDuplicatedAcrossPackagesRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+func TestCreateOrder(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
 
-type CaseTestHelpersDuplicatedAcrossPackagesAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	c.Request = createTestRequest(t, http.MethodPost, "/orders", map[string]string{
+		"product": "Widget",
+		"amount":  "29.99",
+	})
 
-func PositiveTestHelpersDuplicatedAcrossPackages(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestHelpersDuplicatedAcrossPackagesDTO) error {
-    setupTestDB := func() *gorm.DB { return db }
-    _ = setupTestDB
-    _ = db.Where("id = ?", input).Find(&items)
-    return nil
+	assertResponse := func(status int) {
+		if w.Code != status {
+			t.Errorf("expected status %d, got %d", status, w.Code)
+		}
+	}
+	assertResponse(http.StatusCreated)
 }

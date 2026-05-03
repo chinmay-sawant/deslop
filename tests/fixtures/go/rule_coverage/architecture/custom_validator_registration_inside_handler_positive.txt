@@ -1,69 +1,36 @@
-package service
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"net/http"
 )
 
-// Positive scenario for custom_validator_registration_inside_handler: risky concrete example for this rule.
+// Positive scenario for custom_validator_registration_inside_handler.
 // Rule intent: Per-request validator registration instead of startup-time validator wiring.
-type CaseCustomValidatorRegistrationInsideHandlerDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type CreateProductRequest struct {
+	Name     string `json:"name" binding:"required"`
+	Category string `json:"category" binding:"required,valid_category"`
+	Price    int    `json:"price" binding:"required,min=0"`
 }
 
-type CaseCustomValidatorRegistrationInsideHandlerModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+func PositiveCustomValidatorRegistrationInsideHandler(c *gin.Context) {
+	v := validator.New()
+	v.RegisterValidation("valid_category", func(fl validator.FieldLevel) bool {
+		val := fl.Field().String()
+		return val == "electronics" || val == "clothing" || val == "food"
+	})
 
-type CaseCustomValidatorRegistrationInsideHandlerRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseCustomValidatorRegistrationInsideHandlerModel
-}
+	var req CreateProductRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-type CaseCustomValidatorRegistrationInsideHandlerService struct {
-    repo *CaseCustomValidatorRegistrationInsideHandlerRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	if err := v.Struct(req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-type CaseCustomValidatorRegistrationInsideHandlerAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveCustomValidatorRegistrationInsideHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCustomValidatorRegistrationInsideHandlerDTO) error {
-    focus := "custom_validator_registration_inside_handler"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseCustomValidatorRegistrationInsideHandlerDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseCustomValidatorRegistrationInsideHandlerService{repo: &CaseCustomValidatorRegistrationInsideHandlerRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseCustomValidatorRegistrationInsideHandlerModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    validator.New()
-    v := validator.New()
-    v.RegisterValidation("custom_status", func(fl validator.FieldLevel) bool {
-        return fl.Field().String() == "active" || fl.Field().String() == "inactive"
-    })
-    request.Status = "pending"
-    _ = request
-    return nil
+	c.JSON(http.StatusCreated, gin.H{"name": req.Name, "category": req.Category})
 }

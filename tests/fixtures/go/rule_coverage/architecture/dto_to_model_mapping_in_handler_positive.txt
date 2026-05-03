@@ -1,64 +1,60 @@
-package models
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for dto_to_model_mapping_in_handler: risky concrete example for this rule.
-// Rule intent: Handlers that own transport-to-model mapping instead of dedicated mappers or services.
-type CaseDtoToModelMappingInHandlerDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for dto_to_model_mapping_in_handler.
+// Anti-pattern: Handler manually maps DTO fields to model fields
+// instead of delegating to a service layer or dedicated mapper.
+
+type CreateUserDTO struct {
+	Name  string `json:"name" binding:"required"`
+	Email string `json:"email" binding:"required"`
+	Age   int    `json:"age"`
 }
 
-type CaseDtoToModelMappingInHandlerModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type User struct {
+	ID    uint   `gorm:"primaryKey"`
+	Name  string `gorm:"column:name"`
+	Email string `gorm:"column:email;uniqueIndex"`
+	Age   int    `gorm:"column:age"`
 }
 
-type CaseDtoToModelMappingInHandlerRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseDtoToModelMappingInHandlerModel
+func CreateUserHandler(c *gin.Context) {
+	var dto CreateUserDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Anti-pattern: handler directly constructs the domain model from DTO
+	user := User{
+		Name:  dto.Name,
+		Email: dto.Email,
+		Age:   dto.Age,
+	}
+
+	db.Create(&user)
+	c.JSON(http.StatusCreated, user)
 }
 
-type CaseDtoToModelMappingInHandlerService struct {
-    repo *CaseDtoToModelMappingInHandlerRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+func UpdateUserHandler(c *gin.Context) {
+	var dto CreateUserDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-type CaseDtoToModelMappingInHandlerAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	// Anti-pattern: another instance of handler doing DTO-to-model mapping
+	user := User{
+		Name:  dto.Name,
+		Email: dto.Email,
+		Age:   dto.Age,
+	}
 
-func PositiveDtoToModelMappingInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDtoToModelMappingInHandlerDTO) error {
-    focus := "dto_to_model_mapping_in"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseDtoToModelMappingInHandlerDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseDtoToModelMappingInHandlerService{repo: &CaseDtoToModelMappingInHandlerRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseDtoToModelMappingInHandlerModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    mappedModel := CaseDtoToModelMappingInHandlerModel{ID: request.ID, Status: request.Status}
-    db.Create(&mappedModel)
-    return nil
+	db.Model(&User{}).Where("id = ?", c.Param("id")).Updates(&user)
+	c.JSON(http.StatusOK, user)
 }

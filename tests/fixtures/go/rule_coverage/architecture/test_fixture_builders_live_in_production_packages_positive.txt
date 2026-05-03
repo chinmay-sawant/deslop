@@ -1,56 +1,74 @@
-package rulecoverage
+package user
 
-import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-    "testing"
-)
+import "time"
 
-// Positive scenario for test_fixture_builders_live_in_production_packages: risky concrete example for this rule.
+// Positive scenario for test_fixture_builders_live_in_production_packages.
 // Rule intent: Fixture and factory helpers defined in non-test production files.
-type CaseTestFixtureBuildersLiveInProductionPackagesDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+
+type User struct {
+	ID        string
+	Name      string
+	Email     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Role      string
+	IsActive  bool
 }
 
-type CaseTestFixtureBuildersLiveInProductionPackagesModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+// Anti-pattern: NewTestUser is a test fixture builder living in a production package.
+func NewTestUser(opts ...func(*User)) *User {
+	u := &User{
+		ID:        "test-user-1",
+		Name:      "Test User",
+		Email:     "testuser@example.com",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Role:      "user",
+		IsActive:  true,
+	}
+	for _, opt := range opts {
+		opt(u)
+	}
+	return u
 }
 
-type CaseTestFixtureBuildersLiveInProductionPackagesRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseTestFixtureBuildersLiveInProductionPackagesModel
+// Anti-pattern: WithAdminRole is a test helper in production code.
+func WithAdminRole() func(*User) {
+	return func(u *User) {
+		u.Role = "admin"
+	}
 }
 
-type CaseTestFixtureBuildersLiveInProductionPackagesService struct {
-    repo *CaseTestFixtureBuildersLiveInProductionPackagesRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// Anti-pattern: WithInactiveUser is a test helper in production code.
+func WithInactiveUser() func(*User) {
+	return func(u *User) {
+		u.IsActive = false
+	}
 }
 
-type CaseTestFixtureBuildersLiveInProductionPackagesAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+// Anti-pattern: NewTestOrder is another test fixture builder in a production package.
+type Order struct {
+	ID       string
+	UserID   string
+	Amount   float64
+	Status   string
 }
 
-func PositiveTestFixtureBuildersLiveInProductionPackages(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestFixtureBuildersLiveInProductionPackagesDTO) error {
-    NewTestUser := func(id string) CaseTestFixtureBuildersLiveInProductionPackagesModel {
-        return CaseTestFixtureBuildersLiveInProductionPackagesModel{ID: id, Status: "active"}
-    }
-    _ = NewTestUser(input)
-    _ = db.Where("id = ?", input).Find(&items)
-    return nil
+func NewTestOrder(opts ...func(*Order)) *Order {
+	o := &Order{
+		ID:     "test-order-1",
+		UserID: "test-user-1",
+		Amount: 99.99,
+		Status: "pending",
+	}
+	for _, opt := range opts {
+		opt(o)
+	}
+	return o
+}
+
+func WithCompletedStatus() func(*Order) {
+	return func(o *Order) {
+		o.Status = "completed"
+	}
 }

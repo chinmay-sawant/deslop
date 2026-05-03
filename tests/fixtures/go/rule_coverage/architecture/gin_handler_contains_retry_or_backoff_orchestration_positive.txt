@@ -1,67 +1,42 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
+	"time"
 )
 
-// Positive scenario for gin_handler_contains_retry_or_backoff_orchestration: risky concrete example for this rule.
-// Rule intent: Handlers that implement retry loops or backoff decisions inline instead of delegating to service or client layers.
-type CaseGinHandlerContainsRetryOrBackoffOrchestrationDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
+// Positive scenario for gin_handler_contains_retry_or_backoff_orchestration
+// Rule intent: Handlers that implement retry loops or backoff decisions inline
+// instead of delegating to service or client layers.
+func PositiveGinHandlerContainsRetryOrBackoffOrchestration(c *gin.Context, db *gorm.DB) {
+	var req struct {
+		ID string `json:"id" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-type CaseGinHandlerContainsRetryOrBackoffOrchestrationModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+	var result struct {
+		ID     string `gorm:"column:id"`
+		Status string `gorm:"column:status"`
+	}
 
-type CaseGinHandlerContainsRetryOrBackoffOrchestrationRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGinHandlerContainsRetryOrBackoffOrchestrationModel
-}
+	var err error
+	for i := 0; i < 3; i++ {
+		err = db.Where("id = ?", req.ID).First(&result).Error
+		if err == nil {
+			break
+		}
+		time.Sleep(time.Duration(i+1) * time.Second)
+	}
 
-type CaseGinHandlerContainsRetryOrBackoffOrchestrationService struct {
-    repo *CaseGinHandlerContainsRetryOrBackoffOrchestrationRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "operation failed after retries"})
+		return
+	}
 
-type CaseGinHandlerContainsRetryOrBackoffOrchestrationAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveGinHandlerContainsRetryOrBackoffOrchestration(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerContainsRetryOrBackoffOrchestrationDTO) error {
-    focus := "gin_handler_contains_retry_or"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseGinHandlerContainsRetryOrBackoffOrchestrationDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseGinHandlerContainsRetryOrBackoffOrchestrationService{repo: &CaseGinHandlerContainsRetryOrBackoffOrchestrationRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseGinHandlerContainsRetryOrBackoffOrchestrationModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    for i := 0; i < 3; i++ {
-        err := db.Where("id = ?", input).First(&CaseGinHandlerContainsRetryOrBackoffOrchestrationModel{}).Error
-        if err == nil { break }
-        time.Sleep(time.Duration(i+1) * time.Second)
-    }
-    return nil
+	c.JSON(http.StatusOK, gin.H{"data": result})
 }

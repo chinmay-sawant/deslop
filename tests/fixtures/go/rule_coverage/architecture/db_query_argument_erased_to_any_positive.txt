@@ -1,59 +1,59 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"fmt"
+
+	"gorm.io/gorm"
 )
 
-// Positive scenario for db_query_argument_erased_to_any: risky concrete example for this rule.
-// Rule intent: Concrete DB arguments erased to `any` or `interface{}` immediately before query execution.
-type CaseDbQueryArgumentErasedToAnyDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for db_query_argument_erased_to_any.
+// Rule intent: Concrete DB arguments should not be erased to `any` or `interface{}`
+// immediately before query execution, as this loses type safety.
+// Anti-pattern: Explicitly casting typed values to `any` before passing to query methods.
+
+type UserRepository struct {
+	db *gorm.DB
 }
 
-type CaseDbQueryArgumentErasedToAnyModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func (r *UserRepository) FindByTenantID(tenantID string) ([]User, error) {
+	var users []User
+
+	// Anti-pattern: typed string erased to any before query
+	var arg any = tenantID
+	r.db.Where("tenant_id = ?", arg).Find(&users)
+
+	return users, nil
 }
 
-type CaseDbQueryArgumentErasedToAnyRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseDbQueryArgumentErasedToAnyModel
+func (r *UserRepository) FindByStatusAndRole(status string, role string) ([]User, error) {
+	var users []User
+
+	// Anti-pattern: multiple typed values erased to any
+	var statusArg any = status
+	var roleArg any = role
+	r.db.Where("status = ? AND role = ?", statusArg, roleArg).Find(&users)
+
+	return users, nil
 }
 
-type CaseDbQueryArgumentErasedToAnyService struct {
-    repo *CaseDbQueryArgumentErasedToAnyRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func (r *UserRepository) FindByID(id int64) (*User, error) {
+	var user User
+
+	// Anti-pattern: int64 erased to any before query
+	var idArg any = id
+	r.db.Where("id = ?", idArg).First(&user)
+
+	if user.ID == 0 {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	return &user, nil
 }
 
-type CaseDbQueryArgumentErasedToAnyAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveDbQueryArgumentErasedToAny(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDbQueryArgumentErasedToAnyDTO) error {
-    focus := "db_query_argument_erased_to"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseDbQueryArgumentErasedToAnyRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseDbQueryArgumentErasedToAnyModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    var erasedTenant any = c.GetHeader("X-Tenant-ID")
-    repo.db.Where("tenant_id = ?", erasedTenant).Find(&[]CaseDbQueryArgumentErasedToAnyModel{})
-    return nil
+type User struct {
+	ID       int64  `gorm:"column:id"`
+	TenantID string `gorm:"column:tenant_id"`
+	Status   string `gorm:"column:status"`
+	Role     string `gorm:"column:role"`
+	Name     string `gorm:"column:name"`
 }

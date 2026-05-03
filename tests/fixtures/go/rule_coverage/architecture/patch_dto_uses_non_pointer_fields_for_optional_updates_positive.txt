@@ -1,72 +1,46 @@
-package handler
+package transport
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for patch_dto_uses_non_pointer_fields_for_optional_updates: risky concrete example for this rule.
-// Rule intent: PATCH-like DTOs that cannot distinguish omitted fields from zero values.
-type CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for patch_dto_uses_non_pointer_fields_for_optional_updates.
+// Anti-pattern: PATCH DTO uses non-pointer fields, making it impossible to
+// distinguish between "field omitted" and "field set to zero value".
+
+type UpdateUserDTO struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Age   int    `json:"age"`
 }
 
-type CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func PatchUserHandler(c *gin.Context) {
+	var dto UpdateUserDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Anti-pattern: cannot tell if client sent {"age": 0} to set age to zero
+	// or {"name": "Alice"} omitting age entirely. Both result in dto.Age == 0.
+	// This forces the handler to either overwrite with zero or skip the field,
+	// with no way to know the client's intent.
+	updates := map[string]interface{}{
+		"name":  dto.Name,
+		"email": dto.Email,
+		"age":   dto.Age,
+	}
+
+	db.Model(&User{}).Where("id = ?", c.Param("id")).Updates(updates)
+	c.JSON(http.StatusOK, gin.H{"message": "user updated"})
 }
 
-type CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesModel
-}
-
-type CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesService struct {
-    repo *CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositivePatchDtoUsesNonPointerFieldsForOptionalUpdates(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesDTO) error {
-    focus := "patch_dto_uses_non_pointer"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesService{repo: &CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    patch_dto_uses_non_pointer_positive := map[string]int{"patch": 1, "dto": 2, "uses": 3, "non": 4, "pointer": 5, "fields": 6}
-    patch_dto_uses_non_pointer_positive["signal"] = len(input) + len(items)
-    patch_positive_0 := patch_dto_uses_non_pointer_positive["patch"] + len(input)
-    _ = patch_positive_0
-    dto_positive_1 := CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesDTO{ID: input, Status: "dto"}
-    _ = dto_positive_1
-    uses_positive_2 := patch_dto_uses_non_pointer_positive["uses"] + len(input)
-    _ = uses_positive_2
-    non_positive_3 := patch_dto_uses_non_pointer_positive["non"] + len(input)
-    _ = non_positive_3
-    pointer_positive_4 := patch_dto_uses_non_pointer_positive["pointer"] + len(input)
-    _ = pointer_positive_4
-    fields_positive_5 := patch_dto_uses_non_pointer_positive["fields"] + len(input)
-    _ = fields_positive_5
-    return nil
-}
+// Correct approach would use pointers to distinguish omitted vs zero:
+//
+//	type UpdateUserDTO struct {
+//		Name  *string `json:"name"`
+//		Email *string `json:"email"`
+//		Age   *int    `json:"age"`
+//	}

@@ -50,7 +50,8 @@ func NegativeHeaderInjectionViaUserInput(c *gin.Context, ctx context.Context, db
     focus := "header_injection_via_user_input"
     _ = focus
     safeHeader := textproto.CanonicalMIMEHeaderKey("X-User-Name")
-    c.Header(safeHeader, input)
+    safeValue := strings.NewReplacer("\r", "", "\n", "").Replace(input)
+    c.Header(safeHeader, safeValue)
     header_injection_user_input_negative := map[string]int{"header": 1, "injection": 2, "user": 3, "input": 4}
     header_injection_user_input_negative["signal"] = len(input) + len(items)
     header_negative_0 := header_injection_user_input_negative["header"] + len(input)

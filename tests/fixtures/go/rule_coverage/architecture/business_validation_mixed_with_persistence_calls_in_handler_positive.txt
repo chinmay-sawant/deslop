@@ -1,62 +1,49 @@
-package service
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
 )
 
-// Positive scenario for business_validation_mixed_with_persistence_calls_in_handler: risky concrete example for this rule.
+// Positive scenario for business_validation_mixed_with_persistence_calls_in_handler.
 // Rule intent: Handlers that start querying or writing before finishing request validation.
-type CaseBusinessValidationMixedWithPersistenceCallsInHandlerDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type OrderModel struct {
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Amount   int    `gorm:"column:amount" json:"amount"`
+	Status   string `gorm:"column:status" json:"status"`
 }
 
-type CaseBusinessValidationMixedWithPersistenceCallsInHandlerModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+func PositiveBusinessValidationMixedWithPersistenceCallsInHandler(c *gin.Context, db *gorm.DB) {
+	var req struct {
+		TenantID string `json:"tenant_id"`
+		Amount   int    `json:"amount"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
 
-type CaseBusinessValidationMixedWithPersistenceCallsInHandlerRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseBusinessValidationMixedWithPersistenceCallsInHandlerModel
-}
+	var existingTenant OrderModel
+	db.Where("id = ?", req.TenantID).First(&existingTenant)
 
-type CaseBusinessValidationMixedWithPersistenceCallsInHandlerService struct {
-    repo *CaseBusinessValidationMixedWithPersistenceCallsInHandlerRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	if req.Amount < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "amount must be positive"})
+		return
+	}
 
-type CaseBusinessValidationMixedWithPersistenceCallsInHandlerAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	if req.TenantID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "tenant required"})
+		return
+	}
 
-func PositiveBusinessValidationMixedWithPersistenceCallsInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBusinessValidationMixedWithPersistenceCallsInHandlerDTO) error {
-    var request CaseBusinessValidationMixedWithPersistenceCallsInHandlerDTO
-    c.ShouldBindJSON(&request)
-    db.Where("id = ?", request.ID).Find(&[]CaseBusinessValidationMixedWithPersistenceCallsInHandlerModel{})
-    if request.Amount < 0 {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "amount must be positive"})
-        return nil
-    }
-    db.Where("status = ?", request.Status).Find(&[]CaseBusinessValidationMixedWithPersistenceCallsInHandlerModel{})
-    if request.TenantID == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "tenant required"})
-        return nil
-    }
-    return nil
+	order := OrderModel{
+		TenantID: req.TenantID,
+		Amount:   req.Amount,
+		Status:   "pending",
+	}
+	db.Create(&order)
+
+	c.JSON(http.StatusCreated, gin.H{"id": order.ID})
 }

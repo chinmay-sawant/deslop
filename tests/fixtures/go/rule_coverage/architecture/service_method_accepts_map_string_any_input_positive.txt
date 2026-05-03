@@ -1,72 +1,53 @@
 package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"fmt"
+	"gorm.io/gorm"
 )
 
 // Positive scenario for service_method_accepts_map_string_any_input: risky concrete example for this rule.
 // Rule intent: Services that use map-shaped dynamic input instead of typed request contracts.
-type CaseServiceMethodAcceptsMapStringAnyInputDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
-
 type CaseServiceMethodAcceptsMapStringAnyInputModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string `gorm:"column:status" json:"status"`
+	Amount   int    `gorm:"column:amount" json:"amount"`
 }
 
 type CaseServiceMethodAcceptsMapStringAnyInputRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseServiceMethodAcceptsMapStringAnyInputModel
+	db *gorm.DB
 }
 
 type CaseServiceMethodAcceptsMapStringAnyInputService struct {
-    repo *CaseServiceMethodAcceptsMapStringAnyInputRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+	repo *CaseServiceMethodAcceptsMapStringAnyInputRepository
 }
 
-type CaseServiceMethodAcceptsMapStringAnyInputAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+func (s *CaseServiceMethodAcceptsMapStringAnyInputService) Process(input map[string]any) error {
+	id, ok := input["id"].(string)
+	if !ok || id == "" {
+		return fmt.Errorf("missing required field: id")
+	}
 
-func PositiveServiceMethodAcceptsMapStringAnyInput(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceMethodAcceptsMapStringAnyInputDTO) error {
-    focus := "service_method_accepts_map_string"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseServiceMethodAcceptsMapStringAnyInputService{repo: &CaseServiceMethodAcceptsMapStringAnyInputRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseServiceMethodAcceptsMapStringAnyInputModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    service_method_accepts_map_string_positive := map[string]int{"service": 1, "method": 2, "accepts": 3, "map": 4, "string": 5, "any": 6}
-    service_method_accepts_map_string_positive["signal"] = len(input) + len(items)
-    service_positive_0 := CaseServiceMethodAcceptsMapStringAnyInputDTO{ID: input, Status: "service"}
-    _ = service_positive_0
-    method_positive_1 := service_method_accepts_map_string_positive["method"] + len(input)
-    _ = method_positive_1
-    accepts_positive_2 := service_method_accepts_map_string_positive["accepts"] + len(input)
-    _ = accepts_positive_2
-    map_positive_3 := service_method_accepts_map_string_positive["map"] + len(input)
-    _ = map_positive_3
-    string_positive_4 := strings.TrimSpace(input)
-    _ = string_positive_4
-    any_positive_5 := service_method_accepts_map_string_positive["any"] + len(input)
-    _ = any_positive_5
-    return nil
+	tenantID, _ := input["tenant_id"].(string)
+	status, _ := input["status"].(string)
+	amount, _ := input["amount"].(float64)
+
+	model := CaseServiceMethodAcceptsMapStringAnyInputModel{
+		ID:       id,
+		TenantID: tenantID,
+		Status:   status,
+		Amount:   int(amount),
+	}
+
+	if err := s.repo.db.Create(&model).Error; err != nil {
+		return fmt.Errorf("failed to create record: %w", err)
+	}
+
+	tags, _ := input["tags"].([]any)
+	for _, tag := range tags {
+		tagStr, _ := tag.(string)
+		_ = tagStr
+	}
+
+	return nil
 }

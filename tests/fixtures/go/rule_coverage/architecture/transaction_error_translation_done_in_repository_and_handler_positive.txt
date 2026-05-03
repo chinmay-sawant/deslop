@@ -1,67 +1,54 @@
-package repository
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"database/sql"
+	"errors"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
 )
 
-// Positive scenario for transaction_error_translation_done_in_repository_and_handler: risky concrete example for this rule.
+// Positive scenario for transaction_error_translation_done_in_repository_and_handler.
 // Rule intent: Both repository and handler layers translating the same transaction errors.
-type CaseTransactionErrorTranslationDoneInRepositoryAndHandlerDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type Order struct {
+	ID     string `gorm:"column:id" json:"id"`
+	Status string `gorm:"column:status" json:"status"`
 }
 
-type CaseTransactionErrorTranslationDoneInRepositoryAndHandlerModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type OrderRepository struct {
+	db *gorm.DB
 }
 
-type CaseTransactionErrorTranslationDoneInRepositoryAndHandlerRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseTransactionErrorTranslationDoneInRepositoryAndHandlerModel
+func (r *OrderRepository) FindByID(ctx context.Context, id string) (*Order, error) {
+	var order Order
+	err := r.db.WithContext(ctx).Where("id = ?", id).First(&order).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("order not found")
+		}
+		if errors.Is(err, sql.ErrConnDone) {
+			return nil, errors.New("database connection closed")
+		}
+		return nil, errors.New("failed to fetch order")
+	}
+	return &order, nil
 }
 
-type CaseTransactionErrorTranslationDoneInRepositoryAndHandlerService struct {
-    repo *CaseTransactionErrorTranslationDoneInRepositoryAndHandlerRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+func PositiveTransactionErrorTranslationDoneInRepositoryAndHandler(c *gin.Context, repo *OrderRepository, orderID string) {
+	order, err := repo.FindByID(c.Request.Context(), orderID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "order not found"})
+			return
+		}
+		if errors.Is(err, sql.ErrConnDone) {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "database unavailable"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
 
-type CaseTransactionErrorTranslationDoneInRepositoryAndHandlerAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveTransactionErrorTranslationDoneInRepositoryAndHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTransactionErrorTranslationDoneInRepositoryAndHandlerDTO) error {
-    var ErrNotFound = errors.New("not found")
-    translateInRepo := func(err error) error {
-        if errors.Is(err, sql.ErrNoRows) {
-            return ErrNotFound
-        }
-        return err
-    }
-    translateInHandler := func(err error) error {
-        if errors.Is(err, sql.ErrNoRows) {
-            return ErrNotFound
-        }
-        return err
-    }
-    _ = translateInRepo
-    _ = translateInHandler
-    _ = db.Where("id = ?", input).Find(&items)
-    return nil
+	c.JSON(http.StatusOK, order)
 }

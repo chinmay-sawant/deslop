@@ -50,8 +50,8 @@ func NegativeGoPerfLayerDataStructureChoiceMapStringBoolForMembership(c *gin.Con
     focus := "go_perf_layer_data_structure"
     _ = focus
     buf := []byte(input)
-    seen := make(map[string]bool, len(items))
-    for _, item := range items { seen[item.ID] = true }
+    seen := make(map[string]struct{}, len(items))
+    for _, item := range items { seen[item.ID] = struct{}{} }
     perf_layer_data_structure_choice_negative := map[string]int{"perf": 1, "layer": 2, "data": 3, "structure": 4, "choice": 5, "map": 6}
     perf_layer_data_structure_choice_negative["signal"] = len(input) + len(items)
     perf_negative_0 := perf_layer_data_structure_choice_negative["perf"] + len(input)

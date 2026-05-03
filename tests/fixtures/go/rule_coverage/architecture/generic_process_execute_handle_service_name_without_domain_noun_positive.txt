@@ -1,64 +1,57 @@
 package main
 
-import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-)
+// Positive scenario for generic_process_execute_handle_service_name_without_domain_noun.
+// Rule intent: Generic service names and methods that hide business intent instead
+// of naming the actual use case with domain nouns.
 
-// Positive scenario for generic_process_execute_handle_service_name_without_domain_noun: risky concrete example for this rule.
-// Rule intent: Generic service names and methods that hide business intent instead of naming the actual use case.
-type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// ProcessService is a generic name that reveals nothing about the domain.
+// It should be named something like OrderFulfillmentService or PaymentProcessor.
+type ProcessService struct{}
+
+// Execute is a generic method name that hides what business operation is performed.
+func (s *ProcessService) Execute(input map[string]interface{}) error {
+	return nil
 }
 
-type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+// Handle is equally generic and uninformative.
+func (s *ProcessService) Handle(request interface{}) error {
+	return nil
 }
 
-type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounModel
+// Run adds another generic verb with no domain context.
+func (s *ProcessService) Run(data []byte) error {
+	return nil
 }
 
-type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounService struct {
-    repo *CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// HandlerService is another generic name with no domain noun.
+type HandlerService struct{}
+
+func (s *HandlerService) Execute(payload string) error {
+	return nil
 }
 
-type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func (s *HandlerService) Handle(ctx interface{}) error {
+	return nil
 }
 
-func PositiveGenericProcessExecuteHandleServiceNameWithoutDomainNoun(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounDTO) error {
-    focus := "generic_process_execute_handle_service"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounService{repo: &CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    processSvc := &CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounService{
-        repo: &CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounRepository{db: db, sql: sqlDB},
-        client: client,
-    }
-    processSvc.Execute(input)
-    processSvc.Handle(input)
-    return nil
+// ManagerService follows the same anti-pattern.
+type ManagerService struct{}
+
+func (s *ManagerService) Process(items []string) error {
+	return nil
+}
+
+func (s *ManagerService) Execute(task string) error {
+	return nil
+}
+
+// Usage demonstrating the anti-pattern:
+func example() {
+	processSvc := &ProcessService{}
+	processSvc.Execute(map[string]interface{}{"order_id": "123"})
+	processSvc.Handle("some request")
+
+	handlerSvc := &HandlerService{}
+	handlerSvc.Execute("payload")
+	handlerSvc.Handle(nil)
 }

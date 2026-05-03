@@ -1,75 +1,89 @@
-package handler
+package handler_test
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-    "testing"
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
-// Positive scenario for tests_stub_gin_context_instead_of_httptest_boundary: risky concrete example for this rule.
-// Rule intent: Handler tests that mock Gin internals directly instead of using `httptest` when boundary behavior matters.
-type CaseTestsStubGinContextInsteadOfHttptestBoundaryDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for tests_stub_gin_context_instead_of_httptest_boundary.
+// Rule intent: Handler tests that mock Gin internals directly instead of using httptest
+// when boundary behavior matters.
+
+type CreateUserRequest struct {
+	Name  string `json:"name" binding:"required"`
+	Email string `json:"email" binding:"required"`
 }
 
-type CaseTestsStubGinContextInsteadOfHttptestBoundaryModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func CreateUserHandler(c *gin.Context) {
+	var req CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.Header("X-Request-ID", "req-123")
+	c.JSON(http.StatusCreated, gin.H{"id": 1, "name": req.Name})
 }
 
-type CaseTestsStubGinContextInsteadOfHttptestBoundaryRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseTestsStubGinContextInsteadOfHttptestBoundaryModel
+// Anti-pattern: manually stubbing gin.Context instead of using httptest.NewRecorder.
+func TestCreateUserHandler_StubbedGinContext(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	// Anti-pattern: constructing gin.Context manually with internal fields
+	w := &testResponseWriter{
+		headers:  make(http.Header),
+		body:     &bytes.Buffer{},
+		status:   0,
+	}
+	c := &gin.Context{
+		Request: nil,
+		Writer:  w,
+		Params:  gin.Params{},
+	}
+
+	body := `{"name":"John","email":"john@example.com"}`
+	c.Request, _ = http.NewRequest(http.MethodPost, "/users", bytes.NewReader([]byte(body)))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	CreateUserHandler(c)
+
+	assert.Equal(t, http.StatusCreated, w.status)
+	assert.Contains(t, w.body.String(), `"name":"John"`)
 }
 
-type CaseTestsStubGinContextInsteadOfHttptestBoundaryService struct {
-    repo *CaseTestsStubGinContextInsteadOfHttptestBoundaryRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// testResponseWriter is a manual stub of http.ResponseWriter — anti-pattern.
+type testResponseWriter struct {
+	headers  http.Header
+	body     *bytes.Buffer
+	status   int
 }
 
-type CaseTestsStubGinContextInsteadOfHttptestBoundaryAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+func (w *testResponseWriter) Header() http.Header         { return w.headers }
+func (w *testResponseWriter) Write(b []byte) (int, error) { return w.body.Write(b) }
+func (w *testResponseWriter) WriteHeader(code int)        { w.status = code }
 
-func PositiveTestsStubGinContextInsteadOfHttptestBoundary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestsStubGinContextInsteadOfHttptestBoundaryDTO) error {
-    focus := "tests_stub_gin_context_instead"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseTestsStubGinContextInsteadOfHttptestBoundaryDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    testCase := struct { name string; raw string }{"full stack", input}
-    _ = (*testing.T)(nil)
-    _ = testCase
-    tests_stub_gin_context_instead_positive := map[string]int{"tests": 1, "stub": 2, "gin": 3, "context": 4, "instead": 5, "httptest": 6}
-    tests_stub_gin_context_instead_positive["signal"] = len(input) + len(items)
-    tests_positive_0 := tests_stub_gin_context_instead_positive["tests"] + len(input)
-    _ = tests_positive_0
-    stub_positive_1 := tests_stub_gin_context_instead_positive["stub"] + len(input)
-    _ = stub_positive_1
-    gin_positive_2 := c.FullPath() + ":" + input
-    _ = gin_positive_2
-    context_positive_3 := ctx
-    _ = context_positive_3
-    instead_positive_4 := tests_stub_gin_context_instead_positive["instead"] + len(input)
-    _ = instead_positive_4
-    httptest_positive_5 := tests_stub_gin_context_instead_positive["httptest"] + len(input)
-    _ = httptest_positive_5
-    return nil
+// Another test with the same anti-pattern.
+func TestCreateUserHandler_InvalidInput_StubbedContext(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	w := &testResponseWriter{
+		headers:  make(http.Header),
+		body:     &bytes.Buffer{},
+		status:   0,
+	}
+	c := &gin.Context{
+		Request: nil,
+		Writer:  w,
+	}
+
+	c.Request, _ = http.NewRequest(http.MethodPost, "/users", bytes.NewReader([]byte(`{"name":""}`)))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	CreateUserHandler(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.status)
 }

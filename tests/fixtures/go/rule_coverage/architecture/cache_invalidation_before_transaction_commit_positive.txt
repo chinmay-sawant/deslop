@@ -1,54 +1,42 @@
 package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
+	"sync"
 )
 
-// Positive scenario for cache_invalidation_before_transaction_commit: risky concrete example for this rule.
+// Positive scenario for cache_invalidation_before_transaction_commit.
 // Rule intent: Cache mutation or eviction that happens before a write transaction commits.
-type CaseCacheInvalidationBeforeTransactionCommitDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type CacheInvalidationModel struct {
+	ID      string `gorm:"column:id" json:"id"`
+	Balance int    `gorm:"column:balance" json:"balance"`
 }
 
-type CaseCacheInvalidationBeforeTransactionCommitModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type AccountCache struct {
+	mu    sync.RWMutex
+	items map[string]*CacheInvalidationModel
 }
 
-type CaseCacheInvalidationBeforeTransactionCommitRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseCacheInvalidationBeforeTransactionCommitModel
+func (c *AccountCache) Delete(key string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.items, key)
 }
 
-type CaseCacheInvalidationBeforeTransactionCommitService struct {
-    repo *CaseCacheInvalidationBeforeTransactionCommitRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+func PositiveCacheInvalidationBeforeTransactionCommit(c *gin.Context, db *gorm.DB, cache *AccountCache, accountID string) error {
+	tx := db.Begin()
 
-type CaseCacheInvalidationBeforeTransactionCommitAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	tx.Model(&CacheInvalidationModel{}).Where("id = ?", accountID).Update("balance", gorm.Expr("balance - ?", 100))
 
-func PositiveCacheInvalidationBeforeTransactionCommit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCacheInvalidationBeforeTransactionCommitDTO) error {
-    tx := db.Begin()
-    tx.Create(&CaseCacheInvalidationBeforeTransactionCommitModel{ID: input})
-    db.Where("key = ?", "account:"+input).Delete(&CaseCacheInvalidationBeforeTransactionCommitModel{})
-    tx.Commit()
-    return nil
+	cache.Delete("account:" + accountID)
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
 }

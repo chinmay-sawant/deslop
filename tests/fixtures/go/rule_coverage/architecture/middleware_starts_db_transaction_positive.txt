@@ -1,74 +1,79 @@
 package middleware
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"database/sql"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
 )
 
-// Positive scenario for middleware_starts_db_transaction: risky concrete example for this rule.
+// Positive scenario for middleware_starts_db_transaction.
 // Rule intent: Middleware that opens database transactions for the whole request path by default.
 type CaseMiddlewareStartsDbTransactionDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+	ID       string `json:"id" form:"id" uri:"id"`
+	TenantID string `json:"tenant_id" form:"tenant_id"`
+	Status   string `json:"status,omitempty" binding:"required"`
+	Amount   int    `json:"amount"`
+	Payload  []byte `json:"payload"`
 }
 
 type CaseMiddlewareStartsDbTransactionModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+	ID       string         `gorm:"column:id" json:"id"`
+	TenantID string         `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string         `gorm:"column:status" json:"status"`
+	DeletedAt sql.NullTime  `json:"deleted_at,omitempty"`
 }
 
 type CaseMiddlewareStartsDbTransactionRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseMiddlewareStartsDbTransactionModel
+	db    *gorm.DB
+	sqlDB *sql.DB
 }
 
 type CaseMiddlewareStartsDbTransactionService struct {
-    repo *CaseMiddlewareStartsDbTransactionRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+	repo *CaseMiddlewareStartsDbTransactionRepository
 }
 
-type CaseMiddlewareStartsDbTransactionAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func (s *CaseMiddlewareStartsDbTransactionService) CreateWithTx(ctx context.Context, tx *gorm.DB, model *CaseMiddlewareStartsDbTransactionModel) error {
+	return tx.Create(model).Error
 }
 
-func PositiveMiddlewareStartsDbTransaction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareStartsDbTransactionDTO) error {
-    focus := "middleware_starts_db_transaction"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    tx := db.Begin()
-    tx.Create(&CaseMiddlewareStartsDbTransactionModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
-    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
-        return func(inner *gin.Context) {
-            db.Exec("UPDATE accounts SET touched_at = now() WHERE tenant_id = ?", inner.GetHeader("X-Tenant-ID"))
-            inner.JSON(http.StatusOK, gin.H{"status": "mutated by middleware"})
-            next(inner)
-        }
-    }
-    _ = middleware
-    middleware_starts_db_transaction_positive := map[string]int{"middleware": 1, "starts": 2, "db": 3, "transaction": 4}
-    middleware_starts_db_transaction_positive["signal"] = len(input) + len(items)
-    middleware_positive_0 := c.FullPath() + ":" + input
-    _ = middleware_positive_0
-    starts_positive_1 := middleware_starts_db_transaction_positive["starts"] + len(input)
-    _ = starts_positive_1
-    db_positive_2 := db.Where("db_id = ?", input)
-    _ = db_positive_2
-    transaction_positive_3 := middleware_starts_db_transaction_positive["transaction"] + len(input)
-    _ = transaction_positive_3
-    return nil
+func PositiveMiddlewareStartsDbTransaction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB) error {
+	repo := &CaseMiddlewareStartsDbTransactionRepository{db: db, sqlDB: sqlDB}
+	svc := &CaseMiddlewareStartsDbTransactionService{repo: repo}
+
+	middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+		return func(c *gin.Context) {
+			tx := db.Begin()
+			defer func() {
+				if r := recover(); r != nil {
+					tx.Rollback()
+				}
+			}()
+
+			c.Set("db_tx", tx)
+
+			next(c)
+
+			if c.Writer.Status() >= 400 {
+				tx.Rollback()
+			} else {
+				tx.Commit()
+			}
+		}
+	}
+
+	handler := func(c *gin.Context) {
+		tx := c.MustGet("db_tx").(*gorm.DB)
+		model := &CaseMiddlewareStartsDbTransactionModel{
+			ID:       c.Param("id"),
+			TenantID: c.GetHeader("X-Tenant-ID"),
+			Status:   "pending",
+		}
+		svc.CreateWithTx(ctx, tx, model)
+		c.JSON(http.StatusCreated, gin.H{"id": model.ID, "status": model.Status})
+	}
+
+	middleware(handler)(c)
+	return nil
 }

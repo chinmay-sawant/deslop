@@ -1,71 +1,72 @@
-package main
+package domain
 
-import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-)
+import "time"
 
-// Positive scenario for giant_model_struct_spans_multiple_subdomains: risky concrete example for this rule.
-// Rule intent: Oversized model structs that appear to merge multiple bounded contexts into one persistence shape.
-type CaseGiantModelStructSpansMultipleSubdomainsDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
+// Positive scenario for giant_model_struct_spans_multiple_subdomains.
+// Rule intent: Oversized model structs that merge multiple bounded contexts
+// (billing, shipping, inventory, users, etc.) into one persistence shape.
 
-type CaseGiantModelStructSpansMultipleSubdomainsModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+// Order is a god model that spans billing, shipping, inventory, user management,
+// analytics, and notifications subdomains. It should be split into separate
+// aggregates per bounded context.
+type Order struct {
+	// Primary key
+	ID string
 
-type CaseGiantModelStructSpansMultipleSubdomainsRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGiantModelStructSpansMultipleSubdomainsModel
-}
+	// Billing subdomain fields
+	BillingAmount       float64
+	BillingCurrency     string
+	BillingAddress      string
+	BillingCity         string
+	BillingState        string
+	BillingZipCode      string
+	BillingCountry      string
+	BillingTaxAmount    float64
+	BillingDiscountCode string
+	BillingInvoiceID    string
+	BillingPaymentMethod string
 
-type CaseGiantModelStructSpansMultipleSubdomainsService struct {
-    repo *CaseGiantModelStructSpansMultipleSubdomainsRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	// Shipping subdomain fields
+	ShippingAddress     string
+	ShippingCity        string
+	ShippingState       string
+	ShippingZipCode     string
+	ShippingCountry     string
+	ShippingCarrier     string
+	ShippingTrackingNum string
+	ShippingWeight      float64
+	ShippingCost        float64
+	ShippingMethod      string
+	ShippingEstimatedDelivery time.Time
 
-type CaseGiantModelStructSpansMultipleSubdomainsAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	// Inventory subdomain fields
+	InventorySKU        string
+	InventoryWarehouse  string
+	InventoryStockLevel int
+	InventoryReorderPoint int
+	InventoryBatchID    string
+	InventoryExpiryDate time.Time
 
-func PositiveGiantModelStructSpansMultipleSubdomains(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGiantModelStructSpansMultipleSubdomainsDTO) error {
-    focus := "giant_model_struct_spans_multiple"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseGiantModelStructSpansMultipleSubdomainsRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGiantModelStructSpansMultipleSubdomainsModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseGiantModelStructSpansMultipleSubdomainsService{repo: &CaseGiantModelStructSpansMultipleSubdomainsRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseGiantModelStructSpansMultipleSubdomainsModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    log.Printf("giant_model_struct_spans_multiple_subdomains tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
-    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
-    _ = auditFields
-    model.BillingAmount = 100
-    model.ShippingAddress = "123 Main St"
-    model.ProfileBio = "user bio"
-    model.InventoryStock = 50
-    model.TenantOrg = "acme"
-    db.Save(&model)
-    return nil
+	// User/Account subdomain fields
+	UserEmail           string
+	UserFirstName       string
+	UserLastName        string
+	UserPhone           string
+	UserDateOfBirth     string
+	UserLoyaltyPoints   int
+	UserMembershipTier  string
+
+	// Analytics subdomain fields
+	AnalyticsSource      string
+	AnalyticsCampaignID  string
+	AnalyticsReferrerURL string
+	AnalyticsSessionID   string
+	AnalyticsDeviceType  string
+
+	// Notification subdomain fields
+	NotificationEmailSent   bool
+	NotificationSMSSent     bool
+	NotificationPushSent    bool
+	NotificationPreference  string
+	NotificationLanguage    string
 }

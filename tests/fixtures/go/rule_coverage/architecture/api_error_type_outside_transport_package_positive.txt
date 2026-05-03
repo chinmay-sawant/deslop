@@ -1,57 +1,47 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for api_error_type_outside_transport_package: risky concrete example for this rule.
-// Rule intent: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
-type CaseApiErrorTypeOutsideTransportPackageDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for api_error_type_outside_transport_package.
+// Rule intent: API-facing error payload structs should live in transport-boundary packages,
+// not in handler/service/repository packages.
+// Anti-pattern: APIError struct defined directly in the handler package (non-transport boundary).
+
+type APIError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Details string `json:"details,omitempty"`
 }
 
-type CaseApiErrorTypeOutsideTransportPackageModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type UserHandler struct{}
+
+func (h *UserHandler) GetUser(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		errResp := APIError{
+			Code:    http.StatusBadRequest,
+			Message: "missing user id",
+		}
+		c.JSON(http.StatusBadRequest, errResp)
+		return
+	}
+
+	errResp := APIError{
+		Code:    http.StatusNotFound,
+		Message: "user not found",
+		Details: "no user exists with id " + id,
+	}
+	c.JSON(http.StatusNotFound, errResp)
 }
 
-type CaseApiErrorTypeOutsideTransportPackageRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseApiErrorTypeOutsideTransportPackageModel
-}
-
-type CaseApiErrorTypeOutsideTransportPackageService struct {
-    repo *CaseApiErrorTypeOutsideTransportPackageRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseApiErrorTypeOutsideTransportPackageAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveApiErrorTypeOutsideTransportPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseApiErrorTypeOutsideTransportPackageDTO) error {
-    type APIError struct {
-        Code    string
-        Message string
-    }
-    apiErr := APIError{Code: "NOT_FOUND", Message: "resource not found"}
-    c.JSON(http.StatusNotFound, gin.H{"error": apiErr.Code, "message": apiErr.Message})
-    return nil
+func (h *UserHandler) CreateUser(c *gin.Context) {
+	errResp := APIError{
+		Code:    http.StatusConflict,
+		Message: "user already exists",
+	}
+	c.JSON(http.StatusConflict, errResp)
 }

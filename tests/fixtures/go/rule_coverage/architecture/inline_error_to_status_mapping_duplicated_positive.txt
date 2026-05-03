@@ -1,59 +1,86 @@
-package rulecoverage
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"errors"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for inline_error_to_status_mapping_duplicated: risky concrete example for this rule.
-// Rule intent: Repeated error-to-status translation switches across handlers.
-type CaseInlineErrorToStatusMappingDuplicatedDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+var (
+	ErrUserNotFound     = errors.New("user not found")
+	ErrUserDuplicate    = errors.New("user already exists")
+	ErrInvalidInput     = errors.New("invalid input")
+	ErrDatabaseError    = errors.New("database error")
+)
+
+type UserHandler struct{}
+
+func (h *UserHandler) GetUser(c *gin.Context) {
+	err := fetchUser(c.Param("id"))
+	if err != nil {
+		if errors.Is(err, ErrUserNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		} else if errors.Is(err, ErrDatabaseError) {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "unknown error"})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
 
-type CaseInlineErrorToStatusMappingDuplicatedModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func (h *UserHandler) CreateUser(c *gin.Context) {
+	err := createUser()
+	if err != nil {
+		if errors.Is(err, ErrUserDuplicate) {
+			c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
+		} else if errors.Is(err, ErrInvalidInput) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
+		} else if errors.Is(err, ErrDatabaseError) {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "unknown error"})
+		}
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"message": "created"})
 }
 
-type CaseInlineErrorToStatusMappingDuplicatedRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseInlineErrorToStatusMappingDuplicatedModel
+func (h *UserHandler) UpdateUser(c *gin.Context) {
+	err := updateUser(c.Param("id"))
+	if err != nil {
+		if errors.Is(err, ErrUserNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		} else if errors.Is(err, ErrInvalidInput) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
+		} else if errors.Is(err, ErrDatabaseError) {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "unknown error"})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "updated"})
 }
 
-type CaseInlineErrorToStatusMappingDuplicatedService struct {
-    repo *CaseInlineErrorToStatusMappingDuplicatedRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func (h *UserHandler) DeleteUser(c *gin.Context) {
+	err := deleteUser(c.Param("id"))
+	if err != nil {
+		if errors.Is(err, ErrUserNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		} else if errors.Is(err, ErrDatabaseError) {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "unknown error"})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
 }
 
-type CaseInlineErrorToStatusMappingDuplicatedAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveInlineErrorToStatusMappingDuplicated(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseInlineErrorToStatusMappingDuplicatedDTO) error {
-    err := errors.New("not found")
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-    }
-    err2 := errors.New("conflict")
-    if err2 != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
-    }
-    return nil
-}
+func fetchUser(id string) error   { return ErrUserNotFound }
+func createUser() error           { return ErrUserDuplicate }
+func updateUser(id string) error  { return ErrInvalidInput }
+func deleteUser(id string) error  { return ErrDatabaseError }

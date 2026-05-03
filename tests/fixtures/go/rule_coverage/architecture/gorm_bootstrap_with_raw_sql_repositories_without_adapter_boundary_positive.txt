@@ -1,60 +1,59 @@
 package main
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"database/sql"
+	"fmt"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary: risky concrete example for this rule.
-// Rule intent: Codebases that bootstrap persistence with GORM but run repository queries through raw SQL without a clear adapter boundary.
-type CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Bootstrap mixes gorm.Open and sql.Raw without an adapter boundary.
+// The application initializes both GORM and raw sql.DB and passes them directly
+// to repositories, creating a tangled persistence layer with no abstraction.
+
+func bootstrapDSN(dsn string) (*gorm.DB, *sql.DB, error) {
+	gormDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, nil, fmt.Errorf("gorm open: %w", err)
+	}
+
+	rawDB, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return nil, nil, fmt.Errorf("sql open: %w", err)
+	}
+
+	// Both connections handed out directly — no adapter, no boundary.
+	return gormDB, rawDB, nil
 }
 
-type CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type User struct {
+	ID   uint   `gorm:"primaryKey"`
+	Name string `gorm:"column:name"`
 }
 
-type CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryModel
+type UserRepository struct {
+	gormDB *gorm.DB
+	rawDB  *sql.DB
 }
 
-type CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryService struct {
-    repo *CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func (r *UserRepository) FindByIDGORM(id uint) (User, error) {
+	var u User
+	err := r.gormDB.First(&u, id).Error
+	return u, err
 }
 
-type CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func (r *UserRepository) FindByRawSQL(id uint) (User, error) {
+	var u User
+	row := r.rawDB.QueryRow("SELECT id, name FROM users WHERE id = $1", id)
+	err := row.Scan(&u.ID, &u.Name)
+	return u, err
 }
 
-func PositiveGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryDTO) error {
-    repo := &CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryRepository{
-        db:  db,
-        sql: sqlDB,
-    }
-    rows, _ := repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = $1", input)
-    defer rows.Close()
-    var model CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryModel
-    repo.db.Where("id = ?", input).First(&model)
-    c.JSON(http.StatusOK, gin.H{"data": model})
-    _ = rows
-    return nil
+func main() {
+	dsn := "host=localhost user=postgres password=secret dbname=mydb port=5432 sslmode=disable"
+	gormDB, rawDB, _ := bootstrapDSN(dsn)
+
+	repo := &UserRepository{gormDB: gormDB, rawDB: rawDB}
+	_ = repo
 }

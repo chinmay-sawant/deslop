@@ -1,72 +1,47 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"myapp/service"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for repository_depends_on_service_package: risky concrete example for this rule.
-// Rule intent: Repositories that import service packages, which inverts the expected dependency flow.
-type CaseRepositoryDependsOnServicePackageDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Repository imports and depends on the service package.
+// This inverts the expected dependency direction: service -> repository, not repository -> service.
+
+type Notification struct {
+	ID      string `gorm:"column:id"`
+	UserID  string `gorm:"column:user_id"`
+	Message string `gorm:"column:message"`
 }
 
-type CaseRepositoryDependsOnServicePackageModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type NotificationRepository struct {
+	db            *gorm.DB
+	emailService  *service.EmailService
+	smsService    *service.SMSService
 }
 
-type CaseRepositoryDependsOnServicePackageRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRepositoryDependsOnServicePackageModel
+// NewNotificationRepository accepts service-layer dependencies - anti-pattern.
+func NewNotificationRepository(db *gorm.DB, emailSvc *service.EmailService, smsSvc *service.SMSService) *NotificationRepository {
+	return &NotificationRepository{
+		db:           db,
+		emailService: emailSvc,
+		smsService:   smsSvc,
+	}
 }
 
-type CaseRepositoryDependsOnServicePackageService struct {
-    repo *CaseRepositoryDependsOnServicePackageRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// SaveAndNotify persists the notification and calls service methods directly.
+func (r *NotificationRepository) SaveAndNotify(n *Notification) error {
+	if err := r.db.Create(n).Error; err != nil {
+		return err
+	}
+
+	// Repository calling service-layer methods - inverted dependency.
+	r.emailService.Send(n.UserID, n.Message)
+	r.smsService.Send(n.UserID, n.Message)
+	return nil
 }
 
-type CaseRepositoryDependsOnServicePackageAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveRepositoryDependsOnServicePackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryDependsOnServicePackageDTO) error {
-    focus := "repository_depends_on_service_package"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseRepositoryDependsOnServicePackageRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryDependsOnServicePackageModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseRepositoryDependsOnServicePackageService{repo: &CaseRepositoryDependsOnServicePackageRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseRepositoryDependsOnServicePackageModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    repository_depends_service_package_positive := map[string]int{"repository": 1, "depends": 2, "service": 3, "package": 4}
-    repository_depends_service_package_positive["signal"] = len(input) + len(items)
-    repository_positive_0 := db.Where("repository_id = ?", input)
-    _ = repository_positive_0
-    depends_positive_1 := repository_depends_service_package_positive["depends"] + len(input)
-    _ = depends_positive_1
-    service_positive_2 := CaseRepositoryDependsOnServicePackageDTO{ID: input, Status: "service"}
-    _ = service_positive_2
-    package_positive_3 := repository_depends_service_package_positive["package"] + len(input)
-    _ = package_positive_3
-    return nil
+// GetUserPreferences delegates to service instead of returning raw data.
+func (r *NotificationRepository) GetUserPreferences(userID string) *service.UserPreferences {
+	return service.GetUserPreferences(userID)
 }

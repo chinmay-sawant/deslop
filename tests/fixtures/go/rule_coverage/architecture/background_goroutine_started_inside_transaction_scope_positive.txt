@@ -1,57 +1,29 @@
 package rulecoverage
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-    "time"
+	"context"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"log"
+	"net/http"
 )
 
-// Positive scenario for background_goroutine_started_inside_transaction_scope: risky concrete example for this rule.
+// Positive scenario for background_goroutine_started_inside_transaction_scope.
 // Rule intent: Goroutines launched while relying on open transaction state.
-type CaseBackgroundGoroutineStartedInsideTransactionScopeDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type BackgroundGoroutineTxModel struct {
+	ID     string `gorm:"column:id" json:"id"`
+	Status string `gorm:"column:status" json:"status"`
 }
 
-type CaseBackgroundGoroutineStartedInsideTransactionScopeModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+func PositiveBackgroundGoroutineStartedInsideTransactionScope(c *gin.Context, db *gorm.DB, input string) error {
+	tx := db.Begin()
+	tx.Create(&BackgroundGoroutineTxModel{ID: input, Status: "created"})
 
-type CaseBackgroundGoroutineStartedInsideTransactionScopeRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseBackgroundGoroutineStartedInsideTransactionScopeModel
-}
+	go func() {
+		tx.Model(&BackgroundGoroutineTxModel{}).Where("id = ?", input).Update("status", "processed")
+		log.Println("background update completed")
+	}()
 
-type CaseBackgroundGoroutineStartedInsideTransactionScopeService struct {
-    repo *CaseBackgroundGoroutineStartedInsideTransactionScopeRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseBackgroundGoroutineStartedInsideTransactionScopeAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveBackgroundGoroutineStartedInsideTransactionScope(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBackgroundGoroutineStartedInsideTransactionScopeDTO) error {
-    tx := db.Begin()
-    tx.Create(&CaseBackgroundGoroutineStartedInsideTransactionScopeModel{ID: input})
-    go func() {
-        tx.Model(&CaseBackgroundGoroutineStartedInsideTransactionScopeModel{}).Where("id = ?", input).Update("status", "processed")
-    }()
-    tx.Commit()
-    return nil
+	tx.Commit()
+	return nil
 }

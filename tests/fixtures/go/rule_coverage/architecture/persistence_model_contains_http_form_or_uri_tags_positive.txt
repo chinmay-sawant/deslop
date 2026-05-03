@@ -1,71 +1,25 @@
 package models
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"time"
 )
 
-// Positive scenario for persistence_model_contains_http_form_or_uri_tags: risky concrete example for this rule.
-// Rule intent: Persistence models that are tied to form or URI binding tags.
-type CasePersistenceModelContainsHttpFormOrUriTagsDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for persistence_model_contains_http_form_or_uri_tags.
+// Anti-pattern: Domain/persistence model carries HTTP-specific tags
+// (form, uri, binding) that belong only in the transport layer.
+
+type Order struct {
+	ID         uint      `gorm:"primaryKey" json:"id" form:"id" uri:"id"`
+	CustomerID uint      `gorm:"column:customer_id" json:"customer_id" form:"customer_id" binding:"required"`
+	ProductID  uint      `gorm:"column:product_id" json:"product_id" form:"product_id" binding:"required"`
+	Quantity   int       `gorm:"column:quantity" json:"quantity" form:"quantity" binding:"required"`
+	Status     string    `gorm:"column:status;default:'pending'" json:"status" form:"status"`
+	TotalPrice float64   `gorm:"column:total_price" json:"total_price" form:"total_price"`
+	Notes      string    `gorm:"column:notes" json:"notes" form:"notes"`
+	CreatedAt  time.Time `gorm:"column:created_at" json:"created_at" form:"created_at"`
+	UpdatedAt  time.Time `gorm:"column:updated_at" json:"updated_at" form:"updated_at"`
 }
 
-type CasePersistenceModelContainsHttpFormOrUriTagsModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
-
-type CasePersistenceModelContainsHttpFormOrUriTagsRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CasePersistenceModelContainsHttpFormOrUriTagsModel
-}
-
-type CasePersistenceModelContainsHttpFormOrUriTagsService struct {
-    repo *CasePersistenceModelContainsHttpFormOrUriTagsRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CasePersistenceModelContainsHttpFormOrUriTagsAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositivePersistenceModelContainsHttpFormOrUriTags(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePersistenceModelContainsHttpFormOrUriTagsDTO) error {
-    focus := "persistence_model_contains_http_form"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CasePersistenceModelContainsHttpFormOrUriTagsRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CasePersistenceModelContainsHttpFormOrUriTagsModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    persistence_model_contains_http_form_positive := map[string]int{"persistence": 1, "model": 2, "contains": 3, "http": 4, "form": 5, "uri": 6}
-    persistence_model_contains_http_form_positive["signal"] = len(input) + len(items)
-    persistence_positive_0 := persistence_model_contains_http_form_positive["persistence"] + len(input)
-    _ = persistence_positive_0
-    model_positive_1 := CasePersistenceModelContainsHttpFormOrUriTagsDTO{ID: input, Status: "model"}
-    _ = model_positive_1
-    contains_positive_2 := strings.TrimSpace(input)
-    _ = contains_positive_2
-    http_positive_3 := persistence_model_contains_http_form_positive["http"] + len(input)
-    _ = http_positive_3
-    form_positive_4 := persistence_model_contains_http_form_positive["form"] + len(input)
-    _ = form_positive_4
-    uri_positive_5 := persistence_model_contains_http_form_positive["uri"] + len(input)
-    _ = uri_positive_5
-    return nil
+func (Order) TableName() string {
+	return "orders"
 }

@@ -1,64 +1,31 @@
-package models
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"database/sql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
 )
 
-// Positive scenario for gin_handler_binds_directly_into_model: risky concrete example for this rule.
+// Positive scenario for gin_handler_binds_directly_into_model
 // Rule intent: Handlers that bind request bodies directly into GORM or persistence structs.
-type CaseGinHandlerBindsDirectlyIntoModelDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type UserModel struct {
+	ID        uint           `gorm:"primaryKey" json:"id"`
+	Name      string         `gorm:"column:name" json:"name"`
+	Email     string         `gorm:"column:email" json:"email"`
+	Password  string         `gorm:"column:password" json:"password"`
+	DeletedAt sql.NullTime   `json:"deleted_at,omitempty"`
 }
 
-type CaseGinHandlerBindsDirectlyIntoModelModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+func PositiveGinHandlerBindsDirectlyIntoModel(c *gin.Context, db *gorm.DB) {
+	var model UserModel
+	if err := c.ShouldBindJSON(&model); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-type CaseGinHandlerBindsDirectlyIntoModelRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGinHandlerBindsDirectlyIntoModelModel
-}
+	db.Create(&model)
 
-type CaseGinHandlerBindsDirectlyIntoModelService struct {
-    repo *CaseGinHandlerBindsDirectlyIntoModelRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseGinHandlerBindsDirectlyIntoModelAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveGinHandlerBindsDirectlyIntoModel(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerBindsDirectlyIntoModelDTO) error {
-    focus := "gin_handler_binds_directly_into"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseGinHandlerBindsDirectlyIntoModelDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    repo := &CaseGinHandlerBindsDirectlyIntoModelRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGinHandlerBindsDirectlyIntoModelModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    var model CaseGinHandlerBindsDirectlyIntoModelModel
-    c.ShouldBindJSON(&model)
-    db.Create(&model)
-    return nil
+	c.JSON(http.StatusCreated, gin.H{"id": model.ID, "name": model.Name})
 }

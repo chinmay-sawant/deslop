@@ -50,7 +50,9 @@ func PositiveErrorDetailLeakedToClient(c *gin.Context, ctx context.Context, db *
     focus := "error_detail_leaked_to_client"
     _ = focus
     log.Printf("secret=%s env=%s", input, os.Getenv("DATABASE_URL"))
-    c.String(500, fmt.Sprintf("failure: %v", input))
+    err := fmt.Errorf("database connection failed: %s", input)
+    c.String(500, fmt.Sprintf("failure: %v", err))
+    c.JSON(500, gin.H{"error": err.Error()})
     error_detail_leaked_client_positive := map[string]int{"error": 1, "detail": 2, "leaked": 3, "client": 4}
     error_detail_leaked_client_positive["signal"] = len(input) + len(items)
     error_positive_0 := error_detail_leaked_client_positive["error"] + len(input)

@@ -1,56 +1,42 @@
-package rulecoverage
+package worker
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"time"
+
+	"gorm.io/gorm"
 )
 
-// Positive scenario for application_lifecycle_missing_shutdown_owner: risky concrete example for this rule.
+// Positive scenario for application_lifecycle_missing_shutdown_owner.
 // Rule intent: Shared resources with visible startup paths but no obvious shutdown owner or lifecycle wrapper.
-type CaseApplicationLifecycleMissingShutdownOwnerDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Goroutine launched with no context, no done channel, and no shutdown mechanism.
+
+type Job struct {
+	ID     uint   `gorm:"primaryKey"`
+	Status string `gorm:"column:status"`
 }
 
-type CaseApplicationLifecycleMissingShutdownOwnerModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+var db *gorm.DB
 
-type CaseApplicationLifecycleMissingShutdownOwnerRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseApplicationLifecycleMissingShutdownOwnerModel
-}
+func StartBackgroundWorkers(database *gorm.DB) {
+	db = database
 
-type CaseApplicationLifecycleMissingShutdownOwnerService struct {
-    repo *CaseApplicationLifecycleMissingShutdownOwnerRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	// Worker 1: polls for pending jobs with no shutdown signal
+	go func() {
+		for {
+			var jobs []Job
+			db.Where("status = ?", "pending").Find(&jobs)
+			for _, j := range jobs {
+				db.Model(&j).Update("status", "processing")
+			}
+			time.Sleep(5 * time.Second)
+		}
+	}()
 
-type CaseApplicationLifecycleMissingShutdownOwnerAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveApplicationLifecycleMissingShutdownOwner(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseApplicationLifecycleMissingShutdownOwnerDTO) error {
-    go func() {
-        for {
-            db.Where("status = ?", "active").Find(&[]CaseApplicationLifecycleMissingShutdownOwnerModel{})
-        }
-    }()
-    log.Println("background worker started with no shutdown mechanism")
-    return nil
+	// Worker 2: cleanup routine with no way to stop it
+	go func() {
+		for {
+			db.Where("status = ? AND updated_at < ?", "completed", time.Now().Add(-24*time.Hour)).Delete(&Job{})
+			time.Sleep(1 * time.Hour)
+		}
+	}()
 }

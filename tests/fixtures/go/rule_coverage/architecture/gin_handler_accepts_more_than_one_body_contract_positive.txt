@@ -1,72 +1,37 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-// Positive scenario for gin_handler_accepts_more_than_one_body_contract: risky concrete example for this rule.
+// Positive scenario for gin_handler_accepts_more_than_one_body_contract
 // Rule intent: Handlers that try to bind or manually parse multiple body DTOs in one request path.
-type CaseGinHandlerAcceptsMoreThanOneBodyContractDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
+func PositiveGinHandlerAcceptsMoreThanOneBodyContract(c *gin.Context) {
+	var jsonDTO struct {
+		Name  string `json:"name" binding:"required"`
+		Email string `json:"email" binding:"required"`
+	}
 
-type CaseGinHandlerAcceptsMoreThanOneBodyContractModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+	var formDTO struct {
+		Name  string `form:"name" binding:"required"`
+		Email string `form:"email" binding:"required"`
+	}
 
-type CaseGinHandlerAcceptsMoreThanOneBodyContractRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGinHandlerAcceptsMoreThanOneBodyContractModel
-}
+	if err := c.ShouldBindJSON(&jsonDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "json bind failed"})
+		return
+	}
 
-type CaseGinHandlerAcceptsMoreThanOneBodyContractService struct {
-    repo *CaseGinHandlerAcceptsMoreThanOneBodyContractRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	if err := c.ShouldBind(&formDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "form bind failed"})
+		return
+	}
 
-type CaseGinHandlerAcceptsMoreThanOneBodyContractAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveGinHandlerAcceptsMoreThanOneBodyContract(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerAcceptsMoreThanOneBodyContractDTO) error {
-    focus := "gin_handler_accepts_more_than"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseGinHandlerAcceptsMoreThanOneBodyContractDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseGinHandlerAcceptsMoreThanOneBodyContractService{repo: &CaseGinHandlerAcceptsMoreThanOneBodyContractRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseGinHandlerAcceptsMoreThanOneBodyContractModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    var jsonDTO struct {
-        Name  string `json:"name"`
-        Email string `json:"email"`
-    }
-    var formDTO struct {
-        Name  string `form:"name"`
-        Email string `form:"email"`
-    }
-    c.ShouldBindJSON(&jsonDTO)
-    c.ShouldBind(&formDTO)
-    return nil
+	c.JSON(http.StatusOK, gin.H{
+		"json_name":  jsonDTO.Name,
+		"json_email": jsonDTO.Email,
+		"form_name":  formDTO.Name,
+		"form_email": formDTO.Email,
+	})
 }

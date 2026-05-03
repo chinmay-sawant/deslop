@@ -1,65 +1,55 @@
-package middleware
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for body_binding_done_in_middleware_and_handler: risky concrete example for this rule.
+// Positive scenario for body_binding_done_in_middleware_and_handler.
 // Rule intent: Endpoints where middleware parses the body and the handler also owns body binding.
-type CaseBodyBindingDoneInMiddlewareAndHandlerDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Both middleware and handler call ShouldBindJSON on the same request body.
+
+type CreateOrderRequest struct {
+	ProductID uint    `json:"product_id" binding:"required"`
+	Quantity  int     `json:"quantity" binding:"required"`
+	Notes     string  `json:"notes"`
 }
 
-type CaseBodyBindingDoneInMiddlewareAndHandlerModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type Order struct {
+	ID        uint   `gorm:"primaryKey"`
+	ProductID uint   `gorm:"column:product_id"`
+	Quantity  int    `gorm:"column:quantity"`
+	Notes     string `gorm:"column:notes"`
 }
 
-type CaseBodyBindingDoneInMiddlewareAndHandlerRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseBodyBindingDoneInMiddlewareAndHandlerModel
+// Middleware that binds the body
+func ParseOrderBody() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req CreateOrderRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.Set("orderRequest", req)
+		c.Next()
+	}
 }
 
-type CaseBodyBindingDoneInMiddlewareAndHandlerService struct {
-    repo *CaseBodyBindingDoneInMiddlewareAndHandlerRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+// Handler that ALSO binds the body independently
+func CreateOrderHandler(c *gin.Context, db *gorm.DB) {
+	var req CreateOrderRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
 
-type CaseBodyBindingDoneInMiddlewareAndHandlerAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveBodyBindingDoneInMiddlewareAndHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBodyBindingDoneInMiddlewareAndHandlerDTO) error {
-    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
-        return func(inner *gin.Context) {
-            var midReq CaseBodyBindingDoneInMiddlewareAndHandlerDTO
-            inner.ShouldBindJSON(&midReq)
-            inner.Set("parsed", midReq)
-            next(inner)
-        }
-    }
-    var handlerReq CaseBodyBindingDoneInMiddlewareAndHandlerDTO
-    if err := c.ShouldBindJSON(&handlerReq); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return nil
-    }
-    _ = middleware
-    db.Where("id = ?", handlerReq.ID).Find(&[]CaseBodyBindingDoneInMiddlewareAndHandlerModel{})
-    return nil
+	order := Order{
+		ProductID: req.ProductID,
+		Quantity:  req.Quantity,
+		Notes:     req.Notes,
+	}
+	db.Create(&order)
+	c.JSON(http.StatusCreated, order)
 }

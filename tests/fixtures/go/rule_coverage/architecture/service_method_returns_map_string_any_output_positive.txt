@@ -1,72 +1,40 @@
 package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"fmt"
+	"gorm.io/gorm"
 )
 
 // Positive scenario for service_method_returns_map_string_any_output: risky concrete example for this rule.
 // Rule intent: Services that return dynamic maps instead of typed result contracts.
-type CaseServiceMethodReturnsMapStringAnyOutputDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
-
 type CaseServiceMethodReturnsMapStringAnyOutputModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string `gorm:"column:status" json:"status"`
+	Amount   int    `gorm:"column:amount" json:"amount"`
 }
 
 type CaseServiceMethodReturnsMapStringAnyOutputRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseServiceMethodReturnsMapStringAnyOutputModel
+	db *gorm.DB
 }
 
 type CaseServiceMethodReturnsMapStringAnyOutputService struct {
-    repo *CaseServiceMethodReturnsMapStringAnyOutputRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+	repo *CaseServiceMethodReturnsMapStringAnyOutputRepository
 }
 
-type CaseServiceMethodReturnsMapStringAnyOutputAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+func (s *CaseServiceMethodReturnsMapStringAnyOutputService) GetSummary(id string) (map[string]any, error) {
+	var model CaseServiceMethodReturnsMapStringAnyOutputModel
+	if err := s.repo.db.Where("id = ?", id).First(&model).Error; err != nil {
+		return nil, fmt.Errorf("record not found: %w", err)
+	}
 
-func PositiveServiceMethodReturnsMapStringAnyOutput(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceMethodReturnsMapStringAnyOutputDTO) error {
-    focus := "service_method_returns_map_string"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseServiceMethodReturnsMapStringAnyOutputService{repo: &CaseServiceMethodReturnsMapStringAnyOutputRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseServiceMethodReturnsMapStringAnyOutputModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    service_method_returns_map_string_positive := map[string]int{"service": 1, "method": 2, "returns": 3, "map": 4, "string": 5, "any": 6}
-    service_method_returns_map_string_positive["signal"] = len(input) + len(items)
-    service_positive_0 := CaseServiceMethodReturnsMapStringAnyOutputDTO{ID: input, Status: "service"}
-    _ = service_positive_0
-    method_positive_1 := service_method_returns_map_string_positive["method"] + len(input)
-    _ = method_positive_1
-    returns_positive_2 := service_method_returns_map_string_positive["returns"] + len(input)
-    _ = returns_positive_2
-    map_positive_3 := service_method_returns_map_string_positive["map"] + len(input)
-    _ = map_positive_3
-    string_positive_4 := strings.TrimSpace(input)
-    _ = string_positive_4
-    any_positive_5 := service_method_returns_map_string_positive["any"] + len(input)
-    _ = any_positive_5
-    return nil
+	result := map[string]any{
+		"id":         model.ID,
+		"tenant_id":  model.TenantID,
+		"status":     model.Status,
+		"amount":     model.Amount,
+		"formatted":  fmt.Sprintf("%s - %s", model.ID, model.Status),
+	}
+
+	return result, nil
 }

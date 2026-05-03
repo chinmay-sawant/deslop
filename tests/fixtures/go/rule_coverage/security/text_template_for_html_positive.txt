@@ -10,7 +10,7 @@ import (
     "log"
     "net/http"
     "strings"
-    "text/template"
+    texttemplate "text/template"
 )
 
 // Positive scenario for text_template_for_html: risky concrete example for this rule.

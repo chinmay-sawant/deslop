@@ -1,63 +1,38 @@
-package rulecoverage
+package seed
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"log"
+
+	"gorm.io/gorm"
 )
 
-// Positive scenario for placeholder_seed_function_in_production: risky concrete example for this rule.
+// Positive scenario for placeholder_seed_function_in_production.
 // Rule intent: Seed entrypoints in production code that are still TODO-shaped or effectively no-ops.
-type CasePlaceholderSeedFunctionInProductionDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Seed function in production package with TODO comment and no real implementation.
+
+type Category struct {
+	ID   uint   `gorm:"primaryKey"`
+	Name string `gorm:"column:name"`
 }
 
-type CasePlaceholderSeedFunctionInProductionModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type Role struct {
+	ID   uint   `gorm:"primaryKey"`
+	Name string `gorm:"column:name"`
 }
 
-type CasePlaceholderSeedFunctionInProductionRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CasePlaceholderSeedFunctionInProductionModel
+func SeedData(db *gorm.DB) error {
+	// TODO: implement seed data for production
+	// Need to add default categories and roles before launch
+	log.Println("SeedData called but not yet implemented")
+	return nil
 }
 
-type CasePlaceholderSeedFunctionInProductionService struct {
-    repo *CasePlaceholderSeedFunctionInProductionRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func SeedCategories(db *gorm.DB) error {
+	// TODO: add categories
+	return nil
 }
 
-type CasePlaceholderSeedFunctionInProductionAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositivePlaceholderSeedFunctionInProduction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePlaceholderSeedFunctionInProductionDTO) error {
-    focus := "placeholder_seed_function_in_production"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    placeholder_seed_function_production_positive := map[string]int{"placeholder": 1, "seed": 2, "function": 3, "production": 4}
-    placeholder_seed_function_production_positive["signal"] = len(input) + len(items)
-    placeholder_positive_0 := placeholder_seed_function_production_positive["placeholder"] + len(input)
-    _ = placeholder_positive_0
-    seed_positive_1 := placeholder_seed_function_production_positive["seed"] + len(input)
-    _ = seed_positive_1
-    function_positive_2 := placeholder_seed_function_production_positive["function"] + len(input)
-    _ = function_positive_2
-    production_positive_3 := placeholder_seed_function_production_positive["production"] + len(input)
-    _ = production_positive_3
-    return nil
+func SeedRoles(db *gorm.DB) error {
+	// TODO: add roles
+	return nil
 }

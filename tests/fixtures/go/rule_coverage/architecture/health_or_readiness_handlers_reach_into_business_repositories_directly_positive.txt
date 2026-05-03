@@ -1,52 +1,71 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for health_or_readiness_handlers_reach_into_business_repositories_directly: risky concrete example for this rule.
-// Rule intent: Health endpoints that depend on full business repositories instead of focused probes.
-type CaseHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectlyDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type Order struct {
+	ID     uint    `gorm:"primaryKey"`
+	UserID uint    `gorm:"column:user_id"`
+	Total  float64 `gorm:"column:total"`
+	Status string  `gorm:"column:status"`
 }
 
-type CaseHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectlyModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type OrderRepository struct {
+	db *gorm.DB
 }
 
-type CaseHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectlyRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectlyModel
+func (r *OrderRepository) Ping() error {
+	return r.db.Exec("SELECT 1").Error
 }
 
-type CaseHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectlyService struct {
-    repo *CaseHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectlyRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func (r *OrderRepository) Count() (int64, error) {
+	var count int64
+	err := r.db.Model(&Order{}).Count(&count).Error
+	return count, err
 }
 
-type CaseHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectlyAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+type HealthHandler struct {
+	orderRepo *OrderRepository
 }
 
-func PositiveHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectlyDTO) error {
-    var items []CaseHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectlyModel
-    db.Find(&items)
-    return nil
+func (h *HealthHandler) HealthCheck(c *gin.Context) {
+	if err := h.orderRepo.Ping(); err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status":  "unhealthy",
+			"message": "database ping failed",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	count, err := h.orderRepo.Count()
+	if err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status":  "unhealthy",
+			"message": "failed to count orders",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":       "healthy",
+		"order_count":  count,
+	})
+}
+
+func (h *HealthHandler) ReadinessCheck(c *gin.Context) {
+	if err := h.orderRepo.Ping(); err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status": "not ready",
+			"reason": "database connection failed",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ready"})
 }

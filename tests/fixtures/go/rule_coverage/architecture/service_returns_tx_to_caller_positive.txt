@@ -1,75 +1,38 @@
 package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"fmt"
+	"gorm.io/gorm"
 )
 
 // Positive scenario for service_returns_tx_to_caller: risky concrete example for this rule.
 // Rule intent: Services that hand transaction objects back to handlers or controllers.
-type CaseServiceReturnsTxToCallerDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
-
 type CaseServiceReturnsTxToCallerModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+	ID       string `gorm:"column:id" json:"id"`
+	TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string `gorm:"column:status" json:"status"`
 }
 
 type CaseServiceReturnsTxToCallerRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseServiceReturnsTxToCallerModel
+	db *gorm.DB
 }
 
 type CaseServiceReturnsTxToCallerService struct {
-    repo *CaseServiceReturnsTxToCallerRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+	db *gorm.DB
 }
 
-type CaseServiceReturnsTxToCallerAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func (s *CaseServiceReturnsTxToCallerService) BeginTransaction() *gorm.DB {
+	tx := s.db.Begin()
+	return tx
 }
 
-func PositiveServiceReturnsTxToCaller(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceReturnsTxToCallerDTO) error {
-    focus := "service_returns_tx_to_caller"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseServiceReturnsTxToCallerDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseServiceReturnsTxToCallerService{repo: &CaseServiceReturnsTxToCallerRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseServiceReturnsTxToCallerModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    tx := db.Begin()
-    tx.Create(&CaseServiceReturnsTxToCallerModel{ID: input})
-    go func() { _ = tx.Commit().Error }()
-    service_returns_tx_caller_positive := map[string]int{"service": 1, "returns": 2, "tx": 3, "caller": 4}
-    service_returns_tx_caller_positive["signal"] = len(input) + len(items)
-    service_positive_0 := CaseServiceReturnsTxToCallerDTO{ID: input, Status: "service"}
-    _ = service_positive_0
-    returns_positive_1 := service_returns_tx_caller_positive["returns"] + len(input)
-    _ = returns_positive_1
-    tx_positive_2 := service_returns_tx_caller_positive["tx"] + len(input)
-    _ = tx_positive_2
-    caller_positive_3 := service_returns_tx_caller_positive["caller"] + len(input)
-    _ = caller_positive_3
-    return nil
+func (s *CaseServiceReturnsTxToCallerService) CreateWithTx(tx *gorm.DB, id string) error {
+	model := CaseServiceReturnsTxToCallerModel{
+		ID:     id,
+		Status: "pending",
+	}
+	if err := tx.Create(&model).Error; err != nil {
+		return fmt.Errorf("create failed: %w", err)
+	}
+	return nil
 }

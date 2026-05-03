@@ -1,58 +1,73 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-    "testing"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for repository_tests_depend_on_http_transport_types: risky concrete example for this rule.
-// Rule intent: Repository tests that assert HTTP DTOs or handler-layer types.
-type CaseRepositoryTestsDependOnHttpTransportTypesDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Repository tests depend on HTTP transport types like
+// *gin.Context and http.ResponseWriter instead of testing pure repository behavior.
+
+type Tag struct {
+	ID   string `gorm:"column:id"`
+	Name string `gorm:"column:name"`
 }
 
-type CaseRepositoryTestsDependOnHttpTransportTypesModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type TagRepository struct {
+	db *gorm.DB
 }
 
-type CaseRepositoryTestsDependOnHttpTransportTypesRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRepositoryTestsDependOnHttpTransportTypesModel
+func (r *TagRepository) FindByID(id string) (*Tag, error) {
+	var tag Tag
+	err := r.db.First(&tag, "id = ?", id).Error
+	return &tag, err
 }
 
-type CaseRepositoryTestsDependOnHttpTransportTypesService struct {
-    repo *CaseRepositoryTestsDependOnHttpTransportTypesRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func (r *TagRepository) Create(tag *Tag) error {
+	return r.db.Create(tag).Error
 }
 
-type CaseRepositoryTestsDependOnHttpTransportTypesAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+// TestFindByID uses *gin.Context in a repository test - anti-pattern.
+func TestFindByID(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+
+	repo := &TagRepository{db: nil}
+	c.Set("repo", repo)
+
+	tag, err := repo.FindByID("tag-1")
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		t.FailNow()
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": tag})
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected status 200, got %d", w.Code)
+	}
 }
 
-func PositiveRepositoryTestsDependOnHttpTransportTypes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryTestsDependOnHttpTransportTypesDTO) error {
+// TestCreate uses http.ResponseWriter in a repository test - anti-pattern.
+func TestCreate(t *testing.T) {
+	w := httptest.NewRecorder()
 
-    var model CaseRepositoryTestsDependOnHttpTransportTypesModel
-    if err := db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
-        return nil
-    }
-    c.JSON(http.StatusOK, gin.H{"data": model})
-    return nil
+	repo := &TagRepository{db: nil}
+	tag := &Tag{ID: "tag-2", Name: "golang"}
+
+	err := repo.Create(tag)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		t.FailNow()
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	if w.Code != http.StatusCreated {
+		t.Errorf("expected status 201, got %d", w.Code)
+	}
 }

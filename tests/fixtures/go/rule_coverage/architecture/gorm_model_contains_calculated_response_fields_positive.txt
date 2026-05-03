@@ -1,56 +1,18 @@
-package repository
+package models
 
-import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-)
+// Anti-pattern: GORM model contains a calculated JSON response field (full_name)
+// that combines first_name and last_name. This presentation concern does not
+// belong in a persistence struct.
 
-// Positive scenario for gorm_model_contains_calculated_response_fields: risky concrete example for this rule.
-// Rule intent: Persistence structs that carry API-only derived presentation fields.
-type CaseGormModelContainsCalculatedResponseFieldsDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type User struct {
+	ID        uint   `gorm:"primaryKey" json:"id"`
+	FirstName string `gorm:"column:first_name" json:"first_name"`
+	LastName  string `gorm:"column:last_name" json:"last_name"`
+	Email     string `gorm:"column:email" json:"email"`
+	FullName  string `gorm:"-" json:"full_name"` // calculated from FirstName + LastName
 }
 
-type CaseGormModelContainsCalculatedResponseFieldsModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-    FormattedStatus string `json:"formatted_status" gorm:"-"`
-}
-
-type CaseGormModelContainsCalculatedResponseFieldsRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGormModelContainsCalculatedResponseFieldsModel
-}
-
-type CaseGormModelContainsCalculatedResponseFieldsService struct {
-    repo *CaseGormModelContainsCalculatedResponseFieldsRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseGormModelContainsCalculatedResponseFieldsAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveGormModelContainsCalculatedResponseFields(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormModelContainsCalculatedResponseFieldsDTO) error {
-    var model CaseGormModelContainsCalculatedResponseFieldsModel
-    db.Where("id = ?", input).First(&model)
-    model.FormattedStatus = "Status: " + model.Status
-    c.JSON(http.StatusOK, model)
-    return nil
+func (u *User) AfterFind() error {
+	u.FullName = u.FirstName + " " + u.LastName
+	return nil
 }

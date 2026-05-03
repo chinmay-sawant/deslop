@@ -1,64 +1,37 @@
-package main
+package domain
 
-import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-)
+// Positive scenario for domain_entity_contains_json_tags_without_boundary_exception.
+// Rule intent: Core domain entities that are directly annotated for API serialization
+// without a deliberate boundary exception (e.g., DTO layer).
 
-// Positive scenario for domain_entity_contains_json_tags_without_boundary_exception: risky concrete example for this rule.
-// Rule intent: Core domain entities that are directly annotated for API serialization without a deliberate boundary exception.
-type CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// User is a core domain entity that leaks API serialization concerns via json tags.
+// Domain entities should not know about transport-layer concerns like json encoding.
+type User struct {
+	ID        string `json:"id"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+	Role      string `json:"role"`
+	IsActive  bool   `json:"is_active"`
 }
 
-type CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+// Order is another domain entity with json tags, mixing persistence and API concerns.
+type Order struct {
+	ID          string  `json:"id"`
+	UserID      string  `json:"user_id"`
+	TotalAmount float64 `json:"total_amount"`
+	Currency    string  `json:"currency"`
+	Status      string  `json:"status"`
+	Items       []Item  `json:"items"`
+	CreatedAt   string  `json:"created_at"`
 }
 
-type CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionModel
-}
-
-type CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionService struct {
-    repo *CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveDomainEntityContainsJsonTagsWithoutBoundaryException(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionDTO) error {
-    focus := "domain_entity_contains_json_tags"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionService{repo: &CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    c.JSON(http.StatusOK, model)
-    c.JSON(http.StatusOK, gin.H{"entity": model})
-    return nil
+// Item is a value object within the Order aggregate, also leaking json tags.
+type Item struct {
+	ProductID string  `json:"product_id"`
+	Name      string  `json:"name"`
+	Quantity  int     `json:"quantity"`
+	Price     float64 `json:"price"`
 }

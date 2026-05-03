@@ -1,57 +1,35 @@
 package rulecoverage
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for event_publish_before_transaction_commit: risky concrete example for this rule.
+// Positive scenario for event_publish_before_transaction_commit.
 // Rule intent: Event or message publication before durable commit is confirmed.
-type CaseEventPublishBeforeTransactionCommitDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type EventBus struct{}
+
+func (e *EventBus) Publish(ctx context.Context, event string, payload map[string]interface{}) {
 }
 
-type CaseEventPublishBeforeTransactionCommitModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type EventPublishModel struct {
+	ID     string `gorm:"column:id" json:"id"`
+	Status string `gorm:"column:status" json:"status"`
 }
 
-type CaseEventPublishBeforeTransactionCommitRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseEventPublishBeforeTransactionCommitModel
-}
+func PositiveEventPublishBeforeTransactionCommit(c *gin.Context, db *gorm.DB, eventBus *EventBus, orderID string) error {
+	tx := db.Begin()
 
-type CaseEventPublishBeforeTransactionCommitService struct {
-    repo *CaseEventPublishBeforeTransactionCommitRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	tx.Create(&EventPublishModel{ID: orderID, Status: "created"})
 
-type CaseEventPublishBeforeTransactionCommitAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	eventBus.Publish(context.Background(), "order.created", map[string]interface{}{
+		"order_id": orderID,
+	})
 
-func PositiveEventPublishBeforeTransactionCommit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEventPublishBeforeTransactionCommitDTO) error {
-    focus := "event_publish_before_transaction_commit"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    tx := db.Begin()
-    tx.Create(&CaseEventPublishBeforeTransactionCommitModel{ID: input})
-    eventBus.Publish(ctx, "order.created")
-    tx.Commit()
-    return nil
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
 }

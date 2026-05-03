@@ -1,75 +1,65 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-    "testing"
+	"testing"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for migration_tests_live_under_handler_packages: risky concrete example for this rule.
-// Rule intent: Migration-specific tests located in transport packages.
-type CaseMigrationTestsLiveUnderHandlerPackagesDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for migration_tests_live_under_handler_packages.
+// Rule intent: Migration-specific tests located in transport/handler packages.
+// Anti-pattern: Migration test file lives under handler/ instead of migration/ or internal/db/.
+
+type Product struct {
+	ID    uint   `gorm:"primaryKey"`
+	Name  string `gorm:"column:name"`
+	Price int    `gorm:"column:price"`
 }
 
-type CaseMigrationTestsLiveUnderHandlerPackagesModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func TestMigration_AddPriceColumn(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("failed to open db: %v", err)
+	}
+
+	err = db.AutoMigrate(&Product{})
+	if err != nil {
+		t.Fatalf("migration failed: %v", err)
+	}
+
+	var product Product
+	if err := db.First(&product).Error; err == nil {
+		t.Log("migration applied successfully")
+	}
 }
 
-type CaseMigrationTestsLiveUnderHandlerPackagesRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseMigrationTestsLiveUnderHandlerPackagesModel
+func TestMigration_RollbackPriceColumn(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("failed to open db: %v", err)
+	}
+
+	err = db.AutoMigrate(&Product{})
+	if err != nil {
+		t.Fatalf("migration failed: %v", err)
+	}
+
+	err = db.Migrator().DropColumn(&Product{}, "price")
+	if err != nil {
+		t.Fatalf("rollback failed: %v", err)
+	}
 }
 
-type CaseMigrationTestsLiveUnderHandlerPackagesService struct {
-    repo *CaseMigrationTestsLiveUnderHandlerPackagesRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+func TestHandler_GetProducts(t *testing.T) {
+	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	db.AutoMigrate(&Product{})
+	db.Create(&Product{Name: "Widget", Price: 999})
 
-type CaseMigrationTestsLiveUnderHandlerPackagesAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	var products []Product
+	db.Find(&products)
 
-func PositiveMigrationTestsLiveUnderHandlerPackages(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMigrationTestsLiveUnderHandlerPackagesDTO) error {
-    focus := "migration_tests_live_under_handler"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseMigrationTestsLiveUnderHandlerPackagesDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    testCase := struct { name string; raw string }{"full stack", input}
-    _ = (*testing.T)(nil)
-    _ = testCase
-    migration_tests_live_under_handler_positive := map[string]int{"migration": 1, "tests": 2, "live": 3, "under": 4, "handler": 5, "packages": 6}
-    migration_tests_live_under_handler_positive["signal"] = len(input) + len(items)
-    migration_positive_0 := migration_tests_live_under_handler_positive["migration"] + len(input)
-    _ = migration_positive_0
-    tests_positive_1 := migration_tests_live_under_handler_positive["tests"] + len(input)
-    _ = tests_positive_1
-    live_positive_2 := migration_tests_live_under_handler_positive["live"] + len(input)
-    _ = live_positive_2
-    under_positive_3 := migration_tests_live_under_handler_positive["under"] + len(input)
-    _ = under_positive_3
-    handler_positive_4 := c.FullPath() + ":" + input
-    _ = handler_positive_4
-    packages_positive_5 := migration_tests_live_under_handler_positive["packages"] + len(input)
-    _ = packages_positive_5
-    return nil
+	if len(products) != 1 {
+		t.Errorf("expected 1 product, got %d", len(products))
+	}
 }

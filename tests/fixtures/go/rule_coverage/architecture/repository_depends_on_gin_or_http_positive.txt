@@ -1,74 +1,50 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for repository_depends_on_gin_or_http: risky concrete example for this rule.
-// Rule intent: Repository packages that import Gin, `net/http`, or transport-only response helpers.
-type CaseRepositoryDependsOnGinOrHttpDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Repository package imports gin and net/http types.
+// The data layer should not depend on HTTP transport packages.
+
+type Account struct {
+	ID      string `gorm:"column:id"`
+	Balance int    `gorm:"column:balance"`
 }
 
-type CaseRepositoryDependsOnGinOrHttpModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type AccountRepository struct {
+	db *gorm.DB
 }
 
-type CaseRepositoryDependsOnGinOrHttpRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRepositoryDependsOnGinOrHttpModel
+// Find returns gin.H - a gin-specific type - from the repository layer.
+func (r *AccountRepository) Find(id string) (gin.H, error) {
+	var account Account
+	err := r.db.First(&account, "id = ?", id).Error
+	if err != nil {
+		return gin.H{"error": "not found", "status": http.StatusNotFound}, err
+	}
+	return gin.H{"id": account.ID, "balance": account.Balance}, nil
 }
 
-type CaseRepositoryDependsOnGinOrHttpService struct {
-    repo *CaseRepositoryDependsOnGinOrHttpRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// Create uses http.ResponseWriter directly - another transport dependency.
+func (r *AccountRepository) Create(w http.ResponseWriter, account *Account) error {
+	result := r.db.Create(account)
+	if result.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return result.Error
+	}
+	w.WriteHeader(http.StatusCreated)
+	return nil
 }
 
-type CaseRepositoryDependsOnGinOrHttpAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveRepositoryDependsOnGinOrHttp(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryDependsOnGinOrHttpDTO) error {
-    focus := "repository_depends_on_gin_or"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseRepositoryDependsOnGinOrHttpDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    repo := &CaseRepositoryDependsOnGinOrHttpRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryDependsOnGinOrHttpModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    err := errors.New("sql: no rows in result set for " + input)
-    if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
-    repository_depends_gin_http_positive := map[string]int{"repository": 1, "depends": 2, "gin": 3, "http": 4}
-    repository_depends_gin_http_positive["signal"] = len(input) + len(items)
-    repository_positive_0 := db.Where("repository_id = ?", input)
-    _ = repository_positive_0
-    depends_positive_1 := repository_depends_gin_http_positive["depends"] + len(input)
-    _ = depends_positive_1
-    gin_positive_2 := c.FullPath() + ":" + input
-    _ = gin_positive_2
-    http_positive_3 := repository_depends_gin_http_positive["http"] + len(input)
-    _ = http_positive_3
-    return nil
+// StatusCheck returns an http.Status code from the repository.
+func (r *AccountRepository) StatusCheck(id string) int {
+	var account Account
+	if err := r.db.First(&account, "id = ?", id).Error; err != nil {
+		return http.StatusNotFound
+	}
+	return http.StatusOK
 }

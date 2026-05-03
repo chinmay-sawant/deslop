@@ -1,65 +1,110 @@
 package main
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
-    "testing"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for route_registration_tests_duplicate_full_bootstrap_per_file: risky concrete example for this rule.
-// Rule intent: Tests that rebuild the full application bootstrap repeatedly instead of using shared test setup.
-type CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for route_registration_tests_duplicate_full_bootstrap_per_file
+// Anti-pattern: Each test file duplicates the full application bootstrap (gin.Default, db.Open, etc.)
+// instead of using shared test setup.
+
+// --- Test file 1: user_routes_test.go ---
+func TestUserRoutes_GetUsers(t *testing.T) {
+	// Anti-pattern: full bootstrap duplicated in every test file
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("failed to connect database: %v", err)
+	}
+	db.AutoMigrate(&User{})
+
+	router.GET("/api/users", func(c *gin.Context) {
+		var users []User
+		db.Find(&users)
+		c.JSON(http.StatusOK, users)
+	})
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/api/users", nil)
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", w.Code)
+	}
 }
 
-type CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+// --- Test file 2: order_routes_test.go ---
+func TestOrderRoutes_GetOrders(t *testing.T) {
+	// Anti-pattern: full bootstrap duplicated again
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("failed to connect database: %v", err)
+	}
+	db.AutoMigrate(&Order{})
+
+	router.GET("/api/orders", func(c *gin.Context) {
+		var orders []Order
+		db.Find(&orders)
+		c.JSON(http.StatusOK, orders)
+	})
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/api/orders", nil)
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", w.Code)
+	}
 }
 
-type CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileModel
+// --- Test file 3: product_routes_test.go ---
+func TestProductRoutes_GetProducts(t *testing.T) {
+	// Anti-pattern: full bootstrap duplicated yet again
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("failed to connect database: %v", err)
+	}
+	db.AutoMigrate(&Product{})
+
+	router.GET("/api/products", func(c *gin.Context) {
+		var products []Product
+		db.Find(&products)
+		c.JSON(http.StatusOK, products)
+	})
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/api/products", nil)
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", w.Code)
+	}
 }
 
-type CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileService struct {
-    repo *CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+type User struct {
+	ID   uint   `gorm:"primaryKey"`
+	Name string `json:"name"`
 }
 
-type CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+type Order struct {
+	ID       uint    `gorm:"primaryKey"`
+	UserID   uint    `json:"user_id"`
+	Total    float64 `json:"total"`
 }
 
-func PositiveRouteRegistrationTestsDuplicateFullBootstrapPerFile(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileDTO) error {
-
-    router := gin.Default()
-    repo := &CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileRepository{db: db, sql: sqlDB}
-    svc := &CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileService{repo: repo, client: client}
-    router.GET("/api/users", func(c *gin.Context) {
-        var model CaseRouteRegistrationTestsDuplicateFullBootstrapPerFileModel
-        if err := svc.repo.db.WithContext(ctx).Where("id = ?", c.Query("id")).First(&model).Error; err != nil {
-            c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
-            return
-        }
-        c.JSON(http.StatusOK, model)
-    })
-    _ = router
-    _ = svc
-    return nil
+type Product struct {
+	ID    uint    `gorm:"primaryKey"`
+	Name  string  `json:"name"`
+	Price float64 `json:"price"`
 }

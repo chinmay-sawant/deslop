@@ -1,65 +1,118 @@
-package service
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for validation_logic_duplicated_across_handlers: risky concrete example for this rule.
+// Positive scenario for validation_logic_duplicated_across_handlers.
 // Rule intent: Repeated required-field or enum-validation blocks across multiple handler files.
-type CaseValidationLogicDuplicatedAcrossHandlersDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+
+type CreateUserRequest struct {
+	Name  string `json:"name" binding:"required"`
+	Email string `json:"email" binding:"required"`
+	Role  string `json:"role"`
 }
 
-type CaseValidationLogicDuplicatedAcrossHandlersModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type UpdateUserRequest struct {
+	Name  string `json:"name" binding:"required"`
+	Email string `json:"email" binding:"required"`
+	Role  string `json:"role"`
 }
 
-type CaseValidationLogicDuplicatedAcrossHandlersRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseValidationLogicDuplicatedAcrossHandlersModel
+type CreateOrderRequest struct {
+	Name  string `json:"name" binding:"required"`
+	Email string `json:"email" binding:"required"`
+	Role  string `json:"role"`
 }
 
-type CaseValidationLogicDuplicatedAcrossHandlersService struct {
-    repo *CaseValidationLogicDuplicatedAcrossHandlersRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// CreateUserHandler validates input with duplicated logic.
+func CreateUserHandler(c *gin.Context) {
+	var req CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Duplicated validation block #1
+	if req.Name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "name is required"})
+		return
+	}
+	if len(req.Name) > 100 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "name must be less than 100 characters"})
+		return
+	}
+	if req.Email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "email is required"})
+		return
+	}
+	validRoles := map[string]bool{"admin": true, "user": true, "viewer": true}
+	if !validRoles[req.Role] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid role"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "user created"})
 }
 
-type CaseValidationLogicDuplicatedAcrossHandlersAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+// UpdateUserHandler validates input with the SAME duplicated logic.
+func UpdateUserHandler(c *gin.Context) {
+	var req UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Duplicated validation block #2 — identical to CreateUserHandler
+	if req.Name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "name is required"})
+		return
+	}
+	if len(req.Name) > 100 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "name must be less than 100 characters"})
+		return
+	}
+	if req.Email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "email is required"})
+		return
+	}
+	validRoles := map[string]bool{"admin": true, "user": true, "viewer": true}
+	if !validRoles[req.Role] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid role"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "user updated"})
 }
 
-func PositiveValidationLogicDuplicatedAcrossHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseValidationLogicDuplicatedAcrossHandlersDTO) error {
-    handler1 := func(dto CaseValidationLogicDuplicatedAcrossHandlersDTO) error {
-        if len(dto.Status) > 100 {
-            return errors.New("name too long")
-        }
-        return nil
-    }
-    handler2 := func(dto CaseValidationLogicDuplicatedAcrossHandlersDTO) error {
-        if len(dto.Status) > 100 {
-            return errors.New("name too long")
-        }
-        return nil
-    }
-    _ = handler1
-    _ = handler2
-    _ = db.Where("id = ?", input).Find(&items)
-    return nil
+// CreateOrderHandler also has the SAME duplicated validation logic.
+func CreateOrderHandler(c *gin.Context) {
+	var req CreateOrderRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Duplicated validation block #3 — identical to the other two handlers
+	if req.Name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "name is required"})
+		return
+	}
+	if len(req.Name) > 100 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "name must be less than 100 characters"})
+		return
+	}
+	if req.Email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "email is required"})
+		return
+	}
+	validRoles := map[string]bool{"admin": true, "user": true, "viewer": true}
+	if !validRoles[req.Role] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid role"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "order created"})
 }

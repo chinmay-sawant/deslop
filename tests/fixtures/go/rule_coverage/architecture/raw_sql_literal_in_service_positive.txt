@@ -1,4 +1,4 @@
-package repository
+package service
 
 import (
     "context"
@@ -28,14 +28,14 @@ type CaseRawSqlLiteralInServiceModel struct {
     DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type CaseRawSqlLiteralInServiceRepository struct {
+type CaseRawSqlLiteralInServiceUserRepo struct {
     db *gorm.DB
     sql *sql.DB
     cache map[string]CaseRawSqlLiteralInServiceModel
 }
 
-type CaseRawSqlLiteralInServiceService struct {
-    repo *CaseRawSqlLiteralInServiceRepository
+type CaseRawSqlLiteralInServiceUserService struct {
+    repo *CaseRawSqlLiteralInServiceUserRepo
     client *http.Client
     logger *log.Logger
     cfg map[string]string
@@ -49,11 +49,10 @@ func PositiveRawSqlLiteralInService(c *gin.Context, ctx context.Context, db *gor
     focus := "raw_sql_literal_in_service"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    repo := &CaseRawSqlLiteralInServiceRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRawSqlLiteralInServiceModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    service := &CaseRawSqlLiteralInServiceService{repo: &CaseRawSqlLiteralInServiceRepository{db: db, sql: sqlDB}, client: client}
+    service := &CaseRawSqlLiteralInServiceUserService{repo: &CaseRawSqlLiteralInServiceUserRepo{db: db, sql: sqlDB}, client: client, logger: nil}
+    service.repo.db = service.repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    service.repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRawSqlLiteralInServiceModel{})
+    service.repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
     if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
     model := CaseRawSqlLiteralInServiceModel{ID: input, Status: "pending"}
     _ = service

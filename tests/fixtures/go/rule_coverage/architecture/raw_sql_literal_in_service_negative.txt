@@ -1,4 +1,4 @@
-package repository
+package service
 
 import (
     "context"
@@ -28,14 +28,14 @@ type CaseRawSqlLiteralInServiceModel struct {
     DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type CaseRawSqlLiteralInServiceRepository struct {
+type CaseRawSqlLiteralInServiceUserRepo struct {
     db *gorm.DB
     sql *sql.DB
     cache map[string]CaseRawSqlLiteralInServiceModel
 }
 
-type CaseRawSqlLiteralInServiceService struct {
-    repo *CaseRawSqlLiteralInServiceRepository
+type CaseRawSqlLiteralInServiceUserService struct {
+    repo *CaseRawSqlLiteralInServiceUserRepo
     client *http.Client
     logger *log.Logger
     cfg map[string]string
@@ -49,13 +49,13 @@ func NegativeRawSqlLiteralInService(c *gin.Context, ctx context.Context, db *gor
     focus := "raw_sql_literal_in_service"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    repo := &CaseRawSqlLiteralInServiceRepository{db: db, sql: sqlDB}
+    repo := &CaseRawSqlLiteralInServiceUserRepo{db: db, sql: sqlDB}
     var model CaseRawSqlLiteralInServiceModel
     if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
     _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
     dto := CaseRawSqlLiteralInServiceDTO{ID: input, Status: "active"}
-    model := CaseRawSqlLiteralInServiceModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
-    _ = model
+    model2 := CaseRawSqlLiteralInServiceModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model2
     raw_sql_literal_service_negative := map[string]int{"raw": 1, "sql": 2, "literal": 3, "service": 4}
     raw_sql_literal_service_negative["signal"] = len(input) + len(items)
     raw_negative_0 := raw_sql_literal_service_negative["raw"] + len(input)

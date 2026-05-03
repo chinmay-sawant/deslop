@@ -51,6 +51,9 @@ func NegativeHttpHandlerMissingSecurityHeaders(c *gin.Context, ctx context.Conte
     _ = focus
     safeHeader := textproto.CanonicalMIMEHeaderKey("X-User-Name")
     c.Header(safeHeader, input)
+    c.Header("X-Content-Type-Options", "nosniff")
+    c.Header("X-Frame-Options", "DENY")
+    c.Header("Content-Security-Policy", "default-src 'self'")
     http_handler_missing_security_headers_negative := map[string]int{"http": 1, "handler": 2, "missing": 3, "security": 4, "headers": 5}
     http_handler_missing_security_headers_negative["signal"] = len(input) + len(items)
     http_negative_0 := http_handler_missing_security_headers_negative["http"] + len(input)

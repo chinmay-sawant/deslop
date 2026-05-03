@@ -1,55 +1,42 @@
 package router
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-// Positive scenario for admin_or_debug_endpoint_registration_mixed_into_public_router_setup: risky concrete example for this rule.
-// Rule intent: Operational endpoints registered alongside public routes with no clear boundary.
-type CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
+// Positive scenario for admin_or_debug_endpoint_registration_mixed_into_public_router_setup
+// Anti-pattern: Admin/debug endpoints registered alongside public routes with no separation.
+func SetupRouter() *gin.Engine {
+	r := gin.Default()
 
-type CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+	// Public routes
+	r.GET("/api/v1/products", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"products": []string{}})
+	})
+	r.GET("/api/v1/products/:id", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"id": c.Param("id")})
+	})
+	r.POST("/api/v1/orders", func(c *gin.Context) {
+		c.JSON(http.StatusCreated, gin.H{"status": "created"})
+	})
 
-type CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupModel
-}
+	// Anti-pattern: admin and debug endpoints mixed directly into public router
+	r.GET("/admin/users", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"users": []string{}})
+	})
+	r.DELETE("/admin/users/:id", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"deleted": true})
+	})
+	r.GET("/admin/config", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"config": map[string]string{}})
+	})
+	r.GET("/debug/pprof", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"profile": "pprof"})
+	})
+	r.GET("/debug/vars", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"vars": map[string]int{}})
+	})
 
-type CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupService struct {
-    repo *CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetup(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupDTO) error {
-    r := gin.New()
-    r.GET("/api/items", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"data": input}) })
-    r.GET("/api/users", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"data": input}) })
-    r.GET("/admin/users", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"data": input}) })
-    r.GET("/debug/pprof", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"data": input}) })
-    return nil
+	return r
 }

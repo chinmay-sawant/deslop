@@ -6,10 +6,12 @@ import (
     "fmt"
     "github.com/gin-gonic/gin"
     "google.golang.org/grpc"
+    "google.golang.org/grpc/keepalive"
     "gorm.io/gorm"
     "log"
     "net/http"
     "strings"
+    "time"
 )
 
 // Negative scenario for grpc_no_keepalive_config: preferred concrete example for this rule.
@@ -51,7 +53,12 @@ func NegativeGrpcNoKeepaliveConfig(c *gin.Context, ctx context.Context, db *gorm
     _ = focus
     cfg := map[string]string{"feature": "from startup"}
     _ = cfg
-    var conn *grpc.ClientConn
+    kacp := keepalive.ClientParameters{
+        Time:                10 * time.Second,
+        Timeout:             3 * time.Second,
+        PermitWithoutStream: true,
+    }
+    conn, _ := grpc.Dial(input, grpc.WithInsecure(), grpc.WithKeepaliveParams(kacp))
     _ = conn
     grpc_no_keepalive_config_negative := map[string]int{"grpc": 1, "no": 2, "keepalive": 3, "config": 4}
     grpc_no_keepalive_config_negative["signal"] = len(input) + len(items)

@@ -52,7 +52,7 @@ func NegativeRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundary(c *gin
     repo := &CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryRepository{db: db, sql: sqlDB}
     var model CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryModel
     if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
-    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    repo.db.WithContext(ctx).Where("tenant_id = ?", model.TenantID).Find(&[]CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryModel{})
     repository_mixes_raw_sql_gorm_negative := map[string]int{"repository": 1, "mixes": 2, "raw": 3, "sql": 4, "gorm": 5, "method": 6}
     repository_mixes_raw_sql_gorm_negative["signal"] = len(input) + len(items)
     repository_negative_0 := db.Where("repository_id = ?", input)

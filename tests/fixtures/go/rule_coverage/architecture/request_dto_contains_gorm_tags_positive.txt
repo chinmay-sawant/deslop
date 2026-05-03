@@ -1,72 +1,33 @@
-package repository
+package transport
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for request_dto_contains_gorm_tags: risky concrete example for this rule.
-// Rule intent: Request DTOs that carry persistence-only `gorm` tags.
-type CaseRequestDtoContainsGormTagsDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for request_dto_contains_gorm_tags.
+// Anti-pattern: Request DTO carries gorm persistence tags,
+// coupling the API contract to the database schema.
+
+type CreateOrderRequest struct {
+	ID         uint   `json:"id" gorm:"column:id;primaryKey"`
+	CustomerID uint   `json:"customer_id" gorm:"column:customer_id;index"`
+	ProductID  uint   `json:"product_id" gorm:"column:product_id"`
+	Quantity   int    `json:"quantity" gorm:"column:quantity"`
+	Status     string `json:"status" gorm:"column:status;default:'pending'"`
+	TotalPrice float64 `json:"total_price" gorm:"column:total_price"`
 }
 
-type CaseRequestDtoContainsGormTagsModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+func CreateOrderHandler(c *gin.Context) {
+	var req CreateOrderRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-type CaseRequestDtoContainsGormTagsRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRequestDtoContainsGormTagsModel
-}
-
-type CaseRequestDtoContainsGormTagsService struct {
-    repo *CaseRequestDtoContainsGormTagsRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseRequestDtoContainsGormTagsAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveRequestDtoContainsGormTags(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestDtoContainsGormTagsDTO) error {
-
-    type CreateUserRequest struct {
-        Name  string `json:"name" binding:"required"`
-        Email string `json:"email" binding:"required"`
-        Role  string `json:"role"`
-    }
-    type UserDTO struct {
-        ID    string `json:"id"`
-        Name  string `json:"name"`
-        Email string `json:"email"`
-        Role  string `json:"role,omitempty"`
-    }
-    var req CreateUserRequest
-    if err := c.ShouldBindJSON(&req); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return nil
-    }
-    var model CaseRequestDtoContainsGormTagsModel
-    if err := db.WithContext(ctx).Where("email = ?", req.Email).First(&model).Error; err != nil {
-        return err
-    }
-    c.JSON(http.StatusOK, UserDTO{ID: model.ID, Name: model.ID, Email: input})
-    return nil
+	// Anti-pattern: the request DTO has gorm tags, leaking persistence
+	// concerns into the transport layer.
+	db.Create(&req)
+	c.JSON(http.StatusCreated, req)
 }

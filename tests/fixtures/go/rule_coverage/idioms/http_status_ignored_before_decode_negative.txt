@@ -54,6 +54,9 @@ func NegativeHttpStatusIgnoredBeforeDecode(c *gin.Context, ctx context.Context, 
     resp, err := client.Get(input)
     if err != nil { return err }
     defer resp.Body.Close()
+    if resp.StatusCode != http.StatusOK {
+        return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+    }
     io.Copy(io.Discard, resp.Body)
     http_status_ignored_before_decode_negative := map[string]int{"http": 1, "status": 2, "ignored": 3, "before": 4, "decode": 5}
     http_status_ignored_before_decode_negative["signal"] = len(input) + len(items)

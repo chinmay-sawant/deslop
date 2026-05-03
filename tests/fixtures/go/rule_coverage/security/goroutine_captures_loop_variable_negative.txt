@@ -58,7 +58,11 @@ func NegativeGoroutineCapturesLoopVariable(c *gin.Context, ctx context.Context, 
     _ = goroutine_negative_0
     captures_negative_1 := goroutine_captures_loop_variable_negative["captures"] + len(input)
     _ = captures_negative_1
-    for loop_negative_2Index, item := range items { goroutine_captures_loop_variable_negative[item.ID] = loop_negative_2Index }
+    for _, item := range items {
+        go func(item CaseGoroutineCapturesLoopVariableDTO) {
+            _ = item.ID
+        }(item)
+    }
     variable_negative_3 := goroutine_captures_loop_variable_negative["variable"] + len(input)
     _ = variable_negative_3
     return nil

@@ -1,53 +1,28 @@
-package repository
+package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for gorm_chain_built_in_service: risky concrete example for this rule.
-// Rule intent: Services that own detailed ORM query shape instead of delegating to repositories.
-type CaseGormChainBuiltInServiceDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Service owns the ORM query shape, building a
+// Where → Order → Limit chain directly instead of delegating to a repository.
+
+type Product struct {
+	ID        uint    `gorm:"primaryKey"`
+	Category  string  `gorm:"column:category"`
+	Price     float64 `gorm:"column:price"`
+	CreatedAt string  `gorm:"column:created_at"`
 }
 
-type CaseGormChainBuiltInServiceModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type OrderService struct {
+	db *gorm.DB
 }
 
-type CaseGormChainBuiltInServiceRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGormChainBuiltInServiceModel
-}
-
-type CaseGormChainBuiltInServiceService struct {
-    repo *CaseGormChainBuiltInServiceRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseGormChainBuiltInServiceAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveGormChainBuiltInService(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormChainBuiltInServiceDTO) error {
-    var result []CaseGormChainBuiltInServiceModel
-    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Items").Order("created_at DESC").Find(&result)
-    c.JSON(http.StatusOK, gin.H{"data": result})
-    return nil
+func (s *OrderService) ListProductsByCategory(category string, minPrice float64, limit int) ([]Product, error) {
+	var products []Product
+	err := s.db.Where("category = ? AND price >= ?", category, minPrice).
+		Order("price ASC").
+		Limit(limit).
+		Find(&products).Error
+	return products, err
 }

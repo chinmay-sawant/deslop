@@ -1,55 +1,43 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for repository_returns_framework_builder_to_upper_layer: risky concrete example for this rule.
-// Rule intent: Repositories that leak `*gorm.DB`, `sqlx.NamedStmt`, query builders, or raw rows to higher layers instead of returning results or domain abstractions.
-type CaseRepositoryReturnsFrameworkBuilderToUpperLayerDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Repository returns a framework builder (*gorm.DB or *sql.DB)
+// to the upper layer instead of returning concrete results or domain types.
+
+type Task struct {
+	ID       string `gorm:"column:id"`
+	Title    string `gorm:"column:title"`
+	Status   string `gorm:"column:status"`
+	Priority int    `gorm:"column:priority"`
 }
 
-type CaseRepositoryReturnsFrameworkBuilderToUpperLayerModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type TaskRepository struct {
+	db *gorm.DB
 }
 
-type CaseRepositoryReturnsFrameworkBuilderToUpperLayerRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRepositoryReturnsFrameworkBuilderToUpperLayerModel
+// GetQueryBuilder returns *gorm.DB to the service layer - anti-pattern.
+// The caller now has direct access to the query builder.
+func (r *TaskRepository) GetQueryBuilder() *gorm.DB {
+	return r.db
 }
 
-type CaseRepositoryReturnsFrameworkBuilderToUpperLayerService struct {
-    repo *CaseRepositoryReturnsFrameworkBuilderToUpperLayerRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// FilterByStatus returns a *gorm.DB chain instead of []Task - anti-pattern.
+func (r *TaskRepository) FilterByStatus(status string) *gorm.DB {
+	return r.db.Where("status = ?", status)
 }
 
-type CaseRepositoryReturnsFrameworkBuilderToUpperLayerAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+// GetDB returns the raw *gorm.DB instance - anti-pattern.
+func (r *TaskRepository) GetDB() *gorm.DB {
+	return r.db
 }
 
-func PositiveRepositoryReturnsFrameworkBuilderToUpperLayer(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsFrameworkBuilderToUpperLayerDTO) error {
-
-    repo := &CaseRepositoryReturnsFrameworkBuilderToUpperLayerRepository{db: db, sql: sqlDB}
-    tx := repo.db.Where("tenant_id = ?", input)
-    var results []CaseRepositoryReturnsFrameworkBuilderToUpperLayerModel
-    tx.Find(&results)
-    return tx, nil
-}
+// Example misuse in service layer:
+//
+//	qb := repo.GetQueryBuilder()
+//	qb.Where("priority > ?", 5).Delete(&Task{})
+//
+// The service layer can now execute arbitrary queries, bypassing
+// repository encapsulation.

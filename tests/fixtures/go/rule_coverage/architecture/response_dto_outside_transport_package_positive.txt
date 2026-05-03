@@ -1,64 +1,37 @@
-package handler
+package repository
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "os"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for response_dto_outside_transport_package: risky concrete example for this rule.
-// Rule intent: Response envelope structs that live in persistence or repository packages instead of transport or API contract packages.
-type CaseResponseDtoOutsideTransportPackageDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for response_dto_outside_transport_package.
+// Anti-pattern: Response DTO is defined in the repository package
+// instead of the transport/handler package, violating layer boundaries.
+
+// Anti-pattern: This response DTO lives in the repository package but is
+// serialized directly into HTTP responses.
+type InvoiceResponse struct {
+	ID         uint    `json:"id"`
+	OrderID    uint    `json:"order_id"`
+	Amount     float64 `json:"amount"`
+	DueDate    string  `json:"due_date"`
+	Currency   string  `json:"currency"`
+	Status     string  `json:"status"`
 }
 
-type CaseResponseDtoOutsideTransportPackageModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type InvoiceRepository struct {
+	db *gorm.DB
 }
 
-type CaseResponseDtoOutsideTransportPackageRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseResponseDtoOutsideTransportPackageModel
-}
+func (r *InvoiceRepository) GetInvoice(c *gin.Context) {
+	var invoice InvoiceResponse
+	if err := r.db.Where("id = ?", c.Param("id")).First(&invoice).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "invoice not found"})
+		return
+	}
 
-type CaseResponseDtoOutsideTransportPackageService struct {
-    repo *CaseResponseDtoOutsideTransportPackageRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseResponseDtoOutsideTransportPackageAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveResponseDtoOutsideTransportPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseResponseDtoOutsideTransportPackageDTO) error {
-
-    type AccountResponse struct {
-        ID     string `json:"id"`
-        Name   string `json:"name"`
-        Status string `json:"status"`
-    }
-    var model CaseResponseDtoOutsideTransportPackageModel
-    if err := db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
-        return err
-    }
-    resp := AccountResponse{ID: model.ID, Name: model.ID, Status: model.Status}
-    c.JSON(http.StatusOK, resp)
-    return nil
+	// Anti-pattern: repository defines and returns the HTTP response DTO
+	c.JSON(http.StatusOK, invoice)
 }

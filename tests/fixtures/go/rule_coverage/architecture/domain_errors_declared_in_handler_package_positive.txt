@@ -1,70 +1,46 @@
-package main
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"errors"
+	"net/http"
 )
 
-// Positive scenario for domain_errors_declared_in_handler_package: risky concrete example for this rule.
-// Rule intent: Business error types declared only in handlers instead of a reusable domain or service boundary.
-type CaseDomainErrorsDeclaredInHandlerPackageDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for domain_errors_declared_in_handler_package.
+// Rule intent: Business error types declared only in handlers instead of a
+// reusable domain or service boundary.
+
+// These domain errors are declared in the handler package, which is the anti-pattern.
+// They should live in a domain or errors package so services and repositories can use them.
+var (
+	ErrUserNotFound     = errors.New("user not found")
+	ErrOrderNotFound    = errors.New("order not found")
+	ErrInvalidEmail     = errors.New("invalid email address")
+	ErrInsufficientFunds = errors.New("insufficient funds")
+	ErrPaymentFailed    = errors.New("payment processing failed")
+	ErrForbidden        = errors.New("forbidden")
+	ErrUnauthorized     = errors.New("unauthorized")
+)
+
+type UserHandler struct{}
+
+func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
+	err := ErrUserNotFound
+	_ = err
 }
 
-type CaseDomainErrorsDeclaredInHandlerPackageModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func (h *UserHandler) ValidateEmail(w http.ResponseWriter, r *http.Request) {
+	err := ErrInvalidEmail
+	_ = err
 }
 
-type CaseDomainErrorsDeclaredInHandlerPackageRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseDomainErrorsDeclaredInHandlerPackageModel
+type OrderHandler struct{}
+
+func (h *OrderHandler) GetOrder(w http.ResponseWriter, r *http.Request) {
+	err := ErrOrderNotFound
+	_ = err
 }
 
-type CaseDomainErrorsDeclaredInHandlerPackageService struct {
-    repo *CaseDomainErrorsDeclaredInHandlerPackageRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseDomainErrorsDeclaredInHandlerPackageAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveDomainErrorsDeclaredInHandlerPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDomainErrorsDeclaredInHandlerPackageDTO) error {
-    focus := "domain_errors_declared_in_handler"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseDomainErrorsDeclaredInHandlerPackageDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseDomainErrorsDeclaredInHandlerPackageService{repo: &CaseDomainErrorsDeclaredInHandlerPackageRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseDomainErrorsDeclaredInHandlerPackageModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    err := errors.New("sql: no rows in result set for " + input)
-    if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
-    var ErrNotFound = errors.New("not found")
-    var ErrInvalidInput = errors.New("invalid input")
-    var ErrForbidden = errors.New("forbidden")
-    if input == "" { return ErrNotFound }
-    if input == "invalid" { return ErrInvalidInput }
-    return nil
+func (h *OrderHandler) ProcessPayment(w http.ResponseWriter, r *http.Request) {
+	err := ErrInsufficientFunds
+	_ = err
 }

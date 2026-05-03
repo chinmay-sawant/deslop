@@ -1,71 +1,44 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for repository_accepts_gin_context: risky concrete example for this rule.
-// Rule intent: Repositories that accept `*gin.Context` rather than `context.Context`.
-type CaseRepositoryAcceptsGinContextDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Repository method accepts *gin.Context instead of context.Context.
+// This couples the data layer to the HTTP transport layer.
+
+type User struct {
+	ID   string `gorm:"column:id"`
+	Name string `gorm:"column:name"`
 }
 
-type CaseRepositoryAcceptsGinContextModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type UserRepository struct {
+	db *gorm.DB
 }
 
-type CaseRepositoryAcceptsGinContextRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRepositoryAcceptsGinContextModel
+// Find accepts gin.Context - this is the anti-pattern.
+// Repositories should accept context.Context, not framework-specific context types.
+func (r *UserRepository) Find(c *gin.Context, id string) (*User, error) {
+	tenantID := c.GetHeader("X-Tenant-ID")
+	var user User
+	err := r.db.Where("id = ? AND tenant_id = ?", id, tenantID).First(&user).Error
+	return &user, err
 }
 
-type CaseRepositoryAcceptsGinContextService struct {
-    repo *CaseRepositoryAcceptsGinContextRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// List also accepts gin.Context and extracts query params directly.
+func (r *UserRepository) List(c *gin.Context) ([]User, error) {
+	page := c.DefaultQuery("page", "1")
+	limit := c.DefaultQuery("limit", "10")
+	var users []User
+	err := r.db.Offset((pageToInt(page) - 1) * limitToInt(limit)).Limit(limitToInt(limit)).Find(&users).Error
+	return users, err
 }
 
-type CaseRepositoryAcceptsGinContextAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func pageToInt(s string) int {
+	return 1
 }
 
-func PositiveRepositoryAcceptsGinContext(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryAcceptsGinContextDTO) error {
-    focus := "repository_accepts_gin_context"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseRepositoryAcceptsGinContextDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    repo := &CaseRepositoryAcceptsGinContextRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryAcceptsGinContextModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    repository_accepts_gin_context_positive := map[string]int{"repository": 1, "accepts": 2, "gin": 3, "context": 4}
-    repository_accepts_gin_context_positive["signal"] = len(input) + len(items)
-    repository_positive_0 := db.Where("repository_id = ?", input)
-    _ = repository_positive_0
-    accepts_positive_1 := repository_accepts_gin_context_positive["accepts"] + len(input)
-    _ = accepts_positive_1
-    gin_positive_2 := c.FullPath() + ":" + input
-    _ = gin_positive_2
-    context_positive_3 := ctx
-    _ = context_positive_3
-    return nil
+func limitToInt(s string) int {
+	return 10
 }

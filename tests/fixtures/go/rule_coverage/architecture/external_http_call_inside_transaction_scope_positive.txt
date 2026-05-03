@@ -1,57 +1,38 @@
 package rulecoverage
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"io"
+	"net/http"
 )
 
-// Positive scenario for external_http_call_inside_transaction_scope: risky concrete example for this rule.
+// Positive scenario for external_http_call_inside_transaction_scope.
 // Rule intent: Network calls performed while a DB transaction is open.
-type CaseExternalHttpCallInsideTransactionScopeDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type ExternalCallModel struct {
+	ID           string `gorm:"column:id" json:"id"`
+	PaymentRef   string `gorm:"column:payment_ref" json:"payment_ref"`
+	Status       string `gorm:"column:status" json:"status"`
 }
 
-type CaseExternalHttpCallInsideTransactionScopeModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+func PositiveExternalHttpCallInsideTransactionScope(c *gin.Context, db *gorm.DB, orderID string, amount int) error {
+	tx := db.Begin()
 
-type CaseExternalHttpCallInsideTransactionScopeRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseExternalHttpCallInsideTransactionScopeModel
-}
+	tx.Create(&ExternalCallModel{ID: orderID, Status: "pending"})
 
-type CaseExternalHttpCallInsideTransactionScopeService struct {
-    repo *CaseExternalHttpCallInsideTransactionScopeRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	resp, err := http.Get("https://payment-gateway.example.com/charge?amount=" + string(rune(amount)))
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	defer resp.Body.Close()
 
-type CaseExternalHttpCallInsideTransactionScopeAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	body, _ := io.ReadAll(resp.Body)
+	paymentRef := string(body)
 
-func PositiveExternalHttpCallInsideTransactionScope(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseExternalHttpCallInsideTransactionScopeDTO) error {
-    focus := "external_http_call_inside_transaction"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    tx := db.Begin()
-    http.Get("https://example.com/api")
-    tx.Create(&CaseExternalHttpCallInsideTransactionScopeModel{ID: input})
-    tx.Commit()
-    return nil
+	tx.Model(&ExternalCallModel{}).Where("id = ?", orderID).Update("payment_ref", paymentRef)
+
+	tx.Commit()
+	return nil
 }

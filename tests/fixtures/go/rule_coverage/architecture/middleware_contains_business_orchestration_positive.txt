@@ -1,79 +1,94 @@
 package middleware
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"database/sql"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
 )
 
-// Positive scenario for middleware_contains_business_orchestration: risky concrete example for this rule.
+// Positive scenario for middleware_contains_business_orchestration.
 // Rule intent: Middleware that performs domain workflows instead of cross-cutting concerns such as auth, tracing, or request enrichment.
 type CaseMiddlewareContainsBusinessOrchestrationDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+	ID       string `json:"id" form:"id" uri:"id"`
+	TenantID string `json:"tenant_id" form:"tenant_id"`
+	Status   string `json:"status,omitempty" binding:"required"`
+	Amount   int    `json:"amount"`
+	Payload  []byte `json:"payload"`
 }
 
 type CaseMiddlewareContainsBusinessOrchestrationModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+	ID       string         `gorm:"column:id" json:"id"`
+	TenantID string         `gorm:"column:tenant_id" json:"tenant_id"`
+	Status   string         `gorm:"column:status" json:"status"`
+	DeletedAt sql.NullTime  `json:"deleted_at,omitempty"`
 }
 
 type CaseMiddlewareContainsBusinessOrchestrationRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseMiddlewareContainsBusinessOrchestrationModel
+	db    *gorm.DB
+	sqlDB *sql.DB
 }
 
-type CaseMiddlewareContainsBusinessOrchestrationService struct {
-    repo *CaseMiddlewareContainsBusinessOrchestrationRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+type CaseMiddlewareContainsBusinessOrchestrationPaymentService struct {
+	repo *CaseMiddlewareContainsBusinessOrchestrationRepository
 }
 
-type CaseMiddlewareContainsBusinessOrchestrationAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func (s *CaseMiddlewareContainsBusinessOrchestrationPaymentService) ProcessPayment(ctx context.Context, amount int) error {
+	return nil
 }
 
-func PositiveMiddlewareContainsBusinessOrchestration(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareContainsBusinessOrchestrationDTO) error {
-    focus := "middleware_contains_business_orchestration"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseMiddlewareContainsBusinessOrchestrationService{repo: &CaseMiddlewareContainsBusinessOrchestrationRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseMiddlewareContainsBusinessOrchestrationModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
-        return func(inner *gin.Context) {
-            db.Exec("UPDATE accounts SET touched_at = now() WHERE tenant_id = ?", inner.GetHeader("X-Tenant-ID"))
-            inner.JSON(http.StatusOK, gin.H{"status": "mutated by middleware"})
-            next(inner)
-        }
-    }
-    _ = middleware
-    log.Printf("middleware_contains_business_orchestration tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
-    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
-    _ = auditFields
-    middleware_contains_business_orchestration_positive := map[string]int{"middleware": 1, "contains": 2, "business": 3, "orchestration": 4}
-    middleware_contains_business_orchestration_positive["signal"] = len(input) + len(items)
-    middleware_positive_0 := c.FullPath() + ":" + input
-    _ = middleware_positive_0
-    contains_positive_1 := strings.TrimSpace(input)
-    _ = contains_positive_1
-    business_positive_2 := CaseMiddlewareContainsBusinessOrchestrationDTO{ID: input, Status: "business"}
-    _ = business_positive_2
-    orchestration_positive_3 := middleware_contains_business_orchestration_positive["orchestration"] + len(input)
-    _ = orchestration_positive_3
-    return nil
+type CaseMiddlewareContainsBusinessOrchestrationNotificationService struct {
+	repo *CaseMiddlewareContainsBusinessOrchestrationRepository
+}
+
+func (s *CaseMiddlewareContainsBusinessOrchestrationNotificationService) SendConfirmation(ctx context.Context, tenantID string) error {
+	return nil
+}
+
+type CaseMiddlewareContainsBusinessOrchestrationInventoryService struct {
+	repo *CaseMiddlewareContainsBusinessOrchestrationRepository
+}
+
+func (s *CaseMiddlewareContainsBusinessOrchestrationInventoryService) ReserveStock(ctx context.Context, itemID string) error {
+	return nil
+}
+
+func PositiveMiddlewareContainsBusinessOrchestration(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB) error {
+	repo := &CaseMiddlewareContainsBusinessOrchestrationRepository{db: db, sqlDB: sqlDB}
+	paymentSvc := &CaseMiddlewareContainsBusinessOrchestrationPaymentService{repo: repo}
+	notificationSvc := &CaseMiddlewareContainsBusinessOrchestrationNotificationService{repo: repo}
+	inventorySvc := &CaseMiddlewareContainsBusinessOrchestrationInventoryService{repo: repo}
+
+	middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+		return func(c *gin.Context) {
+			orderID := c.Param("order_id")
+			amount := 100
+
+			if err := paymentSvc.ProcessPayment(ctx, amount); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "payment failed"})
+				return
+			}
+
+			if err := inventorySvc.ReserveStock(ctx, orderID); err != nil {
+				c.JSON(http.StatusConflict, gin.H{"error": "stock unavailable"})
+				return
+			}
+
+			if err := notificationSvc.SendConfirmation(ctx, c.GetHeader("X-Tenant-ID")); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "notification failed"})
+				return
+			}
+
+			c.Set("order_processed", true)
+			next(c)
+		}
+	}
+
+	handler := func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "order complete"})
+	}
+
+	middleware(handler)(c)
+	return nil
 }

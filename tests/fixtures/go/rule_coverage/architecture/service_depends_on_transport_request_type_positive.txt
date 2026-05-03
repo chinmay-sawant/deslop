@@ -1,74 +1,50 @@
 package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"fmt"
+	"io"
+	"net/http"
 )
 
-// Positive scenario for service_depends_on_transport_request_type: risky concrete example for this rule.
-// Rule intent: Service signatures that accept request DTOs declared in handler or transport packages.
-type CaseServiceDependsOnTransportRequestTypeDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for service_depends_on_transport_request_type:
+// service signature accepts *http.Request instead of domain inputs.
+type UserService struct {
+	repo UserRepository
 }
 
-type CaseServiceDependsOnTransportRequestTypeModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type UserRepository interface {
+	FindByEmail(ctx context.Context, email string) (*User, error)
 }
 
-type CaseServiceDependsOnTransportRequestTypeRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseServiceDependsOnTransportRequestTypeModel
+type User struct {
+	ID    string
+	Email string
+	Name  string
 }
 
-type CaseServiceDependsOnTransportRequestTypeService struct {
-    repo *CaseServiceDependsOnTransportRequestTypeRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func NewUserService(repo UserRepository) *UserService {
+	return &UserService{repo: repo}
 }
 
-type CaseServiceDependsOnTransportRequestTypeAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+func (s *UserService) GetUserFromRequest(ctx context.Context, r *http.Request) (*User, int, error) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		return nil, http.StatusUnauthorized, fmt.Errorf("missing authorization header")
+	}
 
-func PositiveServiceDependsOnTransportRequestType(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceDependsOnTransportRequestTypeDTO) error {
-    focus := "service_depends_on_transport_request"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseServiceDependsOnTransportRequestTypeDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseServiceDependsOnTransportRequestTypeService{repo: &CaseServiceDependsOnTransportRequestTypeRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseServiceDependsOnTransportRequestTypeModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    service_depends_transport_request_type_positive := map[string]int{"service": 1, "depends": 2, "transport": 3, "request": 4, "type": 5}
-    service_depends_transport_request_type_positive["signal"] = len(input) + len(items)
-    service_positive_0 := CaseServiceDependsOnTransportRequestTypeDTO{ID: input, Status: "service"}
-    _ = service_positive_0
-    depends_positive_1 := service_depends_transport_request_type_positive["depends"] + len(input)
-    _ = depends_positive_1
-    transport_positive_2 := c.FullPath() + ":" + input
-    _ = transport_positive_2
-    request_positive_3 := service_depends_transport_request_type_positive["request"] + len(input)
-    _ = request_positive_3
-    type_positive_4 := service_depends_transport_request_type_positive["type"] + len(input)
-    _ = type_positive_4
-    return nil
+	email := r.URL.Query().Get("email")
+	if email == "" {
+		return nil, http.StatusBadRequest, fmt.Errorf("email query parameter required")
+	}
+
+	user, err := s.repo.FindByEmail(ctx, email)
+	if err != nil {
+		return nil, http.StatusNotFound, err
+	}
+
+	body, _ := io.ReadAll(r.Body)
+	_ = body
+
+	return user, http.StatusOK, nil
 }

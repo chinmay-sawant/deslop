@@ -1,4 +1,4 @@
-package rulecoverage
+package common
 
 import (
     "context"
@@ -45,28 +45,48 @@ type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+// package common is an example of a grab-bag shared package mixing unrelated exports.
+// This file simulates what would be in: internal/common/common.go
+// It exports models, DTOs, a service, a validator, and utility functions together.
+
+type CommonOrderModel struct {
+    ID     string `gorm:"column:id" json:"id"`
+    Status string `gorm:"column:status" json:"status"`
+    Amount int    `gorm:"column:amount" json:"amount"`
+}
+
+type CommonCreateUserDTO struct {
+    Name  string `json:"name" binding:"required"`
+    Email string `json:"email" binding:"required"`
+}
+
+type CommonNotificationService struct {
+    client *http.Client
+    logger *log.Logger
+}
+
+func (s *CommonNotificationService) Send(to, subject, body string) error {
+    fmt.Printf("sending to %s: %s\n", to, subject)
+    return nil
+}
+
+func CommonValidateEmail(email string) bool {
+    return strings.Contains(email, "@")
+}
+
+func CommonFormatCurrency(amount int) string {
+    return fmt.Sprintf("$%d.00", amount)
+}
+
+func CommonToSnakeCase(s string) string {
+    return strings.ToLower(s)
+}
+
 func PositiveSharedPackageNamedCommonBaseUtilsWithMixedExports(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsDTO) error {
-    focus := "shared_package_named_common_base"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    service := &CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsService{repo: &CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    shared_package_named_common_base_positive := map[string]int{"shared": 1, "package": 2, "named": 3, "common": 4, "base": 5, "utils": 6}
-    shared_package_named_common_base_positive["signal"] = len(input) + len(items)
-    shared_positive_0 := shared_package_named_common_base_positive["shared"] + len(input)
-    _ = shared_positive_0
-    package_positive_1 := shared_package_named_common_base_positive["package"] + len(input)
-    _ = package_positive_1
-    named_positive_2 := shared_package_named_common_base_positive["named"] + len(input)
-    _ = named_positive_2
-    common_positive_3 := shared_package_named_common_base_positive["common"] + len(input)
-    _ = common_positive_3
-    base_positive_4 := shared_package_named_common_base_positive["base"] + len(input)
-    _ = base_positive_4
-    utils_positive_5 := shared_package_named_common_base_positive["utils"] + len(input)
-    _ = utils_positive_5
+    _ = CommonValidateEmail(input)
+    _ = CommonFormatCurrency(100)
+    svc := &CommonNotificationService{client: client, logger: log.Default()}
+    svc.Send(input, "test", "body")
+    db.Create(&CommonOrderModel{ID: input, Status: "new", Amount: 50})
     return nil
 }

@@ -1,66 +1,50 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
 )
 
-// Positive scenario for gin_handler_calls_multiple_repositories_directly: risky concrete example for this rule.
+// Positive scenario for gin_handler_calls_multiple_repositories_directly
 // Rule intent: Handlers that coordinate several repositories directly, which usually signals missing service orchestration.
-type CaseGinHandlerCallsMultipleRepositoriesDirectlyDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type UserRepo struct {
+	db *gorm.DB
 }
 
-type CaseGinHandlerCallsMultipleRepositoriesDirectlyModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type OrderRepo struct {
+	db *gorm.DB
 }
 
-type CaseGinHandlerCallsMultipleRepositoriesDirectlyRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGinHandlerCallsMultipleRepositoriesDirectlyModel
+type User struct {
+	ID   uint   `gorm:"primaryKey"`
+	Name string `gorm:"column:name"`
 }
 
-type CaseGinHandlerCallsMultipleRepositoriesDirectlyService struct {
-    repo *CaseGinHandlerCallsMultipleRepositoriesDirectlyRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+type Order struct {
+	ID     uint   `gorm:"primaryKey"`
+	UserID uint   `gorm:"column:user_id"`
+	Amount int    `gorm:"column:amount"`
 }
 
-type CaseGinHandlerCallsMultipleRepositoriesDirectlyAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+func PositiveGinHandlerCallsMultipleRepositoriesDirectly(c *gin.Context, db *gorm.DB) {
+	userRepo := &UserRepo{db: db}
+	orderRepo := &OrderRepo{db: db}
 
-func PositiveGinHandlerCallsMultipleRepositoriesDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerCallsMultipleRepositoriesDirectlyDTO) error {
-    focus := "gin_handler_calls_multiple_repositories"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseGinHandlerCallsMultipleRepositoriesDirectlyDTO
-    _ = c.ShouldBindJSON(&request)
-    request.TenantID = c.GetHeader("X-Tenant-ID")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
-    service := &CaseGinHandlerCallsMultipleRepositoriesDirectlyService{repo: &CaseGinHandlerCallsMultipleRepositoriesDirectlyRepository{db: db, sql: sqlDB}, client: client}
-    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
-    model := CaseGinHandlerCallsMultipleRepositoriesDirectlyModel{ID: input, Status: "pending"}
-    _ = service
-    _ = model
-    userRepo := &CaseGinHandlerCallsMultipleRepositoriesDirectlyRepository{db: db, sql: sqlDB}
-    orderRepo := &CaseGinHandlerCallsMultipleRepositoriesDirectlyRepository{db: db, sql: sqlDB}
-    userRepo.db.Where("id = ?", input).First(&CaseGinHandlerCallsMultipleRepositoriesDirectlyModel{})
-    orderRepo.db.Create(&CaseGinHandlerCallsMultipleRepositoriesDirectlyModel{ID: input})
-    return nil
+	var req struct {
+		UserID uint `json:"user_id" binding:"required"`
+		Amount int  `json:"amount" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user User
+	userRepo.db.Where("id = ?", req.UserID).First(&user)
+
+	order := Order{UserID: req.UserID, Amount: req.Amount}
+	orderRepo.db.Create(&order)
+
+	c.JSON(http.StatusCreated, gin.H{"user": user.Name, "order_id": order.ID})
 }

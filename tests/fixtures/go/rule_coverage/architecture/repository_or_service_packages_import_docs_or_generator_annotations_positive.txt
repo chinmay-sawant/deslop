@@ -1,57 +1,62 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for repository_or_service_packages_import_docs_or_generator_annotations: risky concrete example for this rule.
-// Rule intent: Core business packages that depend on documentation-only tooling or generator-specific concerns.
-type CaseRepositoryOrServicePackagesImportDocsOrGeneratorAnnotationsDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Repository code contains Swagger/API documentation annotations.
+// Repositories should not contain HTTP API documentation comments.
+
+// @Summary GetAccountByID
+// @Description Retrieves an account by its unique identifier
+// @Tags accounts
+// @Accept json
+// @Produce json
+// @Param id path string true "Account ID"
+// @Success 200 {object} Account
+// @Failure 404 {object} ErrorResponse
+// @Router /api/v1/accounts/{id} [get]
+
+// @Summary CreateAccount
+// @Description Creates a new account
+// @Tags accounts
+// @Accept json
+// @Produce json
+// @Param account body AccountRequest true "Account data"
+// @Success 201 {object} Account
+// @Failure 400 {object} ErrorResponse
+// @Router /api/v1/accounts [post]
+
+type Account struct {
+	ID      string `gorm:"column:id"`
+	Name    string `gorm:"column:name"`
+	Balance int    `gorm:"column:balance"`
 }
 
-type CaseRepositoryOrServicePackagesImportDocsOrGeneratorAnnotationsModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type AccountRepository struct {
+	db *gorm.DB
 }
 
-type CaseRepositoryOrServicePackagesImportDocsOrGeneratorAnnotationsRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRepositoryOrServicePackagesImportDocsOrGeneratorAnnotationsModel
+func (r *AccountRepository) FindByID(id string) (*Account, error) {
+	var account Account
+	err := r.db.First(&account, "id = ?", id).Error
+	return &account, err
 }
 
-type CaseRepositoryOrServicePackagesImportDocsOrGeneratorAnnotationsService struct {
-    repo *CaseRepositoryOrServicePackagesImportDocsOrGeneratorAnnotationsRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func (r *AccountRepository) Create(account *Account) error {
+	return r.db.Create(account).Error
 }
 
-type CaseRepositoryOrServicePackagesImportDocsOrGeneratorAnnotationsAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+// @Summary ListAccounts
+// @Description Lists all accounts with pagination
+// @Tags accounts
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {array} Account
+// @Router /api/v1/accounts [get]
 
-func PositiveRepositoryOrServicePackagesImportDocsOrGeneratorAnnotations(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryOrServicePackagesImportDocsOrGeneratorAnnotationsDTO) error {
-
-    // @Summary CreateAccount
-    // @Router /api/v1/accounts [post]
-    var doc CaseRepositoryOrServicePackagesImportDocsOrGeneratorAnnotationsModel
-    if err := db.WithContext(ctx).Where("id = ?", input).First(&doc).Error; err != nil {
-        return fmt.Errorf("find failed: %w", err)
-    }
-    return nil
+func (r *AccountRepository) ListAll() ([]Account, error) {
+	var accounts []Account
+	err := r.db.Find(&accounts).Error
+	return accounts, err
 }

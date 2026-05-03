@@ -1,63 +1,79 @@
 package router
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"log"
+	"net/http"
 )
 
-// Positive scenario for router_constructor_builds_concrete_dependencies: risky concrete example for this rule.
-// Rule intent: Router setup that creates DB clients, external clients, or repositories directly instead of receiving prebuilt dependencies.
-type CaseRouterConstructorBuildsConcreteDependenciesDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for router_constructor_builds_concrete_dependencies
+// Anti-pattern: Router constructor creates concrete dependencies (DB, clients) internally
+// instead of receiving them as parameters.
+func NewRouter() *gin.Engine {
+	// Anti-pattern: database connection built inside router constructor
+	dsn := "host=localhost user=app password=secret dbname=app port=5432 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("failed to connect database: %v", err)
+	}
+
+	// Anti-pattern: repository created with concrete dependency inside router
+	repo := &UserRepository{db: db}
+	svc := &UserService{repo: repo}
+
+	r := gin.Default()
+	r.GET("/users", func(c *gin.Context) {
+		users, err := svc.ListUsers()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, users)
+	})
+	r.GET("/users/:id", func(c *gin.Context) {
+		user, err := svc.GetUser(c.Param("id"))
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+			return
+		}
+		c.JSON(http.StatusOK, user)
+	})
+
+	return r
 }
 
-type CaseRouterConstructorBuildsConcreteDependenciesModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type UserRepository struct {
+	db *gorm.DB
 }
 
-type CaseRouterConstructorBuildsConcreteDependenciesRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRouterConstructorBuildsConcreteDependenciesModel
+func (r *UserRepository) ListUsers() ([]User, error) {
+	var users []User
+	err := r.db.Find(&users).Error
+	return users, err
 }
 
-type CaseRouterConstructorBuildsConcreteDependenciesService struct {
-    repo *CaseRouterConstructorBuildsConcreteDependenciesRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func (r *UserRepository) GetUser(id string) (*User, error) {
+	var user User
+	err := r.db.Where("id = ?", id).First(&user).Error
+	return &user, err
 }
 
-type CaseRouterConstructorBuildsConcreteDependenciesAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+type UserService struct {
+	repo *UserRepository
 }
 
-func PositiveRouterConstructorBuildsConcreteDependencies(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRouterConstructorBuildsConcreteDependenciesDTO) error {
+func (s *UserService) ListUsers() ([]User, error) {
+	return s.repo.ListUsers()
+}
 
-    dsn := "host=localhost user=app password=secret dbname=app port=5432 sslmode=disable"
-    gormDB, err := gorm.Open(nil, &gorm.Config{})
-    if err != nil {
-        log.Fatalf("failed to connect: %v", err)
-    }
-    sqlDB, err := sql.Open("postgres", dsn)
-    if err != nil {
-        log.Fatalf("failed to open sql: %v", err)
-    }
-    repo := &CaseRouterConstructorBuildsConcreteDependenciesRepository{db: gormDB, sql: sqlDB}
-    _ = repo
-    _ = err
-    return nil
+func (s *UserService) GetUser(id string) (*User, error) {
+	return s.repo.GetUser(id)
+}
+
+type User struct {
+	ID    uint   `gorm:"primaryKey" json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }

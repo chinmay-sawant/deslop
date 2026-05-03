@@ -1,56 +1,58 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for create_and_update_share_same_dto_despite_conflicting_requiredness: risky concrete example for this rule.
-// Rule intent: A single DTO reused for create and update when validation rules clearly differ.
-type CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for create_and_update_share_same_dto_despite_conflicting_requiredness.
+// Anti-pattern: A single DTO is reused for both Create and Update operations,
+// but fields that are required on create should be optional on update.
+
+type ProductDTO struct {
+	ID          uint    `json:"id"`
+	Name        string  `json:"name" binding:"required"`
+	Description string  `json:"description" binding:"required"`
+	Price       float64 `json:"price" binding:"required"`
+	CategoryID  uint    `json:"category_id" binding:"required"`
 }
 
-type CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func CreateProductHandler(c *gin.Context) {
+	var dto ProductDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	product := Product{
+		Name:        dto.Name,
+		Description: dto.Description,
+		Price:       dto.Price,
+		CategoryID:  dto.CategoryID,
+	}
+
+	db.Create(&product)
+	c.JSON(http.StatusCreated, product)
 }
 
-type CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessModel
-}
+func UpdateProductHandler(c *gin.Context) {
+	var dto ProductDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-type CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessService struct {
-    repo *CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	// Anti-pattern: Update requires all fields because it shares the same DTO.
+	// Client cannot partially update (e.g., only change Price) without
+	// sending Name, Description, and CategoryID again.
+	updates := map[string]interface{}{
+		"name":        dto.Name,
+		"description": dto.Description,
+		"price":       dto.Price,
+		"category_id": dto.CategoryID,
+	}
 
-type CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveCreateAndUpdateShareSameDtoDespiteConflictingRequiredness(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessDTO) error {
-    var createReq CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessDTO
-    createReq = CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessDTO{ID: input, Status: "active", Amount: 100}
-    db.Create(&createReq)
-    var updateReq CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessDTO
-    updateReq = CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessDTO{ID: input}
-    db.Model(&CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessModel{}).Where("id = ?", input).Updates(&updateReq)
-    return nil
+	db.Model(&Product{}).Where("id = ?", c.Param("id")).Updates(updates)
+	c.JSON(http.StatusOK, dto)
 }

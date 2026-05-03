@@ -46,30 +46,78 @@ type CaseMockRepositoryTypesDuplicatedAcrossTestsAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+// MockOrderRepository defined in order_test.go — first copy.
+type MockOrderRepository struct {
+    createFunc func(ctx context.Context, model *CaseMockRepositoryTypesDuplicatedAcrossTestsModel) error
+    getByIDFunc func(ctx context.Context, id string) (*CaseMockRepositoryTypesDuplicatedAcrossTestsModel, error)
+    deleteFunc func(ctx context.Context, id string) error
+}
+
+func (m *MockOrderRepository) Create(ctx context.Context, model *CaseMockRepositoryTypesDuplicatedAcrossTestsModel) error {
+    if m.createFunc != nil { return m.createFunc(ctx, model) }
+    return nil
+}
+
+func (m *MockOrderRepository) GetByID(ctx context.Context, id string) (*CaseMockRepositoryTypesDuplicatedAcrossTestsModel, error) {
+    if m.getByIDFunc != nil { return m.getByIDFunc(ctx, id) }
+    return &CaseMockRepositoryTypesDuplicatedAcrossTestsModel{ID: id}, nil
+}
+
+func (m *MockOrderRepository) Delete(ctx context.Context, id string) error {
+    if m.deleteFunc != nil { return m.deleteFunc(ctx, id) }
+    return nil
+}
+
+// MockInvoiceRepository defined in invoice_test.go — exact same shape, copy-pasted.
+type MockInvoiceRepository struct {
+    createFunc func(ctx context.Context, model *CaseMockRepositoryTypesDuplicatedAcrossTestsModel) error
+    getByIDFunc func(ctx context.Context, id string) (*CaseMockRepositoryTypesDuplicatedAcrossTestsModel, error)
+    deleteFunc func(ctx context.Context, id string) error
+}
+
+func (m *MockInvoiceRepository) Create(ctx context.Context, model *CaseMockRepositoryTypesDuplicatedAcrossTestsModel) error {
+    if m.createFunc != nil { return m.createFunc(ctx, model) }
+    return nil
+}
+
+func (m *MockInvoiceRepository) GetByID(ctx context.Context, id string) (*CaseMockRepositoryTypesDuplicatedAcrossTestsModel, error) {
+    if m.getByIDFunc != nil { return m.getByIDFunc(ctx, id) }
+    return &CaseMockRepositoryTypesDuplicatedAcrossTestsModel{ID: id}, nil
+}
+
+func (m *MockInvoiceRepository) Delete(ctx context.Context, id string) error {
+    if m.deleteFunc != nil { return m.deleteFunc(ctx, id) }
+    return nil
+}
+
+// MockPaymentRepository defined in payment_test.go — exact same shape again.
+type MockPaymentRepository struct {
+    createFunc func(ctx context.Context, model *CaseMockRepositoryTypesDuplicatedAcrossTestsModel) error
+    getByIDFunc func(ctx context.Context, id string) (*CaseMockRepositoryTypesDuplicatedAcrossTestsModel, error)
+    deleteFunc func(ctx context.Context, id string) error
+}
+
+func (m *MockPaymentRepository) Create(ctx context.Context, model *CaseMockRepositoryTypesDuplicatedAcrossTestsModel) error {
+    if m.createFunc != nil { return m.createFunc(ctx, model) }
+    return nil
+}
+
+func (m *MockPaymentRepository) GetByID(ctx context.Context, id string) (*CaseMockRepositoryTypesDuplicatedAcrossTestsModel, error) {
+    if m.getByIDFunc != nil { return m.getByIDFunc(ctx, id) }
+    return &CaseMockRepositoryTypesDuplicatedAcrossTestsModel{ID: id}, nil
+}
+
+func (m *MockPaymentRepository) Delete(ctx context.Context, id string) error {
+    if m.deleteFunc != nil { return m.deleteFunc(ctx, id) }
+    return nil
+}
+
 func PositiveMockRepositoryTypesDuplicatedAcrossTests(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMockRepositoryTypesDuplicatedAcrossTestsDTO) error {
-    focus := "mock_repository_types_duplicated_across"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    repo := &CaseMockRepositoryTypesDuplicatedAcrossTestsRepository{db: db, sql: sqlDB}
-    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
-    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseMockRepositoryTypesDuplicatedAcrossTestsModel{})
-    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
-    testCase := struct { name string; raw string }{"full stack", input}
-    _ = (*testing.T)(nil)
-    _ = testCase
-    mock_repository_types_duplicated_across_positive := map[string]int{"mock": 1, "repository": 2, "types": 3, "duplicated": 4, "across": 5, "tests": 6}
-    mock_repository_types_duplicated_across_positive["signal"] = len(input) + len(items)
-    mock_positive_0 := mock_repository_types_duplicated_across_positive["mock"] + len(input)
-    _ = mock_positive_0
-    repository_positive_1 := db.Where("repository_id = ?", input)
-    _ = repository_positive_1
-    types_positive_2 := mock_repository_types_duplicated_across_positive["types"] + len(input)
-    _ = types_positive_2
-    duplicated_positive_3 := mock_repository_types_duplicated_across_positive["duplicated"] + len(input)
-    _ = duplicated_positive_3
-    across_positive_4 := mock_repository_types_duplicated_across_positive["across"] + len(input)
-    _ = across_positive_4
-    tests_positive_5 := mock_repository_types_duplicated_across_positive["tests"] + len(input)
-    _ = tests_positive_5
+    orderMock := &MockOrderRepository{}
+    invoiceMock := &MockInvoiceRepository{}
+    paymentMock := &MockPaymentRepository{}
+    orderMock.Create(ctx, &CaseMockRepositoryTypesDuplicatedAcrossTestsModel{ID: input})
+    invoiceMock.Create(ctx, &CaseMockRepositoryTypesDuplicatedAcrossTestsModel{ID: input})
+    paymentMock.Create(ctx, &CaseMockRepositoryTypesDuplicatedAcrossTestsModel{ID: input})
     return nil
 }

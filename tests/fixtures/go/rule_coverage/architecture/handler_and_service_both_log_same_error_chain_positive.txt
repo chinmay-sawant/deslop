@@ -1,57 +1,50 @@
-package service
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"database/sql"
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for handler_and_service_both_log_same_error_chain: risky concrete example for this rule.
-// Rule intent: Duplicated logging ownership where both service and handler log the same failure.
-type CaseHandlerAndServiceBothLogSameErrorChainDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type UserDTO struct {
+	ID       string `json:"id" binding:"required"`
+	Name     string `json:"name" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	TenantID string `json:"tenant_id"`
 }
 
-type CaseHandlerAndServiceBothLogSameErrorChainModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type UserService struct {
+	logger *log.Logger
 }
 
-type CaseHandlerAndServiceBothLogSameErrorChainRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseHandlerAndServiceBothLogSameErrorChainModel
+func (s *UserService) CreateUser(ctx context.Context, dto UserDTO) error {
+	if dto.Email == "" {
+		err := fmt.Errorf("failed to create user: email is required for user %s", dto.Name)
+		s.logger.Printf("service: error creating user: %v", err)
+		return err
+	}
+	return nil
 }
 
-type CaseHandlerAndServiceBothLogSameErrorChainService struct {
-    repo *CaseHandlerAndServiceBothLogSameErrorChainRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+func CreateUserHandler(c *gin.Context) {
+	svc := &UserService{logger: log.Default()}
 
-type CaseHandlerAndServiceBothLogSameErrorChainAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	var dto UserDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-func PositiveHandlerAndServiceBothLogSameErrorChain(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHandlerAndServiceBothLogSameErrorChainDTO) error {
-    err := errors.New("sql: connection refused")
-    log.Printf("handler: %v", err)
-    log.Printf("service: %v", err)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-    }
-    return nil
+	ctx := context.Background()
+	if err := svc.CreateUser(ctx, dto); err != nil {
+		log.Printf("handler: error creating user: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "user created"})
 }

@@ -1,63 +1,61 @@
 package handler
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"log"
+	"net/http"
 )
 
-// Positive scenario for custom_recovery_logic_repeated_across_handlers: risky concrete example for this rule.
+// Positive scenario for custom_recovery_logic_repeated_across_handlers.
 // Rule intent: Repeated recover or panic-to-response logic inside handlers instead of centralized recovery middleware.
-type CaseCustomRecoveryLogicRepeatedAcrossHandlersDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+type Order struct {
+	ID string `gorm:"column:id" json:"id"`
 }
 
-type CaseCustomRecoveryLogicRepeatedAcrossHandlersModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type User struct {
+	ID   string `gorm:"column:id" json:"id"`
+	Name string `gorm:"column:name" json:"name"`
 }
 
-type CaseCustomRecoveryLogicRepeatedAcrossHandlersRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseCustomRecoveryLogicRepeatedAcrossHandlersModel
+func GetOrderHandler(c *gin.Context, db *gorm.DB) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("recovered from panic in GetOrderHandler: %v", r)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		}
+	}()
+
+	var order Order
+	db.First(&order, "id = ?", c.Param("id"))
+	c.JSON(http.StatusOK, order)
 }
 
-type CaseCustomRecoveryLogicRepeatedAcrossHandlersService struct {
-    repo *CaseCustomRecoveryLogicRepeatedAcrossHandlersRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func CreateUserHandler(c *gin.Context, db *gorm.DB) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("recovered from panic in CreateUserHandler: %v", r)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		}
+	}()
+
+	var user User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	db.Create(&user)
+	c.JSON(http.StatusCreated, user)
 }
 
-type CaseCustomRecoveryLogicRepeatedAcrossHandlersAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+func DeleteOrderHandler(c *gin.Context, db *gorm.DB) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("recovered from panic in DeleteOrderHandler: %v", r)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		}
+	}()
 
-func PositiveCustomRecoveryLogicRepeatedAcrossHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCustomRecoveryLogicRepeatedAcrossHandlersDTO) error {
-    defer func() {
-        if r := recover(); r != nil {
-            log.Printf("recovered from panic: %v", r)
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
-        }
-    }()
-    var request CaseCustomRecoveryLogicRepeatedAcrossHandlersDTO
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return nil
-    }
-    c.JSON(http.StatusOK, gin.H{"data": request.ID})
-    return nil
+	db.Delete(&Order{}, "id = ?", c.Param("id"))
+	c.JSON(http.StatusOK, gin.H{"deleted": true})
 }

@@ -47,7 +47,19 @@ type CaseBackgroundJobsRegisteredFromGinPackagesInsteadOfBootstrapAuditSink inte
 }
 
 func PositiveBackgroundJobsRegisteredFromGinPackagesInsteadOfBootstrap(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBackgroundJobsRegisteredFromGinPackagesInsteadOfBootstrapDTO) error {
-    c.Set("job.cleanup", "daily-cleanup")
-    c.Set("job.export", "weekly-export")
+    go func() {
+        ticker := time.NewTicker(24 * time.Hour)
+        defer ticker.Stop()
+        for range ticker.C {
+            db.Where("status = ?", "expired").Delete(&CaseBackgroundJobsRegisteredFromGinPackagesInsteadOfBootstrapModel{})
+        }
+    }()
+    go func() {
+        ticker := time.NewTicker(7 * 24 * time.Hour)
+        defer ticker.Stop()
+        for range ticker.C {
+            fmt.Println("exporting weekly report")
+        }
+    }()
     return nil
 }

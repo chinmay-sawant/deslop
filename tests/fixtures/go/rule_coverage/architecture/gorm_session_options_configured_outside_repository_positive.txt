@@ -1,54 +1,40 @@
-package repository
+package service
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "os"
-    "strings"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for gorm_session_options_configured_outside_repository: risky concrete example for this rule.
-// Rule intent: Code above the repository layer that changes `Session`, `Clauses`, or transaction options directly.
-type CaseGormSessionOptionsConfiguredOutsideRepositoryDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Service configures GORM session options (PrepareStmt, DryRun,
+// SkipHooks) directly instead of delegating to a repository method that
+// encapsulates session configuration.
+
+type User struct {
+	ID   uint   `gorm:"primaryKey"`
+	Name string `gorm:"column:name"`
 }
 
-type CaseGormSessionOptionsConfiguredOutsideRepositoryModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type UserService struct {
+	db *gorm.DB
 }
 
-type CaseGormSessionOptionsConfiguredOutsideRepositoryRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseGormSessionOptionsConfiguredOutsideRepositoryModel
+func (s *UserService) CreateUserWithPreparedStmt(user *User) error {
+	session := s.db.Session(&gorm.Session{
+		PrepareStmt: true,
+		NewDB:       false,
+	})
+	return session.Create(user).Error
 }
 
-type CaseGormSessionOptionsConfiguredOutsideRepositoryService struct {
-    repo *CaseGormSessionOptionsConfiguredOutsideRepositoryRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func (s *UserService) ValidateUserDryRun(user *User) error {
+	session := s.db.Session(&gorm.Session{
+		DryRun: true,
+	})
+	return session.Create(user).Error
 }
 
-type CaseGormSessionOptionsConfiguredOutsideRepositoryAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveGormSessionOptionsConfiguredOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormSessionOptionsConfiguredOutsideRepositoryDTO) error {
-    db.Session(&gorm.Session{PrepareStmt: true})
-    var results []CaseGormSessionOptionsConfiguredOutsideRepositoryModel
-    db.Where("id = ?", input).Find(&results)
-    return nil
+func (s *UserService) UpdateUserSkipHooks(user *User) error {
+	session := s.db.Session(&gorm.Session{
+		SkipHooks: true,
+	})
+	return session.Save(user).Error
 }

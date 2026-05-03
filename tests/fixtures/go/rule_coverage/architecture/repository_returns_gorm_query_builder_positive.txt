@@ -1,54 +1,42 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for repository_returns_gorm_query_builder: risky concrete example for this rule.
-// Rule intent: Repositories that return partially built `*gorm.DB` chains for callers to finish.
-type CaseRepositoryReturnsGormQueryBuilderDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Repository returns *gorm.DB query builder instead of
+// executing the query and returning concrete results.
+
+type Comment struct {
+	ID       string `gorm:"column:id"`
+	PostID   string `gorm:"column:post_id"`
+	AuthorID string `gorm:"column:author_id"`
+	Body     string `gorm:"column:body"`
 }
 
-type CaseRepositoryReturnsGormQueryBuilderModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+type CommentRepository struct {
+	db *gorm.DB
 }
 
-type CaseRepositoryReturnsGormQueryBuilderRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRepositoryReturnsGormQueryBuilderModel
+// QueryByPost returns *gorm.DB instead of []Comment - anti-pattern.
+func (r *CommentRepository) QueryByPost(postID string) *gorm.DB {
+	return r.db.Where("post_id = ?", postID).Order("created_at ASC")
 }
 
-type CaseRepositoryReturnsGormQueryBuilderService struct {
-    repo *CaseRepositoryReturnsGormQueryBuilderRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+// QueryByAuthor returns *gorm.DB instead of []Comment - anti-pattern.
+func (r *CommentRepository) QueryByAuthor(authorID string) *gorm.DB {
+	return r.db.Where("author_id = ?", authorID)
 }
 
-type CaseRepositoryReturnsGormQueryBuilderAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+// Recent returns a partially built *gorm.DB query - anti-pattern.
+func (r *CommentRepository) Recent(limit int) *gorm.DB {
+	return r.db.Order("created_at DESC").Limit(limit)
 }
 
-func PositiveRepositoryReturnsGormQueryBuilder(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsGormQueryBuilderDTO) error {
-
-    q := db.Where("tenant_id = ?", input).Order("created_at DESC")
-    var results []CaseRepositoryReturnsGormQueryBuilderModel
-    q.Find(&results)
-    return q, nil
-}
+// Example misuse:
+//
+//	query := repo.QueryByPost("post-123")
+//	query.Where("author_id = ?", "user-456").Find(&comments)
+//
+// The repository returns the gorm query builder, forcing the caller
+// to know how to execute the query.

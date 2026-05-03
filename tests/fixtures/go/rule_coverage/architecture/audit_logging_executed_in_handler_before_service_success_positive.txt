@@ -1,52 +1,49 @@
-package service
+package handler
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-// Positive scenario for audit_logging_executed_in_handler_before_service_success: risky concrete example for this rule.
+// Positive scenario for audit_logging_executed_in_handler_before_service_success.
 // Rule intent: Audit writes that happen before the service has confirmed success.
-type CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Anti-pattern: Audit log written before db.Create() succeeds, so failed operations still get logged.
+
+type Payment struct {
+	ID      uint    `gorm:"primaryKey"`
+	OrderID uint    `gorm:"column:order_id"`
+	Amount  float64 `gorm:"column:amount"`
+	Status  string  `gorm:"column:status"`
 }
 
-type CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+func CreatePaymentHandler(c *gin.Context, db *gorm.DB) {
+	var req struct {
+		OrderID uint    `json:"order_id"`
+		Amount  float64 `json:"amount"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-type CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessModel
-}
+	userID := c.GetHeader("X-User-ID")
 
-type CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessService struct {
-    repo *CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
+	// Anti-pattern: audit logged BEFORE the payment is actually created
+	log.Printf("audit: user=%s creating payment order_id=%d amount=%.2f", userID, req.OrderID, req.Amount)
 
-type CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
+	payment := Payment{
+		OrderID: req.OrderID,
+		Amount:  req.Amount,
+		Status:  "pending",
+	}
 
-func PositiveAuditLoggingExecutedInHandlerBeforeServiceSuccess(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessDTO) error {
-    log.Printf("audit action=%s user=%s", "UPDATE_ORDER", input)
-    db.Model(&CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessModel{}).Where("id = ?", input).Update("status", "completed")
-    return nil
+	// This could fail (constraint violation, DB down, etc.) but audit was already written
+	if err := db.Create(&payment).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "payment creation failed"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"id": payment.ID})
 }

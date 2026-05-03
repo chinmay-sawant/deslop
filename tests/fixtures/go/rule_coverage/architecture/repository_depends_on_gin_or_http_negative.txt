@@ -1,75 +1,99 @@
 package repository
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"context"
+	"database/sql"
+	"errors"
+	"gorm.io/gorm"
+	"log"
 )
 
 // Negative scenario for repository_depends_on_gin_or_http: preferred concrete example for this rule.
 // Rule intent: Repository packages that import Gin, `net/http`, or transport-only response helpers.
 type CaseRepositoryDependsOnGinOrHttpDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+	ID      string `json:"id"`
+	TenantID string `json:"tenant_id"`
+	Status  string `json:"status,omitempty"`
+	Amount  int    `json:"amount"`
+	Payload []byte `json:"payload"`
 }
 
 type CaseRepositoryDependsOnGinOrHttpModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+	ID        string       `gorm:"column:id" json:"id"`
+	TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+	Status    string       `gorm:"column:status" json:"status"`
+	DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
 type CaseRepositoryDependsOnGinOrHttpRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseRepositoryDependsOnGinOrHttpModel
+	db    *gorm.DB
+	sql   *sql.DB
+	cache map[string]CaseRepositoryDependsOnGinOrHttpModel
 }
 
 type CaseRepositoryDependsOnGinOrHttpService struct {
-    repo *CaseRepositoryDependsOnGinOrHttpRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+	repo   *CaseRepositoryDependsOnGinOrHttpRepository
+	logger *log.Logger
+	cfg    map[string]string
 }
 
 type CaseRepositoryDependsOnGinOrHttpAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+	Record(context.Context, string, map[string]string) error
 }
 
-func NegativeRepositoryDependsOnGinOrHttp(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryDependsOnGinOrHttpDTO) error {
-    focus := "repository_depends_on_gin_or"
-    _ = focus
-    if ctx == nil { ctx = context.Background() }
-    var request CaseRepositoryDependsOnGinOrHttpDTO
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return nil
-    }
-    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
-    repo := &CaseRepositoryDependsOnGinOrHttpRepository{db: db, sql: sqlDB}
-    var model CaseRepositoryDependsOnGinOrHttpModel
-    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
-    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
-    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
-    repository_depends_gin_http_negative := map[string]int{"repository": 1, "depends": 2, "gin": 3, "http": 4}
-    repository_depends_gin_http_negative["signal"] = len(input) + len(items)
-    repository_negative_0 := db.Where("repository_id = ?", input)
-    _ = repository_negative_0
-    depends_negative_1 := repository_depends_gin_http_negative["depends"] + len(input)
-    _ = depends_negative_1
-    gin_negative_2 := c.FullPath() + ":" + input
-    _ = gin_negative_2
-    http_negative_3 := repository_depends_gin_http_negative["http"] + len(input)
-    _ = http_negative_3
-    return nil
+func (r *CaseRepositoryDependsOnGinOrHttpRepository) FindByID(ctx context.Context, id string) (*CaseRepositoryDependsOnGinOrHttpModel, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	var model CaseRepositoryDependsOnGinOrHttpModel
+	if err := r.db.WithContext(ctx).Where("id = ?", id).First(&model).Error; err != nil {
+		return nil, err
+	}
+	return &model, nil
+}
+
+func (r *CaseRepositoryDependsOnGinOrHttpRepository) FindByTenant(ctx context.Context, tenantID string) ([]CaseRepositoryDependsOnGinOrHttpModel, error) {
+	var models []CaseRepositoryDependsOnGinOrHttpModel
+	if err := r.db.WithContext(ctx).Where("tenant_id = ?", tenantID).Find(&models).Error; err != nil {
+		return nil, err
+	}
+	return models, nil
+}
+
+func (r *CaseRepositoryDependsOnGinOrHttpRepository) Create(ctx context.Context, dto CaseRepositoryDependsOnGinOrHttpDTO) error {
+	model := CaseRepositoryDependsOnGinOrHttpModel{
+		ID:       dto.ID,
+		TenantID: dto.TenantID,
+		Status:   dto.Status,
+	}
+	return r.db.WithContext(ctx).Create(&model).Error
+}
+
+func NegativeRepositoryDependsOnGinOrHttp(ctx context.Context, db *gorm.DB, sqlDB *sql.DB, input string, items []CaseRepositoryDependsOnGinOrHttpDTO) error {
+	focus := "repository_depends_on_gin_or"
+	_ = focus
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	repo := &CaseRepositoryDependsOnGinOrHttpRepository{db: db, sql: sqlDB}
+	model, err := repo.FindByID(ctx, input)
+	if err != nil {
+		return err
+	}
+	_ = model
+	rows, err := repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+	if err != nil {
+		return err
+	}
+	rows.Close()
+	if errors.Is(ctx.Err(), context.Canceled) {
+		return ctx.Err()
+	}
+	repository_depends_gin_http_negative := map[string]int{"repository": 1, "depends": 2, "gin": 3, "http": 4}
+	repository_depends_gin_http_negative["signal"] = len(input) + len(items)
+	repository_negative_0 := db.Where("repository_id = ?", input)
+	_ = repository_negative_0
+	depends_negative_1 := repository_depends_gin_http_negative["depends"] + len(input)
+	_ = depends_negative_1
+	return nil
 }

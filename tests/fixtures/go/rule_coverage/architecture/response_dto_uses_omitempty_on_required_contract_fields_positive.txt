@@ -1,63 +1,35 @@
-package handler
+package transport
 
 import (
-    "context"
-    "database/sql"
-    "errors"
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/gorm"
-    "log"
-    "net/http"
-    "strings"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Positive scenario for response_dto_uses_omitempty_on_required_contract_fields: risky concrete example for this rule.
-// Rule intent: Response shapes that silently drop fields that should be stable parts of the API contract.
-type CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Positive scenario for response_dto_uses_omitempty_on_required_contract_fields.
+// Anti-pattern: Response DTO uses omitempty on fields that are guaranteed
+// by the API contract, causing consumers to receive inconsistent shapes.
+
+type UserProfileResponse struct {
+	ID        uint   `json:"id"`
+	Username  string `json:"username,omitempty"`
+	Email     string `json:"email,omitempty"`
+	FirstName string `json:"first_name,omitempty"`
+	LastName  string `json:"last_name,omitempty"`
+	Role      string `json:"role,omitempty"`
 }
 
-type CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
+func GetUserProfileHandler(c *gin.Context) {
+	var user UserProfileResponse
+	if err := db.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
 
-type CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsModel
-}
-
-type CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsService struct {
-    repo *CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveResponseDtoUsesOmitemptyOnRequiredContractFields(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsDTO) error {
-
-    type APIResponse struct {
-        ID     string `json:"id,omitempty"`
-        Name   string `json:"name,omitempty"`
-        Status string `json:"status,omitempty"`
-    }
-    var model CaseResponseDtoUsesOmitemptyOnRequiredContractFieldsModel
-    if err := db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil {
-        return err
-    }
-    resp := APIResponse{ID: model.ID, Status: model.Status}
-    c.JSON(http.StatusOK, resp)
-    return nil
+	// Anti-pattern: if FirstName or LastName is empty string, those fields
+	// are silently omitted from the JSON response. API consumers cannot
+	// distinguish between "field not set" and "field is empty string".
+	// Fields like id, username, email, and role are required by the API
+	// contract but omitempty allows them to disappear.
+	c.JSON(http.StatusOK, user)
 }
