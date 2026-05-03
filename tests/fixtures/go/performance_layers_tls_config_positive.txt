@@ -1,7 +1,0 @@
-package perflayers
-
-import "crypto/tls"
-
-func RequestTLSConfigPositive() *tls.Config {
-    return &tls.Config{MinVersion: tls.VersionTLS12}
-}

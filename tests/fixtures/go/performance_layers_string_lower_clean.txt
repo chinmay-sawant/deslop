@@ -1,5 +1,0 @@
-package perflayers
-
-func LowerCompareClean(left, right string) bool {
-    return left == right
-}

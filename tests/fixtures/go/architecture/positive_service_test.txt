@@ -1,7 +1,0 @@
-package service
-
-import "github.com/gin-gonic/gin"
-
-func TestServiceUsesGin() {
-    _ = gin.H{}
-}

@@ -1,5 +1,0 @@
-package perflayers
-
-func FetchOnce(url string) string {
-    return url
-}

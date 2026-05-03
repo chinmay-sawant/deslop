@@ -1,9 +1,0 @@
-package perflayers
-
-import "net/http"
-
-func RetryLoopWithoutBackoff(url string) {
-    for retry := 0; retry < 3; retry++ {
-        _, _ = http.Get(url)
-    }
-}

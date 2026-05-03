@@ -1,9 +1,0 @@
-package perflayers
-
-func MapStringBoolPositive(values []string, target string) bool {
-    seen := map[string]bool{}
-    for _, value := range values {
-        seen[value] = true
-    }
-    return seen[target]
-}

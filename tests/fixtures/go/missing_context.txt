@@ -1,7 +1,0 @@
-package sample
-
-import "net/http"
-
-func Fetch(url string) (*http.Response, error) {
-	return http.Get(url)
-}

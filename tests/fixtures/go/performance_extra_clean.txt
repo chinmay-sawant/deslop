@@ -1,4 +1,0 @@
-package perfextra
-
-// Clean baseline — no performance anti-patterns present.
-func NoOp() {}

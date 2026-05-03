@@ -1,8 +1,0 @@
-package perflayers
-
-import "io"
-
-func ScannerLargeClean(reader io.Reader) int {
-    written, _ := io.Copy(io.Discard, reader)
-    return int(written)
-}

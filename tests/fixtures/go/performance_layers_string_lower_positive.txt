@@ -1,7 +1,0 @@
-package perflayers
-
-import "strings"
-
-func LowerComparePositive(left, right string) bool {
-    return strings.ToLower(left) == strings.ToLower(right)
-}

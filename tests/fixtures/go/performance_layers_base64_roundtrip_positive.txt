@@ -1,9 +1,0 @@
-package perflayers
-
-import "encoding/base64"
-
-func Base64RoundtripPositive(data []byte) ([]byte, error) {
-    // roundtrip for binary transport
-    encoded := base64.StdEncoding.EncodeToString(data)
-    return base64.StdEncoding.DecodeString(encoded)
-}

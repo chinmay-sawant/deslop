@@ -1,9 +1,0 @@
-package perflayers
-
-func ProcessBatchClean(items []int, stamp int64) []int64 {
-    stamps := make([]int64, 0, len(items))
-    for range items {
-        stamps = append(stamps, stamp)
-    }
-    return stamps
-}

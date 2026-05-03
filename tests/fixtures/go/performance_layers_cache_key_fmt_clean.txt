@@ -1,7 +1,0 @@
-package perflayers
-
-import "strconv"
-
-func StableKeyClean(user string, version int) string {
-    return user + ":" + strconv.Itoa(version)
-}

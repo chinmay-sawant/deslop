@@ -1,3 +1,0 @@
-package sample_test
-
-func Run() {}

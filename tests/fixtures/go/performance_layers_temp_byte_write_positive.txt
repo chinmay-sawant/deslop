@@ -1,7 +1,0 @@
-package perflayers
-
-import "bytes"
-
-func TempByteWritePositive(buf *bytes.Buffer, value string) {
-    _, _ = buf.Write([]byte(value))
-}

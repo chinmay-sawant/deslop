@@ -1,7 +1,0 @@
-package perflayers
-
-func UnboundedCachePositive(key string) int {
-    cache := map[string]int{}
-    cache[key] = 1
-    return cache[key]
-}

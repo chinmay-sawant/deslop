@@ -1,7 +1,0 @@
-package sample
-
-type LocalStore struct{}
-
-func (LocalStore) Save(item string) error {
-	return nil
-}

@@ -1,7 +1,0 @@
-package perflayers
-
-func StaticLookupPositive(key string) int {
-    // static lookup
-    table := map[string]int{"a": 1, "b": 2}
-    return table[key]
-}
