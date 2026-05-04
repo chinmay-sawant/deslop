@@ -20,9 +20,7 @@ use self::file_analysis::analyze_discovered_files;
 use self::file_analysis::is_generated;
 use self::reporting::file_reports;
 #[cfg(test)]
-use self::suppression::{
-    SuppressionDirective, next_code_line, parse_rule_ids, parse_suppression_directives,
-};
+use self::suppression::{next_code_line, parse_rule_ids};
 
 pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     scan_repository_with_go_semantic(options, false)

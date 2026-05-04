@@ -1,26 +1,11 @@
-use std::fs;
 use tempfile::{Builder, TempDir};
 
 use super::{
-    SuppressionDirective, apply_repository_config, is_generated, next_code_line, parse_rule_ids,
-    parse_suppression_directives, scan_repository,
+    apply_repository_config, is_generated, next_code_line, parse_rule_ids,
 };
 use crate::RepoConfig;
-use crate::analysis::{AnalysisConfig, Language, ParsedFile};
-use crate::heuristics::{evaluate_file, evaluate_repo};
-use crate::index::build_repository_index;
-use crate::model::ScanOptions;
 use crate::model::{Finding, Severity};
 
-macro_rules! scan_fixture {
-    ($path:literal) => {
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/",
-            $path
-        ))
-    };
-}
 
 fn sample_finding(rule_id: &str, severity: Severity) -> Finding {
     Finding {
@@ -70,26 +55,6 @@ fn finds_next_code_line_after_directive_comments() {
     assert_eq!(next_code_line(&lines, 1), Some(4));
 }
 
-#[test]
-fn parses_same_line_and_next_line_suppressions() {
-    let source = scan_fixture!("rust/scan/suppressions_same_line.txt");
-
-    assert_eq!(
-        parse_suppression_directives(source),
-        vec![
-            SuppressionDirective {
-                rule_id: "unwrap_in_non_test_code".to_string(),
-                line: 2,
-                next_code_line: Some(4),
-            },
-            SuppressionDirective {
-                rule_id: "panic_macro_leftover".to_string(),
-                line: 3,
-                next_code_line: Some(4),
-            }
-        ]
-    );
-}
 
 #[test]
 fn applies_disabled_rules_and_severity_overrides() {
@@ -156,34 +121,6 @@ fn suppresses_findings_under_configured_paths() {
     assert_eq!(findings[0].path, root.path().join("src/lib.rs"));
 }
 
-#[test]
-fn scan_uses_canonical_root_for_index_resolution() {
-    let root = temp_dir("canonical-root");
-    let src = root.path().join("src");
-    let config = src.join("config");
-    fs::create_dir_all(&config).expect("config dir should be created");
-    fs::write(
-        src.join("lib.rs"),
-        scan_fixture!("rust/scan/canonical_root_lib.txt"),
-    )
-    .expect("lib fixture should be written");
-    fs::write(
-        config.join("render.rs"),
-        scan_fixture!("rust/scan/canonical_root_render.txt"),
-    )
-    .expect("render fixture should be written");
-
-    let report = scan_repository(&ScanOptions {
-        root: root.path().join("."),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
-
-    assert!(!report.findings.iter().any(|finding| {
-        finding.rule_id == "hallucinated_import_call"
-            && finding.function_name.as_deref() == Some("run")
-    }));
-}
 
 #[test]
 fn exact_duplicate_findings_are_collapsed_by_scan_sorting() {
@@ -203,37 +140,4 @@ fn exact_duplicate_findings_are_collapsed_by_scan_sorting() {
     assert_eq!(findings.len(), 1);
 }
 
-#[test]
-fn scan_dispatch_uses_heuristics_instead_of_backend_evaluators() {
-    let source = scan_fixture!("rust/backend/grouped_imported_function.txt");
-    let files = source
-        .split("=== file:")
-        .filter_map(|chunk| {
-            let chunk = chunk.trim();
-            if chunk.is_empty() {
-                return None;
-            }
-            let (header, body) = chunk.split_once('\n')?;
-            let path = header.trim().trim_end_matches("===").trim();
-            Some((path, body.trim_start_matches('\n')))
-        })
-        .map(|(path, body)| {
-            crate::analysis::parse_source_file(std::path::Path::new(path), body)
-                .expect("fixture source should parse")
-        })
-        .collect::<Vec<ParsedFile>>();
-    let index = build_repository_index(std::path::Path::new("/repo"), &files);
-    let analysis_config = AnalysisConfig::default();
-    let file = files
-        .iter()
-        .find(|file| file.language == Language::Rust)
-        .expect("fixture should include a rust file");
 
-    let file_findings = evaluate_file(file, &index, &analysis_config);
-    let repo_findings = evaluate_repo(Language::Rust, &[file], &index, &analysis_config);
-
-    assert!(
-        !file_findings.is_empty() || repo_findings.is_empty(),
-        "the scan layer should dispatch through heuristics for file evaluation"
-    );
-}

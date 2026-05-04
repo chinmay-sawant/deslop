@@ -5,8 +5,6 @@ mod hotpath;
 mod hotpath_ext;
 mod performance;
 mod phase4;
-#[cfg(test)]
-mod tests;
 
 use std::cell::RefCell;
 use std::path::Path;

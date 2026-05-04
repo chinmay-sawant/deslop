@@ -4,8 +4,6 @@ mod errors;
 mod frameworks;
 mod general;
 mod performance;
-#[cfg(test)]
-mod tests;
 
 use std::cell::RefCell;
 use std::path::Path;

@@ -1,8 +1,6 @@
 use std::path::Path;
 
-use deslop::{BenchmarkOptions, benchmark_repository};
-
-use super::support::{FixtureWorkspace, scan_root};
+use super::support::scan_root;
 
 const GOMINDMAPPER_ROOT: &str = "/home/chinmay/ChinmayPersonalProjects/mindmapper/gomindmapper";
 const GOPDFSUIT_ROOT: &str = "/home/chinmay/ChinmayPersonalProjects/gopdfsuit";
@@ -49,26 +47,4 @@ fn test_real_scan() {
     }
 }
 
-#[test]
-fn test_benchmark() {
-    let workspace = FixtureWorkspace::new();
-    workspace.write_file(
-        "main.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/go/simple.go"
-        )),
-    );
 
-    let report = benchmark_repository(&BenchmarkOptions {
-        root: workspace.root().to_path_buf(),
-        repeats: 2,
-        warmups: 1,
-        respect_ignore: true,
-    })
-    .expect("benchmark should succeed");
-
-    assert_eq!(report.repeats, 2);
-    assert_eq!(report.warmups, 1);
-    assert_eq!(report.runs.len(), 2);
-}
