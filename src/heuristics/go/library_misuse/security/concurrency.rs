@@ -300,6 +300,4 @@ fn global_rand_source_contention(
     findings
 }
 
-
-
 // ── Section E — Network And TLS Security ──

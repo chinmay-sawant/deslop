@@ -46,5 +46,3 @@ fn test_real_scan() {
         );
     }
 }
-
-

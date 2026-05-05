@@ -1,6 +1,6 @@
 use std::{collections::BTreeMap, fs, path::Path};
 
-use deslop::{rule_registry, RuleLanguage};
+use deslop::{RuleLanguage, rule_registry};
 
 use super::FixtureWorkspace;
 

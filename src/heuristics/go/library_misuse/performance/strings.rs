@@ -582,5 +582,3 @@ fn builder_write_string_plus(
 }
 
 // ── Section B — Slice And Map Operations ──
-
-

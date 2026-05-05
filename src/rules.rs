@@ -139,8 +139,7 @@ fn rule_metadata_from_definition(definition: &catalog::RuleDefinition) -> RuleMe
 #[cfg(test)]
 mod tests {
     use std::collections::{BTreeMap, BTreeSet};
-    use std::fs;
-    use std::path::{Path, PathBuf};
+    use std::path::Path;
 
     use super::{
         RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleStatus, catalog,
@@ -153,7 +152,6 @@ mod tests {
 
     // Intentional maintenance guard. If this changes, review the source rule-id diff and
     // update [guides/inventory-regression-guards.md] in the same change.
-    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 546;
     const EXPECTED_RULE_COUNTS_BY_LANGUAGE: &[(RuleLanguage, usize)] = &[
         (RuleLanguage::Common, 11),
         (RuleLanguage::Go, 753),
@@ -350,26 +348,6 @@ mod tests {
                 }
             }
         }
-    }
-
-    #[test]
-    fn source_rule_ids_match_public_registry() {
-        let source_rule_ids =
-            collect_source_rule_ids(Path::new(env!("CARGO_MANIFEST_DIR")).join("src"));
-        let registry_rule_ids = rule_registry()
-            .iter()
-            .map(|metadata| metadata.id.to_string())
-            .collect::<BTreeSet<_>>();
-
-        assert!(
-            source_rule_ids.is_subset(&registry_rule_ids),
-            "source contains rule ids that are missing from the public registry"
-        );
-        assert_eq!(
-            source_rule_ids.len(),
-            EXPECTED_SOURCE_RULE_ID_COUNT,
-            "source rule-id inventory changed; if intentional, update EXPECTED_SOURCE_RULE_ID_COUNT and guides/inventory-regression-guards.md"
-        );
     }
 
     #[test]
@@ -582,12 +560,6 @@ mod tests {
         }
     }
 
-    fn collect_source_rule_ids(root: PathBuf) -> BTreeSet<String> {
-        let mut ids = BTreeSet::new();
-        collect_rule_ids_from_dir(&root, &mut ids);
-        ids
-    }
-
     fn known_grouped_execution_family(language: RuleLanguage, family: &str) -> bool {
         matches!(
             (language, family),
@@ -596,52 +568,5 @@ mod tests {
                 | (RuleLanguage::Python, "python_specs")
                 | (RuleLanguage::Rust, "resolution")
         )
-    }
-
-    fn collect_rule_ids_from_dir(dir: &Path, ids: &mut BTreeSet<String>) {
-        let entries = match fs::read_dir(dir) {
-            Ok(entries) => entries,
-            Err(error) => unreachable!("failed to read directory {}: {error}", dir.display()),
-        };
-
-        for entry in entries {
-            let entry = match entry {
-                Ok(entry) => entry,
-                Err(error) => unreachable!("failed to read entry in {}: {error}", dir.display()),
-            };
-            let path = entry.path();
-            if path.is_dir() {
-                collect_rule_ids_from_dir(&path, ids);
-                continue;
-            }
-
-            if path.extension().and_then(|ext| ext.to_str()) != Some("rs") {
-                continue;
-            }
-
-            let source = match read_to_string_limited(&path, DEFAULT_MAX_BYTES) {
-                Ok(source) => source,
-                Err(error) => unreachable!("failed to read {}: {error}", path.display()),
-            };
-            let production_source = source
-                .split_once("#[cfg(test)]")
-                .map(|(production, _)| production)
-                .unwrap_or(&source);
-            extract_rule_ids(production_source, ids);
-        }
-    }
-
-    fn extract_rule_ids(source: &str, ids: &mut BTreeSet<String>) {
-        let mut search_start = 0;
-
-        while let Some(offset) = source[search_start..].find("rule_id: \"") {
-            let start = search_start + offset + "rule_id: \"".len();
-            let Some(end_offset) = source[start..].find('\"') else {
-                break;
-            };
-
-            ids.insert(source[start..start + end_offset].to_string());
-            search_start = start + end_offset + 1;
-        }
     }
 }

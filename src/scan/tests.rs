@@ -1,11 +1,8 @@
 use tempfile::{Builder, TempDir};
 
-use super::{
-    apply_repository_config, is_generated, next_code_line, parse_rule_ids,
-};
+use super::{apply_repository_config, is_generated, next_code_line, parse_rule_ids};
 use crate::RepoConfig;
 use crate::model::{Finding, Severity};
-
 
 fn sample_finding(rule_id: &str, severity: Severity) -> Finding {
     Finding {
@@ -54,7 +51,6 @@ fn finds_next_code_line_after_directive_comments() {
     ];
     assert_eq!(next_code_line(&lines, 1), Some(4));
 }
-
 
 #[test]
 fn applies_disabled_rules_and_severity_overrides() {
@@ -121,7 +117,6 @@ fn suppresses_findings_under_configured_paths() {
     assert_eq!(findings[0].path, root.path().join("src/lib.rs"));
 }
 
-
 #[test]
 fn exact_duplicate_findings_are_collapsed_by_scan_sorting() {
     let finding = sample_finding("unwrap_in_non_test_code", Severity::Warning);
@@ -139,5 +134,3 @@ fn exact_duplicate_findings_are_collapsed_by_scan_sorting() {
 
     assert_eq!(findings.len(), 1);
 }
-
-

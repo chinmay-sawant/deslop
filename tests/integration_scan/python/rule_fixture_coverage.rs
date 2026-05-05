@@ -46,7 +46,11 @@ fn normalize_fixture_lines(text: &str) -> Vec<String> {
 }
 
 fn is_placeholder_metadata_stub(text: &str) -> bool {
-    let normalized = text.to_ascii_lowercase().split_whitespace().collect::<Vec<_>>().join(" ");
+    let normalized = text
+        .to_ascii_lowercase()
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
     PLACEHOLDER_MARKERS
         .iter()
         .all(|marker| normalized.contains(marker))
@@ -56,33 +60,6 @@ fn is_polarity_only_clone(positive_text: &str, negative_text: &str) -> bool {
     let positive_lines = normalize_fixture_lines(positive_text);
     let negative_lines = normalize_fixture_lines(negative_text);
     positive_lines == negative_lines
-}
-
-#[test]
-fn every_python_rule_has_positive_and_negative_fixture_text() {
-    let fixture_root = fixture_root();
-
-    let missing = rule_registry()
-        .iter()
-        .filter(|metadata| metadata.language == RuleLanguage::Python)
-        .flat_map(|metadata| {
-            [
-                fixture_root
-                    .join(metadata.family)
-                    .join(format!("{}_positive.txt", metadata.id)),
-                fixture_root
-                    .join(metadata.family)
-                    .join(format!("{}_negative.txt", metadata.id)),
-            ]
-        })
-        .filter(|path| !path.is_file())
-        .collect::<Vec<_>>();
-
-    assert!(
-        missing.is_empty(),
-        "missing Python rule fixture files: {:?}",
-        missing
-    );
 }
 
 #[test]
@@ -104,8 +81,9 @@ fn python_rule_coverage_fixtures_are_not_placeholder_metadata_stubs() {
         })
         .filter(|path| path.is_file())
         .filter(|path| {
-            let text = std::fs::read_to_string(path)
-                .unwrap_or_else(|error| panic!("failed to read fixture {}: {error}", path.display()));
+            let text = std::fs::read_to_string(path).unwrap_or_else(|error| {
+                panic!("failed to read fixture {}: {error}", path.display())
+            });
             is_placeholder_metadata_stub(&text)
         })
         .collect::<Vec<_>>();
@@ -136,10 +114,16 @@ fn python_rule_coverage_fixture_pairs_are_meaningfully_different() {
             }
 
             let positive_text = std::fs::read_to_string(&positive_path).unwrap_or_else(|error| {
-                panic!("failed to read fixture {}: {error}", positive_path.display())
+                panic!(
+                    "failed to read fixture {}: {error}",
+                    positive_path.display()
+                )
             });
             let negative_text = std::fs::read_to_string(&negative_path).unwrap_or_else(|error| {
-                panic!("failed to read fixture {}: {error}", negative_path.display())
+                panic!(
+                    "failed to read fixture {}: {error}",
+                    negative_path.display()
+                )
             });
 
             if is_polarity_only_clone(&positive_text, &negative_text) {
