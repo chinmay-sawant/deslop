@@ -1,0 +1,39 @@
+use std::fs;
+use std::path::Path;
+
+#[derive(Debug, thiserror::Error)]
+pub enum ConfigError {
+    #[error("failed to read config: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("invalid config format: {0}")]
+    Parse(#[from] toml::de::Error),
+    #[error("missing required field: {0}")]
+    MissingField(String),
+}
+
+pub struct Config {
+    pub database_url: String,
+    pub max_connections: u32,
+}
+
+pub fn load_config(path: &Path) -> Result<Config, ConfigError> {
+    let contents = fs::read_to_string(path)?;
+    let parsed: toml::Value = toml::from_str(&contents)?;
+    let url = parsed["database"]["url"]
+        .as_str()
+        .ok_or_else(|| ConfigError::MissingField("database.url".into()))?
+        .to_string();
+    let max_conn = parsed["database"]["max_connections"]
+        .as_integer()
+        .ok_or_else(|| ConfigError::MissingField("max_connections".into()))? as u32;
+    Ok(Config {
+        database_url: url,
+        max_connections: max_conn,
+    })
+}
+
+pub fn init_logger() -> Result<(), tracing_subscriber::util::TryInitError> {
+    tracing_subscriber::fmt()
+        .with_env_filter("info")
+        .try_init()
+}

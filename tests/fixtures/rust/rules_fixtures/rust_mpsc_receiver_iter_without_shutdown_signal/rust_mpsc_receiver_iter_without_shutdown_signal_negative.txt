@@ -1,0 +1,18 @@
+use std::sync::mpsc;
+use std::thread;
+
+enum Msg {
+    Work(String),
+    Shutdown,
+}
+
+fn worker(rx: mpsc::Receiver<Msg>) {
+    for msg in rx.iter() {
+        match msg {
+            Msg::Work(data) => process(data),
+            Msg::Shutdown => break,
+        }
+    }
+}
+
+fn process(_s: String) {}

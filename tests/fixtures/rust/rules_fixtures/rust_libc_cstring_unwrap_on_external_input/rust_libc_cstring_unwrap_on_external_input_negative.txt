@@ -1,0 +1,11 @@
+use std::ffi::CString;
+
+fn open_path(path: &str) -> Result<i32, String> {
+    let c_path = CString::new(path).map_err(|e| format!("invalid path: {}", e))?;
+    let fd = unsafe { libc::open(c_path.as_ptr(), libc::O_RDONLY) };
+    if fd < 0 {
+        Err(format!("open failed: {}", std::io::Error::last_os_error()))
+    } else {
+        Ok(fd)
+    }
+}

@@ -1,0 +1,21 @@
+#[derive(Clone, Copy)]
+struct CoordMessage {
+    x: f64,
+    y: f64,
+    z: f64,
+}
+
+// GOOD: pass the struct directly for in-process communication
+fn send_to_worker(coord: CoordMessage) {
+    channel.send(coord);
+}
+
+fn receive_from_worker(channel: &Channel) -> CoordMessage {
+    channel.recv().unwrap()
+}
+
+fn process_batch(coords: &[CoordMessage]) {
+    for coord in coords {
+        send_to_worker(*coord);
+    }
+}

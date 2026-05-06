@@ -1,0 +1,28 @@
+use axum::{Router, routing::get, Json};
+use serde_json::Value;
+
+async fn get_user_handler() -> Json<Value> {
+    let app = build_router();
+    let resp = app.oneshot(
+        axum::http::Request::builder()
+            .uri("/health")
+            .body(axum::body::Body::empty())
+            .unwrap()
+    ).await.unwrap();
+    Json(serde_json::json!({"status": "ok"}))
+}
+
+async fn admin_handler() -> Json<Value> {
+    let router = Router::new()
+        .route("/users", get(list_users))
+        .route("/stats", get(get_stats));
+    Json(serde_json::json!({"admin": true}))
+}
+
+fn build_router() -> Router {
+    Router::new()
+        .route("/health", get(|| async { "ok" }))
+}
+
+async fn list_users() -> Json<Value> { Json(serde_json::json!([])) }
+async fn get_stats() -> Json<Value> { Json(serde_json::json!({})) }

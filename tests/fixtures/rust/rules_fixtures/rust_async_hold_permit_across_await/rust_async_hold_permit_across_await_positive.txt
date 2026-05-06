@@ -1,0 +1,20 @@
+use tokio::sync::Semaphore;
+
+async fn fetch_with_limit(sem: &Semaphore, url: &str) -> Result<String, reqwest::Error> {
+    let permit = sem.acquire().await.unwrap();
+    let body = reqwest::get(url).await?.text().await?;
+    drop(permit);
+    Ok(body)
+}
+
+async fn process_items(sem: &Semaphore, items: Vec<String>) {
+    for item in items {
+        let permit = sem.acquire().await.unwrap();
+        let result = expensive_computation(&item).await;
+        save_result(&result).await;
+        drop(permit);
+    }
+}
+
+async fn expensive_computation(_input: &str) -> String { todo!() }
+async fn save_result(_result: &str) { todo!() }

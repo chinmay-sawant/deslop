@@ -1,0 +1,19 @@
+use std::io::Write;
+
+fn format_records(records: &[Record]) -> Vec<u8> {
+    let mut output = Vec::new();
+    for record in records {
+        // BAD: new String allocated per record
+        let line = format!("{}\t{}\t{}\t{}\n",
+            record.id, record.name, record.email, record.score);
+        output.write_all(line.as_bytes()).unwrap();
+    }
+    output
+}
+
+struct Record {
+    id: u64,
+    name: String,
+    email: String,
+    score: f64,
+}

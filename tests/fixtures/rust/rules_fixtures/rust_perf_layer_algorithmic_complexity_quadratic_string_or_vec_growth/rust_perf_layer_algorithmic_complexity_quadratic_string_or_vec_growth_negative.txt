@@ -1,0 +1,16 @@
+fn build_string(n: usize) -> String {
+    let mut result = String::new();
+    for i in 0..n {
+        use std::fmt::Write;
+        write!(result, "{}", i).unwrap();
+    }
+    result
+}
+
+fn collect_growing(n: usize) -> Vec<u64> {
+    let mut result = Vec::with_capacity(n);
+    for i in 0..n {
+        result.push(i as u64);
+    }
+    result
+}

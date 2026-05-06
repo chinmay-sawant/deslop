@@ -1,0 +1,13 @@
+use anyhow::{Context, Result};
+
+fn load_config(path: &str) -> Result<Config> {
+    let text = std::fs::read_to_string(path).context("reading config")?;
+    let config: Config = toml::from_str(&text).context("parsing config")?;
+    Ok(config)
+}
+
+fn process(path: &str) -> Result<()> {
+    let config = load_config(path)?;
+    run_with_config(config)?;
+    Ok(())
+}

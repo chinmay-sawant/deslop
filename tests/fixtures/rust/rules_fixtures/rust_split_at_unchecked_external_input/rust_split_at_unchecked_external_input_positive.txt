@@ -1,0 +1,18 @@
+fn parse_delimited_field(input: &str, delimiter_pos: usize) -> (&str, &str) {
+    let (left, right) = input.split_at(delimiter_pos);
+    (left, right)
+}
+
+fn extract_protocol_and_host(url: &str, sep_index: usize) -> (&str, &str) {
+    let (scheme, rest) = url.split_at(sep_index);
+    (scheme, rest)
+}
+
+fn split_header(raw: &[u8], offset: usize) -> (&[u8], &[u8]) {
+    let (key, value) = raw.split_at(offset);
+    (key, value)
+}
+
+fn parse_field_at_offset(data: &[u8], offset: usize) -> &[u8] {
+    &data[offset..]
+}

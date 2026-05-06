@@ -1,0 +1,25 @@
+// BAD: benchmark docs referencing debug-build numbers alongside release claims
+// README.md:
+// "Our parser processes 100MB in 2.3 seconds (measured on debug build with assertions)"
+// "Run `cargo bench` to reproduce these numbers"
+// Note: benchmarks were run with debug_assertions enabled
+
+fn parse_document(input: &str) -> Document {
+    debug_assert!(!input.is_empty());
+    debug_assert!(input.len() < MAX_SIZE);
+
+    let mut parser = Parser::new(input);
+    parser.parse()
+}
+
+#[cfg(test)]
+mod benches {
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn bench_parse_small(b: &mut Bencher) {
+        let input = "sample document content";
+        b.iter(|| parse_document(input));
+    }
+}

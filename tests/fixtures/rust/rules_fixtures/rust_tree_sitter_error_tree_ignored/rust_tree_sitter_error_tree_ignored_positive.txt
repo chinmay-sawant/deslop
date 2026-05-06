@@ -1,0 +1,22 @@
+use tree_sitter::Parser;
+
+fn parse_and_use(source: &str) {
+    let mut parser = Parser::new();
+    parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+    let tree = parser.parse(source, None).unwrap();
+    let root = tree.root_node();
+
+    let text = &source[root.start_byte()..root.end_byte()];
+    process(text);
+}
+
+fn parse_source(source: &str) -> String {
+    let mut parser = Parser::new();
+    parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+    let tree = parser.parse(source, None).unwrap();
+    let root = tree.root_node();
+    let text = &source[root.start_byte()..root.end_byte()];
+    text.to_string()
+}
+
+fn process(_text: &str) {}

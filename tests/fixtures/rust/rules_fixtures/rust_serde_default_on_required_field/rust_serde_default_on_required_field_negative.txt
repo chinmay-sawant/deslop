@@ -1,0 +1,30 @@
+use serde::Deserialize;
+
+// GOOD: required fields without defaults, truly optional fields with defaults
+#[derive(Deserialize)]
+struct DatabaseConfig {
+    host: String,
+    port: u16,
+    username: String,
+    password: String,
+    database_name: String,
+    #[serde(default = "default_pool_size")]
+    pool_size: u32,
+}
+
+fn default_pool_size() -> u32 {
+    10
+}
+
+#[derive(Deserialize)]
+struct AuthConfig {
+    secret_key: String,
+    token_expiry: u64,
+    issuer: String,
+    #[serde(default = "default_algorithm")]
+    algorithm: String,
+}
+
+fn default_algorithm() -> String {
+    "HS256".to_string()
+}

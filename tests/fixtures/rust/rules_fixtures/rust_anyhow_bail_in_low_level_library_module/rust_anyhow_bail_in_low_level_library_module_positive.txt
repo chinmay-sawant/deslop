@@ -1,0 +1,37 @@
+use anyhow::{bail, Result};
+
+pub fn parse_header(data: &[u8]) -> Result<Header> {
+    if data.len() < 8 {
+        bail!("header too short: expected 8 bytes, got {}", data.len());
+    }
+    let version = data[0];
+    if version != 1 && version != 2 {
+        bail!("unsupported protocol version: {version}");
+    }
+    let length = u32::from_be_bytes([data[4], data[5], data[6], data[7]]);
+    Ok(Header { version, length })
+}
+
+pub fn decode_frame(payload: &[u8]) -> Result<Frame> {
+    if payload.is_empty() {
+        bail!("empty frame payload");
+    }
+    let kind = payload[0];
+    if kind > 5 {
+        bail!("unknown frame kind: {kind}");
+    }
+    Ok(Frame {
+        kind,
+        data: &payload[1..],
+    })
+}
+
+struct Header {
+    version: u8,
+    length: u32,
+}
+
+struct Frame<'a> {
+    kind: u8,
+    data: &'a [u8],
+}

@@ -1,0 +1,19 @@
+use criterion::{criterion_group, criterion_main, Criterion};
+
+fn bench_string_concat(c: &mut Criterion) {
+    let items: Vec<String> = (0..1000).map(|i| format!("item_{}", i)).collect();
+    // BAD: allocation-sensitive benchmark without tracking allocations
+    c.bench_function("string_concat", |b| {
+        b.iter(|| {
+            let mut result = String::new();
+            for item in &items {
+                result.push_str(item);
+                result.push(',');
+            }
+            result
+        })
+    });
+}
+
+criterion_group!(benches, bench_string_concat);
+criterion_main!(benches);

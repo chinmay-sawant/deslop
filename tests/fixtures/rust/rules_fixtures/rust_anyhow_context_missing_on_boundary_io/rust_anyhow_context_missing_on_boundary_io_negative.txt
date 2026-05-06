@@ -1,0 +1,42 @@
+use anyhow::{Context, Result};
+use std::fs;
+use std::path::Path;
+
+pub fn load_config(path: &Path) -> Result<Config> {
+    let contents = fs::read_to_string(path)
+        .with_context(|| format!("reading config from {}", path.display()))?;
+    let config: Config = toml::from_str(&contents)
+        .with_context(|| format!("parsing config from {}", path.display()))?;
+    Ok(config)
+}
+
+pub fn save_output(path: &Path, data: &[u8]) -> Result<()> {
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)
+            .with_context(|| format!("creating directory {}", parent.display()))?;
+    }
+    fs::write(path, data)
+        .with_context(|| format!("writing output to {}", path.display()))?;
+    Ok(())
+}
+
+pub fn read_env_defaults() -> Result<EnvDefaults> {
+    let host = std::env::var("APP_HOST")
+        .context("missing APP_HOST environment variable")?;
+    let port_str = std::env::var("APP_PORT")
+        .context("missing APP_PORT environment variable")?;
+    let port: u16 = port_str
+        .parse()
+        .with_context(|| format!("invalid APP_PORT value: {port_str}"))?;
+    Ok(EnvDefaults { host, port })
+}
+
+struct Config {
+    host: String,
+    port: u16,
+}
+
+struct EnvDefaults {
+    host: String,
+    port: u16,
+}

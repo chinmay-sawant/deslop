@@ -1,0 +1,31 @@
+use std::sync::Mutex;
+use std::sync::Arc;
+
+struct AppState {
+    db: Database,
+    counter: Mutex<u64>,
+}
+
+impl AppState {
+    fn increment(&self) {
+        let mut count = self.counter.lock().unwrap();
+        *count += 1;
+    }
+
+    fn process_request(&self, id: u64) -> String {
+        let mut count = self.counter.lock().unwrap();
+        *count += 1;
+        format!("processed {}", id)
+    }
+
+    fn get_count(&self) -> u64 {
+        let count = self.counter.lock().unwrap();
+        *count
+    }
+}
+
+struct Database;
+
+async fn handle_request(state: Arc<AppState>, id: u64) -> String {
+    state.process_request(id)
+}

@@ -1,0 +1,48 @@
+struct ServerConfig {
+    host: String,
+    port: u16,
+    max_connections: u32,
+    tls_enabled: bool,
+    cert_path: Option<String>,
+    key_path: Option<String>,
+}
+
+struct ServerConfigBuilder {
+    host: Option<String>,
+    port: Option<u16>,
+    max_connections: Option<u32>,
+    tls_enabled: Option<bool>,
+    cert_path: Option<String>,
+    key_path: Option<String>,
+}
+
+impl ServerConfigBuilder {
+    fn new() -> Self {
+        Self {
+            host: None,
+            port: None,
+            max_connections: None,
+            tls_enabled: None,
+            cert_path: None,
+            key_path: None,
+        }
+    }
+
+    fn host(mut self, host: String) -> Self { self.host = Some(host); self }
+    fn port(mut self, port: u16) -> Self { self.port = Some(port); self }
+    fn max_connections(mut self, n: u32) -> Self { self.max_connections = Some(n); self }
+    fn tls_enabled(mut self, v: bool) -> Self { self.tls_enabled = Some(v); self }
+    fn cert_path(mut self, p: String) -> Self { self.cert_path = Some(p); self }
+    fn key_path(mut self, p: String) -> Self { self.key_path = Some(p); self }
+
+    fn build(self) -> ServerConfig {
+        ServerConfig {
+            host: self.host.unwrap_or_else(|| "0.0.0.0".into()),
+            port: self.port.unwrap_or(8080),
+            max_connections: self.max_connections.unwrap_or(100),
+            tls_enabled: self.tls_enabled.unwrap_or(false),
+            cert_path: self.cert_path,
+            key_path: self.key_path,
+        }
+    }
+}

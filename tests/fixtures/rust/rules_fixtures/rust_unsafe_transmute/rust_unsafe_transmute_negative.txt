@@ -1,0 +1,19 @@
+fn cast_u8_to_bool(val: u8) -> bool {
+    val != 0
+}
+
+fn cast_i32_to_u32(val: i32) -> u32 {
+    val as u32
+}
+
+fn cast_bytes_to_string(bytes: Vec<u8>) -> Result<String, String> {
+    String::from_utf8(bytes).map_err(|e| format!("invalid UTF-8: {}", e))
+}
+
+fn safe_convert<T, U: From<T>>(val: T) -> U {
+    U::from(val)
+}
+
+fn checked_cast(val: i32) -> Option<u16> {
+    u16::try_from(val).ok()
+}

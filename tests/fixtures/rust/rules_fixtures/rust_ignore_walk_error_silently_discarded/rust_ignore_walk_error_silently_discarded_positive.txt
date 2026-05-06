@@ -1,0 +1,9 @@
+use walkdir::WalkDir;
+
+fn count_files(root: &str) -> usize {
+    WalkDir::new(root)
+        .into_iter()
+        .filter_map(Result::ok)
+        .filter(|e| e.file_type().is_file())
+        .count()
+}

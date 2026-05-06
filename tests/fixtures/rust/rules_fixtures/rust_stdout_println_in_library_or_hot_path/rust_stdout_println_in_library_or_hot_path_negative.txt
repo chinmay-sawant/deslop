@@ -1,0 +1,37 @@
+pub struct Scanner {
+    logger: slog::Logger,
+}
+
+impl Scanner {
+    pub fn new(logger: slog::Logger) -> Self {
+        Self { logger }
+    }
+
+    pub fn run(&self, targets: &[String]) -> Vec<ScanResult> {
+        let mut results = Vec::new();
+        for target in targets {
+            slog::info!(self.logger, "scanning"; "target" => target);
+            let result = self.scan_target(target);
+            slog::info!(self.logger, "scan complete"; "target" => target);
+            results.push(result);
+        }
+        results
+    }
+
+    fn scan_target(&self, url: &str) -> ScanResult {
+        ScanResult { url: url.to_string(), status: 200 }
+    }
+}
+
+pub struct ScanResult {
+    pub url: String,
+    pub status: u16,
+}
+
+fn main() {
+    let drain = slog::Discard;
+    let logger = slog::Logger::root(drain, slog::o!());
+    let scanner = Scanner::new(logger);
+    let targets = vec!["https://example.com".to_string()];
+    let _results = scanner.run(&targets);
+}

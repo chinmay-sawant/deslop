@@ -1,0 +1,26 @@
+use askama::Template;
+use actix_web::{HttpResponse, web};
+use actix_web::body::BodyStream;
+use futures::stream;
+
+#[derive(Template)]
+#[template(path = "welcome.html")]
+struct WelcomeTemplate {
+    username: String,
+    items: Vec<String>,
+}
+
+async fn welcome_page(username: String, items: Vec<String>) -> HttpResponse {
+    let tmpl = WelcomeTemplate { username, items };
+    // GOOD: render directly into streaming response body
+    let (tx, rx) = tokio::sync::mpsc::channel(1);
+    tokio::task::spawn_blocking(move || {
+        let mut buf = Vec::new();
+        tmpl.write_into(&mut buf).unwrap();
+        let _ = tx.blocking_send(buf);
+    });
+    let stream = tokio_stream::wrappers::ReceiverStream::new(rx);
+    HttpResponse::Ok()
+        .content_type("text/html")
+        .streaming(stream)
+}

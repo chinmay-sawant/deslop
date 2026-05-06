@@ -1,0 +1,29 @@
+use rayon::prelude::*;
+use std::sync::Mutex;
+
+// BAD: Mutex<Vec<_>> for collecting parallel results
+fn find_errors(files: &[PathBuf]) -> Vec<Error> {
+    let errors = Mutex::new(Vec::new());
+
+    files.par_iter().for_each(|file| {
+        let content = std::fs::read_to_string(file).unwrap();
+        for line in content.lines() {
+            if let Some(error) = check_line(line) {
+                errors.lock().unwrap().push(error);
+            }
+        }
+    });
+
+    errors.into_inner().unwrap()
+}
+
+fn collect_metrics(data: &[DataPoint]) -> Vec<Metric> {
+    let metrics = Mutex::new(Vec::new());
+
+    data.par_iter().for_each(|point| {
+        let metric = compute_metric(point);
+        metrics.lock().unwrap().push(metric);
+    });
+
+    metrics.into_inner().unwrap()
+}

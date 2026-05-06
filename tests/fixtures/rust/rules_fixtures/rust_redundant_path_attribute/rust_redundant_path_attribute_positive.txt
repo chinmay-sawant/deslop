@@ -1,0 +1,14 @@
+// BAD: same-directory #[path = "..."] that standard resolution could replace
+// In src/lib.rs:
+#[path = "handlers.rs"]
+mod handlers;
+
+#[path = "models.rs"]
+mod models;
+
+#[path = "utils.rs"]
+mod utils;
+
+// In src/handlers.rs:
+#[path = "helpers.rs"]
+mod helpers;

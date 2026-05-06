@@ -1,0 +1,9 @@
+use tokio::sync::mpsc;
+
+async fn poll_loop(mut rx: mpsc::Receiver<String>) {
+    while let Some(msg) = rx.recv().await {
+        process(msg);
+    }
+}
+
+fn process(_s: String) {}

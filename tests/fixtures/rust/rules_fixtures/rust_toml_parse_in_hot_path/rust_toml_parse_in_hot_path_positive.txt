@@ -1,0 +1,29 @@
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct RequestConfig {
+    action: String,
+    target: String,
+    options: Options,
+}
+
+#[derive(Deserialize)]
+struct Options {
+    verbose: bool,
+    timeout: u64,
+}
+
+fn handle_request(raw_config: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let config: RequestConfig = toml::from_str(raw_config)?;
+    process_action(&config.action, &config.target);
+    Ok(())
+}
+
+fn process_scan_results(results: &str) -> Vec<RequestConfig> {
+    results
+        .lines()
+        .filter_map(|line| toml::from_str(line).ok())
+        .collect()
+}
+
+fn process_action(_action: &str, _target: &str) {}

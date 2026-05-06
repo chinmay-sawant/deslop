@@ -1,0 +1,13 @@
+use std::path::PathBuf;
+
+fn build_path(base: &str, segment: &str) -> PathBuf {
+    let mut path = PathBuf::from(base);
+    path.push(segment);
+    path
+}
+
+fn join_absolute(base: &str, abs: &str) -> PathBuf {
+    let mut path = PathBuf::from(base);
+    path.push(abs);
+    path
+}

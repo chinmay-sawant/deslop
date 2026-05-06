@@ -1,0 +1,53 @@
+trait Validator {
+    fn validate(&self, input: &str) -> bool;
+}
+
+struct MinLength(usize);
+impl Validator for MinLength {
+    fn validate(&self, input: &str) -> bool {
+        input.len() >= self.0
+    }
+}
+
+struct NoSpaces;
+impl Validator for NoSpaces {
+    fn validate(&self, input: &str) -> bool {
+        !input.contains(' ')
+    }
+}
+
+fn validate_all(input: &str, rules: &[&dyn Validator]) -> bool {
+    rules.iter().all(|r| r.validate(input))
+}
+
+fn run_validation_batch(inputs: &[&str]) {
+    let rules: Vec<Box<dyn Validator>> = vec![
+        Box::new(MinLength(3)),
+        Box::new(NoSpaces),
+    ];
+    for input in inputs {
+        let refs: Vec<&dyn Validator> = rules.iter().map(|b| b.as_ref()).collect();
+        let _ = validate_all(input, &refs);
+    }
+}
+
+enum Rule {
+    MinLength(usize),
+    NoSpaces,
+}
+
+impl Rule {
+    fn validate(&self, input: &str) -> bool {
+        match self {
+            Rule::MinLength(n) => input.len() >= *n,
+            Rule::NoSpaces => !input.contains(' '),
+        }
+    }
+}
+
+fn run_enum_validation(inputs: &[&str]) {
+    let rules = vec![Rule::MinLength(3), Rule::NoSpaces];
+    for input in inputs {
+        let _ = rules.iter().all(|r| r.validate(input));
+    }
+}

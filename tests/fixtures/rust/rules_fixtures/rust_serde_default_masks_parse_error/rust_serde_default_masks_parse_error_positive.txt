@@ -1,0 +1,28 @@
+use serde::Deserialize;
+
+// BAD: default masking parse errors on required-looking fields
+#[derive(Deserialize)]
+struct Config {
+    #[serde(default)]
+    database_url: String,
+    #[serde(default)]
+    port: u16,
+    #[serde(default)]
+    max_connections: u32,
+    #[serde(default)]
+    api_key: String,
+}
+
+fn load_config(path: &str) -> Config {
+    let content = std::fs::read_to_string(path).unwrap();
+    // Typos or missing fields silently use defaults
+    serde_json::from_str(&content).unwrap_or_default()
+}
+
+fn parse_request(body: &str) -> Request {
+    let value: serde_json::Value = serde_json::from_str(body).unwrap();
+    Request {
+        action: value["action"].as_str().unwrap_or_default().to_string(),
+        target: value["target"].as_str().unwrap_or_default().to_string(),
+    }
+}

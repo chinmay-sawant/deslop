@@ -1,0 +1,17 @@
+use clap::Parser;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long)]
+    rules: Vec<String>,
+}
+
+fn run(cli: Cli) {
+    for rule_id in &cli.rules {
+        apply_rule(rule_id);
+    }
+}
+
+fn apply_rule(rule_id: &str) {
+    println!("applying rule: {rule_id}");
+}

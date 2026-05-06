@@ -1,0 +1,25 @@
+use sqlx::{PgPool, Row};
+
+async fn list_orders(pool: &PgPool, page: i64, per_page: i64) -> Result<Vec<Order>, sqlx::Error> {
+    // BAD: separate count query on every paginated fetch
+    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM orders")
+        .fetch_one(pool)
+        .await?;
+
+    let offset = (page - 1) * per_page;
+    let rows = sqlx::query_as::<_, Order>(
+        "SELECT id, customer_id, total FROM orders ORDER BY id LIMIT $1 OFFSET $2"
+    )
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(pool)
+    .await?;
+
+    Ok(rows)
+}
+
+struct Order {
+    id: i64,
+    customer_id: i64,
+    total: f64,
+}

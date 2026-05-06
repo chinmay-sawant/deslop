@@ -1,0 +1,15 @@
+// BAD: split + collect just to get the first segment
+fn get_domain(email: &str) -> &str {
+    let parts: Vec<&str> = email.split('@').collect();
+    parts.first().copied().unwrap_or(email)
+}
+
+fn parse_key_value(pair: &str) -> (&str, &str) {
+    let parts: Vec<&str> = pair.splitn(2, '=').collect();
+    (parts[0], parts.get(1).copied().unwrap_or(""))
+}
+
+fn first_line(text: &str) -> &str {
+    let lines: Vec<&str> = text.lines().collect();
+    lines.first().copied().unwrap_or("")
+}

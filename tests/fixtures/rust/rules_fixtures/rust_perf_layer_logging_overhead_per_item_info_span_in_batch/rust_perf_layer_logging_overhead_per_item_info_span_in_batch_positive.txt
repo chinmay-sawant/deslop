@@ -1,0 +1,17 @@
+use tracing::{info, info_span};
+
+fn process_batch(records: &[Record]) {
+    // BAD: info span per item in large batch
+    for record in records {
+        let span = info_span!("record", id = record.id, name = %record.name);
+        let _enter = span.enter();
+        info!("processing record");
+        // process...
+    }
+}
+
+struct Record {
+    id: u64,
+    name: String,
+    data: Vec<u8>,
+}

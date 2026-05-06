@@ -1,0 +1,20 @@
+use serde_json::Value;
+
+// GOOD: borrow instead of clone, or use references
+fn extract_fields<'a>(data: &'a Value, fields: &[&str]) -> Vec<&'a Value> {
+    fields.iter()
+        .filter_map(|field| data.get(field))
+        .collect()
+}
+
+fn merge_configs(base: &Value, overrides: &[Value]) -> Value {
+    let mut result = base.clone(); // clone once
+    for override_val in overrides {
+        if let Value::Object(map) = override_val {
+            for (key, value) in map {
+                result[key] = value.clone(); // unavoidable for merge
+            }
+        }
+    }
+    result
+}

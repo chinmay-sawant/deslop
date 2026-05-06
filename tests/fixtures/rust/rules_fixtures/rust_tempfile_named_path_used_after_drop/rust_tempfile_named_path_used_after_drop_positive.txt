@@ -1,0 +1,21 @@
+use std::path::PathBuf;
+use tempfile::NamedTempFile;
+
+fn create_temp_config() -> PathBuf {
+    let tmpfile = NamedTempFile::new().unwrap();
+    std::fs::write(tmpfile.path(), "key=value").unwrap();
+    tmpfile.path().to_path_buf()
+}
+
+fn process_and_return_path() -> PathBuf {
+    let tmpfile = NamedTempFile::new().unwrap();
+    std::fs::write(tmpfile.path(), b"data").unwrap();
+    tmpfile.into_temp_path().keep().unwrap()
+}
+
+fn generate_report_path() -> PathBuf {
+    let tmpfile = NamedTempFile::new_in("/tmp").unwrap();
+    let path = tmpfile.path().to_path_buf();
+    std::fs::write(&path, "report content").unwrap();
+    path
+}

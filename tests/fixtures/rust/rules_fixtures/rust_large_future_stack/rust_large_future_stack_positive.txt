@@ -1,0 +1,17 @@
+async fn handle_request(data: Vec<u8>) -> String {
+    let parsed = parse_payload(&data).await;
+    let validated = validate(parsed).await;
+    serialize_response(validated).await
+}
+
+async fn parse_payload(data: &[u8]) -> Vec<String> {
+    data.chunks(100).map(|c| String::from_utf8_lossy(c).to_string()).collect()
+}
+
+async fn validate(items: Vec<String>) -> Vec<String> {
+    items
+}
+
+async fn serialize_response(items: Vec<String>) -> String {
+    items.join(",")
+}

@@ -1,0 +1,30 @@
+use std::sync::Arc;
+
+struct DbPool {
+    url: String,
+}
+
+impl DbPool {
+    fn new(url: &str) -> Self {
+        Self { url: url.to_string() }
+    }
+
+    fn query(&self, sql: &str) -> Vec<Row> {
+        vec![]
+    }
+}
+
+struct AppState {
+    pool: Arc<DbPool>,
+}
+
+// GOOD: pool created once at startup, shared across all requests
+fn build_app_state(db_url: &str) -> Arc<AppState> {
+    let pool = Arc::new(DbPool::new(db_url));
+    Arc::new(AppState { pool })
+}
+
+async fn handle_request(state: &AppState) -> Response {
+    let rows = state.pool.query("SELECT * FROM users WHERE active = true");
+    build_response(rows)
+}

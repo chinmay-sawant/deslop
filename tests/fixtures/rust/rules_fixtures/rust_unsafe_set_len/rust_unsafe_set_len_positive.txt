@@ -1,0 +1,28 @@
+fn extend_with_uninit(vec: &mut Vec<u8>, additional: usize) {
+    let new_len = vec.len() + additional;
+    unsafe {
+        vec.set_len(new_len);
+    }
+}
+
+fn build_vec_from_raw(ptr: *const u8, len: usize) -> Vec<u8> {
+    let mut result = Vec::with_capacity(len);
+    unsafe {
+        std::ptr::copy_nonoverlapping(ptr, result.as_mut_ptr(), len);
+        result.set_len(len);
+    }
+    result
+}
+
+fn zeroed_vec(len: usize) -> Vec<u32> {
+    let mut v = Vec::with_capacity(len);
+    unsafe {
+        v.set_len(len);
+    }
+    for item in v.iter_mut() {
+        unsafe {
+            std::ptr::write(item, 0);
+        }
+    }
+    v
+}

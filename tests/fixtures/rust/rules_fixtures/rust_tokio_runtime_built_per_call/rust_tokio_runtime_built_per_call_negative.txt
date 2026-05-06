@@ -1,0 +1,46 @@
+use std::sync::Arc;
+use tokio::runtime::Runtime;
+
+struct ApiClient {
+    runtime: Arc<Runtime>,
+    client: reqwest::Client,
+}
+
+impl ApiClient {
+    fn new() -> Result<Self, Box<dyn std::error::Error>> {
+        let runtime = Arc::new(Runtime::new()?);
+        let client = reqwest::Client::new();
+        Ok(Self { runtime, client })
+    }
+
+    fn fetch_user(&self, id: u64) -> Result<User, Box<dyn std::error::Error>> {
+        self.runtime.block_on(async {
+            let resp = self.client
+                .get(&format!("https://api.example.com/users/{}", id))
+                .send()
+                .await?;
+            let user: User = resp.json().await?;
+            Ok(user)
+        })
+    }
+
+    fn process_batch(&self, urls: &[String]) -> Vec<String> {
+        self.runtime.block_on(async {
+            let mut results = Vec::new();
+            for url in urls {
+                let resp = self.client.get(url).send().await.unwrap();
+                let body = resp.text().await.unwrap();
+                results.push(body);
+            }
+            results
+        })
+    }
+}
+
+struct User { name: String }
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = ApiClient::new()?;
+    let _user = client.fetch_user(1)?;
+    Ok(())
+}

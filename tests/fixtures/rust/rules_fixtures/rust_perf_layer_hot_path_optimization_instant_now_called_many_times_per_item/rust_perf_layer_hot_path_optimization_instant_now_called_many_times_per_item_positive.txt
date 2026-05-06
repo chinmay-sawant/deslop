@@ -1,0 +1,29 @@
+use std::time::Instant;
+
+fn process_items(items: &[Item]) -> Vec<ProcessedItem> {
+    items
+        .iter()
+        .map(|item| {
+            // BAD: Instant::now called multiple times per item
+            let start = Instant::now();
+            let parsed = parse_item(item);
+            let parse_time = start.elapsed();
+
+            let start = Instant::now();
+            let validated = validate(parsed);
+            let validate_time = start.elapsed();
+
+            let start = Instant::now();
+            let transformed = transform(validated);
+            let transform_time = start.elapsed();
+
+            transformed
+        })
+        .collect()
+}
+
+struct Item { data: String }
+struct ProcessedItem { result: String }
+fn parse_item(i: &Item) -> Item { Item { data: i.data.clone() } }
+fn validate(i: Item) -> Item { i }
+fn transform(i: Item) -> ProcessedItem { ProcessedItem { result: i.data } }

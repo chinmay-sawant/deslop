@@ -1,0 +1,15 @@
+use std::collections::BinaryHeap;
+
+fn top_k(values: &[u64], k: usize) -> Vec<u64> {
+    let mut heap = BinaryHeap::with_capacity(k);
+    for &v in values {
+        if heap.len() < k {
+            heap.push(v);
+        } else if let Some(mut min) = heap.peek_mut() {
+            if v > *min {
+                *min = v;
+            }
+        }
+    }
+    heap.into_sorted_vec()
+}

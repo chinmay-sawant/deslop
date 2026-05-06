@@ -1,0 +1,23 @@
+fn process_items(items: &[Item]) -> Vec<Output> {
+    // This is optimized for performance - uses pre-allocated vec
+    let mut results = Vec::with_capacity(items.len());
+    for item in items {
+        results.push(transform(item));
+    }
+    results
+}
+
+// Optimized: avoids bounds checking by using unsafe get_unchecked
+fn fast_lookup(table: &[Entry], key: u64) -> Option<&Entry> {
+    let idx = (key % table.len() as u64) as usize;
+    unsafe { table.get_unchecked(idx) }.as_ref()
+}
+
+// Performance-tuned hash map with custom hasher for low collision rates
+fn build_index(records: &[Record]) -> HashMap<u64, usize> {
+    let mut map = HashMap::with_capacity_and_hasher(records.len(), FnvBuildHasher::default());
+    for (i, r) in records.iter().enumerate() {
+        map.insert(r.id, i);
+    }
+    map
+}

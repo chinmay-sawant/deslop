@@ -1,0 +1,31 @@
+// BAD: public API with raw boolean mode switch
+pub fn process_data(data: &[u8], compress: bool, encrypt: bool) -> Vec<u8> {
+    let mut result = data.to_vec();
+    if compress {
+        result = compress_data(&result);
+    }
+    if encrypt {
+        result = encrypt_data(&result);
+    }
+    result
+}
+
+pub fn connect(host: &str, tls: bool, verify: bool) -> Connection {
+    if tls {
+        if verify {
+            connect_tls_verified(host)
+        } else {
+            connect_tls_unverified(host)
+        }
+    } else {
+        connect_plain(host)
+    }
+}
+
+pub fn create_pool(size: usize, reuse: bool) -> Pool {
+    if reuse {
+        Pool::with_reuse(size)
+    } else {
+        Pool::new(size)
+    }
+}

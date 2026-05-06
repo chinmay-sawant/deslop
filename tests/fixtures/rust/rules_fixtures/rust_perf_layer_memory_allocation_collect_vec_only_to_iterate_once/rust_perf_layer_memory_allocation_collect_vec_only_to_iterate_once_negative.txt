@@ -1,0 +1,17 @@
+fn process_items(items: &[Item]) -> f64 {
+    // GOOD: chain iterator directly without intermediate collection
+    let filtered: Vec<f64> = items
+        .iter()
+        .filter(|i| i.in_stock)
+        .map(|i| i.price)
+        .collect();
+
+    let total: f64 = filtered.iter().sum();
+    total / filtered.len() as f64
+}
+
+struct Item {
+    name: String,
+    price: f64,
+    in_stock: bool,
+}

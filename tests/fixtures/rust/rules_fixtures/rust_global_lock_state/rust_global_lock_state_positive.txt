@@ -1,0 +1,16 @@
+use std::collections::HashMap;
+use std::sync::Mutex;
+
+static CACHE: Mutex<HashMap<String, Vec<u8>>> = Mutex::new(HashMap::new());
+static mut COUNTER: u64 = 0;
+
+fn get_cached(key: &str) -> Option<Vec<u8>> {
+    let guard = CACHE.lock().unwrap();
+    guard.get(key).cloned()
+}
+
+fn increment_counter() {
+    unsafe {
+        COUNTER += 1;
+    }
+}

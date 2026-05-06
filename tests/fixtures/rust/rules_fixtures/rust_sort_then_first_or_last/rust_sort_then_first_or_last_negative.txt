@@ -1,0 +1,26 @@
+struct Order {
+    id: u64,
+    amount: f64,
+    timestamp: u64,
+}
+
+fn get_highest_order(orders: &[Order]) -> Option<&Order> {
+    orders.iter().max_by(|a, b| a.amount.partial_cmp(&b.amount).unwrap())
+}
+
+fn get_latest_order(orders: &[Order]) -> Option<&Order> {
+    orders.iter().max_by_key(|o| o.timestamp)
+}
+
+fn get_smallest_amount(orders: &[Order]) -> Option<f64> {
+    orders.iter().map(|o| o.amount).reduce(f64::min)
+}
+
+fn get_earliest_order(orders: &[Order]) -> Option<&Order> {
+    orders.iter().min_by_key(|o| o.timestamp)
+}
+
+fn top_n_by_amount(orders: &mut Vec<Order>, n: usize) {
+    orders.select_nth_unstable_by(n, |a, b| b.amount.partial_cmp(&a.amount).unwrap());
+    orders.truncate(n);
+}

@@ -1,0 +1,16 @@
+use std::sync::Arc;
+use tokio::sync::Mutex;
+
+async fn process_batch(items: Vec<String>, state: Arc<Mutex<Vec<String>>>) {
+    let mut results = Vec::new();
+    for item in items {
+        let result = fetch_remote(&item).await;
+        results.push(result);
+    }
+    let mut guard = state.lock().await;
+    guard.extend(results);
+}
+
+async fn fetch_remote(url: &str) -> String {
+    format!("result for {}", url)
+}

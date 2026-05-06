@@ -1,0 +1,14 @@
+use clap::Parser;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long, default_value_t = 8080)]
+    port: u16,
+
+    #[arg(long, default_value_t = 1024)]
+    buffer_size: usize,
+}
+
+fn run(cli: Cli) {
+    println!("port={} buffer={}", cli.port, cli.buffer_size);
+}

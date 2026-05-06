@@ -1,0 +1,10 @@
+use std::str;
+
+fn parse_ffi_string(raw: &[u8]) -> &str {
+    unsafe { str::from_utf8_unchecked(raw) }
+}
+
+fn handle_request(body: &[u8]) -> String {
+    let text = unsafe { str::from_utf8_unchecked(body) };
+    text.to_uppercase()
+}

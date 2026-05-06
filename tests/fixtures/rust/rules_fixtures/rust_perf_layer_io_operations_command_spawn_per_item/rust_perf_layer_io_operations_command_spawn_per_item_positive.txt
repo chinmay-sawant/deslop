@@ -1,0 +1,15 @@
+use std::process::Command;
+
+fn process_files(paths: &[&str]) -> Vec<String> {
+    let mut results = Vec::new();
+    for path in paths {
+        // BAD: spawns a new process per item
+        let output = Command::new("wc")
+            .arg("-l")
+            .arg(path)
+            .output()
+            .expect("failed to run wc");
+        results.push(String::from_utf8_lossy(&output.stdout).to_string());
+    }
+    results
+}

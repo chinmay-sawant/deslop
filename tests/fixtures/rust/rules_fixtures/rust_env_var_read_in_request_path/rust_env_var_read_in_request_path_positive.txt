@@ -1,0 +1,25 @@
+async fn handle_request(req: Request) -> Response {
+    let mode = std::env::var("APP_MODE").unwrap_or_else(|_| "production".into());
+    let log_level = std::env::var("LOG_LEVEL").unwrap_or_else(|_| "info".into());
+    let feature_flag = std::env::var("FEATURE_X").unwrap_or_default();
+
+    if mode == "debug" {
+        return Response::debug();
+    }
+
+    let result = process(&req, &log_level, &feature_flag).await;
+    Response::ok(result)
+}
+
+fn get_api_base() -> String {
+    std::env::var("API_BASE_URL").unwrap_or_else(|_| "https://api.example.com".into())
+}
+
+async fn process(_req: &Request, _log_level: &str, _feature: &str) -> String { todo!() }
+
+struct Request;
+struct Response;
+impl Response {
+    fn debug() -> Self { Self }
+    fn ok(_body: String) -> Self { Self }
+}

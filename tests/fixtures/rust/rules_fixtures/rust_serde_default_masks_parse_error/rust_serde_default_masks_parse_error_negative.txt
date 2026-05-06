@@ -1,0 +1,27 @@
+use serde::Deserialize;
+
+// GOOD: required fields without defaults, optional fields with defaults
+#[derive(Deserialize)]
+struct Config {
+    database_url: String,
+    port: u16,
+    max_connections: u32,
+    api_key: String,
+    #[serde(default = "default_log_level")]
+    log_level: String,
+}
+
+fn default_log_level() -> String {
+    "info".to_string()
+}
+
+fn load_config(path: &str) -> Result<Config, Error> {
+    let content = std::fs::read_to_string(path)?;
+    let config: Config = serde_json::from_str(&content)?;
+    Ok(config)
+}
+
+fn parse_request(body: &str) -> Result<Request, Error> {
+    let request: Request = serde_json::from_str(body)?;
+    Ok(request)
+}

@@ -1,0 +1,45 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize)]
+struct UserRequest {
+    name: String,
+    email: String,
+    role: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct RequestBody {
+    user: UserRequest,
+}
+
+#[derive(Debug, Serialize)]
+struct UserResponse<'a> {
+    name: &'a str,
+    email: &'a str,
+    role: &'a str,
+}
+
+#[derive(Debug, Deserialize)]
+struct DatabaseConfig {
+    host: String,
+    port: u16,
+}
+
+#[derive(Debug, Deserialize)]
+struct Config {
+    database: DatabaseConfig,
+}
+
+fn process_request(body: &[u8]) -> Result<String, Box<dyn std::error::Error>> {
+    let data: RequestBody = serde_json::from_slice(body)?;
+    let response = UserResponse {
+        name: &data.user.name,
+        email: &data.user.email,
+        role: &data.user.role,
+    };
+    Ok(serde_json::to_string(&response)?)
+}
+
+fn extract_nested_field(config: &Config) -> &str {
+    &config.database.host
+}

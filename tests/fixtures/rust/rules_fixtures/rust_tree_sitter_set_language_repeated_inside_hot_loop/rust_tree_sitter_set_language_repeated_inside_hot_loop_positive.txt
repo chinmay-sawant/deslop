@@ -1,0 +1,22 @@
+use tree_sitter::Parser;
+
+fn parse_files(files: &[&str]) {
+    let mut parser = Parser::new();
+    for file_path in files {
+        let source = std::fs::read_to_string(file_path).unwrap();
+        parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+        let tree = parser.parse(&source, None).unwrap();
+        process_tree(tree.root_node(), &source);
+    }
+}
+
+fn parse_loop(sources: &[&str]) {
+    let mut parser = Parser::new();
+    for source in sources {
+        parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+        let tree = parser.parse(source, None).unwrap();
+        println!("root: {}", tree.root_node().kind());
+    }
+}
+
+fn process_tree(_node: tree_sitter::Node, _source: &str) {}

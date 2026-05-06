@@ -1,0 +1,17 @@
+use std::sync::Mutex;
+use tree_sitter::Parser;
+
+static PARSER: Mutex<Parser> = Mutex::new(Parser::new());
+
+fn parse_source(source: &str) -> tree_sitter::Tree {
+    let mut parser = PARSER.lock().unwrap();
+    parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+    parser.parse(source, None).unwrap()
+}
+
+fn parse_file(path: &str) -> tree_sitter::Tree {
+    let source = std::fs::read_to_string(path).unwrap();
+    let mut parser = PARSER.lock().unwrap();
+    parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+    parser.parse(&source, None).unwrap()
+}

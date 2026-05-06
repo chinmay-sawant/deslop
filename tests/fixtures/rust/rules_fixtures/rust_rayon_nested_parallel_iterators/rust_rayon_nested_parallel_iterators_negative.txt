@@ -1,0 +1,21 @@
+use rayon::prelude::*;
+
+// GOOD: parallelize outer loop, sequential inner
+fn process_matrix(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
+    matrix.par_iter()
+        .map(|row| {
+            row.iter()
+                .map(|val| val * 2.0)
+                .collect()
+        })
+        .collect()
+}
+
+fn cross_compare(items: &[Item]) -> Vec<Comparison> {
+    items.par_iter()
+        .flat_map_iter(|a| {
+            items.iter()
+                .map(|b| compare(a, b))
+        })
+        .collect()
+}

@@ -1,0 +1,23 @@
+use std::sync::RwLock;
+
+struct Cache {
+    data: RwLock<HashMap<String, String>>,
+}
+
+impl Cache {
+    // BAD: write lock for read-only access
+    fn get(&self, key: &str) -> Option<String> {
+        let guard = self.data.write().unwrap();
+        guard.get(key).cloned()
+    }
+
+    fn contains_key(&self, key: &str) -> bool {
+        let guard = self.data.write().unwrap();
+        guard.contains_key(key)
+    }
+
+    fn len(&self) -> usize {
+        let guard = self.data.write().unwrap();
+        guard.len()
+    }
+}

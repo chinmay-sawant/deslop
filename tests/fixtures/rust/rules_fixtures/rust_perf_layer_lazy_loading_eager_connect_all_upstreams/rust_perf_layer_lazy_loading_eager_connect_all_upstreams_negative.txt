@@ -1,0 +1,37 @@
+struct ServiceConfig {
+    name: String,
+    endpoint: String,
+    optional: bool,
+}
+
+struct UpstreamClient {
+    name: String,
+    endpoint: String,
+    connected: bool,
+}
+
+async fn init_service(configs: Vec<ServiceConfig>) -> Vec<UpstreamClient> {
+    let mut clients = Vec::new();
+    for cfg in configs {
+        if cfg.optional {
+            // GOOD: skip optional upstreams, connect on first use
+            clients.push(UpstreamClient {
+                name: cfg.name,
+                endpoint: cfg.endpoint,
+                connected: false,
+            });
+        } else {
+            let connected = connect_upstream(&cfg.endpoint).await;
+            clients.push(UpstreamClient {
+                name: cfg.name,
+                endpoint: cfg.endpoint,
+                connected,
+            });
+        }
+    }
+    clients
+}
+
+async fn connect_upstream(endpoint: &str) -> bool {
+    true
+}

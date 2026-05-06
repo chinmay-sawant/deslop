@@ -1,0 +1,13 @@
+// src/lib.rs
+fn process_data(data: &[u8]) -> Vec<u8> {
+    data.iter().copied().filter(|b| *b != 0).collect()
+}
+
+// tests/integration.rs (dev-only)
+#[test]
+fn test_with_tempfile() {
+    let tmp = tempfile::NamedTempFile::new().unwrap();
+    std::fs::write(tmp.path(), b"test data").unwrap();
+    let result = process_data(b"test data");
+    assert!(!result.is_empty());
+}

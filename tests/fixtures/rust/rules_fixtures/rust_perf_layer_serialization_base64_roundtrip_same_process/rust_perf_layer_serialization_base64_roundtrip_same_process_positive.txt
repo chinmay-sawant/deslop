@@ -1,0 +1,19 @@
+use base64::{Engine as _, engine::general_purpose};
+
+fn store_token(token: &[u8]) -> String {
+    // BAD: base64 encode only to decode in the same process
+    general_purpose::STANDARD.encode(token)
+}
+
+fn retrieve_token(encoded: &str) -> Vec<u8> {
+    general_purpose::STANDARD.decode(encoded).unwrap()
+}
+
+fn process_auth(token: &[u8]) {
+    let encoded = store_token(token);
+    // Stored in in-memory cache, not sent over network
+    cache_insert("auth_token", &encoded);
+
+    let decoded = retrieve_token(&encoded);
+    validate_token(&decoded);
+}

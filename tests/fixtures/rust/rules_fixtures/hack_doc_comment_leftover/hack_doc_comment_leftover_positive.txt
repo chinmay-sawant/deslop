@@ -1,0 +1,30 @@
+/// HACK: We inline the serialization logic here because serde
+/// doesn't support our custom wire format yet.
+pub struct PacketHeader {
+    pub version: u8,
+    pub flags: u16,
+    pub length: u32,
+}
+
+impl PacketHeader {
+    /// Serialize the header into the provided buffer.
+    ///
+    /// HACK: Manual byte shuffling because the protocol uses
+    /// big-endian for the first three fields and little-endian for length.
+    pub fn encode(&self, buf: &mut [u8]) {
+        buf[0] = self.version;
+        buf[1] = (self.flags >> 8) as u8;
+        buf[2] = self.flags as u8;
+        buf[3..7].copy_from_slice(&self.length.to_le_bytes());
+    }
+
+    /// HACK: This ignores the CRC field entirely until the server
+    /// side is updated to accept packets without it.
+    pub fn decode(buf: &[u8]) -> Self {
+        Self {
+            version: buf[0],
+            flags: ((buf[1] as u16) << 8) | buf[2] as u16,
+            length: u32::from_le_bytes([buf[3], buf[4], buf[5], buf[6]]),
+        }
+    }
+}

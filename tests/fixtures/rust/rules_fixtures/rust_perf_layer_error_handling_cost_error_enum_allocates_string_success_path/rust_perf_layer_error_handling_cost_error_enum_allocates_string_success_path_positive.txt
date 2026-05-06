@@ -1,0 +1,23 @@
+#[derive(Debug)]
+enum ParseError {
+    InvalidFormat { message: String },
+    OutOfRange { message: String },
+    MissingField { message: String },
+}
+
+fn parse_coordinate(input: &str) -> Result<(f64, f64), ParseError> {
+    // BAD: format! allocates error strings on every call, even success path
+    let parts: Vec<&str> = input.split(',').collect();
+    if parts.len() != 2 {
+        return Err(ParseError::InvalidFormat {
+            message: format!("expected 'x,y', got '{}'", input),
+        });
+    }
+    let x: f64 = parts[0].parse().map_err(|_| ParseError::InvalidFormat {
+        message: format!("'{}' is not a float", parts[0]),
+    })?;
+    let y: f64 = parts[1].parse().map_err(|_| ParseError::InvalidFormat {
+        message: format!("'{}' is not a float", parts[1]),
+    })?;
+    Ok((x, y))
+}

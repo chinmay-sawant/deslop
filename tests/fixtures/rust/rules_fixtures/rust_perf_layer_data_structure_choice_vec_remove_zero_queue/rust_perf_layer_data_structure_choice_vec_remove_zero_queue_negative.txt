@@ -1,0 +1,25 @@
+use std::collections::VecDeque;
+
+struct TaskQueue {
+    items: VecDeque<Task>,
+}
+
+impl TaskQueue {
+    fn new() -> Self {
+        Self { items: VecDeque::new() }
+    }
+
+    fn enqueue(&mut self, task: Task) {
+        self.items.push_back(task);
+    }
+
+    fn dequeue(&mut self) -> Option<Task> {
+        // GOOD: VecDeque::pop_front is O(1)
+        self.items.pop_front()
+    }
+}
+
+struct Task {
+    id: u64,
+    payload: Vec<u8>,
+}

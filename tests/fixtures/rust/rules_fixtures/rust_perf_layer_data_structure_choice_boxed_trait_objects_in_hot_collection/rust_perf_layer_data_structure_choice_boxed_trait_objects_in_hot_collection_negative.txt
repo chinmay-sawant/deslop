@@ -1,0 +1,18 @@
+enum Widget {
+    Text { content: String },
+    Image { path: String },
+}
+
+impl Widget {
+    fn render(&self) -> String {
+        match self {
+            Widget::Text { content } => content.clone(),
+            Widget::Image { path } => format!("<img src=\"{}\">", path),
+        }
+    }
+}
+
+// GOOD: enum dispatch avoids pointer chasing and vtable overhead
+fn render_all(widgets: &[Widget]) -> String {
+    widgets.iter().map(|w| w.render()).collect()
+}

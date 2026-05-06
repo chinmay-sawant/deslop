@@ -1,0 +1,30 @@
+use rayon::prelude::*;
+
+// BAD: parallel map producing nested vectors that are later flattened
+fn expand_chunks(chunks: &[Chunk]) -> Vec<Item> {
+    let nested: Vec<Vec<Item>> = chunks.par_iter()
+        .map(|chunk| {
+            let mut items = Vec::new();
+            for entry in &chunk.entries {
+                items.push(Item::from(entry));
+            }
+            items
+        })
+        .collect();
+
+    nested.into_iter().flatten().collect()
+}
+
+fn process_and_split(records: &[Record]) -> Vec<Output> {
+    let batches: Vec<Vec<Output>> = records.par_iter()
+        .map(|record| {
+            let mut outputs = Vec::new();
+            for sub in &record.sub_records {
+                outputs.push(process_single(sub));
+            }
+            outputs
+        })
+        .collect();
+
+    batches.into_iter().flatten().collect()
+}

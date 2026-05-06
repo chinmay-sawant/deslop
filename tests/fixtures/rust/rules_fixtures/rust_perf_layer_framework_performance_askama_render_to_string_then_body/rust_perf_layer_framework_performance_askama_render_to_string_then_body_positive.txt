@@ -1,0 +1,16 @@
+use askama::Template;
+use actix_web::{HttpResponse, web};
+
+#[derive(Template)]
+#[template(path = "welcome.html")]
+struct WelcomeTemplate {
+    username: String,
+    items: Vec<String>,
+}
+
+async fn welcome_page(username: String, items: Vec<String>) -> HttpResponse {
+    let tmpl = WelcomeTemplate { username, items };
+    // BAD: render to String, then wrap in body — double allocation
+    let body = tmpl.render().unwrap();
+    HttpResponse::Ok().content_type("text/html").body(body)
+}

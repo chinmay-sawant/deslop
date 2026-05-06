@@ -1,0 +1,14 @@
+// GOOD: use eq_ignore_ascii_case to avoid allocation
+fn find_user(users: &[User], name: &str) -> Option<&User> {
+    users.iter().find(|u| u.name.eq_ignore_ascii_case(name))
+}
+
+fn matches_header(headers: &[Header], key: &str) -> Option<&str> {
+    headers.iter()
+        .find(|h| h.name.eq_ignore_ascii_case(key))
+        .map(|h| h.value.as_str())
+}
+
+fn is_content_type(response: &Response, expected: &str) -> bool {
+    response.content_type.eq_ignore_ascii_case(expected)
+}

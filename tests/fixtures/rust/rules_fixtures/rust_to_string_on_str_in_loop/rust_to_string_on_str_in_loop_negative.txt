@@ -1,0 +1,37 @@
+fn process_names(names: &[&str]) {
+    let mut results = Vec::new();
+    for name in names {
+        results.push(*name);
+    }
+    println!("{:?}", results);
+}
+
+fn match_names(names: &[String], pattern: &str) -> Vec<&str> {
+    let mut matched = Vec::new();
+    for name in names {
+        if name.contains(pattern) {
+            matched.push(name.as_str());
+        }
+    }
+    matched
+}
+
+fn collect_tags(items: &[Item]) -> Vec<&str> {
+    items.iter().map(|item| item.tag.as_str()).collect()
+}
+
+fn format_entries(entries: &[Entry]) -> String {
+    let mut output = String::new();
+    for entry in entries {
+        output.push_str(&entry.name);
+        output.push('\n');
+    }
+    output
+}
+
+fn write_name(name: &str, buf: &mut String) {
+    buf.push_str(name);
+}
+
+struct Item { tag: String }
+struct Entry { name: String }

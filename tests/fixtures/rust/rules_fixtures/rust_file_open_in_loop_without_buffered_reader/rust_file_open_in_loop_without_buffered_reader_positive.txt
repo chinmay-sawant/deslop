@@ -1,0 +1,31 @@
+use std::fs::File;
+use std::io::{self, BufRead};
+use std::path::Path;
+
+fn count_lines_in_files(paths: &[&Path]) -> io::Result<usize> {
+    let mut total = 0;
+    for path in paths {
+        let file = File::open(path)?;
+        for line in io::BufReader::new(file).lines() {
+            let _ = line?;
+            total += 1;
+        }
+    }
+    Ok(total)
+}
+
+fn scan_configs(dirs: &[&str]) -> Vec<String> {
+    let mut results = Vec::new();
+    for dir in dirs {
+        let entries = std::fs::read_dir(dir).unwrap();
+        for entry in entries {
+            let entry = entry.unwrap();
+            let mut file = File::open(entry.path()).unwrap();
+            let mut contents = String::new();
+            use std::io::Read;
+            file.read_to_string(&mut contents).unwrap();
+            results.push(contents);
+        }
+    }
+    results
+}

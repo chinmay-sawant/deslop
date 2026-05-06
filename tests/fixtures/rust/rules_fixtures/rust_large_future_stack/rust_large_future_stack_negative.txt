@@ -1,0 +1,19 @@
+async fn handle_request(data: &[u8]) -> String {
+    let lines = parse_payload(data);
+    let validated = validate(&lines);
+    serialize_response(&validated)
+}
+
+fn parse_payload(data: &[u8]) -> Vec<&str> {
+    data.split(|b| *b == b'\n')
+        .filter_map(|line| std::str::from_utf8(line).ok())
+        .collect()
+}
+
+fn validate(items: &[&str]) -> Vec<&str> {
+    items.iter().copied().filter(|s| !s.is_empty()).collect()
+}
+
+fn serialize_response(items: &[&str]) -> String {
+    items.join(",")
+}

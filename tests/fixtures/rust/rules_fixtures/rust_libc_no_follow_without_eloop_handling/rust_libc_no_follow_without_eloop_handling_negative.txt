@@ -1,0 +1,20 @@
+use std::ffi::CString;
+
+fn open_no_follow(path: &str) -> Result<i32, std::io::Error> {
+    let c_path = CString::new(path).map_err(|_| std::io::Error::new(
+        std::io::ErrorKind::InvalidInput,
+        "path contains null byte",
+    ))?;
+    let fd = unsafe { libc::open(c_path.as_ptr(), libc::O_RDONLY | libc::O_NOFOLLOW) };
+    if fd < 0 {
+        let err = std::io::Error::last_os_error();
+        if err.raw_os_error() == Some(libc::ELOOP) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "symlink loop detected",
+            ));
+        }
+        return Err(err);
+    }
+    Ok(fd)
+}

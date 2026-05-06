@@ -1,0 +1,19 @@
+use proptest::prelude::*;
+
+fn parse_query(input: &str) -> Result<Query, ParseError> {
+    // parser implementation
+    todo!()
+}
+
+proptest! {
+    // BAD: no regression case for a parser that previously crashed on specific input
+    #[test]
+    fn test_parse_never_panics(input in ".*") {
+        let _ = std::panic::catch_unwind(|| {
+            let _ = parse_query(&input);
+        });
+    }
+}
+
+// No regression test file like: tests/regressions/query_parser_crash.txt
+// No seed capture for minimized failures

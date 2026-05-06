@@ -1,0 +1,27 @@
+use rayon::prelude::*;
+
+struct LargeState {
+    data: Vec<u8>,
+    index: HashMap<u64, Vec<usize>>,
+    config: Config,
+}
+
+// BAD: move closure capturing large owned values
+fn process_batch(state: LargeState, items: &[Item]) -> Vec<Output> {
+    items.par_iter()
+        .map(move |item| {
+            // Each thread gets a clone of the entire state
+            let result = state.lookup(item.key);
+            transform(result)
+        })
+        .collect()
+}
+
+fn analyze_chunks(text: String, chunks: &[Range<usize>]) -> Vec<Analysis> {
+    chunks.par_iter()
+        .map(move |range| {
+            let slice = &text[range.clone()];
+            analyze(slice)
+        })
+        .collect()
+}

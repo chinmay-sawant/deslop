@@ -1,0 +1,17 @@
+#[derive(Clone)]
+struct Config {
+    features: Vec<String>,
+    limits: Vec<(String, u64)>,
+    metadata: Vec<(String, String)>,
+}
+
+fn process_config(config: &Config) {
+    // BAD: cloning large Config just for read-only access
+    let cloned = config.clone();
+    for feature in &cloned.features {
+        println!("feature: {}", feature);
+    }
+    for (key, value) in &cloned.metadata {
+        println!("{}: {}", key, value);
+    }
+}

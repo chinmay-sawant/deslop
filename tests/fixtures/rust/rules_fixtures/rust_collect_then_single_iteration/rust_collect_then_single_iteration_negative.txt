@@ -1,0 +1,16 @@
+fn has_invalid_entry(entries: &[Entry]) -> bool {
+    entries.iter().any(|e| e.name.is_empty())
+}
+
+fn count_matching(items: &[Item], threshold: f64) -> usize {
+    items.iter().filter(|i| i.score > threshold).count()
+}
+
+fn find_first_error(results: &[Result<(), String>]) -> Option<&str> {
+    results
+        .iter()
+        .find_map(|r| r.as_ref().err().map(|e| e.as_str()))
+}
+
+struct Entry { name: String }
+struct Item { score: f64 }

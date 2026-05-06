@@ -1,0 +1,31 @@
+use std::fs::File;
+use std::io::{BufWriter, Write};
+
+struct ReportWriter {
+    writer: BufWriter<File>,
+    records_written: usize,
+}
+
+impl ReportWriter {
+    fn new(path: &str) -> Self {
+        let file = File::create(path).unwrap();
+        Self {
+            writer: BufWriter::new(file),
+            records_written: 0,
+        }
+    }
+
+    fn write_record(&mut self, data: &str) {
+        writeln!(self.writer, "{}", data).unwrap();
+        self.records_written += 1;
+    }
+}
+
+// BAD: BufWriter dropped without explicit flush — data may be lost
+fn generate_report(path: &str) {
+    let mut report = ReportWriter::new(path);
+    for i in 0..1000 {
+        report.write_record(&format!("record_{}", i));
+    }
+    // report dropped here, BufWriter's Drop may not flush
+}

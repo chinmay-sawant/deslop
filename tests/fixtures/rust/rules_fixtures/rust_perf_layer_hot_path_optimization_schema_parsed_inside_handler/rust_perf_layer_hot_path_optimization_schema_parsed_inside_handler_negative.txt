@@ -1,0 +1,36 @@
+use jsonschema::JSONSchema;
+use serde_json::json;
+use std::sync::Arc;
+
+struct AppState {
+    schema: Arc<JSONSchema>,
+}
+
+impl AppState {
+    fn new() -> Self {
+        // GOOD: schema compiled once at startup
+        let schema = JSONSchema::compile(&json!({
+            "type": "object",
+            "required": ["name", "email"],
+            "properties": {
+                "name": { "type": "string", "minLength": 1 },
+                "email": { "type": "string", "format": "email" },
+                "age": { "type": "integer", "minimum": 0 }
+            }
+        }))
+        .expect("invalid schema");
+
+        Self {
+            schema: Arc::new(schema),
+        }
+    }
+}
+
+async fn handle_request(state: &AppState, body: serde_json::Value) -> Result<(), String> {
+    let result = state.schema.validate(&body);
+    if let Err(errors) = result {
+        let msgs: Vec<String> = errors.map(|e| e.to_string()).collect();
+        return Err(msgs.join(", "));
+    }
+    Ok(())
+}

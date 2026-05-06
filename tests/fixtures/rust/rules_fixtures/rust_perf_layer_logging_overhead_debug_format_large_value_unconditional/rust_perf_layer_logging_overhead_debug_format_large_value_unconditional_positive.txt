@@ -1,0 +1,25 @@
+use log::debug;
+
+fn process_request(req: &Request) {
+    let large_payload = req.body();
+    // BAD: Debug format of large value before log level check
+    debug!("received request: {:?}", large_payload);
+}
+
+struct Request {
+    body_bytes: Vec<u8>,
+}
+
+impl Request {
+    fn body(&self) -> Vec<u8> {
+        self.body_bytes.clone()
+    }
+}
+
+impl std::fmt::Debug for Request {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Request")
+            .field("body_bytes", &self.body_bytes)
+            .finish()
+    }
+}

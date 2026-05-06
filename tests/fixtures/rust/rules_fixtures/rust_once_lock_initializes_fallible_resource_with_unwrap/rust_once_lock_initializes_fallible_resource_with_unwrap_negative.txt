@@ -1,0 +1,12 @@
+use std::sync::OnceLock;
+
+static DB: OnceLock<Database> = OnceLock::new();
+
+fn init_db(url: &str) -> Result<(), String> {
+    let db = Database::connect(url).map_err(|e| format!("db connect failed: {}", e))?;
+    DB.set(db).map_err(|_| "db already initialized".to_string())
+}
+
+fn get_db() -> Result<&'static Database, String> {
+    DB.get().ok_or_else(|| "database not initialized".to_string())
+}

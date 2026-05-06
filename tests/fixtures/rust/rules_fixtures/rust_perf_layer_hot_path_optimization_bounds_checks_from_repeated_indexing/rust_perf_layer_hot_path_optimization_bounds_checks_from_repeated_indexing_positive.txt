@@ -1,0 +1,23 @@
+fn compute_running_sums(data: &[f64]) -> Vec<f64> {
+    let mut sums = Vec::with_capacity(data.len());
+    // BAD: repeated indexing causes bounds checks
+    for i in 0..data.len() {
+        let mut total = 0.0;
+        for j in 0..=i {
+            total += data[j];
+        }
+        sums.push(total);
+    }
+    sums
+}
+
+fn find_local_maxima(data: &[i32]) -> Vec<usize> {
+    let mut result = Vec::new();
+    // BAD: repeated indexing in tight loop
+    for i in 1..data.len() - 1 {
+        if data[i] > data[i - 1] && data[i] > data[i + 1] {
+            result.push(i);
+        }
+    }
+    result
+}

@@ -1,0 +1,13 @@
+use tracing::{debug_span, trace};
+
+fn find_matches(data: &[u32], target: u32) -> Vec<usize> {
+    // GOOD: span wraps the entire loop, not per-iteration
+    let span = debug_span!("find_matches", target = target, len = data.len());
+    let _enter = span.enter();
+
+    data.iter()
+        .enumerate()
+        .filter(|(_, &val)| val == target)
+        .map(|(i, _)| i)
+        .collect()
+}

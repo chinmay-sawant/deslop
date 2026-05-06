@@ -1,0 +1,26 @@
+// FFI bindings to the C standard library (libc).
+// ABI: C calling convention. All pointers must be non-null unless documented.
+// Ownership: malloc returns owned memory; free consumes it. memcpy does not take ownership.
+// Nullability: `s` in strlen must be null-terminated and non-null.
+extern "C" {
+    fn malloc(size: usize) -> *mut u8;
+    fn free(ptr: *mut u8);
+    fn strlen(s: *const u8) -> usize;
+    fn memcpy(dest: *mut u8, src: *const u8, n: usize) -> *mut u8;
+}
+
+// Windows API bindings.
+// ABI: "system" (stdcall on x86, C on x86_64). Handles are opaque; do not dereference.
+// Lifetime: CreateFileA returns a HANDLE that must be closed with CloseHandle.
+extern "system" {
+    fn GetLastError() -> u32;
+    fn CreateFileA(
+        name: *const u8,
+        access: u32,
+        share: u32,
+        sec: *mut u8,
+        disp: u32,
+        flags: u32,
+        template: *mut u8,
+    ) -> isize;
+}

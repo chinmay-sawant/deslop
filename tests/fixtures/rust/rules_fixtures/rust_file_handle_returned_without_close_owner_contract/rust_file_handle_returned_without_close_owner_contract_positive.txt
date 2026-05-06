@@ -1,0 +1,12 @@
+use std::fs::File;
+use std::os::unix::io::RawFd;
+
+fn open_config_file() -> RawFd {
+    let file = File::open("/etc/app/config.toml").unwrap();
+    file.into_raw_fd()
+}
+
+fn get_lock_fd(path: &str) -> RawFd {
+    let f = File::create(path).unwrap();
+    f.into_raw_fd()
+}

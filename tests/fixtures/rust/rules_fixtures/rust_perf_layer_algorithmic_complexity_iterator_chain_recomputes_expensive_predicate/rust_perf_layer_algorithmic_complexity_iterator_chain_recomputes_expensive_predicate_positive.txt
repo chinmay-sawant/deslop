@@ -1,0 +1,12 @@
+fn find_matching(items: &[Item], threshold: f64) -> Vec<&Item> {
+    items.iter()
+        .filter(|item| expensive_check(item) > threshold)
+        .filter(|item| expensive_check(item) < threshold * 2.0)
+        .filter(|item| expensive_check(item) != 0.0)
+        .collect()
+}
+
+fn expensive_check(item: &Item) -> f64 {
+    // simulate expensive computation
+    item.data.iter().map(|x| x.powi(2)).sum()
+}

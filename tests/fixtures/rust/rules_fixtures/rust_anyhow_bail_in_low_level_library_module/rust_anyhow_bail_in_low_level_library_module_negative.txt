@@ -1,0 +1,47 @@
+#[derive(Debug, thiserror::Error)]
+pub enum ProtocolError {
+    #[error("header too short: expected 8 bytes, got {actual}")]
+    HeaderTooShort { actual: usize },
+    #[error("unsupported protocol version: {0}")]
+    UnsupportedVersion(u8),
+    #[error("empty frame payload")]
+    EmptyFrame,
+    #[error("unknown frame kind: {0}")]
+    UnknownFrameKind(u8),
+}
+
+pub fn parse_header(data: &[u8]) -> Result<Header, ProtocolError> {
+    if data.len() < 8 {
+        return Err(ProtocolError::HeaderTooShort { actual: data.len() });
+    }
+    let version = data[0];
+    if version != 1 && version != 2 {
+        return Err(ProtocolError::UnsupportedVersion(version));
+    }
+    let length = u32::from_be_bytes([data[4], data[5], data[6], data[7]]);
+    Ok(Header { version, length })
+}
+
+pub fn decode_frame(payload: &[u8]) -> Result<Frame<'_>, ProtocolError> {
+    if payload.is_empty() {
+        return Err(ProtocolError::EmptyFrame);
+    }
+    let kind = payload[0];
+    if kind > 5 {
+        return Err(ProtocolError::UnknownFrameKind(kind));
+    }
+    Ok(Frame {
+        kind,
+        data: &payload[1..],
+    })
+}
+
+struct Header {
+    version: u8,
+    length: u32,
+}
+
+struct Frame<'a> {
+    kind: u8,
+    data: &'a [u8],
+}

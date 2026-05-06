@@ -1,0 +1,25 @@
+use std::mem::MaybeUninit;
+
+fn create_uninit_array() -> [u32; 10] {
+    let arr = MaybeUninit::<[u32; 10]>::uninit();
+    unsafe { arr.assume_init() }
+}
+
+fn partial_init() -> Vec<u8> {
+    let mut buf = Vec::with_capacity(100);
+    unsafe {
+        buf.set_len(100);
+    }
+    buf
+}
+
+fn uninit_struct() -> Config {
+    let config = MaybeUninit::<Config>::uninit();
+    unsafe { config.assume_init() }
+}
+
+struct Config {
+    port: u16,
+    debug: bool,
+    name: String,
+}

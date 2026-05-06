@@ -1,0 +1,25 @@
+fn extend_with_zeroes(vec: &mut Vec<u8>, additional: usize) {
+    vec.extend(std::iter::repeat(0).take(additional));
+}
+
+fn build_vec_from_iter(ptr: *const u8, len: usize) -> Vec<u8> {
+    let mut result = Vec::with_capacity(len);
+    for i in 0..len {
+        result.push(unsafe { *ptr.add(i) });
+    }
+    result
+}
+
+fn zeroed_vec(len: usize) -> Vec<u32> {
+    vec![0u32; len]
+}
+
+fn build_vec_from_ptr(ptr: *const u8, len: usize) -> Vec<u8> {
+    // SAFETY: caller guarantees ptr is valid for len bytes and properly aligned.
+    let mut result = Vec::with_capacity(len);
+    unsafe {
+        std::ptr::copy_nonoverlapping(ptr, result.as_mut_ptr(), len);
+        result.set_len(len);
+    }
+    result
+}

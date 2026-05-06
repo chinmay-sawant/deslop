@@ -1,0 +1,33 @@
+use clap::Parser;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long)]
+    input: String,
+}
+
+pub fn process_files(input_dir: &str) -> std::io::Result<()> {
+    for entry in std::fs::read_dir(input_dir)? {
+        let path = entry?.path();
+        let _ = std::fs::read_to_string(&path);
+    }
+    Ok(())
+}
+
+fn main() {
+    let cli = Cli::parse();
+    if let Err(e) = process_files(&cli.input) {
+        eprintln!("error: {e}");
+        std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_process() {
+        process_files("/tmp").ok();
+    }
+}

@@ -1,0 +1,13 @@
+use std::fs::File;
+use std::os::unix::io::IntoRawFd;
+
+fn pass_to_child(file: File) {
+    let fd = file.into_raw_fd();
+    unsafe {
+        libc::dup2(fd, libc::STDIN_FILENO);
+    }
+}
+
+fn take_fd(file: File) -> libc::c_int {
+    file.into_raw_fd()
+}

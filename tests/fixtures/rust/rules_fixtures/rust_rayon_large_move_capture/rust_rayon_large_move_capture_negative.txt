@@ -1,0 +1,27 @@
+use rayon::prelude::*;
+use std::sync::Arc;
+
+struct LargeState {
+    data: Vec<u8>,
+    index: HashMap<u64, Vec<usize>>,
+    config: Config,
+}
+
+// GOOD: borrow or share via cheap handles
+fn process_batch(state: &LargeState, items: &[Item]) -> Vec<Output> {
+    items.par_iter()
+        .map(|item| {
+            let result = state.lookup(item.key);
+            transform(result)
+        })
+        .collect()
+}
+
+fn analyze_chunks(text: &str, chunks: &[Range<usize>]) -> Vec<Analysis> {
+    chunks.par_iter()
+        .map(|range| {
+            let slice = &text[range.clone()];
+            analyze(slice)
+        })
+        .collect()
+}

@@ -1,0 +1,24 @@
+fn main() {
+    let version = std::process::Command::new("git")
+        .args(["describe", "--tags", "--always"])
+        .output()
+        .expect("git describe failed");
+    let git_version = String::from_utf8(version.stdout).unwrap();
+
+    let deps = std::process::Command::new("cargo")
+        .args(["fetch", "--manifest-path", "Cargo.toml"])
+        .output()
+        .expect("cargo fetch failed");
+
+    let curl_out = std::process::Command::new("curl")
+        .args(["-s", "https://api.example.com/version"])
+        .output()
+        .expect("curl failed");
+    let remote_version = String::from_utf8(curl_out.stdout).unwrap();
+
+    let out_dir = std::env::var("OUT_DIR").unwrap();
+    std::fs::write(
+        format!("{out_dir}/build_info.rs"),
+        format!("pub const GIT_VERSION: &str = \"{git_version}\";"),
+    ).unwrap();
+}

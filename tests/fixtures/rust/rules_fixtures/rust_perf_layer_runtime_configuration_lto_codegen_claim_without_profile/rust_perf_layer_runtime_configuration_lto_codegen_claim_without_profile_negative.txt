@@ -1,0 +1,11 @@
+// Cargo.toml
+// GOOD: performance claims backed by benchmark evidence
+// "LTO measured: 12% improvement on serialization (bench/serde_bench, commit abc123)"
+// "codegen-units=1 measured: 3% improvement, added 40s to CI build time"
+// "See BENCHMARKS.md for methodology and raw results"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+opt-level = 3
+strip = true

@@ -1,0 +1,20 @@
+use std::borrow::Cow;
+
+fn normalize_name(name: Cow<str>) -> String {
+    let owned = name.to_owned();
+    owned.trim().to_lowercase()
+}
+
+fn process_label(label: Cow<str>) -> String {
+    let owned = label.to_owned();
+    if owned.starts_with("temp_") {
+        owned
+    } else {
+        format!("temp_{owned}")
+    }
+}
+
+fn format_path(base: Cow<str>, file: &str) -> String {
+    let base_owned = base.to_owned();
+    format!("{base_owned}/{file}")
+}

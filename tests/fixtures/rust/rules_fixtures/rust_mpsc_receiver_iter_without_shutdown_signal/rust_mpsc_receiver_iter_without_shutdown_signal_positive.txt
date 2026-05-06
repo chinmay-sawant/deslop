@@ -1,0 +1,10 @@
+use std::sync::mpsc;
+use std::thread;
+
+fn worker(rx: mpsc::Receiver<String>) {
+    for msg in rx.iter() {
+        process(msg);
+    }
+}
+
+fn process(_s: String) {}

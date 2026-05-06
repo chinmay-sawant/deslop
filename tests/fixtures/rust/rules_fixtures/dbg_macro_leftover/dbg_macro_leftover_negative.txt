@@ -1,0 +1,32 @@
+use std::collections::HashMap;
+use tracing::{debug, trace};
+
+fn process_user_data(users: &[User]) -> HashMap<u64, String> {
+    let mut result = HashMap::new();
+    for user in users {
+        trace!(user_id = user.id, name = %user.name, "processing user");
+        let display = format!("{} ({})", user.name, user.email);
+        result.insert(user.id, display);
+    }
+    debug!(count = result.len(), "processed users");
+    result
+}
+
+fn calculate_discount(price: f64, quantity: u32) -> f64 {
+    let base = price * quantity as f64;
+    let discount = if quantity > 100 {
+        base * 0.15
+    } else if quantity > 50 {
+        base * 0.10
+    } else {
+        0.0
+    };
+    debug!(base, discount, quantity, "calculated discount");
+    base - discount
+}
+
+struct User {
+    id: u64,
+    name: String,
+    email: String,
+}

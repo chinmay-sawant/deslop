@@ -1,0 +1,6 @@
+[package]
+name = "my-cli"
+version = "0.1.0"
+
+[profile.release]
+opt-level = 3

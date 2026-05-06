@@ -1,0 +1,18 @@
+use std::fs;
+
+fn process_and_log(path: &str) -> Result<(), Error> {
+    let content = fs::read_to_string(path)?;
+    fs::write("/tmp/cache.txt", &content)?;
+    log::info!("processed {}", path);
+    Ok(())
+}
+
+fn cleanup(temp_dir: &str) {
+    // Explicitly handle or log errors for cleanup
+    if let Err(e) = fs::remove_dir_all(temp_dir) {
+        log::warn!("failed to remove temp dir: {}", e);
+    }
+    if let Err(e) = fs::remove_file("/tmp/lock") {
+        log::warn!("failed to remove lock file: {}", e);
+    }
+}

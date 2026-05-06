@@ -1,0 +1,27 @@
+use proptest::prelude::*;
+
+fn is_valid_config(config: &AppConfig) -> bool {
+    config.port > 1024
+        && config.port < 65535
+        && !config.hostname.is_empty()
+        && config.max_connections > 0
+        && config.timeout_secs > 0
+        && config.timeout_secs < 3600
+}
+
+proptest! {
+    // BAD: multiple assume! calls that discard most generated cases
+    #[test]
+    fn test_config_parsing(config in any::<AppConfig>()) {
+        prop_assume!(config.port > 1024);
+        prop_assume!(config.port < 65535);
+        prop_assume!(!config.hostname.is_empty());
+        prop_assume!(config.max_connections > 0);
+        prop_assume!(config.timeout_secs > 0);
+        prop_assume!(config.timeout_secs < 3600);
+
+        let serialized = serde_json::to_string(&config).unwrap();
+        let parsed: AppConfig = serde_json::from_str(&serialized).unwrap();
+        prop_assert_eq!(config, parsed);
+    }
+}

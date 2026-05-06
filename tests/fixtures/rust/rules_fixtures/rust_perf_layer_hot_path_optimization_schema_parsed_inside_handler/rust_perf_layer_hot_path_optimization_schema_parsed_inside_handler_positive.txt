@@ -1,0 +1,23 @@
+use jsonschema::JSONSchema;
+use serde_json::json;
+
+async fn handle_request(body: serde_json::Value) -> Result<(), String> {
+    // BAD: schema parsed per request handler invocation
+    let schema = JSONSchema::compile(&json!({
+        "type": "object",
+        "required": ["name", "email"],
+        "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "email": { "type": "string", "format": "email" },
+            "age": { "type": "integer", "minimum": 0 }
+        }
+    }))
+    .map_err(|e| e.to_string())?;
+
+    let result = schema.validate(&body);
+    if let Err(errors) = result {
+        let msgs: Vec<String> = errors.map(|e| e.to_string()).collect();
+        return Err(msgs.join(", "));
+    }
+    Ok(())
+}

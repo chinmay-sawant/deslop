@@ -1,0 +1,33 @@
+use tree_sitter::Node;
+
+fn walk_tree(node: Node, source: &str) {
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        let text = &source[child.start_byte()..child.end_byte()];
+        process_node(text);
+        walk_tree(child, source);
+    }
+}
+
+fn find_deepest(node: Node, depth: usize) -> usize {
+    let mut max_depth = depth;
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        let d = find_deepest(child, depth + 1);
+        max_depth = max_depth.max(d);
+    }
+    max_depth
+}
+
+fn collect_all(node: Node, source: &str) -> Vec<String> {
+    let mut results = Vec::new();
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        let text = &source[child.start_byte()..child.end_byte()];
+        results.push(text.to_string());
+        results.extend(collect_all(child, source));
+    }
+    results
+}
+
+fn process_node(_text: &str) {}

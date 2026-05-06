@@ -1,0 +1,25 @@
+use serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)]
+struct CoordMessage {
+    x: f64,
+    y: f64,
+    z: f64,
+}
+
+// BAD: bincode serialization for tiny in-process message
+fn send_to_worker(coord: &CoordMessage) {
+    let bytes = bincode::serialize(coord).unwrap();
+    channel.send(bytes);
+}
+
+fn receive_from_worker(channel: &Channel) -> CoordMessage {
+    let bytes = channel.recv().unwrap();
+    bincode::deserialize(&bytes).unwrap()
+}
+
+fn process_batch(coords: &[CoordMessage]) {
+    for coord in coords {
+        send_to_worker(coord);
+    }
+}

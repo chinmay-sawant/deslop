@@ -1,0 +1,23 @@
+use std::thread;
+
+fn fetch_data(url: &str) -> Result<String, Box<dyn std::error::Error>> {
+    let rt = tokio::runtime::Runtime::new()?;
+    let response = rt.block_on(async {
+        let resp = reqwest::get(url).await?;
+        let body = resp.text().await?;
+        Ok::<String, Box<dyn std::error::Error>>(body)
+    })?;
+    Ok(response)
+}
+
+fn background_work(handle: tokio::runtime::Handle) {
+    thread::spawn(move || {
+        handle.block_on(async {
+            let data = fetch_remote_data().await.unwrap();
+            process_data(&data);
+        });
+    });
+}
+
+async fn fetch_remote_data() -> Result<String, Box<dyn std::error::Error>> { Ok("data".into()) }
+fn process_data(_data: &str) {}

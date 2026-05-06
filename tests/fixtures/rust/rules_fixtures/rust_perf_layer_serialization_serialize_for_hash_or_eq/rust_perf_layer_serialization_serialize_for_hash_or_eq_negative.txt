@@ -1,0 +1,25 @@
+use std::collections::HashSet;
+use std::hash::{Hash, Hasher};
+
+#[derive(Clone, PartialEq, Eq, Hash)]
+struct Config {
+    name: String,
+    value: String,
+    version: u32,
+}
+
+// GOOD: derive PartialEq/Eq/Hash directly
+fn configs_equal(a: &Config, b: &Config) -> bool {
+    a == b
+}
+
+fn deduplicate_configs(configs: &[Config]) -> Vec<&Config> {
+    let mut seen = HashSet::new();
+    let mut result = Vec::new();
+    for config in configs {
+        if seen.insert(config) {
+            result.push(config);
+        }
+    }
+    result
+}

@@ -1,0 +1,15 @@
+# Cargo.toml in workspace root
+[workspace]
+members = ["app", "lib"]
+
+# app/Cargo.toml
+[package]
+name = "app"
+[dependencies]
+serde = "1.0.180"
+
+# lib/Cargo.toml
+[package]
+name = "lib"
+[dependencies]
+serde = "1.0.190"

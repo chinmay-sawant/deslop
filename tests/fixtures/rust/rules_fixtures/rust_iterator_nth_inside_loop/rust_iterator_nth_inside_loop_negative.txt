@@ -1,0 +1,13 @@
+fn find_by_index(items: &[String], indices: &[usize]) -> Vec<&str> {
+    indices.iter()
+        .filter_map(|&idx| items.get(idx))
+        .map(|s| s.as_str())
+        .collect()
+}
+
+fn pick_elements(data: &[u64], positions: &[usize]) -> Vec<u64> {
+    positions.iter()
+        .filter_map(|&i| data.get(i))
+        .copied()
+        .collect()
+}

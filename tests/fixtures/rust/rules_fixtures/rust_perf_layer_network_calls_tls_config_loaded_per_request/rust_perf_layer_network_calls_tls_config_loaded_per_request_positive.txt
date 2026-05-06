@@ -1,0 +1,24 @@
+use rustls::{ClientConfig, Certificate, RootCertStore};
+use std::sync::Arc;
+
+async fn make_tls_request(url: &str) -> Result<String, Box<dyn std::error::Error>> {
+    // BAD: TLS config loaded per request
+    let mut root_store = RootCertStore::empty();
+    root_store.add_server_trust_anchors(
+        webpki_roots::TLS_SERVER_ROOTS.iter().map(|ta| {
+            rustls::OwnedTrustAnchor::from_subject_spki_name_constraints(
+                ta.subject,
+                ta.spki,
+                ta.name_constraints,
+            )
+        }),
+    );
+    let config = ClientConfig::builder()
+        .with_safe_defaults()
+        .with_root_certificates(root_store)
+        .with_no_client_auth();
+
+    let connector = tokio_rustls::TlsConnector::from(Arc::new(config));
+    // ... make request ...
+    Ok("response".to_string())
+}

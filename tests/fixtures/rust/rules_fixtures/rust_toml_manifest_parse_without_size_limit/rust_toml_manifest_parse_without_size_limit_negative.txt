@@ -1,0 +1,40 @@
+use serde::Deserialize;
+use std::fs;
+use std::io::Read;
+
+#[derive(Deserialize)]
+struct Manifest {
+    package: Package,
+}
+
+#[derive(Deserialize)]
+struct Package {
+    name: String,
+    version: String,
+}
+
+const MAX_MANIFEST_SIZE: u64 = 1024 * 1024;
+
+fn parse_manifest(path: &str) -> Result<Manifest, Box<dyn std::error::Error>> {
+    let file = fs::File::open(path)?;
+    let metadata = file.metadata()?;
+    if metadata.len() > MAX_MANIFEST_SIZE {
+        return Err("manifest file too large".into());
+    }
+    let mut reader = std::io::BufReader::new(file);
+    let mut data = String::new();
+    reader.read_to_string(&mut data)?;
+    let manifest: Manifest = toml::from_str(&data)?;
+    Ok(manifest)
+}
+
+fn parse_manifest_with_limit(path: &str, max_bytes: usize) -> Result<Manifest, Box<dyn std::error::Error>> {
+    let mut file = fs::File::open(path)?;
+    let mut data = String::with_capacity(max_bytes.min(4096));
+    let bytes_read = file.take(max_bytes as u64).read_to_string(&mut data)?;
+    if bytes_read >= max_bytes {
+        return Err("manifest exceeds size limit".into());
+    }
+    let manifest: Manifest = toml::from_str(&data)?;
+    Ok(manifest)
+}

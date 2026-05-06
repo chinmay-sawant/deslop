@@ -1,0 +1,28 @@
+use rayon::prelude::*;
+use std::fs;
+
+// BAD: blocking I/O inside Rayon CPU-bound parallel closures
+fn process_files(paths: &[String]) -> Vec<ProcessedFile> {
+    paths.par_iter()
+        .map(|path| {
+            // Blocking file I/O in CPU thread pool
+            let content = fs::read_to_string(path).unwrap();
+            let parsed = parse_content(&content);
+            ProcessedFile {
+                path: path.clone(),
+                data: parsed,
+            }
+        })
+        .collect()
+}
+
+fn fetch_and_process(urls: &[String]) -> Vec<Result> {
+    urls.par_iter()
+        .map(|url| {
+            // Blocking network I/O in CPU thread pool
+            let response = reqwest::blocking::get(url).unwrap();
+            let body = response.text().unwrap();
+            process_body(&body)
+        })
+        .collect()
+}

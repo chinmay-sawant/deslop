@@ -1,0 +1,18 @@
+use anyhow::Result;
+
+// BAD: public library API returning anyhow::Result
+pub fn parse_config(path: &str) -> Result<Config> {
+    let content = std::fs::read_to_string(path)?;
+    let config: Config = serde_json::from_str(&content)?;
+    Ok(config)
+}
+
+pub fn connect(url: &str) -> Result<Connection> {
+    let conn = establish_connection(url)?;
+    Ok(conn)
+}
+
+pub fn execute_query(conn: &Connection, sql: &str) -> Result<Vec<Row>> {
+    let rows = conn.query(sql)?;
+    Ok(rows)
+}

@@ -1,0 +1,13 @@
+use std::path::Path;
+
+fn find_rust_files(dir: &Path) -> Vec<&Path> {
+    let mut results = Vec::new();
+    for entry in std::fs::read_dir(dir).unwrap() {
+        let entry = entry.unwrap();
+        let path = entry.path();
+        if path.extension().map_or(false, |e| e == "rs") {
+            results.push(path);
+        }
+    }
+    results
+}

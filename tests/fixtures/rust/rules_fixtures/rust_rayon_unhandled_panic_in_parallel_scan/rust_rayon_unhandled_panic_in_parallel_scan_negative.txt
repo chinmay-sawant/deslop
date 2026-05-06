@@ -1,0 +1,26 @@
+use rayon::prelude::*;
+
+// GOOD: handle errors gracefully in parallel closures
+fn scan_files(paths: &[PathBuf]) -> Vec<ScanResult> {
+    paths.par_iter()
+        .filter_map(|path| {
+            let content = std::fs::read_to_string(path).ok()?;
+            let parsed = serde_json::from_str::<Document>(&content).ok()?;
+            Some(scan_document(&parsed))
+        })
+        .collect()
+}
+
+fn process_items(items: &[Item]) -> Vec<Output> {
+    items.par_iter()
+        .filter_map(|item| {
+            match item.parse_value() {
+                Ok(value) => Some(transform(value)),
+                Err(e) => {
+                    log::warn!("skipping item: {}", e);
+                    None
+                }
+            }
+        })
+        .collect()
+}

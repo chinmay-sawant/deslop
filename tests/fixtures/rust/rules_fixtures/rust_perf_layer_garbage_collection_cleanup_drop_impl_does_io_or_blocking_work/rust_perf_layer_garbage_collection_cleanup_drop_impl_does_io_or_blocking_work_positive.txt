@@ -1,0 +1,20 @@
+use std::fs::File;
+use std::io::Write;
+
+struct DatabaseConnection {
+    path: String,
+}
+
+impl Drop for DatabaseConnection {
+    fn drop(&mut self) {
+        // BAD: Drop performs I/O — blocks the thread, delays cleanup
+        let mut file = File::create(format!("{}.shutdown", self.path)).unwrap();
+        writeln!(file, "connection closed at {:?}", std::time::Instant::now()).unwrap();
+        file.sync_all().unwrap();
+    }
+}
+
+struct Session {
+    conn: DatabaseConnection,
+    data: Vec<u8>,
+}

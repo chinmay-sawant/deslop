@@ -1,0 +1,12 @@
+#![allow(dead_code)]
+
+mod utils {
+    pub fn helper_a() -> i32 { 1 }
+    pub fn helper_b() -> i32 { 2 }
+    pub fn helper_c() -> i32 { 3 }
+    pub fn unused_util() -> String { "unused".into() }
+}
+
+pub fn compute(x: i32) -> i32 {
+    x + utils::helper_a()
+}

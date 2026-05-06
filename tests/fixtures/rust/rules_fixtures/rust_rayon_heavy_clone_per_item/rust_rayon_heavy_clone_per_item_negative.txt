@@ -1,0 +1,28 @@
+use rayon::prelude::*;
+use std::sync::Arc;
+
+struct RuleCatalog {
+    rules: Vec<Rule>,
+    patterns: Vec<Pattern>,
+    config: Config,
+}
+
+// GOOD: share via Arc, clone only cheap handles
+fn lint_files(files: &[PathBuf], catalog: &RuleCatalog) -> Vec<LintResult> {
+    let catalog = Arc::new(catalog);
+    files.par_iter()
+        .map(|file| {
+            let content = std::fs::read_to_string(file).unwrap();
+            lint_with_catalog(&content, &catalog)
+        })
+        .collect()
+}
+
+fn process_with_context(items: &[Item], ctx: &Context) -> Vec<Output> {
+    let ctx = Arc::new(ctx);
+    items.par_iter()
+        .map(|item| {
+            process_item(item, &ctx)
+        })
+        .collect()
+}

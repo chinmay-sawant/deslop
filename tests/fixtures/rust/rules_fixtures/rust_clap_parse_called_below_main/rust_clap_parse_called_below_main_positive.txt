@@ -1,0 +1,25 @@
+use clap::Parser;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long)]
+    input: String,
+}
+
+pub fn process_files() {
+    let cli = Cli::parse();
+    for entry in std::fs::read_dir(&cli.input).unwrap() {
+        let path = entry.unwrap().path();
+        let _ = std::fs::read_to_string(&path);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_process() {
+        Cli::try_parse_from(["test", "--input", "/tmp"]).unwrap();
+    }
+}

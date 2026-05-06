@@ -1,0 +1,37 @@
+use std::sync::Mutex;
+
+const MAX_RETAIN_CAPACITY: usize = 4096;
+
+struct BufferPool {
+    buffers: Mutex<Vec<Vec<u8>>>,
+}
+
+impl BufferPool {
+    fn new() -> Self {
+        Self {
+            buffers: Mutex::new(Vec::new()),
+        }
+    }
+
+    fn acquire(&self) -> Vec<u8> {
+        let mut pool = self.buffers.lock().unwrap();
+        pool.pop().unwrap_or_else(|| Vec::with_capacity(8192))
+    }
+
+    // GOOD: shrink oversized buffers before returning to pool
+    fn release(&self, mut buf: Vec<u8>) {
+        if buf.capacity() > MAX_RETAIN_CAPACITY {
+            buf = Vec::with_capacity(MAX_RETAIN_CAPACITY);
+        }
+        buf.clear();
+        let mut pool = self.buffers.lock().unwrap();
+        pool.push(buf);
+    }
+}
+
+fn handle_request(pool: &BufferPool) {
+    let mut buf = pool.acquire();
+    buf.extend_from_slice(b"small response payload");
+    process(&buf);
+    pool.release(buf);
+}

@@ -1,0 +1,33 @@
+use std::fs;
+use tempfile::NamedTempFile;
+
+#[test]
+fn test_write_report() {
+    let tmpfile = NamedTempFile::new().unwrap();
+    fs::write(tmpfile.path(), "report data").unwrap();
+    assert!(tmpfile.path().exists());
+}
+
+#[test]
+fn test_read_log() {
+    let tmpfile = NamedTempFile::new().unwrap();
+    fs::write(tmpfile.path(), "log entry 1\nlog entry 2").unwrap();
+    let content = fs::read_to_string(tmpfile.path()).unwrap();
+    assert!(content.contains("log entry"));
+}
+
+#[test]
+fn test_config_file() {
+    let tmpfile = NamedTempFile::new_in("/tmp").unwrap();
+    fs::write(tmpfile.path(), "[server]\nport = 8080").unwrap();
+    let content = fs::read_to_string(tmpfile.path()).unwrap();
+    assert!(content.contains("port"));
+}
+
+#[test]
+fn test_output_file() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("output.json");
+    fs::write(&path, r#"{"status": "ok"}"#).unwrap();
+    assert!(path.exists());
+}

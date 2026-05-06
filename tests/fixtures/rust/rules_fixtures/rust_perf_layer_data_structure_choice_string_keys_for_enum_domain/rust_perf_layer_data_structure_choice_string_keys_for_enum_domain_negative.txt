@@ -1,0 +1,15 @@
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+enum Route {
+    Users,
+    Orders,
+    Products,
+}
+
+fn configure_routes() -> [Box<dyn Fn() -> String>; 3] {
+    // GOOD: enum keys avoid String allocation for finite domain
+    [
+        Box::new(|| "users".to_string()),
+        Box::new(|| "orders".to_string()),
+        Box::new(|| "products".to_string()),
+    ]
+}

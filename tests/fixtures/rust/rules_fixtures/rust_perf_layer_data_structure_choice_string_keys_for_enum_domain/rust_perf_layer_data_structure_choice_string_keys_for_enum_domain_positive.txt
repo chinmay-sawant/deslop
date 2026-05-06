@@ -1,0 +1,8 @@
+use std::collections::HashMap;
+
+fn configure_routes(handlers: &mut HashMap<String, Box<dyn Fn() -> String>>) {
+    // BAD: String keys for a finite domain of known routes
+    handlers.insert("/api/users".to_string(), Box::new(|| "users".to_string()));
+    handlers.insert("/api/orders".to_string(), Box::new(|| "orders".to_string()));
+    handlers.insert("/api/products".to_string(), Box::new(|| "products".to_string()));
+}

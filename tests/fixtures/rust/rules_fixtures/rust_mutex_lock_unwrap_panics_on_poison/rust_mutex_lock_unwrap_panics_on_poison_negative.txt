@@ -1,0 +1,12 @@
+use std::sync::Mutex;
+
+fn update_state(state: &Mutex<Vec<String>>, item: String) -> Result<(), String> {
+    let mut guard = state.lock().map_err(|e| format!("lock poisoned: {}", e))?;
+    guard.push(item);
+    Ok(())
+}
+
+fn read_state(state: &Mutex<HashMap<String, u64>>, key: &str) -> Result<u64, String> {
+    let guard = state.lock().map_err(|e| format!("lock poisoned: {}", e))?;
+    Ok(*guard.get(key).unwrap_or(&0))
+}

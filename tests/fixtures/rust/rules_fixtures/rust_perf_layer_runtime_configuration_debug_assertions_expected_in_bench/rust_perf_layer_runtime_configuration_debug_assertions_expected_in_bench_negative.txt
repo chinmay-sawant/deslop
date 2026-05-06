@@ -1,0 +1,25 @@
+// GOOD: benchmark docs clearly separate debug vs release numbers
+// README.md:
+// "Release performance: 100MB in 0.8s (cargo bench --release)"
+// "Debug build with assertions: 100MB in 2.3s (cargo bench, debug_assertions=on)"
+// "All published numbers are from release builds unless noted"
+
+fn parse_document(input: &str) -> Document {
+    debug_assert!(!input.is_empty());
+    debug_assert!(input.len() < MAX_SIZE);
+
+    let mut parser = Parser::new(input);
+    parser.parse()
+}
+
+#[cfg(test)]
+mod benches {
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn bench_parse_small(b: &mut Bencher) {
+        let input = "sample document content";
+        b.iter(|| parse_document(input));
+    }
+}

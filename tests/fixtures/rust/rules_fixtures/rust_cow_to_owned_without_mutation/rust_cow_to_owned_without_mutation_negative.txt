@@ -1,0 +1,23 @@
+use std::borrow::Cow;
+
+fn normalize_name(name: Cow<str>) -> Cow<str> {
+    match name {
+        Cow::Borrowed(s) => Cow::Owned(s.trim().to_lowercase()),
+        Cow::Owned(mut s) => {
+            s = s.trim().to_lowercase().into();
+            Cow::Owned(s)
+        }
+    }
+}
+
+fn process_label(label: Cow<str>) -> Cow<str> {
+    if label.starts_with("temp_") {
+        label
+    } else {
+        Cow::Owned(format!("temp_{label}"))
+    }
+}
+
+fn format_path(base: Cow<str>, file: &str) -> String {
+    format!("{base}/{file}")
+}

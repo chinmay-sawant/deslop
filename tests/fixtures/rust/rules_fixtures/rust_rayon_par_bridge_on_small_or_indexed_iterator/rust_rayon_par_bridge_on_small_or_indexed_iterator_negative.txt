@@ -1,0 +1,25 @@
+use rayon::prelude::*;
+
+// GOOD: sequential for small collections
+fn process_few_items() {
+    let items = vec![1, 2, 3, 4, 5];
+    let results: Vec<i32> = items.into_iter()
+        .map(|x| x * 2)
+        .collect();
+}
+
+// GOOD: par_iter for indexed collections
+fn process_slice(data: &[u8]) -> Vec<u8> {
+    data.par_iter()
+        .map(|b| b.wrapping_add(1))
+        .copied()
+        .collect()
+}
+
+// GOOD: par_bridge for non-indexed, large iterators only
+fn process_stream(stream: impl Iterator<Item = Data> + Send) -> Vec<Output> {
+    stream
+        .par_bridge()
+        .map(|d| transform(d))
+        .collect()
+}

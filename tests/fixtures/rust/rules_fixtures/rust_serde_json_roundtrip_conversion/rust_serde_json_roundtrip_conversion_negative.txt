@@ -1,0 +1,36 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+struct User {
+    name: String,
+    email: String,
+    age: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct UserProfile {
+    display_name: String,
+    contact_email: String,
+}
+
+impl From<&User> for UserProfile {
+    fn from(user: &User) -> Self {
+        UserProfile {
+            display_name: user.name.clone(),
+            contact_email: user.email.clone(),
+        }
+    }
+}
+
+fn convert_user_to_profile(user: &User) -> UserProfile {
+    UserProfile::from(user)
+}
+
+fn main() {
+    let user = User {
+        name: "Alice".into(),
+        email: "alice@example.com".into(),
+        age: 30,
+    };
+    let profile = convert_user_to_profile(&user);
+}

@@ -1,0 +1,43 @@
+use tonic::{Request, Response, Status};
+use tonic::metadata::MetadataMap;
+
+struct RequestContext {
+    tenant_id: String,
+    trace_id: String,
+    user_id: String,
+    role: String,
+}
+
+impl RequestContext {
+    fn from_metadata(md: &MetadataMap) -> Result<Self, Status> {
+        // GOOD: parse metadata once into a structured context
+        let tenant_id = md.get("x-tenant-id")
+            .and_then(|v| v.to_str().ok())
+            .map(|s| s.to_string())
+            .ok_or_else(|| Status::invalid_argument("missing tenant"))?;
+        let trace_id = md.get("x-trace-id")
+            .and_then(|v| v.to_str().ok())
+            .map(|s| s.to_string())
+            .ok_or_else(|| Status::invalid_argument("missing trace"))?;
+        let user_id = md.get("x-user-id")
+            .and_then(|v| v.to_str().ok())
+            .map(|s| s.to_string())
+            .ok_or_else(|| Status::invalid_argument("missing user"))?;
+        let role = md.get("x-role")
+            .and_then(|v| v.to_str().ok())
+            .map(|s| s.to_string())
+            .ok_or_else(|| Status::invalid_argument("missing role"))?;
+
+        Ok(Self { tenant_id, trace_id, user_id, role })
+    }
+}
+
+struct MyService;
+
+#[tonic::async_trait]
+impl MyService {
+    async fn process(&self, req: Request<()>) -> Result<Response<()>, Status> {
+        let ctx = RequestContext::from_metadata(req.metadata())?;
+        Ok(Response::new(()))
+    }
+}

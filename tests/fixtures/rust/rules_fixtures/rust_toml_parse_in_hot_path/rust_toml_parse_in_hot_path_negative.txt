@@ -1,0 +1,39 @@
+use serde::Deserialize;
+use std::collections::HashMap;
+use std::sync::OnceLock;
+
+#[derive(Deserialize, Clone)]
+struct RequestConfig {
+    action: String,
+    target: String,
+    options: Options,
+}
+
+#[derive(Deserialize, Clone)]
+struct Options {
+    verbose: bool,
+    timeout: u64,
+}
+
+static CONFIG_CACHE: OnceLock<HashMap<String, RequestConfig>> = OnceLock::new();
+
+fn get_cached_config(key: &str) -> Option<&'static RequestConfig> {
+    CONFIG_CACHE.get()?.get(key)
+}
+
+fn preparse_configs(raw: &str) -> HashMap<String, RequestConfig> {
+    raw.lines()
+        .filter_map(|line| {
+            let config: RequestConfig = toml::from_str(line).ok()?;
+            Some((config.target.clone(), config))
+        })
+        .collect()
+}
+
+fn handle_request(raw_config: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let config: RequestConfig = toml::from_str(raw_config)?;
+    process_action(&config.action, &config.target);
+    Ok(())
+}
+
+fn process_action(_action: &str, _target: &str) {}

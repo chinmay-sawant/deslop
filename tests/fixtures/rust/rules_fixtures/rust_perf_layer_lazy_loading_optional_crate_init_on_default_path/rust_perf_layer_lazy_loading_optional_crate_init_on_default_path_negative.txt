@@ -1,0 +1,29 @@
+struct MetricsClient {
+    endpoint: String,
+}
+
+fn init_metrics() -> MetricsClient {
+    MetricsClient {
+        endpoint: "https://metrics.example.com".to_string(),
+    }
+}
+
+// GOOD: feature-gated initialization
+#[cfg(feature = "metrics")]
+static METRICS: std::sync::OnceLock<MetricsClient> = std::sync::OnceLock::new();
+
+#[cfg(feature = "metrics")]
+fn get_metrics() -> Option<&'static MetricsClient> {
+    Some(METRICS.get_or_init(|| init_metrics()))
+}
+
+#[cfg(not(feature = "metrics"))]
+fn get_metrics() -> Option<&'static MetricsClient> {
+    None
+}
+
+async fn handle_request() {
+    if let Some(metrics) = get_metrics() {
+        // only initialized when feature is enabled
+    }
+}

@@ -1,0 +1,20 @@
+use std::fs;
+use std::path::PathBuf;
+
+fn setup_workdir() -> PathBuf {
+    let dir = PathBuf::from("/tmp/myapp_workdir");
+    fs::create_dir_all(&dir).unwrap();
+    dir
+}
+
+fn cleanup_workdir(dir: &PathBuf) {
+    let _ = fs::remove_dir_all(dir);
+}
+
+fn run_job() {
+    let workdir = setup_workdir();
+    do_work(&workdir);
+    cleanup_workdir(&workdir);
+}
+
+fn do_work(_dir: &PathBuf) {}

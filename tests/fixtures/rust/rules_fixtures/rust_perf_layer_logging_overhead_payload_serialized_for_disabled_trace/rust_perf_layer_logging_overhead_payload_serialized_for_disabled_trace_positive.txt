@@ -1,0 +1,26 @@
+use tracing::{trace, Level};
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct Payload {
+    records: Vec<Record>,
+    metadata: Metadata,
+}
+
+#[derive(Serialize)]
+struct Record {
+    id: u64,
+    values: Vec<f64>,
+}
+
+#[derive(Serialize)]
+struct Metadata {
+    source: String,
+    timestamp: u64,
+}
+
+fn process_event(payload: &Payload) {
+    // BAD: payload serialized for trace even when tracing is disabled
+    let json = serde_json::to_string(payload).unwrap();
+    trace!("processing event: {}", json);
+}

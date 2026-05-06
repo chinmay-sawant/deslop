@@ -1,0 +1,25 @@
+use std::sync::Mutex;
+use tokio::time::{sleep, Duration};
+
+struct AppState {
+    cache: Mutex<Vec<String>>,
+    db_url: String,
+}
+
+impl AppState {
+    async fn fetch_from_db(&self, key: &str) -> String {
+        sleep(Duration::from_millis(50)).await;
+        format!("data_for_{}", key)
+    }
+}
+
+async fn handle_request(state: &AppState, key: &str) -> String {
+    let mut guard = state.cache.lock().unwrap();
+    if let Some(cached) = guard.iter().find(|s| s.as_str() == key) {
+        return cached.clone();
+    }
+    // BAD: lock guard held across slow async DB call
+    let value = state.fetch_from_db(key).await;
+    guard.push(value.clone());
+    value
+}

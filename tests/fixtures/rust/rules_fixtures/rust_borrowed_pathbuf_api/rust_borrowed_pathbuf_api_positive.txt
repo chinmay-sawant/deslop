@@ -1,0 +1,13 @@
+use std::path::PathBuf;
+
+fn read_file(path: &PathBuf) -> std::io::Result<String> {
+    std::fs::read_to_string(path)
+}
+
+fn is_within_root(path: &PathBuf, root: &PathBuf) -> bool {
+    path.starts_with(root)
+}
+
+fn join_and_check(base: &PathBuf, name: &PathBuf) -> PathBuf {
+    base.join(name)
+}
