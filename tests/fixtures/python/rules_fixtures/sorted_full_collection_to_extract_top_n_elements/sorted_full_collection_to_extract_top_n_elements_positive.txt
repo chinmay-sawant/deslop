@@ -1,0 +1,18 @@
+def get_top_5_scores(scores: list[int]) -> list[int]:
+    return sorted(scores, reverse=True)[:5]
+
+
+def get_lowest_3_prices(prices: list[float]) -> list[float]:
+    return sorted(prices)[:3]
+
+
+def get_top_10_recent_orders(orders: list[dict]) -> list[dict]:
+    return sorted(orders, key=lambda o: o["created_at"], reverse=True)[:10]
+
+
+def get_best_performers(employees: list[dict], n: int = 5) -> list[dict]:
+    return sorted(employees, key=lambda e: e["rating"], reverse=True)[:n]
+
+
+def get_smallest_5_measurements(measurements: list[float]) -> list[float]:
+    return sorted(measurements)[:5]

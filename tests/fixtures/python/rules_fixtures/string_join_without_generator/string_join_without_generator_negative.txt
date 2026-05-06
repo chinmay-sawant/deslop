@@ -1,0 +1,18 @@
+def format_tags(tags: list[str]) -> str:
+    return ", ".join(tag.lower() for tag in tags)
+
+
+def build_query_string(params: dict[str, str]) -> str:
+    return "&".join(f"{k}={v}" for k, v in params.items())
+
+
+def create_csv_row(values: list[str]) -> str:
+    return ",".join(str(v) for v in values)
+
+
+def format_user_list(users: list[dict]) -> str:
+    return "\n".join(f"{u['name']} <{u['email']}>" for u in users)
+
+
+def join_paths(base: str, segments: list[str]) -> str:
+    return "/".join([base] + [s.strip("/") for s in segments])

@@ -1,0 +1,39 @@
+import threading
+
+results = []
+
+
+def worker(data: list[int]) -> None:
+    for item in data:
+        results.append(item * 2)
+
+
+def process_in_parallel(data_chunks: list[list[int]]) -> list[int]:
+    threads = []
+    for chunk in data_chunks:
+        t = threading.Thread(target=worker, args=(chunk,))
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join()
+
+    return results
+
+
+counters = {"processed": 0, "errors": 0}
+
+
+def increment_counter(name: str) -> None:
+    counters[name] += 1
+
+
+def process_items(items: list[dict]) -> None:
+    threads = []
+    for item in items:
+        t = threading.Thread(target=increment_counter, args=("processed",))
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join()

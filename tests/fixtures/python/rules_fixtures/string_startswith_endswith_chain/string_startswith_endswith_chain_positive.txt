@@ -1,0 +1,42 @@
+def is_config_file(filename: str) -> bool:
+    if filename.startswith("config."):
+        return True
+    if filename.startswith("settings."):
+        return True
+    if filename.startswith(".env"):
+        return True
+    return False
+
+
+def is_image_file(filename: str) -> bool:
+    if filename.endswith(".png"):
+        return True
+    if filename.endswith(".jpg"):
+        return True
+    if filename.endswith(".jpeg"):
+        return True
+    if filename.endswith(".gif"):
+        return True
+    return False
+
+
+def is_valid_url(path: str) -> bool:
+    if path.startswith("/api/"):
+        return True
+    if path.startswith("/admin/"):
+        return True
+    if path.startswith("/public/"):
+        return True
+    return False
+
+
+def get_content_type(filename: str) -> str:
+    if filename.endswith(".html"):
+        return "text/html"
+    if filename.endswith(".css"):
+        return "text/css"
+    if filename.endswith(".js"):
+        return "application/javascript"
+    if filename.endswith(".json"):
+        return "application/json"
+    return "text/plain"
