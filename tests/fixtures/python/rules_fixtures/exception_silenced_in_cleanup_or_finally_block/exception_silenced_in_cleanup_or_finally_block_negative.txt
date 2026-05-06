@@ -1,0 +1,41 @@
+import logging
+from contextlib import contextmanager
+
+logger = logging.getLogger(__name__)
+
+
+def process_with_cleanup(resource_id: str) -> dict:
+    conn = acquire_connection(resource_id)
+    try:
+        return conn.execute("SELECT * FROM data")
+    finally:
+        conn.close()
+
+
+def transfer_funds(source: str, dest: str, amount: float) -> dict:
+    tx = begin_transaction()
+    try:
+        tx.debit(source, amount)
+        tx.credit(dest, amount)
+        tx.commit()
+        return {"status": "ok"}
+    except Exception:
+        tx.rollback()
+        raise
+    finally:
+        release_transaction(tx)
+
+
+@contextmanager
+def open_file(path: str):
+    f = open(path)
+    try:
+        yield f
+    finally:
+        f.close()
+
+
+def read_and_process(path: str) -> dict:
+    with open_file(path) as f:
+        data = json.load(f)
+    return process(data)

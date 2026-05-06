@@ -1,0 +1,36 @@
+import json
+import os
+
+
+# tests/conftest.py (shared fixtures)
+def load_test_fixture(filename):
+    fixtures_dir = os.path.join(os.path.dirname(__file__), "fixtures")
+    path = os.path.join(fixtures_dir, filename)
+    with open(path) as f:
+        return json.load(f)
+
+
+def create_test_user(db, name="Test User", email="test@example.com"):
+    user = db.create_user(name=name, email=email)
+    db.session.commit()
+    return user
+
+
+# tests/test_api.py
+from tests.conftest import create_test_user, load_test_fixture
+
+
+def test_list_users():
+    fixture = load_test_fixture("users.json")
+    user = create_test_user(db)
+    assert user.name == "Test User"
+
+
+# tests/test_models.py
+from tests.conftest import create_test_user, load_test_fixture
+
+
+def test_user_model():
+    fixture = load_test_fixture("users.json")
+    user = create_test_user(db, name="Model User")
+    assert user.email == "test@example.com"

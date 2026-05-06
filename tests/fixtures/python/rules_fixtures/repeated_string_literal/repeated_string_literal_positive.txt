@@ -1,0 +1,22 @@
+def validate_user(data):
+    if not data.get("email"):
+        raise ValueError("Field 'email' is required and cannot be empty")
+    if not data.get("name"):
+        raise ValueError("Field 'email' is required and cannot be empty")
+    return True
+
+
+def validate_order(data):
+    if not data.get("customer_email"):
+        raise ValueError("Field 'email' is required and cannot be empty")
+    if not data.get("product_name"):
+        raise ValueError("Field 'email' is required and cannot be empty")
+    return True
+
+
+def validate_invoice(data):
+    if not data.get("billing_email"):
+        raise ValueError("Field 'email' is required and cannot be empty")
+    if not data.get("line_items"):
+        raise ValueError("Field 'email' is required and cannot be empty")
+    return True

@@ -1,0 +1,31 @@
+from collections import deque
+
+
+def bfs_traverse(graph, start):
+    visited = set()
+    queue = deque([start])
+    visited.add(start)
+    order = []
+
+    while queue:
+        node = queue.popleft()
+        order.append(node)
+        for neighbor in graph.get(node, []):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+
+    return order
+
+
+def process_tasks_fifo(tasks):
+    pending = deque()
+    for task in tasks:
+        pending.append(task)
+
+    results = []
+    while pending:
+        task = pending.popleft()
+        results.append(task["id"])
+
+    return results

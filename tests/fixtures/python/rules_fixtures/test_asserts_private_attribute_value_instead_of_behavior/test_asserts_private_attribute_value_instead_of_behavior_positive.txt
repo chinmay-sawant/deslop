@@ -1,0 +1,27 @@
+import pytest
+from myapp.cache import LRUCache
+
+def test_cache_stores_entry():
+    cache = LRUCache(max_size=100)
+    cache.put("key1", "value1")
+    assert cache._entries["key1"] == "value1"
+
+def test_cache_evicts_oldest():
+    cache = LRUCache(max_size=2)
+    cache.put("a", 1)
+    cache.put("b", 2)
+    cache.put("c", 3)
+    assert "a" not in cache._entries
+    assert len(cache._entries) == 2
+
+def test_user_password_hash():
+    from myapp.auth import User
+    user = User("alice")
+    user.set_password("secret123")
+    assert user._password_hash.startswith("$2b$")
+
+def test_connection_pool_size():
+    from myapp.db import ConnectionPool
+    pool = ConnectionPool(dsn="postgres://localhost/test", size=5)
+    assert pool._size == 5
+    assert len(pool._available) == 5

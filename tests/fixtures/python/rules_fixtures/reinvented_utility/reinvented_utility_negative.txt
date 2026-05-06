@@ -1,0 +1,21 @@
+import json
+from itertools import chain
+from more_itertools import chunked, unique_everseen
+
+
+def process_data(nested, chunk_size):
+    flat = list(chain.from_iterable(nested))
+    chunks = list(chunked(flat, chunk_size))
+    unique = list(unique_everseen(flat))
+    return flat, chunks, unique
+
+
+def safe_parse(text, default=None):
+    try:
+        return json.loads(text)
+    except (json.JSONDecodeError, TypeError):
+        return default
+
+
+data = process_data([[1, 2], [3, 4]], 2)
+parsed = safe_parse('{"a": 1}')

@@ -1,0 +1,26 @@
+import threading
+import asyncio
+
+_request_ctx = threading.local()
+
+def set_request_id(request_id: str):
+    _request_ctx.request_id = request_id
+
+async def get_current_user():
+    request_id = _request_ctx.request_id
+    user = await fetch_user_by_request(request_id)
+    return user
+
+async def fetch_user_by_request(request_id: str) -> dict:
+    return {"id": "U1", "request": request_id}
+
+async def log_request():
+    request_id = _request_ctx.request_id
+    print(f"Processing request {request_id}")
+
+async def handle_response(data: dict) -> dict:
+    ctx = _request_ctx
+    return {
+        "request_id": ctx.request_id,
+        "data": data,
+    }

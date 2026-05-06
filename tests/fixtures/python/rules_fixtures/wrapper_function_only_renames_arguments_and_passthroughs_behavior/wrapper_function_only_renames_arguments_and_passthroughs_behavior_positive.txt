@@ -1,0 +1,23 @@
+import httpx
+
+def fetch_url(url: str, headers: dict | None = None):
+    response = httpx.get(url, headers=headers)
+    return response
+
+def post_json(url: str, payload: dict):
+    response = httpx.post(url, json=payload)
+    return response
+
+def read_file(path: str, encoding: str = "utf-8"):
+    with open(path, encoding=encoding) as f:
+        return f.read()
+
+def write_file(path: str, content: str):
+    with open(path, "w") as f:
+        f.write(content)
+
+def get_user(user_id: int):
+    return user_repository.get(user_id)
+
+def create_item(data: dict):
+    return item_service.create(data)

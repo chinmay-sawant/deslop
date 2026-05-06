@@ -1,0 +1,20 @@
+from django.views import View
+from django.http import JsonResponse
+
+from .models import OrderItem
+
+
+class ImportOrderItemsView(View):
+    def post(self, request, order_id):
+        items_data = request.POST.getlist("items")
+        items_to_create = [
+            OrderItem(
+                order_id=order_id,
+                sku=item["sku"],
+                quantity=item["quantity"],
+                unit_price=item["unit_price"],
+            )
+            for item in items_data
+        ]
+        created = OrderItem.objects.bulk_create(items_to_create)
+        return JsonResponse({"created": [item.id for item in created]})

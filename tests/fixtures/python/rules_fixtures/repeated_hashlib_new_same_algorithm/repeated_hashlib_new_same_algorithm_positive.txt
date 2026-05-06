@@ -1,0 +1,19 @@
+import hashlib
+
+
+def hash_password_chunks(password_parts):
+    hashes = []
+    for part in password_parts:
+        h = hashlib.new("sha256")
+        h.update(part.encode("utf-8"))
+        hashes.append(h.hexdigest())
+    return hashes
+
+
+def verify_checksums(file_chunks, expected_hashes):
+    results = []
+    for chunk, expected in zip(file_chunks, expected_hashes):
+        h = hashlib.new("sha256")
+        h.update(chunk)
+        results.append(h.hexdigest() == expected)
+    return results

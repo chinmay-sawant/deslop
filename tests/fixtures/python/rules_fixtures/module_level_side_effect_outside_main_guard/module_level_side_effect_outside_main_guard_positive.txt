@@ -1,0 +1,18 @@
+import signal
+import threading
+import os
+
+
+def cleanup(signum, frame):
+    print("Cleaning up...")
+
+
+signal.signal(signal.SIGTERM, cleanup)
+
+worker = threading.Thread(target=lambda: None, daemon=True)
+worker.start()
+
+os.environ["APP_MODE"] = "production"
+
+with open("/tmp/app.pid", "w") as f:
+    f.write(str(os.getpid()))

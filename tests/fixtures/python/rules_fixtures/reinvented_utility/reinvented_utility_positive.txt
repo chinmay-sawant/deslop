@@ -1,0 +1,42 @@
+import os
+import json
+
+
+def flatten_list(nested):
+    result = []
+    for item in nested:
+        if isinstance(item, list):
+            result.extend(flatten_list(item))
+        else:
+            result.append(item)
+    return result
+
+
+def chunk_list(items, size):
+    chunks = []
+    for i in range(0, len(items), size):
+        chunks.append(items[i:i + size])
+    return chunks
+
+
+def deduplicate(items):
+    seen = set()
+    result = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            result.append(item)
+    return result
+
+
+def safe_json_loads(text, default=None):
+    try:
+        return json.loads(text)
+    except (json.JSONDecodeError, TypeError):
+        return default
+
+
+data = flatten_list([[1, 2], [3, [4, 5]]])
+chunks = chunk_list(data, 2)
+unique = deduplicate(data)
+parsed = safe_json_loads('{"a": 1}')

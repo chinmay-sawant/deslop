@@ -1,0 +1,33 @@
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+
+_shared_thread_pool = ThreadPoolExecutor(max_workers=8)
+_shared_process_pool = ProcessPoolExecutor(max_workers=4)
+
+def fetch_all(urls: list[str]) -> list[bytes]:
+    results = list(_shared_thread_pool.map(fetch_url, urls))
+    return results
+
+def fetch_url(url: str) -> bytes:
+    import requests
+    return requests.get(url).content
+
+def process_batch(items: list[dict]) -> list[dict]:
+    futures = [_shared_process_pool.submit(transform, item) for item in items]
+    return [f.result() for f in futures]
+
+def transform(item: dict) -> dict:
+    return {k: str(v).upper() for k, v in item.items()}
+
+def parallel_compute(data_chunks: list[list[float]]) -> list[float]:
+    results = list(_shared_process_pool.map(compute_sum, data_chunks))
+    return results
+
+def compute_sum(chunk: list[float]) -> float:
+    return sum(chunk)
+
+def bulk_download(files: list[str]) -> list[bytes]:
+    return list(_shared_thread_pool.map(download_file, files))
+
+def download_file(path: str) -> bytes:
+    with open(path, "rb") as f:
+        return f.read()

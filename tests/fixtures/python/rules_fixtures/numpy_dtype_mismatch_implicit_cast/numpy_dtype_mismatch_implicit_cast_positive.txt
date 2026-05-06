@@ -1,0 +1,18 @@
+import numpy as np
+
+def process_measurements(raw_data: list) -> np.ndarray:
+    int_array = np.array(raw_data, dtype=np.int32)
+    float_array = int_array.astype(np.float64)
+    result = float_array * 2.5
+    return result.astype(np.float32)
+
+def compute_distances(points: np.ndarray) -> np.ndarray:
+    float_points = points.astype(np.float64)
+    distances = np.sqrt(np.sum(float_points ** 2, axis=1))
+    return distances.astype(np.float32)
+
+def normalize_weights(weights: list) -> np.ndarray:
+    arr = np.array(weights, dtype=np.int32)
+    total = arr.sum()
+    normalized = arr / total
+    return normalized.astype(np.float64)

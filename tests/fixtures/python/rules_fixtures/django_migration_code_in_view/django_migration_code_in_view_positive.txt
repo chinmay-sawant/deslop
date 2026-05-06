@@ -1,0 +1,20 @@
+from django.db import connection
+from django.http import JsonResponse
+from django.views import View
+
+
+class MigrateAndSeedView(View):
+    def post(self, request):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "ALTER TABLE products ADD COLUMN IF NOT EXISTS "
+                "featured BOOLEAN DEFAULT FALSE"
+            )
+            cursor.execute(
+                "CREATE INDEX IF NOT EXISTS idx_products_featured "
+                "ON products (featured)"
+            )
+            cursor.execute(
+                "UPDATE products SET featured = TRUE WHERE price > 100"
+            )
+        return JsonResponse({"status": "migrated"})

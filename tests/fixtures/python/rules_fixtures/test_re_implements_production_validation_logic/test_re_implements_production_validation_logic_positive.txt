@@ -1,0 +1,33 @@
+import pytest
+from myapp.orders import Order
+
+def test_order_total_calculation():
+    items = [
+        {"price": 10.0, "qty": 2},
+        {"price": 5.0, "qty": 3},
+    ]
+    expected_total = 10.0 * 2 + 5.0 * 3
+    order = Order(items=items)
+    assert order.total == expected_total
+
+def test_discount_validation():
+    discount_pct = 15
+    if discount_pct < 0 or discount_pct > 100:
+        is_valid = False
+    else:
+        is_valid = True
+    assert is_valid is True
+
+def test_email_format_check():
+    email = "user@example.com"
+    import re
+    pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    assert re.match(pattern, email) is not None
+
+def test_age_boundary():
+    age = 25
+    if age >= 18 and age <= 120:
+        valid = True
+    else:
+        valid = False
+    assert valid is True

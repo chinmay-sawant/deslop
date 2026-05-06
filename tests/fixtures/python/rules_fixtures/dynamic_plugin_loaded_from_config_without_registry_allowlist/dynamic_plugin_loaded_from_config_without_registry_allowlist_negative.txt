@@ -1,0 +1,41 @@
+import importlib
+import json
+
+PLUGIN_REGISTRY = {
+    "auth": "myapp.plugins.auth",
+    "logging": "myapp.plugins.logging",
+    "metrics": "myapp.plugins.metrics",
+}
+
+
+def load_plugins_from_config(config_path: str) -> list:
+    with open(config_path) as f:
+        config = json.load(f)
+    
+    plugins = []
+    for plugin_alias in config.get("plugins", []):
+        if plugin_alias not in PLUGIN_REGISTRY:
+            raise ValueError(f"Unknown plugin: {plugin_alias}")
+        module = importlib.import_module(PLUGIN_REGISTRY[plugin_alias])
+        plugins.append(module)
+    return plugins
+
+
+def load_transformer(config: dict):
+    transformer_alias = config["transformer"]
+    if transformer_alias not in PLUGIN_REGISTRY:
+        raise ValueError(f"Unknown transformer: {transformer_alias}")
+    return importlib.import_module(PLUGIN_REGISTRY[transformer_alias])
+
+
+def load_middleware_chain(config_path: str) -> list:
+    with open(config_path) as f:
+        cfg = json.load(f)
+    
+    middlewares = []
+    for mw_alias in cfg["middleware"]:
+        if mw_alias not in PLUGIN_REGISTRY:
+            raise ValueError(f"Unknown middleware: {mw_alias}")
+        mod = importlib.import_module(PLUGIN_REGISTRY[mw_alias])
+        middlewares.append(mod.create())
+    return middlewares

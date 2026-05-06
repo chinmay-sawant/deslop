@@ -1,0 +1,41 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def get_user_name(user_id: str) -> str:
+    try:
+        user = db.fetch_user(user_id)
+        return user["name"]
+    except Exception:
+        return "Unknown"
+
+
+def get_config_value(key: str) -> str | None:
+    try:
+        return config.get(key)
+    except Exception:
+        return None
+
+
+def calculate_score(data: dict) -> float:
+    try:
+        return data["total"] / data["count"]
+    except (KeyError, ZeroDivisionError):
+        return 0.0
+
+
+def load_feature_flags() -> dict:
+    try:
+        with open("flags.json") as f:
+            return json.load(f)
+    except Exception:
+        return {"default": True}
+
+
+def fetch_remote_config(url: str) -> dict:
+    try:
+        response = http_client.get(url)
+        return response.json()
+    except Exception:
+        return {}

@@ -1,0 +1,34 @@
+# utils.py
+def process_file(file_path: str):
+    if file_path.endswith(".csv"):
+        return parse_csv(file_path)
+    elif file_path.endswith(".json"):
+        return parse_json(file_path)
+    elif file_path.endswith(".xml"):
+        return parse_xml(file_path)
+    else:
+        raise ValueError(f"Unsupported file type: {file_path}")
+
+
+# handlers.py
+def handle_upload(filename: str, data: bytes):
+    if filename.endswith(".csv"):
+        return import_csv_data(data)
+    elif filename.endswith(".json"):
+        return import_json_data(data)
+    elif filename.endswith(".xml"):
+        return import_xml_data(data)
+    else:
+        raise ValueError(f"Unsupported format: {filename}")
+
+
+# exporters.py
+def export_data(data: list, format: str):
+    if format == "csv":
+        return to_csv(data)
+    elif format == "json":
+        return to_json(data)
+    elif format == "xml":
+        return to_xml(data)
+    else:
+        raise ValueError(f"Unknown format: {format}")

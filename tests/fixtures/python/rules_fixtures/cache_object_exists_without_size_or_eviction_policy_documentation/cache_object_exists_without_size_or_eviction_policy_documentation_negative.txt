@@ -1,0 +1,29 @@
+import functools
+from cachetools import TTLCache, LRUCache
+
+# Max 1000 users, evicts LRU entries when full
+user_cache: LRUCache[int, dict] = LRUCache(maxsize=1000)
+
+# Max 500 products, entries expire after 5 minutes
+product_cache: TTLCache[int, dict] = TTLCache(maxsize=500, ttl=300)
+
+# Max 100 sessions, entries expire after 1 hour
+session_cache: TTLCache[str, dict] = TTLCache(maxsize=100, ttl=3600)
+
+
+@functools.lru_cache(maxsize=256)
+def get_user(user_id: int):
+    return fetch_user_from_db(user_id)
+
+
+class ProductCatalog:
+    """Product cache with LRU eviction at 500 entries."""
+
+    def __init__(self):
+        self._products: LRUCache = LRUCache(maxsize=500)
+        self._categories: LRUCache = LRUCache(maxsize=100)
+
+    def get_product(self, product_id: int):
+        if product_id not in self._products:
+            self._products[product_id] = load_product(product_id)
+        return self._products[product_id]

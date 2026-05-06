@@ -1,0 +1,46 @@
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import re
+
+def normalize_string(text):
+    return text.strip().lower()
+
+def slugify(text):
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+def md5_hash(data):
+    return hashlib.md5(data.encode()).hexdigest()
+
+def read_json_file(path):
+    with open(path, "r") as f:
+        return json.load(f)
+
+def write_json_file(path, data):
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+
+def ensure_dir(path):
+    os.makedirs(path, exist_ok=True)
+
+def copy_file(src, dst):
+    shutil.copy2(src, dst)
+
+def run_command(cmd):
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    return result.stdout
+
+def parse_csv_line(line):
+    return line.strip().split(",")
+
+def flatten_dict(d, parent_key="", sep="."):
+    items = []
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict):
+            items.extend(flatten_dict(v, new_key, sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)

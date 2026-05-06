@@ -1,0 +1,19 @@
+import json
+
+
+def copy_config(config: dict) -> dict:
+    return json.loads(json.dumps(config))
+
+
+def duplicate_record(record: dict) -> dict:
+    serialized = json.dumps(record)
+    return json.loads(serialized)
+
+
+def clone_settings(settings: dict) -> dict:
+    return json.loads(json.dumps(settings, default=str))
+
+
+def snapshot_state(state: dict) -> dict:
+    encoded = json.dumps(state)
+    return json.loads(encoded)

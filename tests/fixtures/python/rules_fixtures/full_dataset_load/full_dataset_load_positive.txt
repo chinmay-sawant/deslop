@@ -1,0 +1,27 @@
+import json
+
+def load_all_records(filepath):
+    with open(filepath, "r") as f:
+        records = json.load(f)
+    return records
+
+def fetch_all_users(db):
+    cursor = db.execute("SELECT * FROM users")
+    rows = cursor.fetchall()
+    return rows
+
+def read_entire_log(log_path):
+    with open(log_path, "r") as f:
+        lines = f.readlines()
+    return lines
+
+def load_full_dataset(csv_path):
+    import csv
+    with open(csv_path, "r") as f:
+        reader = csv.DictReader(f)
+        all_rows = list(reader)
+    return all_rows
+
+def get_all_products(client):
+    response = client.get("/api/products?limit=none")
+    return response.json()

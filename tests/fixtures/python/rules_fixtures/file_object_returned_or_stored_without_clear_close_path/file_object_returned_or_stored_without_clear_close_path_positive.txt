@@ -1,0 +1,23 @@
+import io
+
+
+def open_data_file(path: str):
+    return open(path, "rb")
+
+
+class DataLoader:
+    def __init__(self, path: str):
+        self.file = open(path, "r")
+    
+    def read_next(self) -> str:
+        return self.file.readline()
+
+
+def get_log_stream(log_path: str) -> io.TextIOWrapper:
+    return open(log_path, "w")
+
+
+def create_report_file(path: str):
+    f = open(path, "w")
+    f.write("Report Header\n")
+    return f

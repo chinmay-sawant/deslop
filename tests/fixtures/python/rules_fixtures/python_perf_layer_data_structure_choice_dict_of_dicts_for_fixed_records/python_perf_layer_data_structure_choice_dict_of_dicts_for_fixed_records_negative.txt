@@ -1,0 +1,46 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class UserRecord:
+    name: str
+    email: str
+    age: int
+    role: str
+
+
+def build_user_index(users: list[dict]) -> dict[str, UserRecord]:
+    index = {}
+    for user in users:
+        index[user["id"]] = UserRecord(
+            name=user["name"],
+            email=user["email"],
+            age=user["age"],
+            role=user["role"],
+        )
+    return index
+
+
+def lookup_users(user_ids: list[str], user_index: dict[str, UserRecord]) -> list:
+    results = []
+    for uid in user_ids:
+        if uid in user_index:
+            record = user_index[uid]
+            results.append({"name": record.name, "email": record.email})
+    return results
+
+
+def merge_user_data(
+    users_a: dict[str, UserRecord], users_b: dict[str, UserRecord]
+) -> dict[str, UserRecord]:
+    merged = {}
+    for uid in set(users_a) | set(users_b):
+        a = users_a.get(uid)
+        b = users_b.get(uid)
+        merged[uid] = UserRecord(
+            name=a.name if a else b.name,
+            email=a.email if a else b.email,
+            age=a.age if a else b.age,
+            role=a.role if a else b.role,
+        )
+    return merged

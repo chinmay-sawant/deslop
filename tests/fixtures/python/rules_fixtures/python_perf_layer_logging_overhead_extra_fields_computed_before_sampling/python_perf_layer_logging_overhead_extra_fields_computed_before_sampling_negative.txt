@@ -1,0 +1,23 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+def handle_request(request):
+    logger.info("Processing request", extra={"ip": request.remote_addr})
+    request_id = generate_request_id()
+    user_context = load_user_context(request.user_id)
+    trace_data = build_trace(request)
+    return process(request)
+
+def generate_request_id():
+    import uuid
+    return str(uuid.uuid4())
+
+def load_user_context(user_id):
+    return {"id": user_id, "loaded": True}
+
+def build_trace(request):
+    return {"path": request.path, "method": request.method}
+
+def process(request):
+    return {"status": "ok"}

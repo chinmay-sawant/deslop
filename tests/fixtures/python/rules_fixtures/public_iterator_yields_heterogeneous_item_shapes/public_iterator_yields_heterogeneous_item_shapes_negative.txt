@@ -1,0 +1,35 @@
+from typing import Iterator, Union
+from dataclasses import dataclass
+
+
+@dataclass
+class ErrorEvent:
+    level: str
+    message: str
+    code: int
+
+
+@dataclass
+class MetricEvent:
+    name: str
+    value: float
+
+
+@dataclass
+class TraceEvent:
+    trace_id: str
+
+
+LogEvent = Union[ErrorEvent, MetricEvent, TraceEvent]
+
+
+def iter_events(log_path: str) -> Iterator[LogEvent]:
+    with open(log_path) as f:
+        for line in f:
+            parts = line.strip().split("\t")
+            if parts[0] == "ERROR":
+                yield ErrorEvent(level="error", message=parts[1], code=int(parts[2]))
+            elif parts[0] == "METRIC":
+                yield MetricEvent(name=parts[1], value=float(parts[2]))
+            elif parts[0] == "TRACE":
+                yield TraceEvent(trace_id=parts[1])

@@ -1,0 +1,26 @@
+class UserManager:
+    def __init__(self, db):
+        self.db = db
+
+    def create_user(self, username: str, email: str) -> dict:
+        user = {"username": username, "email": email}
+        self.db.insert("users", user)
+        return user
+
+    def delete_user(self, user_id: int) -> None:
+        self.db.delete("users", user_id)
+
+    def get_user(self, user_id: int) -> dict:
+        return self.db.find("users", user_id)
+
+    def list_users(self) -> list[dict]:
+        return self.db.findall("users")
+
+    def count_users(self) -> int:
+        return self.db.count("users")
+
+    def search_users(self, query: str) -> list[dict]:
+        return self.db.search("users", query)
+
+    def get_user_stats(self, user_id: int) -> dict:
+        return self.db.aggregate("users", user_id)

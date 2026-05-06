@@ -1,0 +1,28 @@
+from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+
+def score_documents(documents: list[str]) -> list[float]:
+    scores = []
+    for doc in documents:
+        tokens = tokenizer.encode(doc, max_length=512, truncation=True)
+        score = len(tokens) / 512.0
+        scores.append(score)
+    return scores
+
+def filter_by_token_count(texts: list[str], limit: int = 256) -> list[str]:
+    results = []
+    for text in texts:
+        encoded = tokenizer.encode(text, add_special_tokens=True)
+        if len(encoded) <= limit:
+            results.append(text)
+    return results
+
+def build_batch(texts: list[str]) -> dict:
+    all_ids = []
+    all_masks = []
+    for text in texts:
+        encoding = tokenizer.encode_plus(text, max_length=128, padding="max_length", truncation=True)
+        all_ids.append(encoding["input_ids"])
+        all_masks.append(encoding["attention_mask"])
+    return {"input_ids": all_ids, "attention_mask": all_masks}

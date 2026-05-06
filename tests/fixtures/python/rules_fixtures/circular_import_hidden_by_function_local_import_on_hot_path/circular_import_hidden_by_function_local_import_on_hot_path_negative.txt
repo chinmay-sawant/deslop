@@ -1,0 +1,24 @@
+from myapp.services.payment import PaymentProcessor
+from myapp.services.inventory import InventoryManager
+from myapp.services.analytics import AnalyticsEngine
+from myapp.services.export import ReportExporter
+
+
+def process_order(order_id, processor: PaymentProcessor, manager: InventoryManager):
+    processor.charge(order_id)
+    manager.reserve(order_id)
+
+
+def build_report(user_id, engine: AnalyticsEngine, exporter: ReportExporter):
+    data = engine.compute(user_id)
+    return exporter.to_pdf(data)
+
+
+def handle_webhook(event, notifier, email_service):
+    notifier.notify(event)
+    email_service.send_alert(event)
+
+
+def sync_user_data(user_id, crm, cache):
+    data = crm.fetch(user_id)
+    cache.set(f"user:{user_id}", data)

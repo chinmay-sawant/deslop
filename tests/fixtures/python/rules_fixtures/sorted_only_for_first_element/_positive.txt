@@ -1,0 +1,23 @@
+def get_min_temperature(readings: list[float]) -> float:
+    sorted_readings = sorted(readings)
+    return sorted_readings[0]
+
+
+def get_max_score(scores: list[int]) -> int:
+    sorted_scores = sorted(scores, reverse=True)
+    return sorted_scores[0]
+
+
+def get_earliest_order(orders: list[dict]) -> dict:
+    sorted_orders = sorted(orders, key=lambda o: o["created_at"])
+    return sorted_orders[0]
+
+
+def get_highest_priority(tasks: list[dict]) -> dict:
+    sorted_tasks = sorted(tasks, key=lambda t: t["priority"], reverse=True)
+    return sorted_tasks[0]
+
+
+def get_shortest_name(names: list[str]) -> str:
+    sorted_names = sorted(names, key=len)
+    return sorted_names[0]

@@ -1,0 +1,51 @@
+# parsers.py
+import json
+import csv
+import io
+from typing import List, Dict, Any
+
+def parse_json_file(path: str) -> List[Dict[str, Any]]:
+    with open(path, "r") as f:
+        return json.load(f)
+
+def parse_csv_file(path: str) -> List[Dict[str, Any]]:
+    with open(path, "r") as f:
+        return list(csv.DictReader(f))
+
+# validators.py
+from datetime import datetime
+from typing import List, Dict, Any
+
+def validate_report_data(data: List[Dict[str, Any]]) -> None:
+    errors = []
+    for i, row in enumerate(data):
+        if "amount" not in row:
+            errors.append(f"Row {i}: missing amount")
+        elif row["amount"] < 0:
+            errors.append(f"Row {i}: negative amount")
+        if "date" not in row:
+            errors.append(f"Row {i}: missing date")
+    if errors:
+        raise ValueError("\n".join(errors))
+
+# analytics.py
+from typing import Dict, List, Any
+
+def compute_summary(data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    total = sum(row["amount"] for row in data)
+    by_month: Dict[str, float] = {}
+    for row in data:
+        month = row["date"][:7]
+        by_month[month] = by_month.get(month, 0) + row["amount"]
+    return {"total": total, "count": len(data), "by_month": by_month}
+
+# renderers.py
+import json
+from jinja2 import Template
+
+def render_json(summary: dict) -> str:
+    return json.dumps(summary, indent=2)
+
+def render_html(summary: dict) -> str:
+    template = Template("<p>Total: {{ total }}</p>")
+    return template.render(**summary)

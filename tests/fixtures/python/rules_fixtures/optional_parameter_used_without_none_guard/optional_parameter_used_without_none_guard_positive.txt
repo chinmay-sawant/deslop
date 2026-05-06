@@ -1,0 +1,16 @@
+from typing import Optional
+
+def get_user_name(user: Optional[dict]) -> str:
+    return user["name"]
+
+def process_order(order: Optional[dict]) -> float:
+    return order["items"][0]["price"] * order["quantity"]
+
+def format_address(address: Optional[dict]) -> str:
+    return f"{address['street']}, {address['city']}, {address['state']} {address['zip']}"
+
+def calculate_total(items: Optional[list]) -> float:
+    return sum(item["amount"] for item in items)
+
+def get_config_value(config: Optional[dict], key: str) -> str:
+    return config[key]

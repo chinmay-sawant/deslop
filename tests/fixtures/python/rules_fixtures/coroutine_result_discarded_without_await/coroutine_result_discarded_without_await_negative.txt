@@ -1,0 +1,23 @@
+import asyncio
+
+
+async def fetch_user(user_id):
+    response = await http_client.get(f"/users/{user_id}")
+    return response.json()
+
+
+async def process_batch(items):
+    tasks = [fetch_user(item["user_id"]) for item in items]
+    results = await asyncio.gather(*tasks)
+    return results
+
+
+async def send_notifications(users):
+    tasks = [notify_user(user["email"], user["name"]) for user in users]
+    await asyncio.gather(*tasks)
+
+
+async def sync_data(source, dest):
+    data = await source.read_all()
+    await dest.write_all(data)
+    await refresh_cache()

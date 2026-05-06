@@ -1,0 +1,20 @@
+from collections import namedtuple
+from typing import Optional
+
+User = namedtuple("User", ["id", "name", "email", "role", "active"])
+Order = namedtuple("Order", ["id", "user_id", "amount", "status", "created_at"])
+
+def create_user(name: str, email: str) -> User:
+    return User(id=None, name=name, email=email, role="user", active=True)
+
+def deactivate_user(user: User) -> User:
+    return User(id=user.id, name=user.name, email=user.email, role=user.role, active=False)
+
+def create_order(user_id: int, amount: float) -> Order:
+    return Order(id=None, user_id=user_id, amount=amount, status="pending", created_at=None)
+
+def update_order_status(order: Order, status: str) -> Order:
+    return Order(id=order.id, user_id=order.user_id, amount=order.amount, status=status, created_at=order.created_at)
+
+def format_user(user: User) -> str:
+    return f"{user.name} <{user.email}> ({user.role})"

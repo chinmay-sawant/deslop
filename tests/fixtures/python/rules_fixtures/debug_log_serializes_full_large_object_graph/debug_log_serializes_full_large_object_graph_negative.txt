@@ -1,0 +1,14 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_order(customer, order):
+    logger.debug(
+        "Processing order order_id=%s customer_id=%s item_count=%d",
+        order.order_id,
+        customer.customer_id,
+        len(order.line_items),
+    )
+    total = sum(item["price"] * item["qty"] for item in order.line_items)
+    logger.debug("Order total calculated: order_id=%s total=%.2f", order.order_id, total)

@@ -1,0 +1,32 @@
+import boto3
+
+_client = None
+
+
+def _get_client():
+    global _client
+    if _client is None:
+        _client = boto3.client("secretsmanager", region_name="us-east-1")
+    return _client
+
+
+def get_db_password():
+    response = _get_client().get_secret_value(SecretId="prod/db/password")
+    return response["SecretString"]
+
+
+def get_api_key():
+    response = _get_client().get_secret_value(SecretId="prod/api/key")
+    return response["SecretString"]
+
+
+def get_encryption_key():
+    response = _get_client().get_secret_value(SecretId="prod/encryption/key")
+    return response["SecretString"]
+
+
+def handler(event, context):
+    password = get_db_password()
+    api_key = get_api_key()
+    enc_key = get_encryption_key()
+    return {"password": password, "api_key": api_key, "enc_key": enc_key}

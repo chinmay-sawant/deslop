@@ -1,0 +1,27 @@
+import time
+
+
+def benchmark_serializer(data: list[dict]) -> float:
+    start = time.perf_counter()
+    for _ in range(1000):
+        result = [serialize(item) for item in data]
+    elapsed = time.perf_counter() - start
+    print(f"Serializer: {elapsed:.4f}s")
+    return elapsed
+
+
+def serialize(item: dict) -> str:
+    return "|".join(f"{k}={v}" for k, v in item.items())
+
+
+def benchmark_parser(payload: str) -> float:
+    start = time.perf_counter()
+    for _ in range(500):
+        parsed = [parse_line(line) for line in payload.splitlines()]
+    elapsed = time.perf_counter() - start
+    print(f"Parser: {elapsed:.4f}s")
+    return elapsed
+
+
+def parse_line(line: str) -> dict:
+    return dict(kv.split("=") for kv in line.split("|"))

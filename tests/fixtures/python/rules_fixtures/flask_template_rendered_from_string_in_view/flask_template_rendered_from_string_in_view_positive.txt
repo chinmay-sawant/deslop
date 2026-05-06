@@ -1,0 +1,18 @@
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+@app.route("/welcome/<name>")
+def welcome(name):
+    html = "<h1>Welcome, {{ name }}!</h1><p>Your account is active.</p>"
+    return render_template_string(html, name=name)
+
+@app.route("/error")
+def error_page():
+    template = """
+    <html><body>
+    <h1>Error {{ code }}</h1>
+    <p>{{ message }}</p>
+    </body></html>
+    """
+    return render_template_string(template, code=500, message="Something went wrong")

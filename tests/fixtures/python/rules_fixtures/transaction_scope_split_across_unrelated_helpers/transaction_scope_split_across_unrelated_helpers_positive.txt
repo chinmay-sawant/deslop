@@ -1,0 +1,24 @@
+from sqlalchemy.orm import Session
+
+def begin_user_update(session: Session, user_id: int):
+    session.begin()
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+def apply_name_change(user, new_name: str):
+    user.name = new_name
+
+def commit_user_session(session: Session):
+    session.commit()
+
+def rollback_user_session(session: Session):
+    session.rollback()
+
+def update_user_profile(session: Session, user_id: int, new_name: str):
+    user = begin_user_update(session, user_id)
+    apply_name_change(user, new_name)
+    try:
+        commit_user_session(session)
+    except Exception:
+        rollback_user_session(session)
+        raise

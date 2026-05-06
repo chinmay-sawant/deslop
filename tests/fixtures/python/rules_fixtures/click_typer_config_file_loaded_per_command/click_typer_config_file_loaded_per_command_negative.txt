@@ -1,0 +1,44 @@
+import click
+import yaml
+
+
+def load_config():
+    with open("config.yaml") as f:
+        return yaml.safe_load(f)
+
+
+pass_config = click.make_pass_decorator(dict, ensure=True)
+
+
+@click.group()
+@click.pass_context
+def cli(ctx):
+    ctx.ensure_object(dict)
+    ctx.obj["config"] = load_config()
+
+
+@cli.command()
+@click.option("--name", required=True)
+@click.pass_context
+def greet(ctx, name):
+    config = ctx.obj["config"]
+    greeting = config.get("greeting", "Hello")
+    click.echo(f"{greeting}, {name}!")
+
+
+@cli.command()
+@click.option("--count", default=1)
+@click.pass_context
+def process(ctx, count):
+    config = ctx.obj["config"]
+    batch_size = config.get("batch_size", 10)
+    for i in range(0, count, batch_size):
+        click.echo(f"Processing batch {i}")
+
+
+@cli.command()
+@click.pass_context
+def status(ctx):
+    config = ctx.obj["config"]
+    api_url = config.get("api_url", "http://localhost")
+    click.echo(f"API: {api_url}")

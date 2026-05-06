@@ -1,0 +1,18 @@
+import pandas as pd
+
+
+def normalize_prices(df: pd.DataFrame) -> pd.DataFrame:
+    result = df.copy()
+    result["price"] = df["price"] / df["price"].max()
+    return result
+
+
+def add_full_name(df: pd.DataFrame) -> pd.Series:
+    return df["first_name"] + " " + df["last_name"]
+
+
+def filter_and_label(df: pd.DataFrame) -> pd.DataFrame:
+    premium_mask = df["total_spent"] > 1000
+    subset = df.loc[premium_mask].copy()
+    subset["discount"] = subset["total_spent"] * 0.1
+    return subset

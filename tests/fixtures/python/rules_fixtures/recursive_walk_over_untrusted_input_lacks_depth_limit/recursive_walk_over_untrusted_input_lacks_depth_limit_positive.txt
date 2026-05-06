@@ -1,0 +1,30 @@
+import json
+
+
+def walk_json(data, max_depth: int = 100) -> list:
+    results = []
+    if isinstance(data, dict):
+        for k, v in data.items():
+            results.append(k)
+            results.extend(walk_json(v))
+    elif isinstance(data, list):
+        for item in data:
+            results.extend(walk_json(item))
+    else:
+        results.append(data)
+    return results
+
+
+def validate_structure(data: dict) -> bool:
+    if not isinstance(data, dict):
+        return False
+    for key, value in data.items():
+        if isinstance(value, dict):
+            if not validate_structure(value):
+                return False
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    if not validate_structure(item):
+                        return False
+    return True

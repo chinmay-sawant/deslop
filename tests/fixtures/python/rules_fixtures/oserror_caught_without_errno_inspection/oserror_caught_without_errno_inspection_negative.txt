@@ -1,0 +1,29 @@
+import errno
+import os
+import shutil
+
+
+def read_config(path):
+    try:
+        with open(path, "r") as f:
+            return f.read()
+    except OSError as e:
+        if e.errno == errno.ENOENT:
+            return None
+        raise
+
+
+def copy_file(src, dst):
+    try:
+        shutil.copy2(src, dst)
+    except OSError as e:
+        if e.errno == errno.EACCES:
+            raise PermissionError(f"Cannot write to {dst}")
+        raise
+
+
+def delete_temp(path):
+    try:
+        os.remove(path)
+    except FileNotFoundError:
+        pass

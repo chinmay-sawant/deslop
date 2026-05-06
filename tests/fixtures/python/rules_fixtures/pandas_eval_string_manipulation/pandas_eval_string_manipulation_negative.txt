@@ -1,0 +1,18 @@
+import pandas as pd
+
+
+def filter_orders(df, min_amount, category):
+    mask = (df["amount"] > min_amount) & (df["category"] == category)
+    return df[mask]
+
+
+def compute_metrics(df, col_name):
+    df["computed"] = df[col_name] * 2 + 1
+    return df
+
+
+def dynamic_filter(df, filters):
+    mask = pd.Series(True, index=df.index)
+    for key, value in filters.items():
+        mask = mask & (df[key] == value)
+    return df[mask]

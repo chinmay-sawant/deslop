@@ -1,0 +1,22 @@
+import stripe
+import boto3
+import cerberus
+import pandas as pd
+
+def process_payment(order):
+    stripe.api_key = os.environ["STRIPE_KEY"]
+    charge = stripe.Charge.create(amount=order["total"], currency="usd")
+    return charge
+
+def send_notification(user, message):
+    client = boto3.client("sns")
+    client.publish(TopicArn="arn:aws:sns:us-east-1:123:events", Message=json.dumps(message))
+
+def validate_input(data):
+    schema = {"name": {"type": "string"}, "email": {"type": "string"}}
+    v = cerberus.Validator(schema)
+    return v.validate(data)
+
+def transform_batch(records):
+    df = pd.DataFrame(records)
+    return df.to_dict(orient="records")

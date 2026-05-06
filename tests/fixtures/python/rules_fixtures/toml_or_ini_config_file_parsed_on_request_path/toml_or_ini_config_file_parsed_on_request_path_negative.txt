@@ -1,0 +1,26 @@
+import tomllib
+import configparser
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+with open("config.toml", "rb") as f:
+    CONFIG = tomllib.load(f)
+
+parser = configparser.ConfigParser()
+parser.read("features.ini")
+FEATURE_FLAGS = {k: v for k, v in parser.items("features")}
+
+@app.get("/api/settings")
+async def get_settings(request: Request):
+    return {"database_url": CONFIG["database"]["url"]}
+
+@app.get("/api/feature-flags")
+async def get_feature_flags(request: Request):
+    return {"flags": FEATURE_FLAGS}
+
+@app.post("/api/process")
+async def process_data(request: Request):
+    body = await request.json()
+    max_retries = CONFIG.get("processing", {}).get("max_retries", 3)
+    return {"processed": len(body["data"]), "max_retries": max_retries}

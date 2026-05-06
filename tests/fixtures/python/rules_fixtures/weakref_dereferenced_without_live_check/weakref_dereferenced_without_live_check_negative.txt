@@ -1,0 +1,39 @@
+import weakref
+
+class Cache:
+    def __init__(self):
+        self._refs = []
+
+    def add(self, obj):
+        ref = weakref.ref(obj)
+        self._refs.append(ref)
+
+    def get_all(self):
+        results = []
+        for ref in self._refs:
+            obj = ref()
+            if obj is not None:
+                results.append(obj)
+        return results
+
+    def process_all(self):
+        for ref in self._refs:
+            obj = ref()
+            if obj is None:
+                continue
+            obj.process()
+
+    def find_by_name(self, name: str):
+        for ref in self._refs:
+            obj = ref()
+            if obj is not None and obj.name == name:
+                return obj
+        return None
+
+    def summary(self):
+        names = []
+        for ref in self._refs:
+            obj = ref()
+            if obj is not None:
+                names.append(obj.name)
+        return ", ".join(names)

@@ -1,0 +1,15 @@
+def process_large_dataset(source):
+    total = sum(transform(record) for record in source)
+    return total
+
+def transform(record):
+    return record["value"] * 2
+
+def get_events(source):
+    return (parse_event(raw) for raw in source)
+
+def parse_event(raw):
+    return {"id": raw["id"], "type": raw["event_type"]}
+
+def count_valid(source):
+    return sum(1 for item in source if item["status"] == "active")

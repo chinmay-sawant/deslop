@@ -1,0 +1,35 @@
+import subprocess
+import shlex
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route("/ping")
+def ping_host():
+    hostname = request.args.get("host", "localhost")
+    safe_host = shlex.quote(hostname)
+    result = subprocess.run(
+        ["ping", "-c", "1", safe_host],
+        capture_output=True,
+        text=True,
+    )
+    return {"output": result.stdout, "returncode": result.returncode}
+
+@app.route("/search")
+def search_files():
+    pattern = request.args.get("q", "")
+    result = subprocess.run(
+        ["grep", "-r", pattern, "/data/"],
+        capture_output=True,
+        text=True,
+    )
+    return {"matches": result.stdout}
+
+def run_user_script(user_input: str):
+    script_name = f"/scripts/{user_input}.py"
+    proc = subprocess.Popen(
+        ["python", script_name],
+        stdout=subprocess.PIPE,
+    )
+    stdout, _ = proc.communicate()
+    return stdout.decode()

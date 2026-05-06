@@ -1,0 +1,33 @@
+from celery import shared_task
+from django.conf import settings
+import redis
+import boto3
+
+_redis_client = None
+_ses_client = None
+
+def get_redis_client():
+    global _redis_client
+    if _redis_client is None:
+        _redis_client = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+    return _redis_client
+
+def get_ses_client():
+    global _ses_client
+    if _ses_client is None:
+        _ses_client = boto3.client("ses", region_name=settings.AWS_REGION)
+    return _ses_client
+
+@shared_task
+def send_notification(user_id, message):
+    r = get_redis_client()
+    client = get_ses_client()
+    client.send_email(
+        Source=settings.FROM_EMAIL,
+        Destination={"ToAddresses": [get_email(user_id)]},
+        Message={"Subject": {"Data": "Alert"}, "Body": {"Text": {"Data": message}}},
+    )
+    r.publish(f"notifications:{user_id}", message)
+
+def get_email(user_id):
+    return f"user{user_id}@example.com"

@@ -1,0 +1,16 @@
+import json
+
+
+def send_to_endpoints(payload, endpoints):
+    results = []
+    for url in endpoints:
+        body = json.dumps(payload)
+        result = post(url, body)
+        results.append(result)
+
+    audit_log = json.dumps(payload)
+    log_to_file(audit_log)
+
+    cache_value = json.dumps(payload)
+    store_in_cache("last_payload", cache_value)
+    return results

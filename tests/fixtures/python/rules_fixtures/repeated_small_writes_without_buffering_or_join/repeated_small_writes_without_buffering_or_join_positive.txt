@@ -1,0 +1,21 @@
+def write_report(path, rows):
+    with open(path, "w") as f:
+        for row in rows:
+            f.write(str(row["id"]))
+            f.write(",")
+            f.write(row["name"])
+            f.write(",")
+            f.write(str(row["score"]))
+            f.write("\n")
+
+
+def build_csv_string(records):
+    parts = []
+    for rec in records:
+        parts.append(str(rec["id"]))
+        parts.append(",")
+        parts.append(rec["name"])
+        parts.append(",")
+        parts.append(str(rec["value"]))
+        parts.append("\n")
+    return "".join(parts)

@@ -1,0 +1,30 @@
+class Config:
+    def __init__(self):
+        self.database = Database()
+
+
+class Database:
+    def __init__(self):
+        self.connection = Connection()
+
+
+class Connection:
+    def __init__(self):
+        self.pool = Pool()
+
+
+class Pool:
+    def __init__(self):
+        self.max_size = 100
+
+
+def process_items(items, config):
+    results = []
+    for item in items:
+        max_conn = config.database.connection.pool.max_size
+        if item.priority > max_conn * 0.8:
+            results.append(item)
+        conn_count = config.database.connection.pool.max_size
+        if len(results) > conn_count:
+            break
+    return results

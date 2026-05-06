@@ -1,0 +1,24 @@
+import threading
+import asyncio
+
+
+def create_background_thread() -> threading.Thread:
+    t = threading.Thread(target=lambda: None, daemon=True)
+    return t
+
+
+def create_event_loop() -> asyncio.AbstractEventLoop:
+    return asyncio.new_event_loop()
+
+
+def main():
+    bg = create_background_thread()
+    bg.start()
+
+    loop = create_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(some_async_work())
+
+
+async def some_async_work():
+    pass

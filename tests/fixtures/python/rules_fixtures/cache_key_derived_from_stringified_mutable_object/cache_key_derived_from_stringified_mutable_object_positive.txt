@@ -1,0 +1,29 @@
+import json
+
+
+def get_user_cache_key(user_id: int, filters: dict) -> str:
+    return f"user:{user_id}:filters:{json.dumps(filters)}"
+
+
+def get_product_cache_key(product_ids: list) -> str:
+    return f"products:{str(product_ids)}"
+
+
+def get_search_cache_key(params: dict) -> str:
+    return f"search:{json.dumps(params)}"
+
+
+def get_report_cache_key(options: dict) -> str:
+    return f"report:{json.dumps(options, sort_keys=True)}"
+
+
+cache = {}
+
+
+def fetch_user_data(user_id: int, filters: dict):
+    key = get_user_cache_key(user_id, filters)
+    if key in cache:
+        return cache[key]
+    data = load_user_data(user_id, filters)
+    cache[key] = data
+    return data

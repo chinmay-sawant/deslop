@@ -1,0 +1,31 @@
+def get_page(cursor, limit=20):
+    query = """
+        SELECT id, created_at, title
+        FROM articles
+        WHERE created_at > %s
+        ORDER BY created_at
+        LIMIT %s
+    """
+    return db.execute(query, [cursor, limit])
+
+
+def fetch_messages(after_id, batch_size=50):
+    query = """
+        SELECT id, content, sent_at
+        FROM messages
+        WHERE id > %s
+        ORDER BY sent_at
+        LIMIT %s
+    """
+    return db.execute(query, [after_id, batch_size])
+
+
+def list_events(since_timestamp, page_size=100):
+    query = """
+        SELECT id, event_type, occurred_at
+        FROM events
+        WHERE occurred_at > %s
+        ORDER BY occurred_at
+        LIMIT %s
+    """
+    return db.execute(query, [since_timestamp, page_size])

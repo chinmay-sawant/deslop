@@ -1,0 +1,21 @@
+from fastapi import Response
+from django.http import JsonResponse
+
+
+class UserService:
+    def get_user(self, user_id: int) -> Response:
+        data = {"id": user_id, "name": "John"}
+        return Response(content=str(data), media_type="application/json")
+
+    def delete_user(self, user_id: int) -> Response:
+        return Response(status_code=204)
+
+
+class ReportService:
+    def generate_report(self, report_id: int) -> JsonResponse:
+        data = {"id": report_id, "status": "ready"}
+        return JsonResponse(data)
+
+    def export_csv(self, report_id: int) -> JsonResponse:
+        csv_data = "id,name\n1,John"
+        return JsonResponse({"csv": csv_data})

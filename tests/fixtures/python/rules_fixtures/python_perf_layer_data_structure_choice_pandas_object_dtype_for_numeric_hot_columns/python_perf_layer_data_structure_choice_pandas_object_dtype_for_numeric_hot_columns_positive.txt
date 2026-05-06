@@ -1,0 +1,15 @@
+import pandas as pd
+
+
+def load_sales_data(path: str) -> pd.DataFrame:
+    df = pd.read_csv(path)
+    df["amount"] = df["amount"].astype(str)
+    df["quantity"] = df["quantity"].astype(str)
+    df["price"] = df["price"].astype(str)
+    return df
+
+
+def process_numeric(df: pd.DataFrame) -> pd.DataFrame:
+    df["total"] = df["amount"].astype(float) * df["quantity"].astype(float)
+    df["tax"] = df["price"].astype(float) * 0.08
+    return df

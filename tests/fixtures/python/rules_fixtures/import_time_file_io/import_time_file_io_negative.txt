@@ -1,0 +1,23 @@
+import json
+from pathlib import Path
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1)
+def get_schema() -> dict:
+    schema_path = Path(__file__).parent / "schema.json"
+    with open(schema_path) as f:
+        return json.load(f)
+
+
+@lru_cache(maxsize=1)
+def get_template_files() -> list[Path]:
+    templates_dir = Path(__file__).parent / "templates"
+    return list(templates_dir.glob("*.html"))
+
+
+@lru_cache(maxsize=1)
+def get_version() -> str:
+    version_path = Path(__file__).parent / "version.txt"
+    with open(version_path) as f:
+        return f.read().strip()

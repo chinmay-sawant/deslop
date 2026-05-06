@@ -1,0 +1,26 @@
+def process_and_sum(items: list) -> tuple[list, int]:
+    processed = [transform(item) for item in items]
+    total = sum(items)
+    return processed, total
+
+
+def find_first_and_count(data: list, predicate) -> tuple:
+    first_match = None
+    count = 0
+    for item in data:
+        if predicate(item):
+            if first_match is None:
+                first_match = item
+            count += 1
+    return first_match, count
+
+
+def batch_and_validate(records: list) -> dict:
+    valid = []
+    invalid = []
+    for record in records:
+        if is_valid(record):
+            valid.append(record)
+        else:
+            invalid.append(record)
+    return {"valid": valid, "invalid": invalid, "total": len(records)}

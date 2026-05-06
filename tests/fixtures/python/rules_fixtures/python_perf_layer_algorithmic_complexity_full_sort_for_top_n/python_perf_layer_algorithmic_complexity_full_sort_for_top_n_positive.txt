@@ -1,0 +1,17 @@
+def get_top_scorers(players, n=5):
+    sorted_players = sorted(players, key=lambda p: p.score, reverse=True)
+    return sorted_players[:n]
+
+
+def find_cheapest_products(products, count=3):
+    sorted_products = sorted(products, key=lambda p: p.price)
+    return sorted_products[:count]
+
+
+def get_recent_orders(orders, limit=10):
+    sorted_orders = sorted(orders, key=lambda o: o.created_at, reverse=True)
+    return sorted_orders[:limit]
+
+
+def smallest_values(data, k=5):
+    return sorted(data)[:k]

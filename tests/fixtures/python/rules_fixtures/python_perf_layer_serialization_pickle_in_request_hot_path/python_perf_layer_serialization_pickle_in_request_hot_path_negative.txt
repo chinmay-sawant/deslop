@@ -1,0 +1,22 @@
+import json
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+
+@app.route("/api/process", methods=["POST"])
+def process():
+    data = request.get_json()
+    result = transform(data)
+    return jsonify(result)
+
+
+@app.route("/api/batch", methods=["POST"])
+def batch_process():
+    items = request.get_json()
+    results = [transform(item) for item in items]
+    return jsonify(results)
+
+
+def transform(item: dict) -> dict:
+    return {k: str(v).upper() for k, v in item.items()}

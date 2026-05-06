@@ -1,0 +1,7 @@
+import threading
+
+
+def do_work():
+    lock = threading.Lock()
+    with lock:
+        process_items()

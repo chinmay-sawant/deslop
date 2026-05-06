@@ -1,0 +1,21 @@
+import numpy as np
+
+def get_top_scores(scores: np.ndarray, n: int) -> np.ndarray:
+    sorted_indices = np.argsort(scores)[::-1]
+    return scores[sorted_indices[:n]]
+
+def filter_valid(data: np.ndarray, mask: np.ndarray) -> np.ndarray:
+    return data[mask]
+
+def compute_stats(values: np.ndarray) -> dict:
+    return {
+        "mean": np.mean(values),
+        "std": np.std(values),
+        "min": np.min(values),
+        "max": np.max(values),
+        "median": np.median(values),
+    }
+
+def find_peaks(signal: np.ndarray) -> np.ndarray:
+    diff = np.diff(signal)
+    return np.where(diff > 0)[0]

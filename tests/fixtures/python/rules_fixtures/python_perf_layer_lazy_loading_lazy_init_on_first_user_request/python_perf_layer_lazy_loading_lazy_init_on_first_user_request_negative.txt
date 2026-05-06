@@ -1,0 +1,26 @@
+import json
+import atexit
+
+_model = None
+_search_index = None
+
+def warmup():
+    global _model, _search_index
+    _model = load_ml_model()
+    _search_index = build_search_index()
+
+def load_ml_model():
+    import pickle
+    with open("model.pkl", "rb") as f:
+        return pickle.load(f)
+
+def build_search_index():
+    with open("documents.json") as f:
+        docs = json.load(f)
+    return {d["id"]: d for d in docs}
+
+def handle_predict(request):
+    return _model.predict(request.features)
+
+def handle_search(request):
+    return _search_index.get(request.query)

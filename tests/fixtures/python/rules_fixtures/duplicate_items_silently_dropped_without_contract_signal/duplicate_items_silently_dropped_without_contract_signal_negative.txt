@@ -1,0 +1,34 @@
+from typing import List
+
+
+def dedupe_tags(tags: List[str]) -> List[str]:
+    """Deduplicates tags while preserving order. Duplicates are silently dropped."""
+    seen = set()
+    result = []
+    for tag in tags:
+        if tag not in seen:
+            seen.add(tag)
+            result.append(tag)
+    return result
+
+
+def process_user_emails(emails: List[str], *, warn_on_duplicate: bool = True) -> List[str]:
+    from collections import Counter
+    counts = Counter(emails)
+    if warn_on_duplicate:
+        for email, count in counts.items():
+            if count > 1:
+                import warnings
+                warnings.warn(f"Duplicate email dropped: {email} (appeared {count} times)")
+    return [e.lower() for e in sorted(counts.keys())]
+
+
+def get_distinct_categories(products, *, signal_dedup: bool = False) -> List[str]:
+    categories = sorted({p["category"] for p in products})
+    if signal_dedup and len(categories) < len(products):
+        import logging
+        logging.getLogger(__name__).info(
+            "Deduplicated %d products down to %d categories",
+            len(products), len(categories),
+        )
+    return categories

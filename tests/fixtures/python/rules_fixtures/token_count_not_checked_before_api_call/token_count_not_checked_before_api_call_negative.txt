@@ -1,0 +1,58 @@
+import openai
+import tiktoken
+
+client = openai.OpenAI()
+MAX_TOKENS = 8192
+
+def count_tokens(text: str, model: str = "gpt-4") -> int:
+    enc = tiktoken.encoding_for_model(model)
+    return len(enc.encode(text))
+
+def summarize_text(text: str) -> str:
+    token_count = count_tokens(text)
+    if token_count > MAX_TOKENS - 500:
+        text = text[: (MAX_TOKENS - 500) * 4]
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "Summarize the following text."},
+            {"role": "user", "content": text},
+        ],
+    )
+    return response.choices[0].message.content
+
+def ask_question(context: str, question: str) -> str:
+    prompt = f"Context:\n{context}\n\nQuestion: {question}"
+    total_tokens = count_tokens(prompt)
+    max_response = min(500, MAX_TOKENS - total_tokens)
+    if max_response <= 0:
+        raise ValueError("Prompt exceeds context window")
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=max_response,
+    )
+    return response.choices[0].message.content
+
+def generate_code(description: str) -> str:
+    token_count = count_tokens(description)
+    if token_count > MAX_TOKENS - 1000:
+        raise ValueError(f"Description too long: {token_count} tokens")
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "Write Python code."},
+            {"role": "user", "content": description},
+        ],
+    )
+    return response.choices[0].message.content
+
+def batch_embed(texts: list[str]) -> list[list[float]]:
+    total = sum(count_tokens(t, "text-embedding-ada-002") for t in texts)
+    if total > 8000:
+        raise ValueError("Batch exceeds embedding token limit")
+    response = client.embeddings.create(
+        model="text-embedding-ada-002",
+        input=texts,
+    )
+    return [item.embedding for item in response.data]

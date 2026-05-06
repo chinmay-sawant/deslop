@@ -1,0 +1,19 @@
+from pydantic import BaseModel
+
+
+class UserSchema(BaseModel):
+    id: int
+    name: str
+    email: str
+
+
+def parse_user_payload(raw_json: str) -> UserSchema:
+    return UserSchema.model_validate_json(raw_json)
+
+
+def load_config(config_str: str) -> UserSchema:
+    return UserSchema.model_validate_json(config_str)
+
+
+def process_message(message_bytes: bytes) -> UserSchema:
+    return UserSchema.model_validate_json(message_bytes)

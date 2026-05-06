@@ -1,0 +1,16 @@
+from ....sibling_package.models import UserProfile
+from ....sibling_package.utils import normalize_email
+from ....another_sibling.views import format_response
+
+
+def get_user_display(user_id):
+    profile = UserProfile.query.get(user_id)
+    email = normalize_email(profile.email)
+    return format_response(profile, email)
+
+
+def update_user_email(user_id, new_email):
+    profile = UserProfile.query.get(user_id)
+    profile.email = normalize_email(new_email)
+    profile.save()
+    return format_response(profile, profile.email)

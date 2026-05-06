@@ -1,0 +1,30 @@
+import json
+
+def process_batch(records):
+    parsed = []
+    for raw in records:
+        decoded = json.loads(raw["payload"])
+        enriched = {**decoded, "score": compute_score(decoded)}
+        normalized = normalize(enriched)
+        parsed.append(normalized)
+    return parsed
+
+def process_batch_with_retry(records):
+    for attempt in range(3):
+        try:
+            return _send_to_service(records)
+        except ConnectionError:
+            continue
+    raise RuntimeError("service unavailable after retries")
+
+def _send_to_service(records):
+    import requests
+    resp = requests.post("https://api.example.com/batch", json=records)
+    resp.raise_for_status()
+    return resp.json()
+
+def compute_score(data):
+    return sum(v ** 2 for v in data.get("values", []))
+
+def normalize(record):
+    return {k.lower(): v for k, v in record.items()}

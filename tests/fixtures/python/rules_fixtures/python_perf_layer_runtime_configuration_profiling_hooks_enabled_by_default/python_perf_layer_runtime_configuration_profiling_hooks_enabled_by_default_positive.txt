@@ -1,0 +1,32 @@
+import sys
+import cProfile
+import atexit
+
+_profiler = cProfile.Profile()
+_profiler.enable()
+
+
+def _dump_profile():
+    _profiler.disable()
+    _profiler.print_stats(sort="cumulative")
+
+
+atexit.register(_dump_profile)
+
+
+def process_data(items: list[dict]) -> list[dict]:
+    return [transform(item) for item in items]
+
+
+def transform(item: dict) -> dict:
+    return {k: v for k, v in item.items() if v is not None}
+
+
+def main():
+    data = [{"id": i, "name": f"item_{i}", "value": i * 10} for i in range(1000)]
+    result = process_data(data)
+    print(f"Processed {len(result)} items")
+
+
+if __name__ == "__main__":
+    main()

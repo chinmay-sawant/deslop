@@ -1,0 +1,29 @@
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/dashboard")
+async def get_dashboard():
+    return {
+        "user": {"name": "Alice", "role": "admin", "avatar": "/img/alice.png"},
+        "stats": {
+            "total_orders": 1234,
+            "pending_orders": 56,
+            "total_revenue": 98765.43,
+            "average_order_value": 80.05,
+            "top_product": "Widget Pro",
+            "conversion_rate": 0.032,
+        },
+        "notifications": [
+            {"id": 1, "type": "info", "message": "New feature available"},
+            {"id": 2, "type": "warning", "message": "Low stock alert"},
+            {"id": 3, "type": "success", "message": "Order shipped"},
+        ],
+        "settings": {
+            "theme": "dark",
+            "language": "en",
+            "timezone": "UTC",
+            "currency": "USD",
+        },
+    }

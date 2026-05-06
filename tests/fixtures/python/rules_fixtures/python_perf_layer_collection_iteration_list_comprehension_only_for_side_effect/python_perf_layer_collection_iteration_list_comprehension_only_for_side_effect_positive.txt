@@ -1,0 +1,18 @@
+def send_notifications(users: list) -> list:
+    results = [send_email(user.email) for user in users]
+    return results
+
+
+def log_all_events(events: list) -> list:
+    logged = [logger.info(f"Event: {e}") for e in events]
+    return logged
+
+
+def update_records(records: list) -> list:
+    updated = [db.save(r) for r in records]
+    return updated
+
+
+def batch_delete(items: list) -> list:
+    removed = [cache.delete(item.key) for item in items]
+    return removed

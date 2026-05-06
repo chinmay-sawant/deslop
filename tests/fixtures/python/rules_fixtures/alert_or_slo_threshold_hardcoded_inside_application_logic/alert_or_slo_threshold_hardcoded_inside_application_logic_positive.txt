@@ -1,0 +1,29 @@
+import time
+
+LATENCY_THRESHOLD_MS = 500
+ERROR_RATE_THRESHOLD = 0.05
+SATISFACTION_THRESHOLD = 0.95
+
+
+def check_api_health(metrics_collector):
+    p99_latency = metrics_collector.get_p99_latency("api")
+    if p99_latency > LATENCY_THRESHOLD_MS:
+        trigger_alert("API latency exceeded threshold")
+
+    error_rate = metrics_collector.get_error_rate("api")
+    if error_rate > ERROR_RATE_THRESHOLD:
+        trigger_alert("API error rate exceeded threshold")
+
+
+def check_order_slo(metrics_collector):
+    success_rate = metrics_collector.get_success_rate("orders")
+    if success_rate < SATISFACTION_THRESHOLD:
+        trigger_alert("Order SLO breached")
+
+    latency = metrics_collector.get_p95_latency("orders")
+    if latency > 300:
+        trigger_alert("Order latency degraded")
+
+
+def trigger_alert(message: str):
+    print(f"ALERT: {message}")

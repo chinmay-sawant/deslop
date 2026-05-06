@@ -1,0 +1,23 @@
+import os
+
+
+class UserService:
+    def get_user(self, user_id: int) -> dict:
+        db_url = os.getenv("DATABASE_URL", "sqlite:///default.db")
+        max_retries = int(os.getenv("MAX_RETRIES", "3"))
+        return {"id": user_id, "db": db_url, "retries": max_retries}
+
+
+class EmailService:
+    def send_welcome(self, user_email: str) -> None:
+        smtp_host = os.getenv("SMTP_HOST", "localhost")
+        smtp_port = int(os.getenv("SMTP_PORT", "587"))
+        from_addr = os.getenv("FROM_EMAIL", "noreply@example.com")
+        print(f"Sending from {from_addr} via {smtp_host}:{smtp_port} to {user_email}")
+
+
+class CacheService:
+    def get(self, key: str) -> str | None:
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+        ttl = int(os.getenv("CACHE_TTL", "300"))
+        return None

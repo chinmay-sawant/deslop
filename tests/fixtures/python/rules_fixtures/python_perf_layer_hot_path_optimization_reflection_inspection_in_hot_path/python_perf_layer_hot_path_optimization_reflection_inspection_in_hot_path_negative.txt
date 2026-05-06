@@ -1,0 +1,23 @@
+import inspect
+
+class Dispatcher:
+    def __init__(self, handlers):
+        self._handlers = []
+        for handler in handlers:
+            sig = inspect.signature(handler)
+            params = list(sig.parameters.keys())
+            self._handlers.append((handler, "event" in params))
+
+    def dispatch(self, event):
+        for handler, needs_event in self._handlers:
+            if needs_event:
+                handler(event=event)
+            else:
+                handler()
+
+def validate_payload(schema_class, payload):
+    required_fields = schema_class.required_fields()
+    for name in required_fields:
+        if name not in payload:
+            raise ValueError(f"Missing field: {name}")
+    return payload

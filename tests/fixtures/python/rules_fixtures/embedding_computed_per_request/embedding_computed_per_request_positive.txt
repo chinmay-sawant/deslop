@@ -1,0 +1,25 @@
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+
+def search_similar_documents(query: str, documents: list[str]) -> list[str]:
+    query_embedding = model.encode(query)
+    doc_embeddings = model.encode(documents)
+    
+    similarities = np.dot(doc_embeddings, query_embedding)
+    top_indices = np.argsort(similarities)[::-1][:5]
+    return [documents[i] for i in top_indices]
+
+
+def get_recommendations(user_query: str, catalog: list[dict]) -> list[dict]:
+    query_vec = model.encode(user_query)
+    scores = []
+    for item in catalog:
+        item_vec = model.encode(item["description"])
+        score = float(np.dot(query_vec, item_vec))
+        scores.append((score, item))
+    scores.sort(reverse=True)
+    return [item for _, item in scores[:10]]

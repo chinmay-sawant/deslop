@@ -1,0 +1,39 @@
+import pymongo.errors
+import botocore.exceptions
+import redis.exceptions
+
+class UserRepository:
+    def find_by_id(self, user_id: str) -> dict | None:
+        try:
+            return self._collection.find_one({"_id": user_id})
+        except pymongo.errors.PyMongoError as exc:
+            raise exc
+
+    def save(self, user: dict) -> None:
+        try:
+            self._collection.insert_one(user)
+        except pymongo.errors.DuplicateKeyError:
+            raise
+
+class StorageService:
+    def upload(self, key: str, data: bytes) -> str:
+        try:
+            self._bucket.put_object(Key=key, Body=data)
+            return key
+        except botocore.exceptions.ClientError as exc:
+            raise exc
+
+    def download(self, key: str) -> bytes:
+        try:
+            obj = self._bucket.get_object(Key=key)
+            return obj["Body"].read()
+        except botocore.exceptions.BotoCoreError as exc:
+            raise exc
+
+class SessionStore:
+    def get(self, session_id: str) -> dict | None:
+        try:
+            data = self._redis.get(session_id)
+            return json.loads(data) if data else None
+        except redis.exceptions.RedisError as exc:
+            raise exc

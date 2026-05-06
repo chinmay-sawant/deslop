@@ -1,0 +1,23 @@
+import asyncio
+
+
+async def fetch_data(url: str) -> dict:
+    return {"url": url, "data": "sample"}
+
+
+async def process_items(items: list[str]) -> list[dict]:
+    tasks = [fetch_data(f"https://api.example.com/{item}") for item in items]
+    results = await asyncio.gather(*tasks)
+    return list(results)
+
+
+async def main():
+    items = ["a", "b", "c"]
+    results = await process_items(items)
+    for data in results:
+        print(data)
+
+
+def run_sync():
+    results = asyncio.run(process_items(["a", "b", "c"]))
+    print(results)

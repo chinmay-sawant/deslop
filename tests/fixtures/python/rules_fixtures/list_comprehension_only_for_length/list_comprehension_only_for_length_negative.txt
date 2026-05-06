@@ -1,0 +1,15 @@
+def count_active_users(users: list[dict]) -> int:
+    return sum(1 for u in users if u["active"])
+
+
+def count_errors(log_entries: list[dict]) -> int:
+    return sum(1 for e in log_entries if e["level"] == "ERROR")
+
+
+def has_enough_valid(records: list[dict], minimum: int) -> bool:
+    valid = sum(1 for r in records if r["status"] == "valid")
+    return valid >= minimum
+
+
+def count_matching(items: list[str], pattern: str) -> int:
+    return sum(1 for item in items if pattern in item)

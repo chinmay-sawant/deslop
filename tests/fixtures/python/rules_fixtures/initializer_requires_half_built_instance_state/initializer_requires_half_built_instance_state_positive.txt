@@ -1,0 +1,27 @@
+class DataPipeline:
+    def __init__(self, source: str):
+        self.source = source
+        self._validate_source()
+
+    def _validate_source(self):
+        if not self.transformer:
+            raise ValueError("transformer must be set before calling validate")
+        if not self.destination:
+            raise ValueError("destination must be set before calling validate")
+
+    def set_transformer(self, transformer):
+        self.transformer = transformer
+
+    def set_destination(self, destination):
+        self.destination = destination
+
+    def run(self):
+        data = self.extract(self.source)
+        transformed = self.transformer.transform(data)
+        self.destination.write(transformed)
+
+
+pipeline = DataPipeline("s3://bucket/data")
+pipeline.set_transformer(CsvTransformer())
+pipeline.set_destination(PostgresDestination("conn_string"))
+pipeline.run()

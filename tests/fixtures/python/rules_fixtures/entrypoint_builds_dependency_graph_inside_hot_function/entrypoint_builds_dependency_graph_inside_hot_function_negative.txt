@@ -1,0 +1,34 @@
+import boto3
+from redis import Redis
+
+
+class OrderHandler:
+    def __init__(self, db: "DatabaseConnection", cache: Redis, s3, queue):
+        self._db = db
+        self._cache = cache
+        self._s3 = s3
+        self._queue = queue
+
+    def handle_event(self, event: dict) -> dict:
+        order = self._db.fetch(event["order_id"])
+        cached = self._cache.get(f"order:{order['id']}")
+        if cached:
+            return cached
+        result = process_order(order)
+        self._cache.set(f"order:{order['id']}", result)
+        return result
+
+
+def build_handler() -> OrderHandler:
+    db = DatabaseConnection("postgresql://localhost/orders")
+    cache = Redis(host="localhost", port=6379)
+    s3 = boto3.client("s3")
+    queue = SQSClient("order-queue")
+    return OrderHandler(db, cache, s3, queue)
+
+
+handler = build_handler()
+
+
+def handle_order_event(event: dict) -> dict:
+    return handler.handle_event(event)

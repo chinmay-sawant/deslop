@@ -1,0 +1,38 @@
+def create_order_response(order) -> dict:
+    if order.total > 1000:
+        order.status = "pending_review"
+        order.requires_approval = True
+        order.approval_threshold = 1000
+    elif order.total > 500:
+        order.discount = order.total * 0.05
+        order.status = "processing"
+    else:
+        order.status = "processing"
+
+    return {
+        "id": order.id,
+        "total": order.total,
+        "status": order.status,
+        "discount": getattr(order, "discount", 0),
+        "requires_approval": getattr(order, "requires_approval", False),
+        "created_at": order.created_at.isoformat(),
+    }
+
+
+def update_product_pricing(product, new_cost: float) -> dict:
+    markup = 1.5 if product.category == "electronics" else 1.3
+    product.price = new_cost * markup
+    product.updated_at = datetime.utcnow()
+
+    if product.price > 100:
+        product.shipping_class = "oversized"
+    else:
+        product.shipping_class = "standard"
+
+    return {
+        "id": product.id,
+        "name": product.name,
+        "price": product.price,
+        "shipping_class": product.shipping_class,
+        "updated_at": product.updated_at.isoformat(),
+    }

@@ -1,0 +1,19 @@
+import pkg_resources
+
+
+def get_version():
+    return pkg_resources.get_distribution("myapp").version
+
+
+def get_package_info():
+    dist = pkg_resources.get_distribution("myapp")
+    return {
+        "version": dist.version,
+        "location": dist.location,
+        "project_name": dist.project_name,
+    }
+
+
+def check_compatibility():
+    required = pkg_resources.require("myapp>=2.0")
+    return len(required) > 0

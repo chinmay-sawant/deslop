@@ -1,0 +1,17 @@
+from functools import lru_cache
+
+@lru_cache(maxsize=1)
+def get_sentiment_model():
+    from transformers import pipeline
+    return pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+
+@lru_cache(maxsize=1)
+def get_ner_model():
+    from transformers import pipeline
+    return pipeline("ner", model="dbmdz/bert-large-cased-finetuned-conll03-english")
+
+def process_text(text):
+    return {"result": text.upper()}
+
+def analyze_sentiment(text):
+    return get_sentiment_model()(text)

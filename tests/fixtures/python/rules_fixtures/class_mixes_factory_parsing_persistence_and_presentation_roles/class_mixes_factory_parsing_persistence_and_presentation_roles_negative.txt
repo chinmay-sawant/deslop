@@ -1,0 +1,47 @@
+from dataclasses import dataclass
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
+
+
+@dataclass
+class UserData:
+    name: str
+    email: str
+
+
+class UserParser:
+    @staticmethod
+    def from_csv_row(row) -> UserData:
+        return UserData(name=row[0], email=row[1])
+
+    @staticmethod
+    def from_api_response(payload) -> UserData:
+        return UserData(name=payload["name"], email=payload["email"])
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    email = Column(String)
+
+    def save(self, session):
+        session.add(self)
+        session.commit()
+
+    def delete(self, session):
+        session.delete(self)
+        session.commit()
+
+
+class UserPresenter:
+    @staticmethod
+    def to_json(user: User) -> str:
+        import json
+        return json.dumps({"id": user.id, "name": user.name, "email": user.email})
+
+    @staticmethod
+    def to_html(user: User) -> str:
+        return f"<div><h1>{user.name}</h1><p>{user.email}</p></div>"

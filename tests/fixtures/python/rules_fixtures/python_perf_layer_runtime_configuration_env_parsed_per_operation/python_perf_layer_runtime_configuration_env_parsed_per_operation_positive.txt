@@ -1,0 +1,28 @@
+import os
+
+
+def get_db_url() -> str:
+    host = os.environ.get("DB_HOST", "localhost")
+    port = os.environ.get("DB_PORT", "5432")
+    name = os.environ.get("DB_NAME", "mydb")
+    user = os.environ.get("DB_USER", "postgres")
+    password = os.environ.get("DB_PASSWORD", "")
+    return f"postgresql://{user}:{password}@{host}:{port}/{name}"
+
+
+def get_redis_url() -> str:
+    host = os.environ.get("REDIS_HOST", "localhost")
+    port = os.environ.get("REDIS_PORT", "6379")
+    db = os.environ.get("REDIS_DB", "0")
+    return f"redis://{host}:{port}/{db}"
+
+
+def get_api_key() -> str:
+    return os.environ.get("API_KEY", "")
+
+
+def process_request():
+    db_url = get_db_url()
+    redis_url = get_redis_url()
+    api_key = get_api_key()
+    return {"db": db_url, "redis": redis_url, "key": api_key}

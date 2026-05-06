@@ -1,0 +1,32 @@
+def get_paginated_users(page: int, page_size: int) -> dict:
+    offset = (page - 1) * page_size
+    rows = db.query(
+        "SELECT * FROM users ORDER BY id LIMIT ? OFFSET ?",
+        page_size + 1,
+        offset,
+    ).fetchall()
+    has_next = len(rows) > page_size
+    items = rows[:page_size]
+    return {"has_next": has_next, "items": items, "page": page}
+
+
+def list_orders(page: int, per_page: int) -> dict:
+    orders = (
+        session.query(Order)
+        .order_by(Order.id)
+        .offset((page - 1) * per_page)
+        .limit(per_page + 1)
+        .all()
+    )
+    has_next = len(orders) > per_page
+    return {"has_next": has_next, "orders": orders[:per_page]}
+
+
+def search_products(query: str, page: int) -> dict:
+    results = db.execute(
+        "SELECT * FROM products WHERE name LIKE ? ORDER BY id LIMIT 21 OFFSET ?",
+        f"%{query}%",
+        (page - 1) * 20,
+    ).fetchall()
+    has_next = len(results) > 20
+    return {"has_next": has_next, "items": results[:20]}

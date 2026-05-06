@@ -1,0 +1,36 @@
+from typing import Union, Optional
+from dataclasses import dataclass
+
+
+@dataclass
+class SuccessResult:
+    data: dict
+    status_code: int = 200
+
+
+@dataclass
+class ErrorResult:
+    message: str
+    status_code: int = 500
+
+
+@dataclass
+class RedirectResult:
+    url: str
+    status_code: int = 302
+
+
+def process_request(request) -> Union[SuccessResult, ErrorResult, RedirectResult]:
+    if request.is_json:
+        return SuccessResult(data={"status": "ok"})
+    elif request.is_error:
+        return ErrorResult(message="Internal error")
+    else:
+        return RedirectResult(url="https://example.com")
+
+
+def fetch_resource(resource_id: str) -> Optional[dict]:
+    resource = db.get(resource_id)
+    if resource is None:
+        return None
+    return resource.to_dict()

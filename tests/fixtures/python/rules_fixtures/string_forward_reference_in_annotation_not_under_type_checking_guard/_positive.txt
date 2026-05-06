@@ -1,0 +1,30 @@
+from __future__ import annotations
+
+
+class OrderProcessor:
+    def process(self, order: "Order") -> "OrderResult":
+        return OrderResult(order_id=order.id, status="processed")
+
+
+class Order:
+    def __init__(self, id: int, items: list):
+        self.id = id
+        self.items = items
+
+    def get_processor(self) -> "OrderProcessor":
+        return OrderProcessor()
+
+
+class OrderResult:
+    def __init__(self, order_id: int, status: str):
+        self.order_id = order_id
+        self.status = status
+
+
+def create_order(data: dict) -> "Order":
+    return Order(id=data["id"], items=data["items"])
+
+
+def process_and_get_result(order: "Order") -> "OrderResult":
+    processor = OrderProcessor()
+    return processor.process(order)

@@ -1,0 +1,34 @@
+class DatabaseConfig:
+    def __init__(self, host, port, name):
+        self.host = host
+        self.port = port
+        self.name = name
+
+
+class ConnectionBuilder:
+    def __init__(self, config):
+        self.config = config
+
+    def build(self):
+        return f"{self.config.host}:{self.config.port}/{self.config.name}"
+
+
+class RequestPayload:
+    def __init__(self, data):
+        self.data = data
+
+
+class ResponseEnvelope:
+    def __init__(self, body):
+        self.body = body
+
+
+class LoggerAdapter:
+    def __init__(self, logger):
+        self.logger = logger
+
+    def info(self, msg):
+        self.logger.info(msg)
+
+    def error(self, msg):
+        self.logger.error(msg)

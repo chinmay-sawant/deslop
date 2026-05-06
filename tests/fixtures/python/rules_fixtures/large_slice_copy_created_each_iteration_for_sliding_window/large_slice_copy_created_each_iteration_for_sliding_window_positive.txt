@@ -1,0 +1,28 @@
+def moving_average(values: list[float], window: int) -> list[float]:
+    result = []
+    for i in range(len(values) - window + 1):
+        window_slice = values[i:i + window]
+        result.append(sum(window_slice) / len(window_slice))
+    return result
+
+
+def detect_spikes(readings: list[float], window: int, threshold: float) -> list[int]:
+    spike_indices = []
+    for i in range(len(readings) - window + 1):
+        window_data = readings[i:i + window]
+        mean = sum(window_data) / len(window_data)
+        if readings[i + window - 1] > mean * threshold:
+            spike_indices.append(i + window - 1)
+    return spike_indices
+
+
+def sliding_correlation(series_a: list[float], series_b: list[float], window: int) -> list[float]:
+    correlations = []
+    for i in range(len(series_a) - window + 1):
+        chunk_a = series_a[i:i + window]
+        chunk_b = series_b[i:i + window]
+        mean_a = sum(chunk_a) / window
+        mean_b = sum(chunk_b) / window
+        cov = sum((a - mean_a) * (b - mean_b) for a, b in zip(chunk_a, chunk_b)) / window
+        correlations.append(cov)
+    return correlations

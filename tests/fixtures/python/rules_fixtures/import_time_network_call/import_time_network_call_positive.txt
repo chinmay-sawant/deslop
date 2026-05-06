@@ -1,0 +1,17 @@
+import requests
+
+REMOTE_CONFIG_URL = "https://config.example.com/app-config.json"
+response = requests.get(REMOTE_CONFIG_URL, timeout=5)
+REMOTE_CONFIG = response.json()
+
+SERVICE_DISCOVERY_URL = "https://registry.example.com/services"
+resp = requests.get(SERVICE_DISCOVERY_URL, timeout=5)
+AVAILABLE_SERVICES = resp.json()
+
+
+def get_remote_config(key: str):
+    return REMOTE_CONFIG.get(key)
+
+
+def get_service_url(service_name: str) -> str:
+    return AVAILABLE_SERVICES[service_name]

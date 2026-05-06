@@ -1,0 +1,31 @@
+from flask import Flask, jsonify, request, make_response
+
+app = Flask(__name__)
+
+
+@app.route("/api/resource", methods=["POST"])
+def create_resource():
+    if is_rate_limited(request.remote_addr):
+        response = make_response(jsonify({
+            "error": "Too many requests",
+            "retry_after_seconds": 60,
+        }), 429)
+        response.headers["Retry-After"] = "60"
+        return response
+    return jsonify({"id": 1, "status": "created"}), 201
+
+
+def is_rate_limited(client_ip: str) -> bool:
+    return False
+
+
+@app.route("/api/data", methods=["GET"])
+def get_data():
+    if is_rate_limited(request.remote_addr):
+        response = make_response(jsonify({
+            "error": "Too many requests",
+            "retry_after_seconds": 60,
+        }), 429)
+        response.headers["Retry-After"] = "60"
+        return response
+    return jsonify({"items": []})

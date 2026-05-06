@@ -1,0 +1,12 @@
+def summarize_config(config):
+    return {
+        "name": config["name"],
+        "version": config["version"],
+        "count": len(config["items"]),
+    }
+
+def format_user_profile(user):
+    return f"{user['name']} ({user['email']})"
+
+def calculate_totals(items):
+    return sum(item["price"] * item["qty"] for item in items)

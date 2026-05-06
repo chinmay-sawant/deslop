@@ -1,0 +1,38 @@
+from typing import List, Dict, Any, Optional
+
+
+class UserService:
+    def __init__(self, db_url: str):
+        self.db_url = db_url
+        self._engine = None
+        self._connection = None
+
+    def connect(self):
+        from sqlalchemy import create_engine
+        self._engine = create_engine(self.db_url)
+        self._connection = self._engine.connect()
+
+    def get_users(self) -> List[Dict[str, Any]]:
+        if self._connection is None:
+            self.connect()
+        return self._connection.execute("SELECT * FROM users").fetchall()
+
+
+class DataPipeline:
+    def __init__(self, source_url: str, session: Optional[Any] = None):
+        self.source_url = source_url
+        self.session = session
+        self._data = None
+
+    def fetch(self):
+        if self.session is None:
+            import requests
+            self.session = requests.Session()
+        response = self.session.get(self.source_url)
+        self._data = response.json()
+        return self._data
+
+    def process(self):
+        if self._data is None:
+            self.fetch()
+        return [self._transform(item) for item in self._data]

@@ -1,0 +1,24 @@
+import pandas as pd
+
+
+def update_prices(df):
+    mask = df["category"] == "electronics"
+    df.loc[mask, "price"] = df.loc[mask, "price"] * 1.1
+    return df
+
+
+def fix_names(df):
+    df["name"] = df["name"].fillna("unknown")
+    return df
+
+
+def adjust_quantities(df):
+    mask = df["status"] == "active"
+    df.loc[mask, "quantity"] = df.loc[mask, "quantity"].clip(lower=1)
+    return df
+
+
+def correct_emails(df):
+    mask = df["email"].str.contains("@")
+    df.loc[mask, "verified"] = True
+    return df

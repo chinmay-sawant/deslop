@@ -1,0 +1,20 @@
+import json
+from pathlib import Path
+
+SCHEMA_PATH = Path(__file__).parent / "schema.json"
+with open(SCHEMA_PATH) as f:
+    SCHEMA = json.load(f)
+
+TEMPLATES_DIR = Path(__file__).parent / "templates"
+TEMPLATE_FILES = list(TEMPLATES_DIR.glob("*.html"))
+
+with open(Path(__file__).parent / "version.txt") as f:
+    VERSION = f.read().strip()
+
+
+def get_schema() -> dict:
+    return SCHEMA
+
+
+def get_version() -> str:
+    return VERSION

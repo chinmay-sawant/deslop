@@ -1,0 +1,20 @@
+import os
+from flask import Flask
+
+app = Flask(__name__)
+app.config["DEBUG"] = os.environ.get("FLASK_DEBUG", "0") == "1"
+app.config["TESTING"] = os.environ.get("FLASK_TESTING", "0") == "1"
+
+
+@app.route("/api/data")
+def get_data():
+    return {"items": list(range(100))}
+
+
+@app.route("/api/health")
+def health():
+    return {"status": "ok"}
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000, debug=app.config["DEBUG"])

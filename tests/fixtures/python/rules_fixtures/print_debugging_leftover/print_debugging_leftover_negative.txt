@@ -1,0 +1,26 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_order(order):
+    logger.info("Processing order %s", order["id"])
+    total = calculate_total(order)
+    logger.info("Order %s total: %.2f", order["id"], total)
+    return total
+
+
+def calculate_total(order):
+    logger.debug("Order items: %s", order.get("items"))
+    return sum(item["price"] for item in order.get("items", []))
+
+
+def sync_inventory(products):
+    for product in products:
+        logger.info("Syncing %s", product["name"])
+        update_stock(product)
+    logger.info("Inventory sync complete")
+
+
+def update_stock(product):
+    pass

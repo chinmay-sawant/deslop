@@ -1,0 +1,29 @@
+from myapp.auth import AuthService
+from myapp.db import Database
+from myapp.cache import Cache
+from myapp.email import EmailService
+from myapp.models import User
+from myapp.config import Settings
+
+class UserService:
+    def __init__(
+        self,
+        auth: AuthService,
+        db: Database,
+        cache: Cache,
+        email: EmailService,
+        settings: Settings,
+    ):
+        self._auth = auth
+        self._db = db
+        self._cache = cache
+        self._email = email
+        self._settings = settings
+
+    def signup(self, data: dict) -> User:
+        user = User(**data)
+        self._auth.hash_password(user)
+        self._db.save(user)
+        self._cache.set(f"user:{user.id}", user)
+        self._email.send(user.email, "Welcome!")
+        return user

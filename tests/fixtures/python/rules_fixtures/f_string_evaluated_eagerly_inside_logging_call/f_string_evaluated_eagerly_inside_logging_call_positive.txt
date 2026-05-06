@@ -1,0 +1,25 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_order(order):
+    logger.debug(f"Processing order {order.id} for user {order.user.name}")
+    
+    items = fetch_items(order.id)
+    logger.info(f"Found {len(items)} items totaling ${sum(i.price for i in items):.2f}")
+    
+    for item in items:
+        logger.debug(f"Item {item.sku}: {item.name} x{item.qty} @ ${item.price}")
+        validate_item(item)
+    
+    logger.info(f"Order {order.id} processed successfully with {len(items)} items")
+    return {"order_id": order.id, "count": len(items)}
+
+
+def sync_users(user_ids: list[str]):
+    for uid in user_ids:
+        logger.debug(f"Syncing user {uid}")
+        user = fetch_user(uid)
+        logger.info(f"User {user.name} ({user.email}) synced, {len(user.orders)} orders")
+        save(user)

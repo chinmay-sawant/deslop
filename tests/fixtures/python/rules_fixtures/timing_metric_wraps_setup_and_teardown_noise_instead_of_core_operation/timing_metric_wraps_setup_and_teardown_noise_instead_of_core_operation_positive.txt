@@ -1,0 +1,49 @@
+import time
+from prometheus_client import Histogram
+
+PROCESS_LATENCY = Histogram("process_latency_seconds", "Time to process request")
+
+def handle_request(request_data: dict) -> dict:
+    start = time.monotonic()
+    db = connect_to_database()
+    cache = warm_cache(db)
+    result = process(request_data, db, cache)
+    db.close()
+    elapsed = time.monotonic() - start
+    PROCESS_LATENCY.observe(elapsed)
+    return result
+
+def process(data: dict, db, cache) -> dict:
+    return {"status": "ok"}
+
+def connect_to_database():
+    return "db_connection"
+
+def warm_cache(db):
+    return "cache"
+
+def train_model(dataset_path: str):
+    start = time.perf_counter()
+    data = load_dataset(dataset_path)
+    data = preprocess(data)
+    split = train_test_split(data)
+    model = fit_model(split)
+    metrics = evaluate(model, split)
+    elapsed = time.perf_counter() - start
+    PROCESS_LATENCY.observe(elapsed)
+    return model
+
+def load_dataset(path: str):
+    return []
+
+def preprocess(data):
+    return data
+
+def train_test_split(data):
+    return data
+
+def fit_model(split):
+    return "model"
+
+def evaluate(model, split):
+    return {}

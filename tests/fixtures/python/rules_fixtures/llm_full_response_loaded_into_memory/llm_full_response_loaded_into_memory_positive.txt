@@ -1,0 +1,35 @@
+import openai
+
+
+def generate_long_report(topic: str) -> str:
+    client = openai.OpenAI()
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": f"Write a detailed report on {topic}"}],
+        max_tokens=8000,
+    )
+    full_text = response.choices[0].message.content
+    return full_text
+
+
+def get_embeddings_batch(texts: list[str]) -> list[list[float]]:
+    client = openai.OpenAI()
+    response = client.embeddings.create(
+        model="text-embedding-ada-002",
+        input=texts,
+    )
+    all_embeddings = [item.embedding for item in response.data]
+    return all_embeddings
+
+
+def stream_chat_response(prompt: str) -> str:
+    client = openai.OpenAI()
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=4000,
+    )
+    collected = ""
+    for chunk in response:
+        collected += chunk.choices[0].message.content
+    return collected

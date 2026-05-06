@@ -1,0 +1,47 @@
+import openai
+
+
+def summarize_documents(docs: list[str]) -> list[str]:
+    client = openai.OpenAI()
+    batch_messages = [
+        {"role": "user", "content": f"Summarize: {doc}"} for doc in docs
+    ]
+    responses = []
+    for batch_start in range(0, len(batch_messages), 20):
+        batch = batch_messages[batch_start : batch_start + 20]
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=batch,
+        )
+        responses.extend(response.choices)
+    return [choice.message.content for choice in responses]
+
+
+def classify_reviews(reviews: list[str]) -> list[str]:
+    client = openai.OpenAI()
+    batch = [
+        {"role": "user", "content": f"Classify: {review}"}
+        for review in reviews
+    ]
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=batch,
+    )
+    return [choice.message.content for choice in response.choices]
+
+
+def translate_batch(texts: list[str], target_lang: str) -> list[str]:
+    client = openai.OpenAI()
+    prompts = [
+        [
+            {"role": "system", "content": f"Translate to {target_lang}"},
+            {"role": "user", "content": text},
+        ]
+        for text in texts
+    ]
+    results = []
+    for chunk_start in range(0, len(prompts), 10):
+        chunk = prompts[chunk_start : chunk_start + 10]
+        response = client.chat.completions.create(model="gpt-4", messages=chunk)
+        results.extend(c.message.content for c in response.choices)
+    return results

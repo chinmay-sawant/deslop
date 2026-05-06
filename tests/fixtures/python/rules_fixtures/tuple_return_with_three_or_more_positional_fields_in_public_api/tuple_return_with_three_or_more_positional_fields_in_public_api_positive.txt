@@ -1,0 +1,27 @@
+from typing import NamedTuple
+
+def parse_log_line(line: str) -> tuple[str, str, str, int]:
+    parts = line.split(" ", 3)
+    return parts[0], parts[1], parts[2], int(parts[3])
+
+def get_user_stats(user_id: int) -> tuple[int, float, str, bool, int]:
+    total_posts = 42
+    avg_score = 3.7
+    top_category = "tech"
+    is_premium = True
+    follower_count = 128
+    return total_posts, avg_score, top_category, is_premium, follower_count
+
+def extract_file_metadata(path: str) -> tuple[str, int, str, str]:
+    name = path.split("/")[-1]
+    size = 1024
+    mime = "text/plain"
+    encoding = "utf-8"
+    return name, size, mime, encoding
+
+def compute_metrics(data: list[float]) -> tuple[float, float, float, float]:
+    mean = sum(data) / len(data)
+    variance = sum((x - mean) ** 2 for x in data) / len(data)
+    minimum = min(data)
+    maximum = max(data)
+    return mean, variance, minimum, maximum

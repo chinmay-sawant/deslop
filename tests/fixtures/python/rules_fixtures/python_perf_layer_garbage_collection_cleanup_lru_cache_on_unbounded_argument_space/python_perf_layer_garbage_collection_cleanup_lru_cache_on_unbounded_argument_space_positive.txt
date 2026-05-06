@@ -1,0 +1,15 @@
+from functools import lru_cache
+import hashlib
+
+@lru_cache
+def hash_user_input(user_id, raw_input):
+    return hashlib.sha256(raw_input.encode()).hexdigest()
+
+@lru_cache
+def get_user_session(session_token):
+    return {"token": session_token, "data": "session_data"}
+
+def process_request(user_id, body, session_token):
+    h = hash_user_input(user_id, body)
+    session = get_user_session(session_token)
+    return {"hash": h, "session": session}

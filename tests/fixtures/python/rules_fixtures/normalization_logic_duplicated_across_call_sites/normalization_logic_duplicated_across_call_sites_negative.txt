@@ -1,0 +1,31 @@
+import re
+from typing import Dict
+
+def normalize_email(email: str) -> str:
+    return email.strip().lower()
+
+def normalize_phone(phone: str) -> str:
+    digits = re.sub(r'\D', '', phone)
+    if len(digits) == 11 and digits.startswith('1'):
+        digits = digits[1:]
+    return f"({digits[:3]}) {digits[3:6]}-{digits[6:]}"
+
+def normalize_address(address: str) -> str:
+    address = address.strip()
+    address = re.sub(r'\s+', ' ', address)
+    return address.replace("Street", "St").replace("Avenue", "Ave")
+
+def normalize_contact(record: dict) -> dict:
+    record["email"] = normalize_email(record["email"])
+    record["phone"] = normalize_phone(record["phone"])
+    record["address"] = normalize_address(record["address"])
+    return record
+
+def process_user(user: dict) -> dict:
+    return normalize_contact(user)
+
+def process_lead(lead: dict) -> dict:
+    return normalize_contact(lead)
+
+def process_contact(contact: dict) -> dict:
+    return normalize_contact(contact)

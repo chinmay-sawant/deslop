@@ -1,0 +1,24 @@
+from itertools import chain
+
+
+def collect_tags(items):
+    return list(chain.from_iterable(item["tags"] for item in items))
+
+
+def build_report(sections):
+    lines = list(chain.from_iterable(s.paragraphs for s in sections))
+    return "\n".join(lines)
+
+
+def flatten_results(responses):
+    return list(chain.from_iterable(resp["items"] for resp in responses))
+
+
+def gather_errors(results):
+    return list(chain.from_iterable(
+        result.get("errors", []) for result in results
+    ))
+
+
+def merge_datasets(sources):
+    return list(chain.from_iterable(source.records for source in sources))

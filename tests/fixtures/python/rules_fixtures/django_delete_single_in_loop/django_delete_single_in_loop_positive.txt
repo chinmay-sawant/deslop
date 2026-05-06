@@ -1,0 +1,18 @@
+from django.views import View
+from django.http import JsonResponse
+
+from .models import Notification
+
+
+class ClearNotificationsView(View):
+    def post(self, request):
+        notification_ids = request.POST.getlist("notification_ids")
+        deleted_count = 0
+        for nid in notification_ids:
+            try:
+                notification = Notification.objects.get(id=nid, user=request.user)
+                notification.delete()
+                deleted_count += 1
+            except Notification.DoesNotExist:
+                continue
+        return JsonResponse({"deleted": deleted_count})

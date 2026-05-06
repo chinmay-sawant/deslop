@@ -1,0 +1,16 @@
+import tempfile
+import os
+
+def build_archive(files):
+    tmp_dir = tempfile.mkdtemp()
+    for name, content in files.items():
+        path = os.path.join(tmp_dir, name)
+        with open(path, "w") as f:
+            f.write(content)
+    archive_path = os.path.join(tmp_dir, "archive.tar")
+    os.system(f"tar -cf {archive_path} -C {tmp_dir} .")
+    process_other_tasks()
+    return archive_path
+
+def process_other_tasks():
+    pass

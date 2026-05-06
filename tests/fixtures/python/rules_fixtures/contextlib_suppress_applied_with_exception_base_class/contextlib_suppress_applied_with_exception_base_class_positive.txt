@@ -1,0 +1,26 @@
+import contextlib
+
+
+def safe_read(path):
+    with contextlib.suppress(Exception):
+        with open(path) as f:
+            return f.read()
+    return None
+
+
+def try_parse(data):
+    with contextlib.suppress(BaseException):
+        return json.loads(data)
+    return {}
+
+
+def safe_import(module_name):
+    with contextlib.suppress(Exception):
+        return __import__(module_name)
+    return None
+
+
+def try_connect(url):
+    with contextlib.suppress(BaseException):
+        return create_connection(url)
+    return None

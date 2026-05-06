@@ -1,0 +1,24 @@
+def normalize_dataset(records):
+    for rec in records:
+        rec["name"] = rec["name"].strip().lower()
+
+    for rec in records:
+        rec["email"] = rec["email"].strip().lower()
+
+    for rec in records:
+        rec["phone"] = rec["phone"].replace("-", "").replace(" ", "")
+
+    return records
+
+
+def clean_prices(items):
+    for item in items:
+        item["price"] = round(float(item["price"]), 2)
+
+    for item in items:
+        item["tax"] = item["price"] * 0.1
+
+    for item in items:
+        item["total"] = item["price"] + item["tax"]
+
+    return items

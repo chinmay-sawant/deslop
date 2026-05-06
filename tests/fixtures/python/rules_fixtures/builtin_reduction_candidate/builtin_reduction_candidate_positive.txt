@@ -1,0 +1,37 @@
+def calculate_total(items: list) -> float:
+    total = 0
+    for item in items:
+        total = total + item.price
+    return total
+
+
+def has_active_subscription(users: list) -> bool:
+    found = False
+    for user in users:
+        if user.is_active:
+            found = True
+    return found
+
+
+def all_orders_shipped(orders: list) -> bool:
+    result = True
+    for order in orders:
+        if not order.shipped:
+            result = False
+    return result
+
+
+def count_valid_items(items: list) -> int:
+    count = 0
+    for item in items:
+        if item.is_valid:
+            count = count + 1
+    return count
+
+
+def find_max_price(products: list) -> float:
+    max_price = 0
+    for product in products:
+        if product.price > max_price:
+            max_price = product.price
+    return max_price

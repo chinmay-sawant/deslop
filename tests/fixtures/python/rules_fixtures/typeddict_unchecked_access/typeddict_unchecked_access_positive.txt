@@ -1,0 +1,27 @@
+from typing import TypedDict
+
+class ConfigData(TypedDict, total=False):
+    debug: bool
+    log_level: str
+    max_connections: int
+    secret_key: str
+
+class ItemPayload(TypedDict, total=False):
+    name: str
+    quantity: int
+    price: float
+    discount: float
+
+def get_debug_mode(config: ConfigData) -> bool:
+    return config["debug"]
+
+def get_secret(config: ConfigData) -> str:
+    return config["secret_key"]
+
+def calculate_total(item: ItemPayload) -> float:
+    base = item["quantity"] * item["price"]
+    discount = item["discount"]
+    return base * (1 - discount)
+
+def get_log_level(config: ConfigData) -> str:
+    return config["log_level"]

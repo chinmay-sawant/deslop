@@ -1,0 +1,33 @@
+def process_orders(orders: list[dict]) -> dict:
+    pending = [o for o in orders if o["status"] == "pending"]
+    count = len(pending)
+    
+    for order in pending:
+        process(order)
+    
+    return {"processed": count}
+
+
+def analyze_users(users: list[dict]) -> dict:
+    active = [u for u in users if u["is_active"]]
+    active_count = len(active)
+    
+    premium = [u for u in active if u["tier"] == "premium"]
+    premium_count = len(premium)
+    
+    for user in premium:
+        send_notification(user)
+    
+    return {"active": active_count, "premium": premium_count}
+
+
+def validate_items(items: list[dict]) -> list[dict]:
+    valid = [i for i in items if i["quantity"] > 0]
+    total = len(valid)
+    
+    results = []
+    for item in valid:
+        result = validate(item)
+        results.append(result)
+    
+    return results

@@ -1,0 +1,34 @@
+import random
+import numpy as np
+import torch
+
+
+def train_model(dataset):
+    model = torch.nn.Linear(10, 1)
+    optimizer = torch.optim.Adam(model.parameters())
+    for epoch in range(100):
+        for batch in dataset:
+            output = model(batch)
+            loss = output.mean()
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+    return model
+
+
+def evaluate_model(model, test_data):
+    results = []
+    for sample in test_data:
+        idx = random.randint(0, len(test_data) - 1)
+        augmented = test_data[idx] + np.random.normal(0, 0.1, size=sample.shape)
+        pred = model(torch.tensor(augmented, dtype=torch.float32))
+        results.append(pred.item())
+    return results
+
+
+def augment_dataset(data: list) -> list:
+    augmented = []
+    for item in data:
+        noise = np.random.randn(*item.shape) * 0.05
+        augmented.append(item + noise)
+    return augmented

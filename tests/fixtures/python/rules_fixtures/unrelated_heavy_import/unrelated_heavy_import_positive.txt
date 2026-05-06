@@ -1,0 +1,20 @@
+import pandas as pd
+import numpy as np
+import torch
+import torchvision
+import tensorflow as tf
+import sklearn
+import matplotlib.pyplot as plt
+import seaborn as sns
+import xgboost as xgb
+import lightgbm as lgb
+import catboost as cb
+
+def load_csv(path: str) -> pd.DataFrame:
+    return pd.read_csv(path)
+
+def get_user_name(user_id: int) -> str:
+    return f"user_{user_id}"
+
+def format_date(dt) -> str:
+    return dt.strftime("%Y-%m-%d")

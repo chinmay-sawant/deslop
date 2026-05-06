@@ -1,0 +1,19 @@
+def build_csv_header(columns: list[str]) -> str:
+    header = ""
+    for col in columns:
+        header += col + ","
+    return header.rstrip(",")
+
+
+def build_report(lines: list[str]) -> str:
+    report = ""
+    for line in lines:
+        report += line + "\n"
+    return report
+
+
+def concatenate_parts(parts: list[str]) -> str:
+    result = ""
+    for part in parts:
+        result += part
+    return result

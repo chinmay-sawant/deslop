@@ -1,0 +1,41 @@
+class UserProfile:
+    def __init__(self, username: str, email: str):
+        self.username = username
+        self.email = email
+        self.display_name = username
+        self.last_login = None
+
+    def update_email(self, new_email: str) -> None:
+        self.email = new_email
+        self.last_login = "2024-01-01"
+
+    def format_profile(self) -> str:
+        return f"User: {self.display_name}, Email: {self.email}"
+
+
+class ShoppingCart:
+    def __init__(self):
+        self.items: list[dict] = []
+        self.discount = 0.0
+
+    def add_item(self, item: dict) -> None:
+        self.items.append(item)
+        self.discount += item.get("discount", 0)
+
+    def get_subtotal(self) -> float:
+        return sum(i["price"] for i in self.items)
+
+    def format_receipt(self) -> str:
+        subtotal = self.get_subtotal()
+        return f"Subtotal: ${subtotal:.2f}, Discount: ${self.discount:.2f}"
+
+
+class Settings:
+    def __init__(self):
+        self.values: dict[str, str] = {}
+
+    def set_value(self, key: str, value: str) -> None:
+        self.values[key] = value
+
+    def format_setting(self, key: str) -> str:
+        return f"{key}={self.values.get(key, '')}"

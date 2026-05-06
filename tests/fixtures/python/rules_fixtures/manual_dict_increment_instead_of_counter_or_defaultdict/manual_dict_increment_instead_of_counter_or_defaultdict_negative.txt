@@ -1,0 +1,23 @@
+from collections import Counter, defaultdict
+
+
+def count_words(text: str) -> dict[str, int]:
+    return Counter(text.lower().split())
+
+
+def tally_errors(log_lines: list[str]) -> dict[str, int]:
+    error_counts = Counter()
+    for line in log_lines:
+        if "ERROR" in line:
+            parts = line.split()
+            error_type = parts[-1] if parts else "unknown"
+            error_counts[error_type] += 1
+    return dict(error_counts)
+
+
+def group_by_status(items: list[dict]) -> dict[str, list[dict]]:
+    grouped = defaultdict(list)
+    for item in items:
+        status = item.get("status", "unknown")
+        grouped[status].append(item)
+    return dict(grouped)

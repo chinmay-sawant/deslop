@@ -1,0 +1,29 @@
+STATUS_LABELS = {200: "OK", 404: "Not Found", 500: "Server Error"}
+MESSAGE_TYPES = {"error": "critical", "warn": "warning", "info": "normal", "debug": "low"}
+PRIORITY_WEIGHTS = {"critical": 4, "high": 3, "medium": 2, "low": 1}
+CURRENCY_SYMBOLS = {"USD": "$", "EUR": "€", "GBP": "£", "JPY": "¥"}
+
+
+def get_status_label(code):
+    return STATUS_LABELS.get(code, "Unknown")
+
+
+def classify_message(msg_type):
+    return MESSAGE_TYPES.get(msg_type, "unknown")
+
+
+def get_priority_weight(priority):
+    return PRIORITY_WEIGHTS.get(priority, 0)
+
+
+def build_headers(content_type):
+    return {
+        "Content-Type": content_type,
+        "Cache-Control": "no-cache",
+        "X-Request-Id": generate_id(),
+    }
+
+
+def format_currency(amount, currency):
+    symbol = CURRENCY_SYMBOLS.get(currency, currency)
+    return f"{symbol}{amount:.2f}"

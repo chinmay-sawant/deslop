@@ -1,0 +1,29 @@
+import boto3
+import requests
+from pathlib import Path
+
+class RemoteConfig:
+    def __init__(self, config_url: str):
+        response = requests.get(config_url, timeout=30)
+        self.data = response.json()
+        self.version = self.data.get("version", "unknown")
+
+class DatabaseMigrator:
+    def __init__(self, connection_string: str):
+        import psycopg2
+        self.conn = psycopg2.connect(connection_string)
+        self.conn.autocommit = True
+        self._run_pending_migrations()
+
+    def _run_pending_migrations(self) -> None:
+        migration_dir = Path("migrations")
+        for sql_file in sorted(migration_dir.glob("*.sql")):
+            with open(sql_file) as f:
+                self.conn.execute(f.read())
+
+class S3FileManager:
+    def __init__(self, bucket: str, region: str = "us-east-1"):
+        self.client = boto3.client("s3", region_name=region)
+        self.bucket = bucket
+        response = self.client.list_objects_v2(Bucket=bucket, MaxKeys=1)
+        self.is_ready = response.get("KeyCount", 0) >= 0

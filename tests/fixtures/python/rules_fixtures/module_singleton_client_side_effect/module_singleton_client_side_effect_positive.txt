@@ -1,0 +1,21 @@
+import boto3
+import redis
+from pymongo import MongoClient
+from elasticsearch import Elasticsearch
+
+S3_CLIENT = boto3.client("s3", region_name="us-east-1")
+REDIS_CLIENT = redis.Redis(host="localhost", port=6379, db=0)
+MONGO_CLIENT = MongoClient("mongodb://localhost:27017")
+ES_CLIENT = Elasticsearch(["http://localhost:9200"])
+
+def upload_file(bucket: str, key: str, data: bytes) -> None:
+    S3_CLIENT.put_object(Bucket=bucket, Key=key, Body=data)
+
+def cache_set(key: str, value: str, ttl: int = 3600) -> None:
+    REDIS_CLIENT.setex(key, ttl, value)
+
+def insert_document(collection: str, doc: dict) -> None:
+    MONGO_CLIENT["mydb"][collection].insert_one(doc)
+
+def search_index(index: str, query: dict) -> dict:
+    return ES_CLIENT.search(index=index, body=query)

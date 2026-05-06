@@ -1,0 +1,37 @@
+from fastapi import FastAPI, Request, Depends
+
+app = FastAPI()
+
+class FileStorage:
+    def __init__(self, base_path: str = "/data/uploads"):
+        self.base_path = base_path
+
+    def read(self, filename: str) -> bytes:
+        path = os.path.join(self.base_path, filename)
+        with open(path, "rb") as f:
+            return f.read()
+
+    def exists(self, filename: str) -> bool:
+        return os.path.exists(os.path.join(self.base_path, filename))
+
+    def write(self, filename: str, content: str):
+        path = os.path.join(self.base_path, filename)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write(content)
+
+file_storage = FileStorage()
+
+@app.get("/api/files/{filename}")
+async def get_file(filename: str):
+    if not file_storage.exists(filename):
+        return {"error": "not found"}
+    content = file_storage.read(filename)
+    return {"filename": filename, "size": len(content)}
+
+@app.post("/api/export")
+async def export_data(request: Request):
+    body = await request.json()
+    csv_content = "\n".join(",".join(str(v) for v in row) for row in body["data"])
+    file_storage.write(f"{body['name']}.csv", csv_content)
+    return {"status": "exported"}

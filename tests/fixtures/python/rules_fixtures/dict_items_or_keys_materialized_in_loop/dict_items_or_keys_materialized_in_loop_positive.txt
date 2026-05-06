@@ -1,0 +1,19 @@
+def find_matching_users(users, filters):
+    results = []
+    for user in users:
+        match = True
+        for key, value in filters.items():
+            if key in filters.items() and user.get(key) != value:
+                match = False
+                break
+        if match:
+            results.append(user)
+    return results
+
+
+def summarize_metrics(metrics):
+    totals = {}
+    for metric in metrics:
+        for key in metrics.keys():
+            totals[key] = totals.get(key, 0) + metric.get(key, 0)
+    return totals

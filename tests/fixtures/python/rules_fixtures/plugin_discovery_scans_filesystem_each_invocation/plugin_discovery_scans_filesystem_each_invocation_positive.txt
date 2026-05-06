@@ -1,0 +1,23 @@
+import os
+import importlib
+import glob
+
+
+def discover_plugins(plugin_dir):
+    plugins = []
+    for path in glob.glob(os.path.join(plugin_dir, "*.py")):
+        name = os.path.splitext(os.path.basename(path))[0]
+        spec = importlib.util.spec_from_file_location(name, path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        plugins.append(mod)
+    return plugins
+
+
+def load_extensions(directory):
+    extensions = []
+    for entry in os.listdir(directory):
+        if entry.endswith(".py"):
+            mod = importlib.import_module(f"extensions.{entry[:-3]}")
+            extensions.append(mod)
+    return extensions

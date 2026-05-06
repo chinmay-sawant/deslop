@@ -1,0 +1,40 @@
+class DataTransformer:
+    def transform(self, value):
+        return value.strip()
+
+
+class Normalizer:
+    def __init__(self):
+        self._transformer = DataTransformer()
+
+    def normalize(self, value):
+        return self._transformer.transform(value)
+
+
+class Processor:
+    def __init__(self):
+        self._normalizer = Normalizer()
+
+    def process(self, value):
+        return self._normalizer.normalize(value)
+
+
+class Pipeline:
+    def __init__(self):
+        self._processor = Processor()
+
+    def run(self, value):
+        return self._processor.process(value)
+
+
+class Service:
+    def __init__(self):
+        self._pipeline = Pipeline()
+
+    def execute(self, value):
+        return self._pipeline.run(value)
+
+
+def handle_request(value):
+    svc = Service()
+    return svc.execute(value)

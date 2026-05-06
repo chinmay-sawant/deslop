@@ -1,0 +1,26 @@
+def get_paginated_users(page: int, page_size: int) -> dict:
+    total = db.query("SELECT COUNT(*) FROM users").scalar()
+    offset = (page - 1) * page_size
+    rows = db.query(
+        "SELECT * FROM users ORDER BY id LIMIT ? OFFSET ?",
+        page_size,
+        offset,
+    ).fetchall()
+    return {"total": total, "items": rows, "page": page}
+
+
+def list_orders(page: int, per_page: int) -> dict:
+    count = session.query(func.count(Order.id)).scalar()
+    offset = (page - 1) * per_page
+    orders = session.query(Order).order_by(Order.id).offset(offset).limit(per_page).all()
+    return {"count": count, "orders": orders}
+
+
+def search_products(query: str, page: int) -> dict:
+    total = db.execute("SELECT COUNT(*) FROM products WHERE name LIKE ?", f"%{query}%").fetchone()[0]
+    results = db.execute(
+        "SELECT * FROM products WHERE name LIKE ? ORDER BY id LIMIT 20 OFFSET ?",
+        f"%{query}%",
+        (page - 1) * 20,
+    ).fetchall()
+    return {"total": total, "items": results}

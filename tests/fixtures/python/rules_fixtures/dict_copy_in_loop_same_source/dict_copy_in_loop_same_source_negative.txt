@@ -1,0 +1,18 @@
+from typing import Any, Dict
+
+
+def merge_updates(base_config: Dict[str, Any], overrides: Dict[str, Any]) -> Dict[str, Any]:
+    result = dict(base_config)
+    result.update(overrides)
+    return result
+
+
+def sync_user_preferences(
+    defaults: Dict[str, Any],
+    user_prefs: Dict[str, Any],
+    session_overrides: Dict[str, Any],
+) -> Dict[str, Any]:
+    merged = dict(defaults)
+    merged.update(user_prefs)
+    merged.update(session_overrides)
+    return merged

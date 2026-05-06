@@ -1,0 +1,41 @@
+# orders/module.py
+from payments.service import calculate_total_with_tax
+from inventory.check import validate_stock
+
+
+def create_order(user_id: int, items: list):
+    total = calculate_total_with_tax(items)
+    validate_stock(items)
+    return save_order(user_id, items, total)
+
+
+# payments/service.py
+from orders.module import get_order_details
+from inventory.check import get_item_price
+
+
+def calculate_total_with_tax(items: list) -> float:
+    subtotal = sum(get_item_price(item["id"]) for item in items)
+    return subtotal * 1.1
+
+
+def process_payment(order_id: int, amount: float):
+    order = get_order_details(order_id)
+    charge(order["user_id"], amount)
+
+
+# inventory/check.py
+from orders.module import get_order_items
+
+
+def validate_stock(items: list):
+    for item in items:
+        product = get_product(item["id"])
+        if product.stock < item["quantity"]:
+            raise ValueError(f"Insufficient stock for {item['id']}")
+
+
+def restock_from_order(order_id: int):
+    items = get_order_items(order_id)
+    for item in items:
+        increase_stock(item["id"], item["quantity"])

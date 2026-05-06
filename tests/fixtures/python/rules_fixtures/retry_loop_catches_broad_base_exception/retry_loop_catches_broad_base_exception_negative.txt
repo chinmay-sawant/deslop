@@ -1,0 +1,21 @@
+import time
+import requests
+
+
+def fetch_with_retry(url, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            return requests.get(url, timeout=10)
+        except (requests.ConnectionError, requests.Timeout) as e:
+            time.sleep(2 ** attempt)
+    raise RuntimeError(f"Failed after {max_retries} attempts: {url}")
+
+
+def send_message(queue, message, retries=5):
+    for i in range(retries):
+        try:
+            queue.publish(message)
+            return True
+        except ConnectionError:
+            time.sleep(2 ** i)
+    return False

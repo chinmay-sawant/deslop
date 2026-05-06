@@ -1,0 +1,12 @@
+def build_report(items: list[dict]) -> str:
+    lines = [f"id={item['id']} name={item['name']}" for item in items]
+    return "\n".join(lines) + "\n"
+
+
+def concatenate_log_entries(entries: list[str]) -> str:
+    return "\n".join(f"[LOG] {entry}" for entry in entries) + "\n"
+
+
+def build_sql_values(rows: list[tuple]) -> str:
+    parts = [f"({row[0]}, '{row[1]}')" for row in rows]
+    return ",".join(parts)

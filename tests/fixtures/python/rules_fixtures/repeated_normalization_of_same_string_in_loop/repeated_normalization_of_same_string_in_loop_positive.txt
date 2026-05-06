@@ -1,0 +1,17 @@
+def match_keywords(text, keywords):
+    matches = []
+    for keyword in keywords:
+        if keyword.lower().strip() in text.lower().strip():
+            matches.append(keyword)
+    return matches
+
+
+def filter_by_prefix(items, prefix):
+    results = []
+    normalized_prefix = prefix.lower().strip()
+    for item in items:
+        if item.name.lower().strip().startswith(normalized_prefix):
+            results.append(item)
+        if item.name.lower().strip() == normalized_prefix:
+            results.append(item)
+    return results

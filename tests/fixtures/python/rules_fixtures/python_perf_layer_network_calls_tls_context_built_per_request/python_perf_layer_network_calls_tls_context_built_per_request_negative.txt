@@ -1,0 +1,23 @@
+import ssl
+import urllib.request
+
+_TLS_CONTEXT = ssl.create_default_context(cafile="/etc/ssl/certs/ca-certificates.crt")
+
+
+def fetch_secure(url: str) -> str:
+    with urllib.request.urlopen(url, context=_TLS_CONTEXT) as resp:
+        return resp.read().decode()
+
+
+def fetch_user_data(user_id: str) -> str:
+    url = f"https://api.example.com/users/{user_id}"
+    with urllib.request.urlopen(url, context=_TLS_CONTEXT) as resp:
+        return resp.read().decode()
+
+
+def batch_fetch(urls: list[str]) -> list[str]:
+    results = []
+    for url in urls:
+        with urllib.request.urlopen(url, context=_TLS_CONTEXT) as resp:
+            results.append(resp.read().decode())
+    return results

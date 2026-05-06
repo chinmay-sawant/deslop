@@ -1,0 +1,18 @@
+def aggregate_scores(records, weights):
+    totals = {}
+    for record in records:
+        category = record["category"]
+        score = record["score"]
+        weight = weights.get(record["category"], 1.0)
+        adjusted = score * weight
+        totals[category] = totals.get(category, 0) + adjusted
+    return totals
+
+
+def build_index(items, metadata):
+    index = {}
+    for item in items:
+        key = item["id"]
+        prefix = metadata.get(item["id"], "default")
+        index[key] = f"{prefix}:{item['value']}"
+    return index

@@ -1,0 +1,19 @@
+import os
+from celery import shared_task
+from myapp.config import get_smtp_config, get_aws_config
+
+
+@shared_task
+def send_email(recipient, subject, body):
+    config = get_smtp_config()
+    server = smtplib.SMTP(config.host, config.port)
+    server.login(config.user, config.password)
+    server.sendmail(config.user, recipient, body)
+
+
+@shared_task
+def upload_to_s3(file_path, bucket_name):
+    config = get_aws_config()
+    s3 = boto3.client("s3", aws_access_key_id=config.key_id,
+                       aws_secret_access_key=config.secret, region_name=config.region)
+    s3.upload_file(file_path, bucket_name, file_path)

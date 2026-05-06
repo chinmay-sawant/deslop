@@ -1,0 +1,16 @@
+import numpy as np
+
+def normalize_scores(scores):
+    result = np.empty_like(scores)
+    for i in range(len(scores)):
+        result[i] = scores[i] / 255.0
+    return result
+
+def apply_threshold(values, threshold):
+    output = []
+    for v in values:
+        if v > threshold:
+            output.append(v)
+        else:
+            output.append(0.0)
+    return np.array(output)

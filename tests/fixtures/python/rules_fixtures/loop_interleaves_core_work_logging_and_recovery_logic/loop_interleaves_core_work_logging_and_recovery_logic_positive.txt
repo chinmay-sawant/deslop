@@ -1,0 +1,29 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_events(events: list[dict]) -> list[dict]:
+    results = []
+    for event in events:
+        try:
+            logger.info(f"Processing event {event['id']}")
+            result = handle_event(event)
+            logger.info(f"Event {event['id']} processed successfully")
+            results.append(result)
+        except Exception as e:
+            logger.error(f"Event {event['id']} failed: {e}")
+            if event.get("retryable"):
+                logger.info(f"Retrying event {event['id']}")
+                retry_event(event)
+            else:
+                logger.warning(f"Skipping non-retryable event {event['id']}")
+    return results
+
+
+def handle_event(event: dict) -> dict:
+    return {"id": event["id"], "status": "done"}
+
+
+def retry_event(event: dict) -> None:
+    pass

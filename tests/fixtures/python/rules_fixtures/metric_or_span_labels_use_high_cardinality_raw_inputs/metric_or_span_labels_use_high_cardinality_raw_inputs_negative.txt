@@ -1,0 +1,31 @@
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
+
+
+def process_request(user_id: str, request_path: str, ip_address: str) -> None:
+    with tracer.start_as_current_span("process_request") as span:
+        span.set_attribute("user.hash", hash(user_id) % 10000)
+        span.set_attribute("http.path_template", "/users/{id}/profile")
+        span.set_attribute("client.region", get_region(ip_address))
+        span.set_attribute("request.type", "api")
+        do_work()
+
+
+def do_work() -> None:
+    pass
+
+
+def get_region(ip_address: str) -> str:
+    return "us-east-1"
+
+
+def track_event(event_type: str, payload: dict) -> None:
+    with tracer.start_as_current_span("track_event") as span:
+        span.set_attribute("event.type", event_type)
+        span.set_attribute("event.category", categorize_event(event_type))
+        span.set_attribute("event.payload_size", len(str(payload)))
+
+
+def categorize_event(event_type: str) -> str:
+    return "general"

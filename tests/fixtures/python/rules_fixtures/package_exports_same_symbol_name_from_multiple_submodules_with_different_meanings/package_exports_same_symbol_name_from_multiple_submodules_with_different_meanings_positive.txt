@@ -1,0 +1,25 @@
+# mypackage/__init__.py
+from mypackage.auth.client import Client as AuthClient
+from mypackage.http.client import Client as HTTPClient
+from mypackage.db.client import Client as DBClient
+
+# mypackage/auth/client.py
+class Client:
+    def authenticate(self, token: str) -> bool:
+        return len(token) > 0
+
+# mypackage/http/client.py
+class Client:
+    def __init__(self, base_url: str):
+        self.base_url = base_url
+
+    def get(self, path: str) -> dict:
+        return {}
+
+# mypackage/db/client.py
+class Client:
+    def __init__(self, dsn: str):
+        self.dsn = dsn
+
+    def query(self, sql: str) -> list:
+        return []

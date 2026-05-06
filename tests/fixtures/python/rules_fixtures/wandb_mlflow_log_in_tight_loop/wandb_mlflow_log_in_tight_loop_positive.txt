@@ -1,0 +1,26 @@
+import wandb
+import mlflow
+
+def train_model(model, dataloader, epochs: int):
+    for epoch in range(epochs):
+        for batch_idx, (data, target) in enumerate(dataloader):
+            loss = model.train_step(data, target)
+            wandb.log({"train_loss": loss, "epoch": epoch, "batch": batch_idx})
+
+def train_with_mlflow(model, dataloader, epochs: int):
+    for epoch in range(epochs):
+        for batch_idx, (data, target) in enumerate(dataloader):
+            loss = model.train_step(data, target)
+            mlflow.log_metric("train_loss", loss, step=epoch * len(dataloader) + batch_idx)
+
+def evaluate_and_log(model, val_loader):
+    for batch_idx, (data, target) in enumerate(val_loader):
+        accuracy = model.evaluate(data, target)
+        wandb.log({"val_accuracy": accuracy, "val_batch": batch_idx})
+        mlflow.log_metric("val_accuracy", accuracy, step=batch_idx)
+
+def grid_search(train_fn, configs: list[dict]):
+    for i, config in enumerate(configs):
+        for step in range(1000):
+            metric = train_fn(config, step)
+            wandb.log({"grid_metric": metric, "config_idx": i, "step": step})

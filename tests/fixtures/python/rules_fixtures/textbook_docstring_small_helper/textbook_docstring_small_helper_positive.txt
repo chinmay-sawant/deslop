@@ -1,0 +1,47 @@
+def clamp(value: float, low: float, high: float) -> float:
+    """Clamp a numeric value to fall within the specified bounds.
+
+    This function takes a numeric value and ensures it falls within the
+    range defined by the lower bound (low) and the upper bound (high).
+    If the value is less than low, it returns low. If the value is greater
+    than high, it returns high. Otherwise, it returns the value unchanged.
+
+    Args:
+        value: The numeric value to be clamped.
+        low: The minimum allowed value (inclusive lower bound).
+        high: The maximum allowed value (inclusive upper bound).
+
+    Returns:
+        The clamped value guaranteed to be between low and high.
+    """
+    return max(low, min(value, high))
+
+def is_blank(s: str) -> bool:
+    """Determine whether the given string is blank or contains only whitespace.
+
+    This helper function checks if the provided string is empty or consists
+    entirely of whitespace characters. It returns True if the string has no
+    visible content, and False otherwise.
+
+    Args:
+        s: The string to check for blankness.
+
+    Returns:
+        True if the string is empty or whitespace-only, False otherwise.
+    """
+    return s.strip() == ""
+
+def first_or_none(items: list) -> object | None:
+    """Retrieve the first element from a list, or None if the list is empty.
+
+    This utility function safely extracts the first element from a list-like
+    collection. If the collection has no elements, it returns None instead
+    of raising an IndexError.
+
+    Args:
+        items: A list or iterable from which to retrieve the first element.
+
+    Returns:
+        The first element if available, or None if the list is empty.
+    """
+    return items[0] if items else None

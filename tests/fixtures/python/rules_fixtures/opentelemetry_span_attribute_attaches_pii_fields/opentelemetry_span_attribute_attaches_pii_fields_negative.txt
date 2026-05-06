@@ -1,0 +1,21 @@
+import hashlib
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
+
+def _hash_pii(value: str) -> str:
+    return hashlib.sha256(value.encode()).hexdigest()[:8]
+
+def process_order(order_id: int, user_email: str, user_phone: str, ip_address: str) -> dict:
+    with tracer.start_as_current_span("process_order") as span:
+        span.set_attribute("order_id", order_id)
+        span.set_attribute("user_email_hash", _hash_pii(user_email))
+        span.set_attribute("user_phone_hash", _hash_pii(user_phone))
+        span.set_attribute("ip_hash", _hash_pii(ip_address))
+        return {"status": "processed"}
+
+def handle_login(email: str, password: str, ip: str) -> dict:
+    with tracer.start_as_current_span("login") as span:
+        span.set_attribute("email_hash", _hash_pii(email))
+        span.set_attribute("ip_hash", _hash_pii(ip))
+        return {"token": "abc123"}

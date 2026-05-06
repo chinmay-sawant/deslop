@@ -1,0 +1,19 @@
+def process_large_dataset(source):
+    results = []
+    for record in source:
+        transformed = transform(record)
+        results.append(transformed)
+    total = sum(results)
+    return total
+
+def transform(record):
+    return record["value"] * 2
+
+def get_events(source):
+    events = []
+    for raw in source:
+        events.append(parse_event(raw))
+    return events
+
+def parse_event(raw):
+    return {"id": raw["id"], "type": raw["event_type"]}

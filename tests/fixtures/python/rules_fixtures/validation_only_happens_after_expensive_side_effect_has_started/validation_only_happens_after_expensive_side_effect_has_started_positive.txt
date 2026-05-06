@@ -1,0 +1,26 @@
+import boto3
+
+def process_upload(bucket: str, key: str, data: bytes):
+    s3 = boto3.client("s3")
+    s3.put_object(Bucket=bucket, Key=key, Body=data)
+    if not key.endswith((".csv", ".json", ".parquet")):
+        raise ValueError(f"Unsupported file type: {key}")
+    return {"key": key, "size": len(data)}
+
+def send_email(recipient: str, subject: str, body: str):
+    ses = boto3.client("ses")
+    if not recipient:
+        raise ValueError("Recipient is required")
+    ses.send_email(
+        Source="noreply@example.com",
+        Destination={"ToAddresses": [recipient]},
+        Message={"Subject": {"Data": subject}, "Body": {"Text": {"Data": body}}},
+    )
+
+def create_instance(ami_id: str, instance_type: str):
+    ec2 = boto3.client("ec2")
+    response = ec2.run_instances(ImageId=ami_id, InstanceType=instance_type, MinCount=1, MaxCount=1)
+    instance_id = response["Instances"][0]["InstanceId"]
+    if instance_type not in ("t2.micro", "t2.small", "t2.medium"):
+        raise ValueError(f"Unsupported instance type: {instance_type}")
+    return instance_id

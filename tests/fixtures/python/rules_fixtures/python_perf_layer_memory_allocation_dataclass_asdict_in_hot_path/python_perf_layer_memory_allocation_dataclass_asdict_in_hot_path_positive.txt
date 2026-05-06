@@ -1,0 +1,23 @@
+from dataclasses import dataclass, asdict
+
+@dataclass
+class Event:
+    id: int
+    type: str
+    payload: dict
+    timestamp: float
+
+def serialize_events(events):
+    results = []
+    for event in events:
+        d = asdict(event)
+        d["serialized"] = True
+        results.append(d)
+    return results
+
+def build_report(events):
+    rows = []
+    for event in events:
+        d = asdict(event)
+        rows.append(f"{d['id']},{d['type']},{d['timestamp']}")
+    return "\n".join(rows)

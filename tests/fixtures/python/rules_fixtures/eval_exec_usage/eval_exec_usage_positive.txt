@@ -1,0 +1,27 @@
+import ast
+
+
+def calculate_expression(expr: str, variables: dict) -> float:
+    return eval(expr, {"__builtins__": {}}, variables)
+
+
+def run_user_code(code: str) -> None:
+    exec(code)
+
+
+def dynamic_import(module_name: str):
+    return eval(f"__import__('{module_name}')")
+
+
+def parse_formula(formula: str, context: dict) -> float:
+    for key, value in context.items():
+        exec(f"{key} = {value}")
+    return eval(formula)
+
+
+def apply_transform(data: list, transform_expr: str) -> list:
+    result = []
+    for item in data:
+        transformed = eval(transform_expr, {"x": item})
+        result.append(transformed)
+    return result

@@ -1,0 +1,16 @@
+from sqlalchemy.orm import Session
+
+
+class OrderRepository:
+    def __init__(self, session: Session):
+        self.session = session
+
+    def get_orders_by_user(self, user_id: int):
+        return self.session.query(Order).filter(Order.user_id == user_id)
+
+    def get_recent_orders(self, days: int):
+        cutoff = datetime.utcnow() - timedelta(days=days)
+        return self.session.query(Order).filter(Order.created_at >= cutoff)
+
+    def get_orders_by_status(self, status: str):
+        return self.session.query(Order).filter(Order.status == status)

@@ -1,0 +1,21 @@
+from opentelemetry import trace
+
+
+tracer = trace.get_tracer("order-service")
+
+
+def process_order(order_data):
+    with tracer.start_as_current_span("process_order") as span:
+        span.set_attribute("order_id", order_data["order_id"])
+        validate_order(order_data)
+        persist_order(order_data)
+
+
+def validate_order(order_data):
+    with tracer.start_as_current_span("validate_order") as span:
+        span.set_attribute("item_count", len(order_data.get("items", [])))
+
+
+def persist_order(order_data):
+    with tracer.start_as_current_span("persist_order") as span:
+        span.set_attribute("order_id", order_data["order_id"])

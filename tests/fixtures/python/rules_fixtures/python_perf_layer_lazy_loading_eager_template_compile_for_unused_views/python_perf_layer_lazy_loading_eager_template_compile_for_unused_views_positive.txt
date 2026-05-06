@@ -1,0 +1,12 @@
+from jinja2 import Environment, FileSystemLoader
+
+env = Environment(loader=FileSystemLoader("templates"))
+
+home_template = env.get_template("home.html")
+dashboard_template = env.get_template("dashboard.html")
+admin_template = env.get_template("admin.html")
+report_template = env.get_template("report.html")
+settings_template = env.get_template("settings.html")
+
+def render_home(request):
+    return home_template.render(title="Home")

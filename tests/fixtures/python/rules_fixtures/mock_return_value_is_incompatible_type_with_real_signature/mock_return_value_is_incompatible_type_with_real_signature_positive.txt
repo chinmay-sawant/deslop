@@ -1,0 +1,31 @@
+from unittest.mock import Mock
+
+import pytest
+
+
+def get_user(user_id: int) -> dict:
+    return {"id": user_id, "name": "John", "email": "john@example.com"}
+
+
+def get_user_count() -> int:
+    return 42
+
+
+class TestUserFunctions:
+    def test_get_user_returns_dict(self):
+        mock_get_user = Mock()
+        mock_get_user.return_value = "John"
+        result = mock_get_user(1)
+        assert result == "John"
+
+    def test_get_user_count_returns_int(self):
+        mock_count = Mock()
+        mock_count.return_value = [1, 2, 3]
+        result = mock_count()
+        assert len(result) == 3
+
+    def test_process_user(self):
+        mock_fetch = Mock()
+        mock_fetch.return_value = None
+        result = mock_fetch(1)
+        assert result is None

@@ -1,0 +1,25 @@
+import json
+from typing import Iterator
+
+
+def process_log_file(filepath: str) -> Iterator[dict]:
+    with open(filepath) as f:
+        for line in f:
+            entry = json.loads(line)
+            if entry["level"] == "ERROR":
+                yield {"host": "server1", **entry}
+
+
+def load_and_transform_csv(filepath: str) -> Iterator[dict]:
+    import csv
+    with open(filepath) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            row["amount"] = float(row["amount"])
+            row["tax"] = float(row["amount"]) * 0.1
+            yield row
+
+
+def export_report(data: Iterator[dict]) -> Iterator[bytes]:
+    for record in data:
+        yield json.dumps(record).encode() + b"\n"

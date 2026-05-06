@@ -1,0 +1,19 @@
+import requests
+
+
+def download_report(url: str) -> bytes:
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+    return response.content
+
+
+def fetch_export(url: str) -> str:
+    resp = requests.get(url, stream=True)
+    resp.raise_for_status()
+    return resp.text
+
+
+def load_dataset(url: str) -> dict:
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.json()

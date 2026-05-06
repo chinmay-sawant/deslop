@@ -1,0 +1,42 @@
+class TaskQueue:
+    def __init__(self):
+        self._tasks = []
+
+    def add(self, task):
+        self._tasks.append(task)
+
+    def remove(self, task_id):
+        self._tasks = [t for t in self._tasks if t.id != task_id]
+
+    def get_all(self):
+        return list(self._tasks)
+
+    def pop(self):
+        return self._tasks.pop(0) if self._tasks else None
+
+class WorkerPool:
+    def __init__(self, num_workers=4):
+        self._workers = []
+        self._running = False
+        self._num_workers = num_workers
+
+    def start(self, task_queue):
+        self._running = True
+        for _ in range(self._num_workers):
+            worker = threading.Thread(target=self._run_worker, args=(task_queue,), daemon=True)
+            worker.start()
+            self._workers.append(worker)
+
+    def stop(self):
+        self._running = False
+        for worker in self._workers:
+            worker.join(timeout=5)
+        self._workers.clear()
+
+    def _run_worker(self, task_queue):
+        while self._running:
+            task = task_queue.pop()
+            if task:
+                task.execute()
+            else:
+                time.sleep(0.1)

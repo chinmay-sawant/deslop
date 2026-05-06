@@ -1,0 +1,31 @@
+import uuid
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def handle_request(request):
+    correlation_id = str(uuid.uuid4())
+    logger.info(f"[{correlation_id}] Processing request")
+
+    user = fetch_user(request.user_id, correlation_id)
+    correlation_id = str(uuid.uuid4())
+    logger.info(f"[{correlation_id}] User fetched")
+
+    orders = fetch_orders(user.id, correlation_id)
+    correlation_id = str(uuid.uuid4())
+    logger.info(f"[{correlation_id}] Orders fetched")
+
+    return build_response(user, orders, correlation_id)
+
+
+def process_batch(items):
+    for item in items:
+        cid = str(uuid.uuid4())
+        logger.info(f"[{cid}] Processing item {item.id}")
+
+        result = transform(item, cid)
+        cid = str(uuid.uuid4())
+        logger.info(f"[{cid}] Transformed item {item.id}")
+
+        save(result, cid)

@@ -1,0 +1,25 @@
+from typing import List
+
+
+def batch_create_users(users: List[dict]) -> List[dict]:
+    if not users:
+        return []
+    results = db.bulk_insert("users", users)
+    return results
+
+
+def batch_update_orders(orders: List[dict]) -> List[dict]:
+    if not orders:
+        return []
+    results = db.bulk_update("orders", orders, key_field="id")
+    return results
+
+
+def batch_delete_items(item_ids: List[int]) -> dict:
+    if not item_ids:
+        return {"deleted": 0, "errors": []}
+    try:
+        deleted_count = db.bulk_delete("items", item_ids)
+        return {"deleted": deleted_count, "errors": []}
+    except Exception as e:
+        return {"deleted": 0, "errors": [{"error": str(e)}]}

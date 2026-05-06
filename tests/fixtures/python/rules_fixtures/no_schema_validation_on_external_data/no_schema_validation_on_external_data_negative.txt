@@ -1,0 +1,38 @@
+import json
+import csv
+from typing import Any, Dict, List
+from pydantic import BaseModel, validator
+
+class UserData(BaseModel):
+    name: str
+    email: str
+    age: int
+
+    @validator("age")
+    def age_must_be_positive(cls, v: int) -> int:
+        if v < 0 or v > 150:
+            raise ValueError("invalid age")
+        return v
+
+class ProductData(BaseModel):
+    sku: str
+    name: str
+    price: float
+
+def load_user_data(path: str) -> List[UserData]:
+    with open(path) as f:
+        raw = json.load(f)
+    return [UserData(**item) for item in raw]
+
+def import_products(csv_path: str) -> List[ProductData]:
+    products = []
+    with open(csv_path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            row["price"] = float(row["price"])
+            products.append(ProductData(**row))
+    return products
+
+def process_api_response(response_data: dict) -> dict:
+    user = UserData(**response_data["user"])
+    return {"name": user.name, "email": user.email}

@@ -1,0 +1,20 @@
+from typing import List
+
+
+def dedupe_tags(tags: List[str]) -> List[str]:
+    seen = set()
+    result = []
+    for tag in tags:
+        if tag not in seen:
+            seen.add(tag)
+            result.append(tag)
+    return result
+
+
+def process_user_emails(emails: List[str]) -> List[str]:
+    unique_emails = list(set(emails))
+    return [e.lower() for e in unique_emails]
+
+
+def get_distinct_categories(products):
+    return list({p["category"] for p in products})

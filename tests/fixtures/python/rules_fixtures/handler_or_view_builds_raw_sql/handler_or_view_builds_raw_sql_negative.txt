@@ -1,0 +1,44 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+class UserRepository:
+    def search(self, query_text, sort_by="name"):
+        return db.execute(
+            "SELECT id, name, email FROM users WHERE name LIKE ? ORDER BY ?",
+            (f"%{query_text}%", sort_by)
+        ).fetchall()
+
+    def get_by_id(self, user_id):
+        return db.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+
+class ReportRepository:
+    def get_by_date_range(self, start, end):
+        return db.execute(
+            "SELECT * FROM reports WHERE created_at BETWEEN ? AND ?",
+            (start, end)
+        ).fetchall()
+
+user_repo = UserRepository()
+report_repo = ReportRepository()
+
+@app.route("/users")
+def list_users():
+    search = request.args.get("search", "")
+    sort_by = request.args.get("sort", "name")
+    rows = user_repo.search(search, sort_by)
+    return jsonify([dict(r) for r in rows])
+
+@app.route("/orders/<int:order_id>")
+def get_order(order_id):
+    row = user_repo.get_by_id(order_id)
+    if not row:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(dict(row))
+
+@app.route("/reports")
+def get_reports():
+    start = request.args.get("start")
+    end = request.args.get("end")
+    rows = report_repo.get_by_date_range(start, end)
+    return jsonify([dict(r) for r in rows])

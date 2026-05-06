@@ -1,0 +1,6 @@
+from django.shortcuts import render
+from .models import Category, Product
+
+def dashboard(request):
+    categories = list(Category.objects.prefetch_related("product_set").all())
+    return render(request, "dashboard.html", {"categories": categories})

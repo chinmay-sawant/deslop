@@ -1,0 +1,35 @@
+import openai
+
+
+def classify_text(text: str) -> str:
+    client = openai.OpenAI()
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": f"Classify: {text}"}],
+    )
+    return response.choices[0].message.content
+
+
+def process_items(items: list[str]) -> list[str]:
+    results = []
+    for item in items:
+        label = classify_text(item)
+        results.append(label)
+    return results
+
+
+def get_sentiment(text: str) -> str:
+    client = openai.OpenAI()
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": f"Sentiment: {text}"}],
+    )
+    return response.choices[0].message.content
+
+
+def analyze_feedback(feedback_list: list[str]) -> list[str]:
+    sentiments = []
+    for fb in feedback_list:
+        result = get_sentiment(fb)
+        sentiments.append(result)
+    return sentiments

@@ -1,0 +1,27 @@
+import pytest
+from datetime import datetime, timezone
+from myapp.orders import OrderService
+
+@pytest.fixture
+def order_service():
+    return OrderService()
+
+def test_order_has_timestamp(order_service):
+    order = order_service.create({"item": "widget", "qty": 2})
+    assert order["created_at"] is not None
+    now = datetime.now()
+    assert order["created_at"].year == now.year
+
+def test_invoice_date_is_today(order_service):
+    order = order_service.create({"item": "gadget", "qty": 1})
+    invoice = order_service.generate_invoice(order["id"])
+    assert invoice["date"] == datetime.today().strftime("%Y-%m-%d")
+
+def test_session_expiry(order_service):
+    session = order_service.start_session()
+    assert session["expires_at"] > datetime.now(timezone.utc)
+
+def test_report_period(order_service):
+    report = order_service.monthly_report()
+    current_month = datetime.now().strftime("%Y-%m")
+    assert report["period"] == current_month

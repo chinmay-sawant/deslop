@@ -1,0 +1,43 @@
+from dataclasses import dataclass
+
+@dataclass
+class ShippingConfig:
+    heavy_weight_limit: float = 50.0
+    medium_weight_limit: float = 20.0
+    long_distance_limit: float = 1000.0
+    heavy_rate: float = 25.00
+    medium_rate: float = 15.00
+    long_distance_rate: float = 12.50
+    base_rate: float = 5.99
+
+@dataclass
+class DiscountConfig:
+    premium_rate: float = 0.85
+    vip_rate: float = 0.70
+    bulk_threshold: float = 500.0
+    bulk_rate: float = 0.95
+
+TIER_THRESHOLDS = {"platinum": 10000, "gold": 5000, "silver": 1000}
+
+def calculate_shipping(weight, distance, config: ShippingConfig):
+    if weight > config.heavy_weight_limit:
+        return config.heavy_rate
+    elif weight > config.medium_weight_limit:
+        return config.medium_rate
+    elif distance > config.long_distance_limit:
+        return config.long_distance_rate
+    return config.base_rate
+
+def apply_discount(total, customer_type, config: DiscountConfig):
+    rates = {"premium": config.premium_rate, "vip": config.vip_rate}
+    if customer_type in rates:
+        return total * rates[customer_type]
+    elif total > config.bulk_threshold:
+        return total * config.bulk_rate
+    return total
+
+def classify_tier(points):
+    for tier, threshold in TIER_THRESHOLDS.items():
+        if points >= threshold:
+            return tier
+    return "bronze"

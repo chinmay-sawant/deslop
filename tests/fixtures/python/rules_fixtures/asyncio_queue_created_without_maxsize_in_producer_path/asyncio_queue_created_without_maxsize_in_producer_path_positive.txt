@@ -1,0 +1,20 @@
+import asyncio
+
+
+async def producer(queue: asyncio.Queue):
+    while True:
+        data = await fetch_next_batch()
+        for item in data:
+            await queue.put(item)
+
+
+async def consumer(queue: asyncio.Queue):
+    while True:
+        item = await queue.get()
+        await process_item(item)
+        queue.task_done()
+
+
+async def main():
+    queue = asyncio.Queue()
+    await asyncio.gather(producer(queue), consumer(queue))

@@ -1,0 +1,14 @@
+def has_valid_items(items: list) -> bool:
+    return any(item.is_valid() for item in items)
+
+
+def check_permissions(permissions: list[str]) -> bool:
+    return any(is_granted(p) for p in permissions)
+
+
+def find_errors(logs: list[str]) -> bool:
+    return any("ERROR" in line for line in logs)
+
+
+def any_active(users: list) -> bool:
+    return any(u.active for u in users)

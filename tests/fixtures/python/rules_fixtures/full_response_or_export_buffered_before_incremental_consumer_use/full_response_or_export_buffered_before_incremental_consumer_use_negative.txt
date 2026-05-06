@@ -1,0 +1,28 @@
+import csv
+import io
+
+def stream_users_csv(db):
+    cursor = db.execute("SELECT id, name, email, address, phone, department FROM users")
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["id", "name", "email", "address", "phone", "department"])
+    yield output.getvalue()
+    output.seek(0)
+    output.truncate()
+    for row in cursor:
+        writer.writerow(row)
+        yield output.getvalue()
+        output.seek(0)
+        output.truncate()
+
+def yield_report_payload(data_store):
+    for entry in data_store.scan():
+        yield json.dumps({
+            "timestamp": entry.ts,
+            "value": entry.value,
+            "tags": entry.tags,
+        })
+
+def generate_incremental_export(records):
+    for record in records:
+        yield format_record(record)

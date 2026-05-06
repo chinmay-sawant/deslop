@@ -1,0 +1,26 @@
+import time
+
+
+def wait_for_ready(check_fn, timeout=30):
+    start = time.monotonic()
+    while time.monotonic() - start < timeout:
+        if check_fn():
+            return True
+        time.sleep(0.01)
+    return False
+
+
+def poll_for_result(get_fn, interval=0.005):
+    while True:
+        result = get_fn()
+        if result is not None:
+            return result
+        time.sleep(interval)
+
+
+def wait_until_complete(status_fn):
+    while True:
+        status = status_fn()
+        if status == "done":
+            break
+        time.sleep(0.02)

@@ -1,0 +1,11 @@
+def validate_order(order):
+    error_msg = f"Order {order['id']} has invalid total {order['total']:.2f} for customer {order['customer_id']}"
+    if order["total"] < 0:
+        raise ValueError(error_msg)
+
+def fetch_user_profile(user_id, db):
+    error_detail = f"Failed to load profile for user_id={user_id}, query took longer than expected"
+    profile = db.get_user(user_id)
+    if profile is None:
+        raise LookupError(error_detail)
+    return profile

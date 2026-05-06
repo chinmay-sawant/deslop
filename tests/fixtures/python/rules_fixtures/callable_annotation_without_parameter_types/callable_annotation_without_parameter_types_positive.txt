@@ -1,0 +1,34 @@
+from typing import Callable
+
+
+def register_handler(event: str, callback: Callable):
+    handlers[event] = callback
+
+
+def process_with_transform(data: list, transform: Callable) -> list:
+    return [transform(item) for item in data]
+
+
+def create_validator(rules: list, on_error: Callable) -> Callable:
+    def validate(data: dict):
+        for rule in rules:
+            if not rule.check(data):
+                on_error(data, rule.message)
+    return validate
+
+
+def retry_operation(operation: Callable, max_attempts: int = 3):
+    for attempt in range(max_attempts):
+        try:
+            return operation()
+        except Exception:
+            if attempt == max_attempts - 1:
+                raise
+
+
+def build_pipeline(steps: list[Callable]) -> Callable:
+    def execute(data):
+        for step in steps:
+            data = step(data)
+        return data
+    return execute

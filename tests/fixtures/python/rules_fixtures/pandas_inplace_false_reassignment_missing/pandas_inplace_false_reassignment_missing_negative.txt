@@ -1,0 +1,20 @@
+import pandas as pd
+
+
+def clean_data(df):
+    df = df.drop_duplicates()
+    df = df.sort_values("name")
+    df = df.reset_index(drop=True)
+    return df
+
+
+def transform_prices(df):
+    df = df.fillna(0)
+    df = df.drop(columns=["temp_col"])
+    return df
+
+
+def process_orders(df):
+    df = df.drop_duplicates(subset=["order_id"])
+    df["total"] = df["price"] * df["quantity"]
+    return df

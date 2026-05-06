@@ -1,0 +1,24 @@
+import jwt
+
+ALGORITHM = "HS256"
+
+
+def decode_token(token: str, secret: str) -> dict:
+    return jwt.decode(token, secret, algorithms=[ALGORITHM])
+
+
+def verify_user_token(token: str, secret: str) -> dict:
+    return jwt.decode(
+        token,
+        secret,
+        algorithms=[ALGORITHM],
+        options={"require": ["exp", "sub"]},
+    )
+
+
+def parse_jwt(token: str, public_key: str) -> dict:
+    return jwt.decode(token, public_key, algorithms=["RS256"])
+
+
+def extract_claims(token: str, secret: str) -> dict:
+    return jwt.decode(token, secret, algorithms=[ALGORITHM])

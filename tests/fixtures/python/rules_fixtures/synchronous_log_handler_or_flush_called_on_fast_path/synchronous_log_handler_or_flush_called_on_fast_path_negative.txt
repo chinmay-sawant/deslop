@@ -1,0 +1,32 @@
+import logging
+import logging.handlers
+import queue
+
+log_queue = queue.Queue(-1)
+queue_handler = logging.handlers.QueueHandler(log_queue)
+logger = logging.getLogger(__name__)
+logger.addHandler(queue_handler)
+
+listener = logging.handlers.QueueListener(
+    log_queue,
+    logging.FileHandler("/var/log/app.log"),
+)
+listener.start()
+
+def handle_request(request_data: dict) -> dict:
+    logger.info("request_received", extra={"path": request_data["path"]})
+    result = process(request_data)
+    logger.info("request_completed", extra={"status": 200})
+    return result
+
+def process(data: dict) -> dict:
+    return {"status": "ok", "data": data}
+
+async def async_handle_request(request_data: dict) -> dict:
+    logger.info("async_request_start", extra={"path": request_data["path"]})
+    result = await async_process(request_data)
+    logger.info("async_request_done")
+    return result
+
+async def async_process(data: dict) -> dict:
+    return {"status": "ok"}

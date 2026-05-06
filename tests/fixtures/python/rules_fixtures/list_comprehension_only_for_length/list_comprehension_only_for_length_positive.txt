@@ -1,0 +1,17 @@
+def count_active_users(users: list[dict]) -> int:
+    return len([u for u in users if u["active"]])
+
+
+def count_errors(log_entries: list[dict]) -> int:
+    error_count = len([e for e in log_entries if e["level"] == "ERROR"])
+    return error_count
+
+
+def has_enough_valid(records: list[dict], minimum: int) -> bool:
+    valid = len([r for r in records if r["status"] == "valid"])
+    return valid >= minimum
+
+
+def count_matching(items: list[str], pattern: str) -> int:
+    matches = len([item for item in items if pattern in item])
+    return matches

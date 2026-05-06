@@ -1,0 +1,22 @@
+from collections import defaultdict
+
+
+def group_orders_by_customer(orders):
+    by_customer = defaultdict(lambda: [])
+    for order in orders:
+        by_customer[order["customer_id"]].append(order)
+    return by_customer
+
+
+def count_events_by_type(events):
+    counts = defaultdict(lambda: 0)
+    for event in events:
+        counts[event["type"]] += 1
+    return counts
+
+
+def build_nested_index(records):
+    index = defaultdict(lambda: defaultdict(lambda: []))
+    for rec in records:
+        index[rec["category"]][rec["sub_category"]].append(rec)
+    return index

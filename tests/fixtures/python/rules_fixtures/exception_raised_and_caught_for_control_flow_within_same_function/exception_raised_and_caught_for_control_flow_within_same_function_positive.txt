@@ -1,0 +1,29 @@
+def find_user(users: list[dict], target_id: str) -> dict | None:
+    try:
+        for user in users:
+            if user["id"] == target_id:
+                raise StopIteration(user)
+    except StopIteration as e:
+        return e.value
+    return None
+
+
+def validate_and_transform(data: dict) -> dict:
+    try:
+        if not data.get("name"):
+            raise ValueError("missing name")
+        if not data.get("email"):
+            raise ValueError("missing email")
+        return {"name": data["name"], "email": data["email"]}
+    except ValueError:
+        return {"name": "", "email": ""}
+
+
+def parse_config(config_str: str) -> dict:
+    try:
+        result = json.loads(config_str)
+        if "database" not in result:
+            raise KeyError("missing database key")
+        return result
+    except (json.JSONDecodeError, KeyError):
+        return {"database": "default"}

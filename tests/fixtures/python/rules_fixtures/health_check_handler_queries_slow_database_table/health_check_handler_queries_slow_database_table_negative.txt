@@ -1,0 +1,17 @@
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route("/health")
+def health_check():
+    result = db.execute("SELECT 1").fetchone()
+    return jsonify({"status": "healthy" if result else "unhealthy"})
+
+@app.route("/ready")
+def readiness_check():
+    try:
+        result = db.execute("SELECT 1").fetchone()
+        db_ok = result is not None
+    except Exception:
+        db_ok = False
+    return jsonify({"ready": db_ok})

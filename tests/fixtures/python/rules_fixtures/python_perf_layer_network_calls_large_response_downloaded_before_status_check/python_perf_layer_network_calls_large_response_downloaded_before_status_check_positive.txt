@@ -1,0 +1,24 @@
+import requests
+
+
+def download_report(url: str) -> bytes:
+    response = requests.get(url)
+    body = response.content
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to download: {response.status_code}")
+    return body
+
+
+def fetch_export(url: str) -> str:
+    resp = requests.get(url)
+    data = resp.text
+    resp.raise_for_status()
+    return data
+
+
+def load_dataset(url: str) -> dict:
+    response = requests.get(url)
+    payload = response.json()
+    if response.status_code >= 400:
+        raise ValueError(f"Server error: {response.status_code}")
+    return payload

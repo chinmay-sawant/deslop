@@ -1,0 +1,35 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
+
+
+class UserRepository:
+    def __init__(self, database_url: str):
+        self.engine = create_engine(database_url)
+        self.SessionLocal = sessionmaker(bind=self.engine)
+
+    def get_user(self, user_id: int) -> dict:
+        with self.SessionLocal() as session:
+            row = session.execute("SELECT * FROM users WHERE id = :id", {"id": user_id}).fetchone()
+            return dict(row) if row else None
+
+
+class OrderRepository:
+    def __init__(self, database_url: str):
+        self.engine = create_engine(database_url)
+        self.SessionLocal = sessionmaker(bind=self.engine)
+
+    def get_orders(self, user_id: int) -> list[dict]:
+        with self.SessionLocal() as session:
+            rows = session.execute("SELECT * FROM orders WHERE user_id = :id", {"id": user_id}).fetchall()
+            return [dict(r) for r in rows]
+
+
+class ProductRepository:
+    def __init__(self, database_url: str):
+        self.engine = create_engine(database_url)
+        self.SessionLocal = sessionmaker(bind=self.engine)
+
+    def get_product(self, product_id: int) -> dict:
+        with self.SessionLocal() as session:
+            row = session.execute("SELECT * FROM products WHERE id = :id", {"id": product_id}).fetchone()
+            return dict(row) if row else None

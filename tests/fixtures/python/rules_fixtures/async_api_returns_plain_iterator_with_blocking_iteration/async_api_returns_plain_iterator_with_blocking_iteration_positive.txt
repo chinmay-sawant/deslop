@@ -1,0 +1,28 @@
+import httpx
+
+
+async def fetch_all_users(client: httpx.AsyncClient) -> list:
+    response = await client.get("/api/users")
+    return response.json()
+
+
+async def process_user_batch(client: httpx.AsyncClient, user_ids: list):
+    results = []
+    for user_id in user_ids:
+        response = await client.get(f"/api/users/{user_id}")
+        results.append(response.json())
+    return results
+
+
+async def get_paginated_orders(client: httpx.AsyncClient) -> list:
+    all_orders = []
+    page = 1
+    while True:
+        resp = await client.get(f"/api/orders?page={page}")
+        data = resp.json()
+        if not data["orders"]:
+            break
+        for order in data["orders"]:
+            all_orders.append(order)
+        page += 1
+    return all_orders

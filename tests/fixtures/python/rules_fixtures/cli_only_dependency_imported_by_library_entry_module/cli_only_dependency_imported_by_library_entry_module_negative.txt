@@ -1,0 +1,19 @@
+from typing import List, Dict, Any
+
+
+def format_output(data: List[Dict[str, Any]]) -> str:
+    lines = []
+    for row in data:
+        lines.append(" | ".join(str(v) for v in row.values()))
+    return "\n".join(lines)
+
+
+def parse_config(path: str) -> dict:
+    import json
+    with open(path) as f:
+        return json.load(f)
+
+
+def main():
+    data = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
+    print(format_output(data))

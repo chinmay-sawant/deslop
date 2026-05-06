@@ -1,0 +1,18 @@
+def apply_defaults(config, defaults):
+    for key, value in defaults.items():
+        config[key] = value
+    return config
+
+
+def normalize_records(records):
+    for record in records:
+        record["name"] = record["name"].strip().lower()
+        record["email"] = record["email"].strip()
+    return records
+
+
+def enrich_items(items, metadata):
+    for item in items:
+        item["source"] = metadata["source"]
+        item["timestamp"] = metadata["timestamp"]
+    return items

@@ -1,0 +1,22 @@
+def normalize_phone(raw):
+    return raw.replace("-", "").replace(" ", "").replace("(", "").replace(")", "")
+
+
+def validate_contacts(contacts):
+    valid = []
+    for contact in contacts:
+        phone = normalize_phone(contact["phone"])
+        if len(phone) == 10:
+            valid.append(contact)
+        display_phone = normalize_phone(contact["phone"])
+        contact["display"] = display_phone
+    return valid
+
+
+def format_report(entries):
+    lines = []
+    for entry in entries:
+        key = compute_hash(entry["name"] + entry["date"])
+        label = f"{compute_hash(entry['name'] + entry['date'])}:{entry['value']}"
+        lines.append(f"{key} -> {label}")
+    return lines

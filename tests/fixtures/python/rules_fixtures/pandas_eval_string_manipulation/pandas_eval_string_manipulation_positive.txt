@@ -1,0 +1,20 @@
+import pandas as pd
+
+
+def filter_orders(df, min_amount, category):
+    query_str = f"amount > {min_amount} and category == '{category}'"
+    return df.query(query_str)
+
+
+def compute_metrics(df, col_name):
+    expr = f"{col_name} * 2 + 1"
+    df["computed"] = df.eval(expr)
+    return df
+
+
+def dynamic_filter(df, filters):
+    parts = []
+    for key, value in filters.items():
+        parts.append(f"{key} == '{value}'")
+    query_str = " and ".join(parts)
+    return df.query(query_str)

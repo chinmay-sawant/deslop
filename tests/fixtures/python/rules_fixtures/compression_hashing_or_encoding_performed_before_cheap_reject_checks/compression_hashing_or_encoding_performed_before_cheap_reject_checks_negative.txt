@@ -1,0 +1,33 @@
+import hashlib
+import gzip
+import base64
+
+
+def process_upload(file_data, max_size=1024):
+    if len(file_data) > max_size:
+        raise ValueError("File too large")
+
+    compressed = gzip.compress(file_data)
+    encoded = base64.b64encode(compressed)
+    checksum = hashlib.sha256(encoded).hexdigest()
+
+    return {"data": encoded, "checksum": checksum}
+
+
+def validate_and_hash(payload, allowed_types):
+    if payload.get("type") not in allowed_types:
+        raise ValueError("Invalid type")
+
+    serialized = json.dumps(payload, sort_keys=True).encode()
+    digest = hashlib.sha256(serialized).hexdigest()
+    return digest
+
+
+def encode_token(data, secret, max_length=512):
+    raw = json.dumps(data).encode()
+    if len(raw) > max_length:
+        raise ValueError("Token too long")
+
+    encoded = base64.urlsafe_b64encode(raw)
+    signature = hmac.new(secret, encoded, hashlib.sha256).hexdigest()
+    return f"{encoded.decode()}.{signature}"

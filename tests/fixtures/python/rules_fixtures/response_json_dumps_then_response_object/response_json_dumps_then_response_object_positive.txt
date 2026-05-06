@@ -1,0 +1,20 @@
+import json
+from fastapi import Response
+
+
+def get_user_profile(user_id: int):
+    user = fetch_user(user_id)
+    body = json.dumps({"user": user, "status": "ok"})
+    return Response(content=body, media_type="application/json")
+
+
+def get_order_details(order_id: int):
+    order = fetch_order(order_id)
+    body = json.dumps({"order": order, "status": "ok"})
+    return Response(content=body, media_type="application/json")
+
+
+def list_products():
+    products = fetch_products()
+    body = json.dumps({"products": products, "count": len(products)})
+    return Response(content=body, media_type="application/json")

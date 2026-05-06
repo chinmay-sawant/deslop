@@ -1,0 +1,16 @@
+import subprocess
+
+def convert_images(image_paths):
+    results = []
+    for path in image_paths:
+        output = path.replace(".png", ".webp")
+        subprocess.run(["cwebp", path, "-o", output], check=True)
+        results.append(output)
+    return results
+
+def check_hosts(hostnames):
+    statuses = {}
+    for host in hostnames:
+        result = subprocess.run(["ping", "-c", "1", host], capture_output=True)
+        statuses[host] = result.returncode == 0
+    return statuses

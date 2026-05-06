@@ -1,0 +1,20 @@
+import time
+
+
+def fetch_with_retry(url, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            return http_get(url)
+        except Exception as e:
+            time.sleep(1)
+    raise RuntimeError(f"Failed after {max_retries} attempts: {url}")
+
+
+def send_message(queue, message, retries=5):
+    for i in range(retries):
+        try:
+            queue.publish(message)
+            return True
+        except BaseException:
+            time.sleep(0.5)
+    return False

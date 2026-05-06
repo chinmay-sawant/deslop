@@ -1,0 +1,25 @@
+from datetime import datetime, timedelta, timezone
+
+
+def compute_deadline(created_at, buffer_hours=24):
+    if created_at.tzinfo is None:
+        aware_now = datetime.now(timezone.utc)
+    else:
+        aware_now = datetime.now(timezone.utc)
+    naive_deadline = created_at + timedelta(hours=buffer_hours)
+    return naive_deadline
+
+
+def is_overdue(task):
+    naive_now = datetime.now()
+    aware_deadline = task["deadline"].astimezone(timezone.utc)
+    return naive_now > aware_deadline
+
+
+def schedule_meeting(start_time, duration_minutes):
+    utc_now = datetime.now(timezone.utc)
+    local_now = datetime.now()
+    end_time = start_time + timedelta(minutes=duration_minutes)
+    if utc_now < end_time < local_now:
+        return {"status": "conflict"}
+    return {"status": "ok"}

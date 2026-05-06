@@ -1,0 +1,36 @@
+import os
+import tempfile
+from contextlib import contextmanager
+
+
+@contextmanager
+def temp_file(suffix: str):
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+    try:
+        tmp.close()
+        yield tmp.name
+    finally:
+        if os.path.exists(tmp.name):
+            os.unlink(tmp.name)
+
+
+def process_upload(file_data: bytes) -> str:
+    with temp_file(".csv") as path:
+        with open(path, "wb") as f:
+            f.write(file_data)
+        return parse_csv(path)
+
+
+def generate_report(data: dict) -> str:
+    with temp_file(".json") as path:
+        with open(path, "wb") as f:
+            f.write(str(data).encode())
+        return render_pdf(path)
+
+
+def export_snapshot(records: list) -> str:
+    import json
+    with temp_file(".json") as path:
+        with open(path, "w") as f:
+            json.dump(records, f)
+        return upload_to_s3(path)

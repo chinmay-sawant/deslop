@@ -1,0 +1,21 @@
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route("/config")
+def get_config():
+    with open("/etc/app/config.json", "r") as f:
+        config_data = f.read()
+    return config_data
+
+@app.route("/terms")
+def get_terms():
+    with open("/app/static/terms_of_service.txt", "r") as f:
+        lines = f.readlines()
+    return "".join(lines)
+
+@app.route("/report")
+def get_report():
+    with open("/data/daily_report.csv", "r") as f:
+        csv_content = f.read()
+    return csv_content, 200, {"Content-Type": "text/csv"}

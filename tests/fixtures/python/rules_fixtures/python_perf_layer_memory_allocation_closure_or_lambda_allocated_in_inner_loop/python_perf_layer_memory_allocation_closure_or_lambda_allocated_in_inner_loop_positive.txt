@@ -1,0 +1,16 @@
+def process_matrix(matrix, threshold):
+    result = []
+    for row in matrix:
+        filtered = list(filter(lambda x: x > threshold, row))
+        mapped = list(map(lambda x: x ** 2, filtered))
+        result.append(sum(mapped))
+    return result
+
+def apply_rules(data, rules):
+    output = []
+    for item in data:
+        for rule in rules:
+            check = lambda v, r=rule: r["min"] <= v <= r["max"]
+            if check(item["value"]):
+                output.append(item)
+    return output

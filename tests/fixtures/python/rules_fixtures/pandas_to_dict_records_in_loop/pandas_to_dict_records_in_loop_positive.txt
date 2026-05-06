@@ -1,0 +1,29 @@
+import pandas as pd
+
+
+def export_to_api(df, endpoint):
+    for _, row in df.iterrows():
+        record = row.to_dict()
+        send_record(endpoint, record)
+
+
+def batch_process(df):
+    for idx in range(len(df)):
+        row_dict = df.iloc[idx].to_dict()
+        process_row(row_dict)
+
+
+def serialize_rows(df):
+    results = []
+    for i in range(len(df)):
+        data = df.iloc[i].to_dict()
+        results.append(data)
+    return results
+
+
+def send_record(endpoint, record):
+    pass
+
+
+def process_row(row_dict):
+    pass

@@ -1,0 +1,24 @@
+def calculate_shipping(order):
+    base = _base_rate(order.destination.country, order.weight)
+    priority_mult = _priority_multiplier(order.priority)
+    surcharge = _surcharge(order)
+    return base * priority_mult + surcharge
+
+
+def _base_rate(country, weight):
+    rates = {
+        "US": 15.00 if weight > 50 else 5.00,
+        "CA": 30.00 if weight > 50 else 20.00,
+    }
+    return rates.get(country, 60.00 if weight > 50 else 40.00)
+
+
+def _priority_multiplier(priority):
+    return {"express": 2.0, "standard": 1.0}.get(priority, 0.8)
+
+
+def _surcharge(order):
+    if order.priority == "express" and order.insurance:
+        if order.destination.state in ("HI", "AK"):
+            return 10.00
+    return 0.00

@@ -1,0 +1,28 @@
+from typing import TypedDict
+
+class UserProfile(TypedDict, total=False):
+    name: str
+    email: str
+    bio: str
+    avatar_url: str
+    phone: str
+
+def format_user_display(profile: UserProfile) -> str:
+    name = profile.get("name", "Unknown")
+    email = profile.get("email", "no-email")
+    return f"{name} <{email}>"
+
+def get_user_bio(profile: UserProfile) -> str:
+    return profile.get("bio", "")
+
+def build_avatar_tag(profile: UserProfile) -> str:
+    url = profile.get("avatar_url")
+    if url is None:
+        return ""
+    return f'<img src="{url}" />'
+
+def send_sms(profile: UserProfile, message: str):
+    phone = profile.get("phone")
+    if phone is None:
+        return
+    print(f"Sending SMS to {phone}: {message}")

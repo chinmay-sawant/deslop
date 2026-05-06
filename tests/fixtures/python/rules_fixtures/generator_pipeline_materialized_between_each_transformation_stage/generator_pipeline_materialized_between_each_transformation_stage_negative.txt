@@ -1,0 +1,31 @@
+def process_orders(raw_orders):
+    def pipeline():
+        for o in raw_orders:
+            if o["status"] == "cancelled":
+                continue
+            if o["total"] <= 100:
+                continue
+            enriched = enrich(o)
+            yield enriched
+    return sorted(pipeline(), key=lambda o: o["date"])
+
+def transform_dataset(records):
+    def pipeline():
+        for r in records:
+            parsed = parse(r)
+            if parsed is not None:
+                yield normalize(parsed)
+    grouped = group_by_category(pipeline())
+    return [item for group in grouped.values() for item in group]
+
+def build_report(events):
+    def pipeline():
+        for e in events:
+            r = extract(e)
+            if r["severity"] >= 3:
+                yield r
+    seen = set()
+    for r in sorted(pipeline(), key=lambda r: r["timestamp"]):
+        if r["id"] not in seen:
+            seen.add(r["id"])
+            yield serialize(r)

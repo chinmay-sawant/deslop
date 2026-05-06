@@ -1,0 +1,28 @@
+def process_order(order):
+    # If order is from a VIP customer and the total exceeds $500
+    # and the item is not backordered, apply a discount
+    if order.customer.tier == "vip":
+        if order.total > 500:
+            if not order.item.backordered:
+                order.discount = order.total * 0.1
+            else:
+                order.discount = 0
+        else:
+            order.discount = 0
+    else:
+        order.discount = 0
+
+    # Check if we should expedite shipping
+    # VIP customers with priority items get free express
+    if order.customer.tier == "vip":
+        if order.item.priority:
+            if order.shipping_zone == "domestic":
+                order.shipping = "express_free"
+            else:
+                order.shipping = "express_discounted"
+        else:
+            order.shipping = "standard"
+    else:
+        order.shipping = "standard"
+
+    return order

@@ -1,0 +1,23 @@
+import pytest
+from myapp.auth import hash_password, verify_password
+from myapp.db import get_connection
+from myapp.api import create_response
+from myapp.cache import CacheBackend
+
+def test_hash_password():
+    result = hash_password("mypassword")
+    assert verify_password("mypassword", result) is True
+
+def test_get_connection():
+    conn = get_connection()
+    assert conn is not None
+    conn.close()
+
+def test_create_response():
+    result = create_response({"status": "ok"}, code=200)
+    assert result["code"] == 200
+
+def test_cache_backend():
+    backend = CacheBackend(url="redis://localhost:6379")
+    backend.set("key", "value")
+    assert backend.get("key") == "value"

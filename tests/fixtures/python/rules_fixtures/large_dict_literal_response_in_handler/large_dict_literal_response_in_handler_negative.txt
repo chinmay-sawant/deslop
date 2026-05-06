@@ -1,0 +1,60 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+
+class UserSummary(BaseModel):
+    name: str
+    role: str
+    avatar: str
+
+
+class DashboardStats(BaseModel):
+    total_orders: int
+    pending_orders: int
+    total_revenue: float
+    average_order_value: float
+    top_product: str
+    conversion_rate: float
+
+
+class Notification(BaseModel):
+    id: int
+    type: str
+    message: str
+
+
+class DashboardSettings(BaseModel):
+    theme: str
+    language: str
+    timezone: str
+    currency: str
+
+
+class DashboardResponse(BaseModel):
+    user: UserSummary
+    stats: DashboardStats
+    notifications: list[Notification]
+    settings: DashboardSettings
+
+
+@app.get("/dashboard", response_model=DashboardResponse)
+async def get_dashboard():
+    return DashboardResponse(
+        user=UserSummary(name="Alice", role="admin", avatar="/img/alice.png"),
+        stats=DashboardStats(
+            total_orders=1234,
+            pending_orders=56,
+            total_revenue=98765.43,
+            average_order_value=80.05,
+            top_product="Widget Pro",
+            conversion_rate=0.032,
+        ),
+        notifications=[
+            Notification(id=1, type="info", message="New feature available"),
+            Notification(id=2, type="warning", message="Low stock alert"),
+            Notification(id=3, type="success", message="Order shipped"),
+        ],
+        settings=DashboardSettings(theme="dark", language="en", timezone="UTC", currency="USD"),
+    )

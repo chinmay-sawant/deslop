@@ -1,0 +1,27 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_events(events: list[dict]):
+    for event in events:
+        logger.info(f"Processing event: {event['id']}")
+        result = handle_event(event)
+        logger.debug(f"Event {event['id']} result: {result}")
+
+
+def validate_records(records: list[dict]):
+    for record in records:
+        logger.info(f"Validating record {record['id']}")
+        if not is_valid(record):
+            logger.warning(f"Invalid record: {record['id']}")
+            continue
+        process(record)
+
+
+def transform_batch(items: list[dict]) -> list[dict]:
+    transformed = []
+    for item in items:
+        logger.debug(f"Transforming item: {item}")
+        transformed.append(transform(item))
+    return transformed

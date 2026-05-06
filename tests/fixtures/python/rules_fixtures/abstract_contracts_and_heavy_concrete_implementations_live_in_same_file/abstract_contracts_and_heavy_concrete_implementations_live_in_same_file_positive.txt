@@ -1,0 +1,39 @@
+from abc import ABC, abstractmethod
+import boto3
+import json
+from datetime import datetime
+
+
+class NotificationChannel(ABC):
+    @abstractmethod
+    def send(self, recipient: str, message: str) -> bool: ...
+
+    @abstractmethod
+    def validate_recipient(self, recipient: str) -> bool: ...
+
+
+class SMSNotificationChannel(NotificationChannel):
+    def __init__(self, provider_key: str, region: str = "us-east-1"):
+        self.client = boto3.client("sns", region_name=region, aws_access_key_id=provider_key)
+        self.region = region
+        self._rate_limit = 100
+        self._sent_count = 0
+
+    def send(self, recipient: str, message: str) -> bool:
+        if not self.validate_recipient(recipient):
+            return False
+        truncated = message[:160]
+        response = self.client.publish(PhoneNumber=recipient, Message=truncated)
+        self._sent_count += 1
+        return response["ResponseMetadata"]["HTTPStatusCode"] == 200
+
+    def validate_recipient(self, recipient: str) -> bool:
+        return recipient.startswith("+") and len(recipient) >= 10
+
+    def get_delivery_status(self, message_id: str) -> dict:
+        return self.client.get_sms_attributes(message_id=message_id)
+
+    def _format_for_region(self, message: str) -> str:
+        if self.region == "eu-west-1":
+            return message[:140]
+        return message

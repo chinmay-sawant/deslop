@@ -1,0 +1,12 @@
+myapp/
+    __init__.py
+    models.py
+    service.py
+    _test_helpers.py
+    _factories.py
+    auth/
+        __init__.py
+        _test_helpers.py
+    db/
+        __init__.py
+        _factories.py

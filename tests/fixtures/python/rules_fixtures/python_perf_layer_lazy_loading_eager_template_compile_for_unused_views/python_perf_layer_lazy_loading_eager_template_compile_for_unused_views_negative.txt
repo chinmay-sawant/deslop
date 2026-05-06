@@ -1,0 +1,16 @@
+from jinja2 import Environment, FileSystemLoader
+
+env = Environment(loader=FileSystemLoader("templates"))
+
+_template_cache = {}
+
+def get_template(name):
+    if name not in _template_cache:
+        _template_cache[name] = env.get_template(name)
+    return _template_cache[name]
+
+def render_home(request):
+    return get_template("home.html").render(title="Home")
+
+def render_dashboard(request):
+    return get_template("dashboard.html").render(title="Dashboard")

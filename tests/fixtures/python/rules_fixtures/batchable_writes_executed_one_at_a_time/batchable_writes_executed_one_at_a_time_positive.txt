@@ -1,0 +1,29 @@
+import sqlite3
+
+
+def save_user_events(events: list):
+    conn = sqlite3.connect("events.db")
+    for event in events:
+        conn.execute(
+            "INSERT INTO events (user_id, event_type, data) VALUES (?, ?, ?)",
+            (event["user_id"], event["type"], event["data"]),
+        )
+    conn.commit()
+    conn.close()
+
+
+def update_product_prices(products: list):
+    conn = sqlite3.connect("products.db")
+    for product in products:
+        conn.execute(
+            "UPDATE products SET price = ? WHERE id = ?",
+            (product["price"], product["id"]),
+        )
+    conn.commit()
+    conn.close()
+
+
+def write_audit_logs(logs: list):
+    with open("audit.log", "a") as f:
+        for log_entry in logs:
+            f.write(f"{log_entry['timestamp']} {log_entry['action']} {log_entry['user']}\n")

@@ -1,0 +1,29 @@
+import math
+
+
+def compute_distances(points_a: list[tuple], points_b: list[tuple]) -> list[list[float]]:
+    distances = []
+    for a in points_a:
+        scale = math.sqrt(a[0] ** 2 + a[1] ** 2 + a[2] ** 2)
+        row = []
+        for b in points_b:
+            dx = (a[0] - b[0]) * scale
+            dy = (a[1] - b[1]) * scale
+            dz = (a[2] - b[2]) * scale
+            dist = math.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
+            row.append(dist)
+        distances.append(row)
+    return distances
+
+
+def match_patterns(data: list[str], patterns: list[str]) -> list[list[bool]]:
+    results = []
+    for item in data:
+        normalized = item.lower().strip()
+        prefix = f"match_{normalized}_"
+        row = []
+        for pattern in patterns:
+            matched = pattern.startswith(prefix)
+            row.append(matched)
+        results.append(row)
+    return results

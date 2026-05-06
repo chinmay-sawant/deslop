@@ -1,0 +1,11 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Task
+
+
+class MarkTasksCompleteView(View):
+    def post(self, request):
+        task_ids = request.POST.getlist("task_ids")
+        updated_count = Task.objects.filter(id__in=task_ids).update(status="completed")
+        return JsonResponse({"completed": updated_count})

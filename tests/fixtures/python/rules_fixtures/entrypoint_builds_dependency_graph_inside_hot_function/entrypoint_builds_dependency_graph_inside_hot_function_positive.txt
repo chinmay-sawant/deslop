@@ -1,0 +1,28 @@
+import boto3
+from redis import Redis
+
+
+def handle_order_event(event: dict) -> dict:
+    db = DatabaseConnection("postgresql://localhost/orders")
+    cache = Redis(host="localhost", port=6379)
+    s3 = boto3.client("s3")
+    queue = SQSClient("order-queue")
+    
+    order = db.fetch(event["order_id"])
+    cached = cache.get(f"order:{order['id']}")
+    if cached:
+        return cached
+    
+    result = process_order(order)
+    cache.set(f"order:{order['id']}", result)
+    return result
+
+
+def run_batch_job(batch_id: str) -> dict:
+    db = DatabaseConnection("postgresql://localhost/batch")
+    cache = Redis(host="localhost", port=6379)
+    logger = setup_logger("batch")
+    metrics = MetricsClient()
+    
+    items = db.query(f"SELECT * FROM items WHERE batch_id = '{batch_id}'")
+    return {"processed": len(items)}

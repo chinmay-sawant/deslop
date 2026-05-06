@@ -1,0 +1,43 @@
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route("/health")
+def health_check():
+    db_conn = get_db_connection()
+    db_conn.execute("SELECT 1")
+
+    cache_client = get_cache()
+    cache_client.ping()
+
+    es = Elasticsearch(os.environ["ELASTICSEARCH_URL"])
+    es.cluster.health()
+
+    kafka = KafkaClient(os.environ["KAFKA_BROKERS"])
+    kafka.check_connection()
+
+    response = requests.get("https://external-api.example.com/status", timeout=5)
+    external_ok = response.status_code == 200
+
+    return jsonify({
+        "status": "healthy",
+        "db": True,
+        "cache": True,
+        "search": True,
+        "queue": True,
+        "external": external_ok,
+    })
+
+@app.route("/ready")
+def readiness():
+    redis_client = redis.Redis()
+    redis_client.ping()
+
+    s3 = boto3.client("s3")
+    s3.head_bucket(Bucket="my-bucket")
+
+    smtp = smtplib.SMTP("mail.example.com")
+    smtp.noop()
+    smtp.quit()
+
+    return jsonify({"ready": True})

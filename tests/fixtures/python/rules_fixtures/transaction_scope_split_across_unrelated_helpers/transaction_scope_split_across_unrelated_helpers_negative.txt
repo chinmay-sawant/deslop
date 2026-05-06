@@ -1,0 +1,20 @@
+from sqlalchemy.orm import Session
+
+def update_user_profile(session: Session, user_id: int, new_name: str):
+    try:
+        with session.begin():
+            user = session.query(User).filter_by(id=user_id).one()
+            user.name = new_name
+    except Exception:
+        raise
+
+def create_order_with_items(session: Session, order_data: dict, items: list):
+    try:
+        with session.begin():
+            order = Order(**order_data)
+            session.add(order)
+            for item_data in items:
+                item = OrderItem(order_id=order.id, **item_data)
+                session.add(item)
+    except Exception:
+        raise

@@ -1,0 +1,27 @@
+def fetch_user(user_id):
+    user = db.query(User).get(user_id)
+    return {
+        "user": {"id": user.id, "name": user.name, "email": user.email},
+        "status": "ok",
+        "cache_hit": False,
+        "request_id": request.headers.get("X-Request-Id"),
+        "ttl": 3600,
+    }
+
+def get_product_details(product_id):
+    product = inventory_service.lookup(product_id)
+    return {
+        "product": product.to_dict(),
+        "http_status": 200,
+        "etag": generate_etag(product),
+        "served_from": "primary",
+    }
+
+def load_dashboard_stats():
+    stats = analytics.compute_stats()
+    return {
+        "data": stats,
+        "response_code": 200,
+        "generated_at": datetime.utcnow().isoformat(),
+        "cache_control": "no-store",
+    }

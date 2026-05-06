@@ -1,0 +1,16 @@
+from fastapi import FastAPI
+import sentry_sdk
+
+app = FastAPI()
+
+sentry_sdk.init(dsn="https://examplePublicKey@o0.ingest.sentry.io/0")
+
+
+@app.get("/api/data")
+async def get_data():
+    return {"data": [1, 2, 3]}
+
+
+@app.get("/api/users")
+async def get_users():
+    return {"users": []}

@@ -1,0 +1,22 @@
+import pytest
+from myapp import config
+from myapp.cache import GLOBAL_CACHE
+
+def test_enable_debug_mode():
+    config.DEBUG = True
+    config.LOG_LEVEL = "DEBUG"
+    assert config.DEBUG is True
+
+def test_set_cache_ttl():
+    GLOBAL_CACHE.ttl = 600
+    GLOBAL_CACHE.max_entries = 5000
+    assert GLOBAL_CACHE.ttl == 600
+
+def test_change_feature_flags():
+    config.FEATURE_FLAGS["new_checkout"] = True
+    config.FEATURE_FLAGS["dark_mode"] = True
+    assert config.FEATURE_FLAGS["new_checkout"] is True
+
+def test_override_api_url():
+    config.API_BASE_URL = "https://staging.example.com"
+    assert config.API_BASE_URL == "https://staging.example.com"

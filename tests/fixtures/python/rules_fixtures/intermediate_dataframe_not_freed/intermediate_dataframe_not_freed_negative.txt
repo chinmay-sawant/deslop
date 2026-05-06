@@ -1,0 +1,22 @@
+import pandas as pd
+import gc
+
+
+def process_sales_data(filepath: str) -> pd.DataFrame:
+    df = pd.read_csv(filepath)
+    df = df[df["amount"] > 0]
+    df = df.groupby("region").agg({"amount": "sum"})
+    df = df.sort_values("amount", ascending=False)
+    df = df.assign(rank=range(1, len(df) + 1))
+    return df.reset_index()
+
+
+def enrich_customer_data(customers: pd.DataFrame, orders: pd.DataFrame) -> pd.DataFrame:
+    merged = customers.merge(orders, on="customer_id")
+    del orders
+    merged = merged[merged["status"] == "completed"]
+    aggregated = merged.groupby("customer_id").agg({"total": "sum", "order_id": "count"})
+    del merged
+    gc.collect()
+    aggregated = aggregated.rename(columns={"total": "total_spent", "order_id": "order_count"})
+    return customers.merge(aggregated, on="customer_id", how="left")

@@ -1,0 +1,18 @@
+def merge_updates(base_config, overrides):
+    result = {}
+    for key, value in base_config.items():
+        result[key] = value
+    for key, value in overrides.items():
+        result[key] = value
+    return result
+
+
+def sync_user_preferences(defaults, user_prefs, session_overrides):
+    merged = {}
+    for key, val in defaults.items():
+        merged[key] = val
+    for key, val in user_prefs.items():
+        merged[key] = val
+    for key, val in session_overrides.items():
+        merged[key] = val
+    return merged

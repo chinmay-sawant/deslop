@@ -1,0 +1,21 @@
+import pandas as pd
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_data(df):
+    logger.info("Processing dataframe with %d rows, %d cols", len(df), len(df.columns))
+    return df.dropna()
+
+
+def analyze_results(df):
+    summary = df.describe()
+    logger.info("Summary stats: %s", summary.to_dict())
+    return summary
+
+
+def generate_report(df, output_path):
+    logger.info("Generating report: %d rows", len(df))
+    df.to_csv(output_path)
+    logger.info("Saved to %s", output_path)

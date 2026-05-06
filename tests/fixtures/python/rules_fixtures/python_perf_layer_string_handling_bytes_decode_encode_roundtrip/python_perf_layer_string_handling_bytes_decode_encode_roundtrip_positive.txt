@@ -1,0 +1,17 @@
+def process_payload(data: bytes) -> bytes:
+    text = data.decode("utf-8")
+    lines = text.splitlines()
+    result = "\n".join(line.strip() for line in lines)
+    return result.encode("utf-8")
+
+
+def normalize_bytes(raw: bytes) -> bytes:
+    decoded = raw.decode("ascii")
+    cleaned = decoded.strip().lower()
+    return cleaned.encode("ascii")
+
+
+def transform(data: bytes) -> bytes:
+    s = data.decode("utf-8")
+    modified = s.replace("old", "new")
+    return modified.encode("utf-8")

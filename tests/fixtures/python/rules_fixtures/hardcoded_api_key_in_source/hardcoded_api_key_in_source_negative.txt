@@ -1,0 +1,19 @@
+import os
+import openai
+
+openai.api_key = os.environ["OPENAI_API_KEY"]
+
+def generate_embedding(text):
+    response = openai.Embedding.create(input=text, model="text-embedding-ada-002")
+    return response["data"][0]["embedding"]
+
+def send_to_s3(data):
+    client = boto3.client("s3")
+    client.put_object(Bucket=os.environ["S3_BUCKET"], Key="data.json", Body=json.dumps(data))
+
+def query_model(prompt):
+    token = os.environ["HF_TOKEN"]
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.post("https://api-inference.huggingface.co/models/gpt2",
+                            headers=headers, json={"inputs": prompt})
+    return response.json()

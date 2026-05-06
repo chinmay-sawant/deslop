@@ -1,0 +1,14 @@
+from datetime import datetime
+
+
+def filter_events(event_strings):
+    cutoff = datetime(2024, 1, 1)
+    fmt = "%Y-%m-%d %H:%M:%S"
+    parsed = [datetime.strptime(raw, fmt) for raw in event_strings]
+    return [ts for ts in parsed if ts > cutoff]
+
+
+def compute_deltas(timestamp_strings):
+    fmt = "%Y-%m-%d %H:%M:%S"
+    parsed = [datetime.strptime(s, fmt) for s in timestamp_strings]
+    return [(parsed[i + 1] - parsed[i]).total_seconds() for i in range(len(parsed) - 1)]

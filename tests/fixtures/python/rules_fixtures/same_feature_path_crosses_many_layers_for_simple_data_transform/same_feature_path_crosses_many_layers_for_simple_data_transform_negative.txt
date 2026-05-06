@@ -1,0 +1,6 @@
+def normalize(value):
+    return value.strip()
+
+
+def handle_request(value):
+    return normalize(value)
