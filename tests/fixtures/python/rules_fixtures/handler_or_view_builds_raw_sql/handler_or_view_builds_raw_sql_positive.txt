@@ -1,0 +1,27 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route("/users")
+def list_users():
+    search = request.args.get("search", "")
+    sort_by = request.args.get("sort", "name")
+    query = f"SELECT id, name, email FROM users WHERE name LIKE '%{search}%' ORDER BY {sort_by}"
+    rows = db.execute(query).fetchall()
+    return jsonify([dict(r) for r in rows])
+
+@app.route("/orders/<int:order_id>")
+def get_order(order_id):
+    query = f"SELECT * FROM orders WHERE id = {order_id}"
+    row = db.execute(query).fetchone()
+    if not row:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(dict(row))
+
+@app.route("/reports")
+def get_reports():
+    start = request.args.get("start")
+    end = request.args.get("end")
+    query = f"SELECT * FROM reports WHERE created_at BETWEEN '{start}' AND '{end}'"
+    rows = db.execute(query).fetchall()
+    return jsonify([dict(r) for r in rows])

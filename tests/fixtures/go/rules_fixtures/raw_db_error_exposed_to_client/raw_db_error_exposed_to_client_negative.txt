@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for raw_db_error_exposed_to_client: Direct serialization of SQL or GORM error text into API responses.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule117NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule117NegativeService interface {
+	Run(context.Context, Rule117NegativeRecord) error
+}
+
+func scenario117Negative(ctx context.Context, service Rule117NegativeService, input Rule117NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

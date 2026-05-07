@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for gin_handler_uses_action_param_switch_for_many_use_cases: Handlers that branch on `action`, `type`, or mode strings to serve many workflows from one endpoint function.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule052PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario052Positive(w http.ResponseWriter, r *http.Request, repo Rule052PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

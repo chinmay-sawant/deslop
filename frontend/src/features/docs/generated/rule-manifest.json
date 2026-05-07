@@ -112,7 +112,7 @@
       ]
     },
     "go": {
-      "ruleCount": 653,
+      "ruleCount": 753,
       "families": [
         {
           "id": "architecture",
@@ -2822,7 +2822,7 @@
           "id": "performance",
           "label": "Performance",
           "summary": "Low-level CPU, allocation, and repeated-work performance smells.",
-          "ruleCount": 161,
+          "ruleCount": 261,
           "rules": [
             {
               "id": "adler32_checksum_in_loop",
@@ -3200,6 +3200,606 @@
               "id": "full_dataset_load",
               "label": "Full Dataset Load",
               "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_algorithmic_complexity_per_request_topk_full_sort",
+              "label": "Go Perf Layer Algorithmic Complexity Per Request Topk Full Sort",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline",
+              "label": "Go Perf Layer Algorithmic Complexity Quadratic Append Filter Pipeline",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen_set",
+              "label": "Go Perf Layer Algorithmic Complexity Recursive Graph Walk without Seen Set",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans",
+              "label": "Go Perf Layer Algorithmic Complexity Repeated Nested Slice Scans",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_algorithmic_complexity_sort_before_linear_dedup",
+              "label": "Go Perf Layer Algorithmic Complexity Sort Before Linear Dedup",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_async_concurrency_channel_buffer_too_small_for_known_burst",
+              "label": "Go Perf Layer Async Concurrency Channel Buffer Too Small for Known Burst",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call",
+              "label": "Go Perf Layer Async Concurrency Context Timeout Allocated Per Inner Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_async_concurrency_goroutine_per_item_without_worker_limit",
+              "label": "Go Perf Layer Async Concurrency Goroutine Per Item without Worker Limit",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_async_concurrency_mutex_held_during_slow_call",
+              "label": "Go Perf Layer Async Concurrency Mutex Held During Slow Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_async_concurrency_select_default_busy_poll",
+              "label": "Go Perf Layer Async Concurrency Select Default Busy Poll",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_caching_cache_key_built_with_fmt",
+              "label": "Go Perf Layer Caching Cache Key Built with Fmt",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_caching_cache_miss_does_duplicate_work",
+              "label": "Go Perf Layer Caching Cache Miss Does Duplicate Work",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_caching_json_cache_value_stored_as_string",
+              "label": "Go Perf Layer Caching JSON Cache Value Stored as String",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_caching_per_request_config_cache_rebuild",
+              "label": "Go Perf Layer Caching Per Request Config Cache Rebuild",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_caching_unbounded_cache_map",
+              "label": "Go Perf Layer Caching Unbounded Cache Map",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_collection_iteration_copy_slice_before_readonly_range",
+              "label": "Go Perf Layer Collection Iteration Copy Slice Before Readonly Range",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_collection_iteration_len_called_after_materializing_channel",
+              "label": "Go Perf Layer Collection Iteration Len Called After Materializing Channel",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need",
+              "label": "Go Perf Layer Collection Iteration Manual Index Loop without Bounds Need",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_collection_iteration_multiple_passes_for_independent_counts",
+              "label": "Go Perf Layer Collection Iteration Multiple Passes for Independent Counts",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_collection_iteration_range_over_map_for_deterministic_first",
+              "label": "Go Perf Layer Collection Iteration Range Over Map for Deterministic First",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_data_structure_choice_interface_map_for_typed_values",
+              "label": "Go Perf Layer Data Structure Choice Interface Map for Typed Values",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_data_structure_choice_linked_list_for_cache_iteration",
+              "label": "Go Perf Layer Data Structure Choice Linked List for Cache Iteration",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_data_structure_choice_map_string_bool_for_membership",
+              "label": "Go Perf Layer Data Structure Choice Map String Bool for Membership",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_data_structure_choice_slice_queue_pop_front",
+              "label": "Go Perf Layer Data Structure Choice Slice Queue Pop Front",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_data_structure_choice_small_enum_string_switch_map",
+              "label": "Go Perf Layer Data Structure Choice Small Enum String Switch Map",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_database_access_count_query_before_paged_fetch",
+              "label": "Go Perf Layer Database Access Count Query Before Paged Fetch",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_database_access_query_inside_loop_without_batching",
+              "label": "Go Perf Layer Database Access Query Inside Loop without Batching",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_database_access_rows_scan_into_map_per_row",
+              "label": "Go Perf Layer Database Access Rows Scan Into Map Per Row",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_database_access_select_star_on_hot_query",
+              "label": "Go Perf Layer Database Access Select Star on Hot Query",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_database_access_transaction_per_row_bulk_write",
+              "label": "Go Perf Layer Database Access Transaction Per Row Bulk Write",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_error_handling_cost_error_string_built_before_error_needed",
+              "label": "Go Perf Layer Error Handling Cost Error String Built Before Error Needed",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_error_handling_cost_errors_wrap_in_tight_loop",
+              "label": "Go Perf Layer Error Handling Cost Errors Wrap in Tight Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_error_handling_cost_multierror_append_for_success_path",
+              "label": "Go Perf Layer Error Handling Cost Multierror Append for Success Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_error_handling_cost_panic_recover_for_control_flow",
+              "label": "Go Perf Layer Error Handling Cost Panic Recover for Control Flow",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_error_handling_cost_sentinel_error_allocated_per_call",
+              "label": "Go Perf Layer Error Handling Cost Sentinel Error Allocated Per Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_framework_performance_gin_context_copied_for_sync_path",
+              "label": "Go Perf Layer Framework Performance Gin Context Copied for Sync Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_framework_performance_gorm_preload_all_associations",
+              "label": "Go Perf Layer Framework Performance GORM Preload All Associations",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_framework_performance_grpc_metadata_parsed_repeatedly",
+              "label": "Go Perf Layer Framework Performance gRPC Metadata Parsed Repeatedly",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_framework_performance_sqlx_select_slice_unbounded",
+              "label": "Go Perf Layer Framework Performance sqlx Select Slice Unbounded",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_framework_performance_template_execute_to_string_then_write",
+              "label": "Go Perf Layer Framework Performance Template Execute to String Then Write",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_garbage_collection_cleanup_finalizer_used_for_regular_cleanup",
+              "label": "Go Perf Layer Garbage Collection Cleanup Finalizer Used for Regular Cleanup",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate",
+              "label": "Go Perf Layer Garbage Collection Cleanup Large Slice Retained After Truncate",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse",
+              "label": "Go Perf Layer Garbage Collection Cleanup Response Body Not Drained for Reuse",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers",
+              "label": "Go Perf Layer Garbage Collection Cleanup Sync Pool Stores Large Unbounded Buffers",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_garbage_collection_cleanup_ticker_not_stopped_on_exit",
+              "label": "Go Perf Layer Garbage Collection Cleanup Ticker Not Stopped on Exit",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_hot_path_optimization_allocation_in_hash_or_less_func",
+              "label": "Go Perf Layer Hot Path Optimization Allocation in Hash or Less Func",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_hot_path_optimization_defer_for_simple_unlock_in_hot_loop",
+              "label": "Go Perf Layer Hot Path Optimization Defer for Simple Unlock in Hot Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_hot_path_optimization_invariant_parse_inside_handler",
+              "label": "Go Perf Layer Hot Path Optimization Invariant Parse Inside Handler",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_hot_path_optimization_reflection_on_hot_path",
+              "label": "Go Perf Layer Hot Path Optimization Reflection on Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_hot_path_optimization_time_now_called_many_times_per_item",
+              "label": "Go Perf Layer Hot Path Optimization Time Now Called Many Times Per Item",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_io_operations_readall_on_known_large_file",
+              "label": "Go Perf Layer I/O Operations Readall on Known Large File",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_io_operations_scanner_used_for_large_token_stream",
+              "label": "Go Perf Layer I/O Operations Scanner Used for Large Token Stream",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_io_operations_small_writes_without_bufio_writer",
+              "label": "Go Perf Layer I/O Operations Small Writes without Bufio Writer",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_io_operations_stat_before_open_without_branch",
+              "label": "Go Perf Layer I/O Operations Stat Before Open without Branch",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_io_operations_temporary_file_for_stream_transform",
+              "label": "Go Perf Layer I/O Operations Temporary File for Stream Transform",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_lazy_loading_eager_connect_to_all_backends",
+              "label": "Go Perf Layer Lazy Loading Eager Connect to All Backends",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_lazy_loading_eager_load_optional_config",
+              "label": "Go Perf Layer Lazy Loading Eager Load Optional Config",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_lazy_loading_eager_metric_label_cardinality_build",
+              "label": "Go Perf Layer Lazy Loading Eager Metric Label Cardinality Build",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_lazy_loading_eager_template_parse_for_unused_routes",
+              "label": "Go Perf Layer Lazy Loading Eager Template Parse for Unused Routes",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_lazy_loading_lazy_once_hides_slow_first_request",
+              "label": "Go Perf Layer Lazy Loading Lazy Once Hides Slow First Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_logging_overhead_fmt_log_message_in_loop",
+              "label": "Go Perf Layer Logging Overhead Fmt Log Message in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_logging_overhead_log_fields_built_before_level_check",
+              "label": "Go Perf Layer Logging Overhead Log Fields Built Before Level Check",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_logging_overhead_log_payload_serialized_before_sampling",
+              "label": "Go Perf Layer Logging Overhead Log Payload Serialized Before Sampling",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_logging_overhead_logger_with_fields_per_request",
+              "label": "Go Perf Layer Logging Overhead Logger with Fields Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_logging_overhead_per_record_debug_log_in_batch",
+              "label": "Go Perf Layer Logging Overhead Per Record Debug Log in Batch",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_memory_allocation_append_without_known_capacity",
+              "label": "Go Perf Layer Memory Allocation Append without Known Capacity",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_memory_allocation_bytes_buffer_allocated_per_record",
+              "label": "Go Perf Layer Memory Allocation Bytes Buffer Allocated Per Record",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_memory_allocation_closure_capture_allocates_in_loop",
+              "label": "Go Perf Layer Memory Allocation Closure Capture Allocates in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_memory_allocation_map_recreated_for_static_lookup",
+              "label": "Go Perf Layer Memory Allocation Map Recreated for Static Lookup",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write",
+              "label": "Go Perf Layer Memory Allocation Temporary Byte Slice for String Write",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_network_calls_dns_lookup_per_request_path",
+              "label": "Go Perf Layer Network Calls Dns Lookup Per Request Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_network_calls_http_client_created_per_call",
+              "label": "Go Perf Layer Network Calls HTTP Client Created Per Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_network_calls_retry_loop_without_backoff",
+              "label": "Go Perf Layer Network Calls Retry Loop without Backoff",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_network_calls_tls_config_built_per_request",
+              "label": "Go Perf Layer Network Calls Tls Config Built Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_network_calls_transport_without_connection_limits",
+              "label": "Go Perf Layer Network Calls Transport without Connection Limits",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_profiling_benchmarking_benchmark_includes_setup_in_loop",
+              "label": "Go Perf Layer Profiling Benchmarking Benchmark Includes Setup in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report",
+              "label": "Go Perf Layer Profiling Benchmarking Benchmark Missing Allocs Report",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_profiling_benchmarking_microbenchmark_dead_code_eliminated",
+              "label": "Go Perf Layer Profiling Benchmarking Microbenchmark Dead Code Eliminated",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_profiling_benchmarking_optimization_comment_without_benchmark",
+              "label": "Go Perf Layer Profiling Benchmarking Optimization Comment without Benchmark",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_profiling_benchmarking_pprof_endpoint_enabled_without_sampling_plan",
+              "label": "Go Perf Layer Profiling Benchmarking Pprof Endpoint Enabled without Sampling Plan",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_resource_pooling_buffer_pool_without_max_capacity",
+              "label": "Go Perf Layer Resource Pooling Buffer Pool without Max Capacity",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_resource_pooling_db_pool_created_per_repository",
+              "label": "Go Perf Layer Resource Pooling DB Pool Created Per Repository",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_resource_pooling_http_transport_per_service_method",
+              "label": "Go Perf Layer Resource Pooling HTTP Transport Per Service Method",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_resource_pooling_rate_limiter_per_request",
+              "label": "Go Perf Layer Resource Pooling Rate Limiter Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_resource_pooling_worker_pool_without_shutdown_backpressure",
+              "label": "Go Perf Layer Resource Pooling Worker Pool without Shutdown Backpressure",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_runtime_configuration_debug_build_tags_in_hot_binary",
+              "label": "Go Perf Layer Runtime Configuration Debug Build Tags in Hot Binary",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_runtime_configuration_gogc_forced_low_without_measurement",
+              "label": "Go Perf Layer Runtime Configuration Gogc Forced Low without Measurement",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_runtime_configuration_gomaxprocs_set_in_library",
+              "label": "Go Perf Layer Runtime Configuration Gomaxprocs Set in Library",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_runtime_configuration_race_detector_assumed_in_benchmark_numbers",
+              "label": "Go Perf Layer Runtime Configuration Race Detector Assumed in Benchmark Numbers",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_runtime_configuration_reflection_config_loaded_per_call",
+              "label": "Go Perf Layer Runtime Configuration Reflection Config Loaded Per Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_serialization_base64_roundtrip_for_binary_transport",
+              "label": "Go Perf Layer Serialization Base64 Roundtrip for Binary Transport",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_serialization_gzip_writer_created_per_small_payload",
+              "label": "Go Perf Layer Serialization Gzip Writer Created Per Small Payload",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_serialization_json_decoder_without_reuse_for_stream",
+              "label": "Go Perf Layer Serialization JSON Decoder without Reuse for Stream",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_serialization_json_marshal_for_deep_equal",
+              "label": "Go Perf Layer Serialization JSON Marshal for Deep Equal",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_serialization_map_any_json_decode_in_hot_path",
+              "label": "Go Perf Layer Serialization Map Any JSON Decode in Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_string_handling_byte_string_roundtrip_for_contains",
+              "label": "Go Perf Layer String Handling Byte String Roundtrip for Contains",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_string_handling_fmt_sprintf_for_simple_concat",
+              "label": "Go Perf Layer String Handling Fmt Sprintf for Simple Concat",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_string_handling_regexp_compile_in_request_path",
+              "label": "Go Perf Layer String Handling Regexp Compile in Request Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_string_handling_string_lower_for_case_insensitive_compare",
+              "label": "Go Perf Layer String Handling String Lower for Case Insensitive Compare",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "go_perf_layer_string_handling_strings_join_single_element_loop",
+              "label": "Go Perf Layer String Handling Strings Join Single Element Loop",
+              "defaultSeverity": "contextual",
               "status": "stable"
             },
             {
@@ -4147,7 +4747,7 @@
       ]
     },
     "python": {
-      "ruleCount": 591,
+      "ruleCount": 691,
       "families": [
         {
           "id": "ai_smells",
@@ -7225,7 +7825,7 @@
           "id": "performance",
           "label": "Performance",
           "summary": "General performance patterns outside the hot-path packs.",
-          "ruleCount": 29,
+          "ruleCount": 129,
           "rules": [
             {
               "id": "batchable_writes_executed_one_at_a_time",
@@ -7326,6 +7926,606 @@
             {
               "id": "multiple_regex_passes_over_same_text_without_precompiled_plan",
               "label": "Multiple Regex Passes Over Same Text without Precompiled Plan",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_algorithmic_complexity_cartesian_product_materialized_before_filter",
+              "label": "Python Perf Layer Algorithmic Complexity Cartesian Product Materialized Before Filter",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_algorithmic_complexity_full_sort_for_top_n",
+              "label": "Python Perf Layer Algorithmic Complexity Full Sort for Top N",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_algorithmic_complexity_nested_membership_scan_without_set",
+              "label": "Python Perf Layer Algorithmic Complexity Nested Membership Scan without Set",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_algorithmic_complexity_recursive_walk_without_iterative_guard",
+              "label": "Python Perf Layer Algorithmic Complexity Recursive Walk without Iterative Guard",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_algorithmic_complexity_repeated_dataframe_filter_chain",
+              "label": "Python Perf Layer Algorithmic Complexity Repeated Dataframe Filter Chain",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_async_concurrency_asyncio_task_per_item_unbounded",
+              "label": "Python Perf Layer Async Concurrency Asyncio Task Per Item Unbounded",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_async_concurrency_blocking_requests_in_async_route",
+              "label": "Python Perf Layer Async Concurrency Blocking Requests in Async Route",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_async_concurrency_busy_async_poll_sleep_zero",
+              "label": "Python Perf Layer Async Concurrency Busy Async Poll Sleep Zero",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_async_concurrency_lock_held_during_await_or_io",
+              "label": "Python Perf Layer Async Concurrency Lock Held During Await or I/O",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_async_concurrency_threadpool_created_per_request",
+              "label": "Python Perf Layer Async Concurrency Threadpool Created Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_caching_cache_key_uses_json_dumps_in_hot_path",
+              "label": "Python Perf Layer Caching Cache Key Uses JSON Dumps in Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_caching_cache_miss_duplicate_concurrent_work",
+              "label": "Python Perf Layer Caching Cache Miss Duplicate Concurrent Work",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_caching_cached_value_immediately_deserialized",
+              "label": "Python Perf Layer Caching Cached Value Immediately Deserialized",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_caching_per_request_settings_cache_rebuilt",
+              "label": "Python Perf Layer Caching Per Request Settings Cache Rebuilt",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_caching_unbounded_dict_cache",
+              "label": "Python Perf Layer Caching Unbounded Dict Cache",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_collection_iteration_enumerate_list_materialized",
+              "label": "Python Perf Layer Collection Iteration Enumerate List Materialized",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_collection_iteration_generator_materialized_for_truthiness",
+              "label": "Python Perf Layer Collection Iteration Generator Materialized for Truthiness",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_collection_iteration_list_comprehension_only_for_side_effect",
+              "label": "Python Perf Layer Collection Iteration List Comprehension Only for Side Effect",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_collection_iteration_multiple_passes_over_same_iterable",
+              "label": "Python Perf Layer Collection Iteration Multiple Passes Over Same Iterable",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_collection_iteration_pandas_iterrows_for_numeric_transform",
+              "label": "Python Perf Layer Collection Iteration Pandas Iterrows for Numeric Transform",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records",
+              "label": "Python Perf Layer Data Structure Choice Dict of Dicts for Fixed Records",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_data_structure_choice_heapq_reimplemented_with_sorted_list",
+              "label": "Python Perf Layer Data Structure Choice Heapq Reimplemented with Sorted List",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_data_structure_choice_list_as_fifo_queue",
+              "label": "Python Perf Layer Data Structure Choice List as Fifo Queue",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_data_structure_choice_pandas_object_dtype_for_numeric_hot_columns",
+              "label": "Python Perf Layer Data Structure Choice Pandas Object Dtype for Numeric Hot Columns",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_data_structure_choice_set_rebuilt_for_each_lookup_batch",
+              "label": "Python Perf Layer Data Structure Choice Set Rebuilt for Each Lookup Batch",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_database_access_count_then_fetch_every_page",
+              "label": "Python Perf Layer Database Access Count Then Fetch Every Page",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_database_access_dataframe_to_sql_row_loop",
+              "label": "Python Perf Layer Database Access Dataframe to SQL Row Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_database_access_orm_query_inside_loop",
+              "label": "Python Perf Layer Database Access ORM Query Inside Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_database_access_row_by_row_bulk_insert",
+              "label": "Python Perf Layer Database Access Row by Row Bulk Insert",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_database_access_select_all_columns_for_serializer_subset",
+              "label": "Python Perf Layer Database Access Select All Columns for Serializer Subset",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_error_handling_cost_broad_except_retries_cpu_work",
+              "label": "Python Perf Layer Error Handling Cost Broad Except Retries CPU Work",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_error_handling_cost_error_message_formatted_on_success_path",
+              "label": "Python Perf Layer Error Handling Cost Error Message Formatted on Success Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_error_handling_cost_exception_used_for_loop_control",
+              "label": "Python Perf Layer Error Handling Cost Exception Used for Loop Control",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_error_handling_cost_multi_error_list_allocated_before_failure",
+              "label": "Python Perf Layer Error Handling Cost Multi Error List Allocated Before Failure",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_error_handling_cost_raise_from_none_hides_retriable_error_context",
+              "label": "Python Perf Layer Error Handling Cost Raise From None Hides Retriable Error Context",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_framework_performance_celery_task_loads_config_each_run",
+              "label": "Python Perf Layer Framework Performance Celery Task Loads Config Each Run",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_framework_performance_django_queryset_evaluated_in_template_loop",
+              "label": "Python Perf Layer Framework Performance Django Queryset Evaluated in Template Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_framework_performance_fastapi_dependency_builds_client_per_request",
+              "label": "Python Perf Layer Framework Performance Fastapi Dependency Builds Client Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_framework_performance_pandas_apply_for_vectorizable_operation",
+              "label": "Python Perf Layer Framework Performance Pandas Apply for Vectorizable Operation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_framework_performance_sqlalchemy_lazy_load_in_serializer",
+              "label": "Python Perf Layer Framework Performance Sqlalchemy Lazy Load in Serializer",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_garbage_collection_cleanup_cycle_heavy_objects_without_break",
+              "label": "Python Perf Layer Garbage Collection Cleanup Cycle Heavy Objects without Break",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_garbage_collection_cleanup_file_handle_closed_by_gc",
+              "label": "Python Perf Layer Garbage Collection Cleanup File Handle Closed by Gc",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_garbage_collection_cleanup_large_list_cleared_but_retained",
+              "label": "Python Perf Layer Garbage Collection Cleanup Large List Cleared But Retained",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_garbage_collection_cleanup_lru_cache_on_unbounded_argument_space",
+              "label": "Python Perf Layer Garbage Collection Cleanup Lru Cache on Unbounded Argument Space",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_garbage_collection_cleanup_temporary_directory_not_cleaned_promptly",
+              "label": "Python Perf Layer Garbage Collection Cleanup Temporary Directory Not Cleaned Promptly",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_hot_path_optimization_attribute_lookup_in_deep_inner_loop",
+              "label": "Python Perf Layer Hot Path Optimization Attribute Lookup in Deep Inner Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_hot_path_optimization_datetime_now_called_per_field",
+              "label": "Python Perf Layer Hot Path Optimization Datetime Now Called Per Field",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_hot_path_optimization_numpy_python_loop_over_array",
+              "label": "Python Perf Layer Hot Path Optimization Numpy Python Loop Over Array",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path",
+              "label": "Python Perf Layer Hot Path Optimization Reflection Inspection in Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_hot_path_optimization_schema_parsed_inside_handler",
+              "label": "Python Perf Layer Hot Path Optimization Schema Parsed Inside Handler",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_io_operations_path_exists_before_open_race",
+              "label": "Python Perf Layer I/O Operations Path Exists Before Open Race",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_io_operations_read_entire_file_for_line_processing",
+              "label": "Python Perf Layer I/O Operations Read Entire File for Line Processing",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_io_operations_small_file_writes_without_buffer",
+              "label": "Python Perf Layer I/O Operations Small File Writes without Buffer",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_io_operations_subprocess_per_item",
+              "label": "Python Perf Layer I/O Operations Subprocess Per Item",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_io_operations_temporary_file_for_bytes_transform",
+              "label": "Python Perf Layer I/O Operations Temporary File for Bytes Transform",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_lazy_loading_eager_import_heavy_optional_dependency",
+              "label": "Python Perf Layer Lazy Loading Eager Import Heavy Optional Dependency",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_lazy_loading_eager_template_compile_for_unused_views",
+              "label": "Python Perf Layer Lazy Loading Eager Template Compile for Unused Views",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_lazy_loading_feature_flag_data_loaded_before_needed",
+              "label": "Python Perf Layer Lazy Loading Feature Flag Data Loaded Before Needed",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_lazy_loading_lazy_init_on_first_user_request",
+              "label": "Python Perf Layer Lazy Loading Lazy Init on First User Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_lazy_loading_optional_model_loaded_at_startup",
+              "label": "Python Perf Layer Lazy Loading Optional Model Loaded at Startup",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_logging_overhead_extra_fields_computed_before_sampling",
+              "label": "Python Perf Layer Logging Overhead Extra Fields Computed Before Sampling",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_logging_overhead_log_message_formatted_before_level_check",
+              "label": "Python Perf Layer Logging Overhead Log Message Formatted Before Level Check",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_logging_overhead_logger_created_per_request",
+              "label": "Python Perf Layer Logging Overhead Logger Created Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_logging_overhead_per_item_info_log_in_batch",
+              "label": "Python Perf Layer Logging Overhead Per Item Info Log in Batch",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_logging_overhead_trace_payload_serialized_unconditionally",
+              "label": "Python Perf Layer Logging Overhead Trace Payload Serialized Unconditionally",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_memory_allocation_closure_or_lambda_allocated_in_inner_loop",
+              "label": "Python Perf Layer Memory Allocation Closure or Lambda Allocated in Inner Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_memory_allocation_dataclass_asdict_in_hot_path",
+              "label": "Python Perf Layer Memory Allocation Dataclass Asdict in Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_memory_allocation_deepcopy_before_readonly_transform",
+              "label": "Python Perf Layer Memory Allocation Deepcopy Before Readonly Transform",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_memory_allocation_list_append_without_generator_stream",
+              "label": "Python Perf Layer Memory Allocation List Append without Generator Stream",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_memory_allocation_temporary_dataframe_created_per_row",
+              "label": "Python Perf Layer Memory Allocation Temporary Dataframe Created Per Row",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_network_calls_dns_or_url_parse_repeated_per_request",
+              "label": "Python Perf Layer Network Calls Dns or URL Parse Repeated Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_network_calls_http_session_created_per_call",
+              "label": "Python Perf Layer Network Calls HTTP Session Created Per Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_network_calls_large_response_downloaded_before_status_check",
+              "label": "Python Perf Layer Network Calls Large Response Downloaded Before Status Check",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_network_calls_retry_without_backoff_or_jitter",
+              "label": "Python Perf Layer Network Calls Retry without Backoff or Jitter",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_network_calls_tls_context_built_per_request",
+              "label": "Python Perf Layer Network Calls Tls Context Built Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_profiling_benchmarking_benchmark_allocations_not_tracked",
+              "label": "Python Perf Layer Profiling Benchmarking Benchmark Allocations Not Tracked",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_profiling_benchmarking_benchmark_missing_warmup",
+              "label": "Python Perf Layer Profiling Benchmarking Benchmark Missing Warmup",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_profiling_benchmarking_load_test_without_realistic_payload_size",
+              "label": "Python Perf Layer Profiling Benchmarking Load Test without Realistic Payload Size",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_profiling_benchmarking_profile_claim_without_profile_artifact",
+              "label": "Python Perf Layer Profiling Benchmarking Profile Claim without Profile Artifact",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_profiling_benchmarking_timeit_result_not_consumed",
+              "label": "Python Perf Layer Profiling Benchmarking Timeit Result Not Consumed",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_resource_pooling_db_engine_created_per_repository",
+              "label": "Python Perf Layer Resource Pooling DB Engine Created Per Repository",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_resource_pooling_http_pool_not_reused",
+              "label": "Python Perf Layer Resource Pooling HTTP Pool Not Reused",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_resource_pooling_large_buffer_pool_without_cap",
+              "label": "Python Perf Layer Resource Pooling Large Buffer Pool without Cap",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_resource_pooling_process_pool_without_shutdown",
+              "label": "Python Perf Layer Resource Pooling Process Pool without Shutdown",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_resource_pooling_rate_limiter_created_per_request",
+              "label": "Python Perf Layer Resource Pooling Rate Limiter Created Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_runtime_configuration_debug_mode_enabled_in_perf_sensitive_path",
+              "label": "Python Perf Layer Runtime Configuration Debug Mode Enabled in Perf Sensitive Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_runtime_configuration_env_parsed_per_operation",
+              "label": "Python Perf Layer Runtime Configuration Env Parsed Per Operation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_runtime_configuration_locale_timezone_loaded_per_request",
+              "label": "Python Perf Layer Runtime Configuration Locale Timezone Loaded Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_runtime_configuration_profiling_hooks_enabled_by_default",
+              "label": "Python Perf Layer Runtime Configuration Profiling Hooks Enabled by Default",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_runtime_configuration_pythonpath_mutated_per_call",
+              "label": "Python Perf Layer Runtime Configuration Pythonpath Mutated Per Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_serialization_base64_roundtrip_same_process",
+              "label": "Python Perf Layer Serialization Base64 Roundtrip Same Process",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_serialization_gzip_compress_tiny_payloads",
+              "label": "Python Perf Layer Serialization Gzip Compress Tiny Payloads",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_serialization_json_dumps_for_equality_or_hash",
+              "label": "Python Perf Layer Serialization JSON Dumps for Equality or Hash",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_serialization_pickle_in_request_hot_path",
+              "label": "Python Perf Layer Serialization Pickle in Request Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_serialization_pydantic_model_recreated_for_internal_dict",
+              "label": "Python Perf Layer Serialization Pydantic Model Recreated for Internal Dict",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_string_handling_bytes_decode_encode_roundtrip",
+              "label": "Python Perf Layer String Handling Bytes Decode Encode Roundtrip",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_string_handling_json_string_concat_manual_build",
+              "label": "Python Perf Layer String Handling JSON String Concat Manual Build",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_string_handling_lowercase_compare_allocates",
+              "label": "Python Perf Layer String Handling Lowercase Compare Allocates",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_string_handling_plus_equals_string_in_loop",
+              "label": "Python Perf Layer String Handling Plus Equals String in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "python_perf_layer_string_handling_regex_compiled_per_call",
+              "label": "Python Perf Layer String Handling Regex Compiled Per Call",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -7818,7 +9018,7 @@
       ]
     },
     "rust": {
-      "ruleCount": 250,
+      "ruleCount": 350,
       "families": [
         {
           "id": "api_design",
@@ -9152,7 +10352,7 @@
           "id": "performance",
           "label": "Performance",
           "summary": "Repeated work, allocation churn, and avoidable hot-path waste.",
-          "ruleCount": 12,
+          "ruleCount": 112,
           "rules": [
             {
               "id": "rust_aos_hot_path",
@@ -9199,6 +10399,606 @@
             {
               "id": "rust_path_join_absolute",
               "label": "Rust Path Join Absolute",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_algorithmic_complexity_iterator_chain_recomputes_expensive_predicate",
+              "label": "Rust Perf Layer Algorithmic Complexity Iterator Chain Recomputes Expensive Predicate",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_algorithmic_complexity_nested_vec_scan_without_index",
+              "label": "Rust Perf Layer Algorithmic Complexity Nested Vec Scan without Index",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_algorithmic_complexity_quadratic_string_or_vec_growth",
+              "label": "Rust Perf Layer Algorithmic Complexity Quadratic String or Vec Growth",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen",
+              "label": "Rust Perf Layer Algorithmic Complexity Recursive Graph Walk without Seen",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_algorithmic_complexity_sort_for_top_k",
+              "label": "Rust Perf Layer Algorithmic Complexity Sort for Top K",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_async_concurrency_blocking_mutex_in_async_path",
+              "label": "Rust Perf Layer Async Concurrency Blocking Mutex in Async Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_async_concurrency_busy_poll_future_loop",
+              "label": "Rust Perf Layer Async Concurrency Busy Poll Future Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_async_concurrency_lock_guard_held_across_slow_call",
+              "label": "Rust Perf Layer Async Concurrency Lock Guard Held Across Slow Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_async_concurrency_timeout_created_for_inner_retry",
+              "label": "Rust Perf Layer Async Concurrency Timeout Created for Inner Retry",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_async_concurrency_tokio_spawn_per_item_unbounded",
+              "label": "Rust Perf Layer Async Concurrency Tokio Spawn Per Item Unbounded",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_caching_cache_key_allocates_string_hot_path",
+              "label": "Rust Perf Layer Caching Cache Key Allocates String Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_caching_cache_miss_duplicate_async_work",
+              "label": "Rust Perf Layer Caching Cache Miss Duplicate Async Work",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_caching_cached_json_string_deserialized_each_use",
+              "label": "Rust Perf Layer Caching Cached JSON String Deserialized Each Use",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_caching_once_lock_lazy_cost_on_first_request",
+              "label": "Rust Perf Layer Caching Once Lock Lazy Cost on First Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_caching_unbounded_hashmap_cache",
+              "label": "Rust Perf Layer Caching Unbounded Hashmap Cache",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_collection_iteration_collect_for_len_or_is_empty",
+              "label": "Rust Perf Layer Collection Iteration Collect for Len or Is Empty",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_collection_iteration_hashset_rebuilt_per_lookup_batch",
+              "label": "Rust Perf Layer Collection Iteration Hashset Rebuilt Per Lookup Batch",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_collection_iteration_iter_cloned_before_filter",
+              "label": "Rust Perf Layer Collection Iteration Iter Cloned Before Filter",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_collection_iteration_manual_index_loop_over_slice",
+              "label": "Rust Perf Layer Collection Iteration Manual Index Loop Over Slice",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_collection_iteration_multiple_passes_over_same_slice",
+              "label": "Rust Perf Layer Collection Iteration Multiple Passes Over Same Slice",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_data_structure_choice_boxed_trait_objects_in_hot_collection",
+              "label": "Rust Perf Layer Data Structure Choice Boxed Trait Objects in Hot Collection",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_data_structure_choice_btreemap_for_unordered_hot_lookup",
+              "label": "Rust Perf Layer Data Structure Choice Btreemap for Unordered Hot Lookup",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_data_structure_choice_hashmap_for_tiny_static_set",
+              "label": "Rust Perf Layer Data Structure Choice Hashmap for Tiny Static Set",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_data_structure_choice_string_keys_for_enum_domain",
+              "label": "Rust Perf Layer Data Structure Choice String Keys for Enum Domain",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_data_structure_choice_vec_remove_zero_queue",
+              "label": "Rust Perf Layer Data Structure Choice Vec Remove Zero Queue",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_database_access_count_before_page_fetch_each_request",
+              "label": "Rust Perf Layer Database Access Count Before Page Fetch Each Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_database_access_row_to_hashmap_decode_hot_path",
+              "label": "Rust Perf Layer Database Access Row to Hashmap Decode Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_database_access_select_star_for_typed_projection",
+              "label": "Rust Perf Layer Database Access Select Star for Typed Projection",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_database_access_sql_query_inside_loop",
+              "label": "Rust Perf Layer Database Access SQL Query Inside Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_database_access_transaction_per_row_bulk_insert",
+              "label": "Rust Perf Layer Database Access Transaction Per Row Bulk Insert",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_error_handling_cost_anyhow_context_in_hot_loop",
+              "label": "Rust Perf Layer Error Handling Cost Anyhow Context in Hot Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_error_handling_cost_clone_error_context_large_payload",
+              "label": "Rust Perf Layer Error Handling Cost Clone Error Context Large Payload",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_error_handling_cost_error_enum_allocates_string_success_path",
+              "label": "Rust Perf Layer Error Handling Cost Error Enum Allocates String Success Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_error_handling_cost_panic_catch_unwind_for_control_flow",
+              "label": "Rust Perf Layer Error Handling Cost Panic Catch Unwind for Control Flow",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_error_handling_cost_vec_errors_allocated_before_error",
+              "label": "Rust Perf Layer Error Handling Cost Vec Errors Allocated Before Error",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_framework_performance_actix_blocking_pool_for_light_work",
+              "label": "Rust Perf Layer Framework Performance Actix Blocking Pool for Light Work",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_framework_performance_askama_render_to_string_then_body",
+              "label": "Rust Perf Layer Framework Performance Askama Render to String Then Body",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_framework_performance_axum_extension_clones_heavy_state",
+              "label": "Rust Perf Layer Framework Performance Axum Extension Clones Heavy State",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_framework_performance_sqlx_fetch_all_unbounded",
+              "label": "Rust Perf Layer Framework Performance sqlx Fetch All Unbounded",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_framework_performance_tonic_metadata_parsed_repeatedly",
+              "label": "Rust Perf Layer Framework Performance Tonic Metadata Parsed Repeatedly",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_garbage_collection_cleanup_arc_cycle_without_weak_break",
+              "label": "Rust Perf Layer Garbage Collection Cleanup Arc Cycle without Weak Break",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_garbage_collection_cleanup_bufwriter_not_flushed_at_owner_boundary",
+              "label": "Rust Perf Layer Garbage Collection Cleanup Bufwriter Not Flushed at Owner Boundary",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_garbage_collection_cleanup_drop_impl_does_io_or_blocking_work",
+              "label": "Rust Perf Layer Garbage Collection Cleanup Drop Impl Does I/O or Blocking Work",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_garbage_collection_cleanup_large_vec_clear_retains_spike_capacity",
+              "label": "Rust Perf Layer Garbage Collection Cleanup Large Vec Clear Retains Spike Capacity",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_garbage_collection_cleanup_leaked_box_for_runtime_singleton",
+              "label": "Rust Perf Layer Garbage Collection Cleanup Leaked Box for Runtime Singleton",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_hot_path_optimization_allocation_inside_sort_comparator",
+              "label": "Rust Perf Layer Hot Path Optimization Allocation Inside Sort Comparator",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_hot_path_optimization_bounds_checks_from_repeated_indexing",
+              "label": "Rust Perf Layer Hot Path Optimization Bounds Checks From Repeated Indexing",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_hot_path_optimization_dynamic_dispatch_in_deep_loop",
+              "label": "Rust Perf Layer Hot Path Optimization Dynamic Dispatch in Deep Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_hot_path_optimization_instant_now_called_many_times_per_item",
+              "label": "Rust Perf Layer Hot Path Optimization Instant Now Called Many Times Per Item",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_hot_path_optimization_schema_parsed_inside_handler",
+              "label": "Rust Perf Layer Hot Path Optimization Schema Parsed Inside Handler",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_io_operations_command_spawn_per_item",
+              "label": "Rust Perf Layer I/O Operations Command Spawn Per Item",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_io_operations_metadata_before_open_without_need",
+              "label": "Rust Perf Layer I/O Operations Metadata Before Open without Need",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_io_operations_read_to_string_for_line_processing",
+              "label": "Rust Perf Layer I/O Operations Read to String for Line Processing",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_io_operations_tempfile_for_stream_transform",
+              "label": "Rust Perf Layer I/O Operations Tempfile for Stream Transform",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_io_operations_unbuffered_writes_in_loop",
+              "label": "Rust Perf Layer I/O Operations Unbuffered Writes in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_lazy_loading_eager_compile_unused_templates",
+              "label": "Rust Perf Layer Lazy Loading Eager Compile Unused Templates",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_lazy_loading_eager_connect_all_upstreams",
+              "label": "Rust Perf Layer Lazy Loading Eager Connect All Upstreams",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_lazy_loading_eager_load_optional_assets",
+              "label": "Rust Perf Layer Lazy Loading Eager Load Optional Assets",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_lazy_loading_lazy_static_hides_tail_latency",
+              "label": "Rust Perf Layer Lazy Loading Lazy Static Hides Tail Latency",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_lazy_loading_optional_crate_init_on_default_path",
+              "label": "Rust Perf Layer Lazy Loading Optional Crate Init on Default Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_logging_overhead_debug_format_large_value_unconditional",
+              "label": "Rust Perf Layer Logging Overhead Debug Format Large Value Unconditional",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_logging_overhead_log_fields_allocated_before_enabled",
+              "label": "Rust Perf Layer Logging Overhead Log Fields Allocated Before Enabled",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_logging_overhead_payload_serialized_for_disabled_trace",
+              "label": "Rust Perf Layer Logging Overhead Payload Serialized for Disabled Trace",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_logging_overhead_per_item_info_span_in_batch",
+              "label": "Rust Perf Layer Logging Overhead Per Item Info Span in Batch",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_logging_overhead_span_created_inside_tight_loop",
+              "label": "Rust Perf Layer Logging Overhead Span Created Inside Tight Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_memory_allocation_clone_large_value_for_readonly_use",
+              "label": "Rust Perf Layer Memory Allocation Clone Large Value for Readonly Use",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_memory_allocation_collect_vec_only_to_iterate_once",
+              "label": "Rust Perf Layer Memory Allocation Collect Vec Only to Iterate Once",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_memory_allocation_format_allocates_for_writer",
+              "label": "Rust Perf Layer Memory Allocation Format Allocates for Writer",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_memory_allocation_string_reallocated_per_record",
+              "label": "Rust Perf Layer Memory Allocation String Reallocated Per Record",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_memory_allocation_vec_push_without_capacity",
+              "label": "Rust Perf Layer Memory Allocation Vec Push without Capacity",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_network_calls_dns_resolution_in_request_path",
+              "label": "Rust Perf Layer Network Calls Dns Resolution in Request Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_network_calls_hyper_connector_rebuilt_per_request",
+              "label": "Rust Perf Layer Network Calls Hyper Connector Rebuilt Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_network_calls_reqwest_client_created_per_call",
+              "label": "Rust Perf Layer Network Calls Reqwest Client Created Per Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_network_calls_retry_without_backoff_jitter",
+              "label": "Rust Perf Layer Network Calls Retry without Backoff Jitter",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_network_calls_tls_config_loaded_per_request",
+              "label": "Rust Perf Layer Network Calls Tls Config Loaded Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_profiling_benchmarking_alloc_sensitive_benchmark_without_alloc_counts",
+              "label": "Rust Perf Layer Profiling Benchmarking Alloc Sensitive Benchmark without Alloc Counts",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_profiling_benchmarking_benchmark_missing_black_box",
+              "label": "Rust Perf Layer Profiling Benchmarking Benchmark Missing Black Box",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_profiling_benchmarking_criterion_benchmark_includes_setup",
+              "label": "Rust Perf Layer Profiling Benchmarking Criterion Benchmark Includes Setup",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_profiling_benchmarking_load_test_payload_too_small",
+              "label": "Rust Perf Layer Profiling Benchmarking Load Test Payload Too Small",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_profiling_benchmarking_optimization_comment_without_measurement",
+              "label": "Rust Perf Layer Profiling Benchmarking Optimization Comment without Measurement",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_resource_pooling_buffer_pool_returns_oversized_vec",
+              "label": "Rust Perf Layer Resource Pooling Buffer Pool Returns Oversized Vec",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_resource_pooling_connection_pool_without_limits",
+              "label": "Rust Perf Layer Resource Pooling Connection Pool without Limits",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_resource_pooling_pool_created_per_request",
+              "label": "Rust Perf Layer Resource Pooling Pool Created Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_resource_pooling_semaphore_created_per_operation",
+              "label": "Rust Perf Layer Resource Pooling Semaphore Created Per Operation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_resource_pooling_threadpool_without_shutdown_owner",
+              "label": "Rust Perf Layer Resource Pooling Threadpool without Shutdown Owner",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_runtime_configuration_debug_assertions_expected_in_bench",
+              "label": "Rust Perf Layer Runtime Configuration Debug Assertions Expected in Bench",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_runtime_configuration_env_parsed_per_operation",
+              "label": "Rust Perf Layer Runtime Configuration Env Parsed Per Operation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_runtime_configuration_feature_flags_loaded_per_request",
+              "label": "Rust Perf Layer Runtime Configuration Feature Flags Loaded Per Request",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_runtime_configuration_lto_codegen_claim_without_profile",
+              "label": "Rust Perf Layer Runtime Configuration Lto Codegen Claim without Profile",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_runtime_configuration_rayon_threads_set_in_library",
+              "label": "Rust Perf Layer Runtime Configuration Rayon Threads Set in Library",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_serialization_base64_roundtrip_same_process",
+              "label": "Rust Perf Layer Serialization Base64 Roundtrip Same Process",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_serialization_bincode_or_postcard_for_tiny_messages",
+              "label": "Rust Perf Layer Serialization Bincode or Postcard for Tiny Messages",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_serialization_gzip_encoder_per_tiny_payload",
+              "label": "Rust Perf Layer Serialization Gzip Encoder Per Tiny Payload",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_serialization_serde_json_to_value_hot_path",
+              "label": "Rust Perf Layer Serialization Serde JSON to Value Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_serialization_serialize_for_hash_or_eq",
+              "label": "Rust Perf Layer Serialization Serialize for Hash or Eq",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_string_handling_format_in_loop_for_simple_append",
+              "label": "Rust Perf Layer String Handling Format in Loop for Simple Append",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_string_handling_regex_new_in_function_path",
+              "label": "Rust Perf Layer String Handling Regex New in Function Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_string_handling_split_collect_for_first_segment",
+              "label": "Rust Perf Layer String Handling Split Collect for First Segment",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_string_handling_string_from_utf8_roundtrip",
+              "label": "Rust Perf Layer String Handling String From Utf8 Roundtrip",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_perf_layer_string_handling_to_lowercase_compare",
+              "label": "Rust Perf Layer String Handling to Lowercase Compare",
               "defaultSeverity": "contextual",
               "status": "stable"
             },

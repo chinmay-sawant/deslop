@@ -1,0 +1,33 @@
+from typing import Any, Dict, List
+
+def process_data(items: List[dict]) -> List[dict]:
+    try:
+        import orjson as json_module
+    except ImportError:
+        import json as json_module
+
+    results = []
+    for item in items:
+        serialized = json_module.dumps(item)
+        results.append(json_module.loads(serialized))
+    return results
+
+def compute_metrics(values: List[float]) -> dict:
+    try:
+        import numpy as np
+        return {
+            "mean": float(np.mean(values)),
+            "std": float(np.std(values)),
+        }
+    except ImportError:
+        mean = sum(values) / len(values)
+        variance = sum((x - mean) ** 2 for x in values) / len(values)
+        return {"mean": mean, "std": variance ** 0.5}
+
+def format_output(data: Any) -> str:
+    try:
+        import rich
+        return rich.to_json(data)
+    except ImportError:
+        import json
+        return json.dumps(data)

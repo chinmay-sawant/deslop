@@ -1,0 +1,29 @@
+import os
+import shutil
+
+
+def read_config(path):
+    try:
+        with open(path, "r") as f:
+            return f.read()
+    except OSError:
+        return None
+
+
+def copy_file(src, dst):
+    try:
+        shutil.copy2(src, dst)
+    except OSError as e:
+        log_error(str(e))
+        raise
+
+
+def delete_temp(path):
+    try:
+        os.remove(path)
+    except OSError:
+        pass
+
+
+def log_error(msg):
+    pass

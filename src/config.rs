@@ -22,7 +22,7 @@ pub(crate) struct RepoConfig {
 impl Default for RepoConfig {
     fn default() -> Self {
         Self {
-            go_semantic_experimental: true,
+            go_semantic_experimental: false,
             rust_async_experimental: true,
             disabled_rules: Vec::new(),
             suppressed_paths: Vec::new(),

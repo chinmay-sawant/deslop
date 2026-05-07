@@ -1,0 +1,20 @@
+async fn compute_stats(items: Vec<Item>) -> Stats {
+    let mut totals = Vec::with_capacity(items.len());
+    for item in &items {
+        let value = heavy_sync_computation(item);
+        totals.push(value);
+    }
+    let sum: f64 = totals.iter().sum();
+    Stats { count: totals.len(), sum }
+}
+
+fn heavy_sync_computation(item: &Item) -> f64 {
+    let mut result = 0.0;
+    for i in 0..1_000_000 {
+        result += (item.value + i as f64).sqrt();
+    }
+    result
+}
+
+struct Item { value: f64 }
+struct Stats { count: usize, sum: f64 }

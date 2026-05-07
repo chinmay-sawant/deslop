@@ -1,0 +1,25 @@
+use std::sync::Arc;
+use tokio::sync::Semaphore;
+
+async fn upload_file(path: &str) -> Result<(), Error> {
+    // BAD: new semaphore created for each upload operation
+    let sem = Arc::new(Semaphore::new(10));
+    let permit = sem.acquire().await?;
+    
+    let data = tokio::fs::read(path).await?;
+    send_to_storage(&data).await?;
+    
+    drop(permit);
+    Ok(())
+}
+
+async fn download_file(url: &str) -> Result<Vec<u8>, Error> {
+    // BAD: another new semaphore per download
+    let sem = Arc::new(Semaphore::new(10));
+    let permit = sem.acquire().await?;
+    
+    let data = fetch_from_network(url).await?;
+    
+    drop(permit);
+    Ok(data)
+}

@@ -1,0 +1,19 @@
+import pytest
+
+
+def test_square():
+    assert 2 ** 2 == 4
+
+
+def test_user_creation():
+    user = create_user("alice")
+    assert user.name == "alice"
+
+
+def test_addition():
+    assert 10 + 5 == 15
+
+
+@pytest.mark.parametrize("input_val,expected", [(2, 4), (3, 9), (4, 16), (5, 25)])
+def test_square_parametrized(input_val, expected):
+    assert input_val ** 2 == expected

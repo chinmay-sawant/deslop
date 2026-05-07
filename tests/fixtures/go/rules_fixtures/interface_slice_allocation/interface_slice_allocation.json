@@ -1,0 +1,14 @@
+{
+  "id": "interface_slice_allocation",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`[]interface{}` or `[]any` used to pass homogeneous typed data",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,19 @@
+def get_top_scorer(students):
+    ranked = sorted(students, key=lambda s: s["score"], reverse=True)
+    return ranked[0]
+
+def get_cheapest_product(products):
+    ordered = sorted(products, key=lambda p: p["price"])
+    return ordered[0]
+
+def find_latest_order(orders):
+    by_date = sorted(orders, key=lambda o: o["created_at"], reverse=True)
+    return by_date[0]
+
+def get_worst_performer(employees):
+    ranked = sorted(employees, key=lambda e: e["rating"])
+    return ranked[0]
+
+def get_five_recent_logs(logs):
+    sorted_logs = sorted(logs, key=lambda l: l["timestamp"], reverse=True)
+    return sorted_logs[:5]

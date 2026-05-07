@@ -1,0 +1,20 @@
+import os
+import sys
+
+os.environ.setdefault("APP_ENV", "production")
+
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+from . import models
+from . import views
+from . import serializers
+
+REGISTRY = {}
+REGISTRY["models"] = models
+REGISTRY["views"] = views
+REGISTRY["serializers"] = serializers
+
+def get_version():
+    return "1.0.0"

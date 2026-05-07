@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for pgxpool_ping_per_request: Per-request pgxpool connectivity probes that add latency outside health-check boundaries.
+// fixture polarity: negative; family: data_access; severity: info.
+type Rule282NegativeRecord struct { ID int }
+
+func scenario282Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule282NegativeRecord{}).Error
+}

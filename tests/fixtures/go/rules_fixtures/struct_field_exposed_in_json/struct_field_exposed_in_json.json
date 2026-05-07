@@ -1,0 +1,14 @@
+{
+  "id": "struct_field_exposed_in_json",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "exported struct fields containing sensitive data (Password, Secret, Token, APIKey, PrivateKey) without `json:\"-\"` tags in API response structs",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

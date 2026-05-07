@@ -23,12 +23,3 @@ pub(crate) fn parse_json_output(output: &Output) -> serde_json::Value {
     let stdout = String::from_utf8_lossy(&output.stdout);
     serde_json::from_str(&stdout).expect("JSON output should be valid JSON")
 }
-
-pub(crate) fn assert_json_fields(value: &serde_json::Value, fields: &[&str]) {
-    for field in fields {
-        assert!(
-            value.get(field).is_some(),
-            "JSON should contain '{field}' field"
-        );
-    }
-}

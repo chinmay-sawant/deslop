@@ -1,0 +1,14 @@
+{
+  "id": "service_reads_settings_inline_instead_of_injected",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Service reads configuration from os.getenv or settings module inline rather than receiving it via injection.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

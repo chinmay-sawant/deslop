@@ -1,0 +1,19 @@
+import re
+
+def count_errors_in_log(filepath):
+    count = 0
+    with open(filepath, "r") as f:
+        for line in f:
+            if "ERROR" in line:
+                count += 1
+    return count
+
+def extract_emails(filepath):
+    emails = []
+    pattern = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
+    with open(filepath, "r") as f:
+        for line in f:
+            match = pattern.search(line)
+            if match:
+                emails.append(match.group())
+    return emails

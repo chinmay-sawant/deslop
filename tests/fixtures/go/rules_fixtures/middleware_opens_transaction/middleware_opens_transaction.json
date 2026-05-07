@@ -1,0 +1,14 @@
+{
+  "id": "middleware_opens_transaction",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Middleware that owns transaction lifetime for all downstream business logic.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

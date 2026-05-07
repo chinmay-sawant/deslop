@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for admin_or_debug_endpoint_registration_mixed_into_public_router_setup: Operational endpoints registered alongside public routes with no clear boundary.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule000NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule000NegativeService interface {
+	Run(context.Context, Rule000NegativeRecord) error
+}
+
+func scenario000Negative(ctx context.Context, service Rule000NegativeService, input Rule000NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

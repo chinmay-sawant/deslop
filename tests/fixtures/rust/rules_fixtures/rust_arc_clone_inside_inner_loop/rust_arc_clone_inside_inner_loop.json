@@ -1,0 +1,14 @@
+{
+  "id": "rust_arc_clone_inside_inner_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated `Arc::clone` in inner loops when a borrowed reference or cloned handle outside the loop would work.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

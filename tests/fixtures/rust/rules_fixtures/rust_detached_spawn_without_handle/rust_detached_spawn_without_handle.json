@@ -1,0 +1,14 @@
+{
+  "id": "rust_detached_spawn_without_handle",
+  "language": "rust",
+  "family": "runtime_ownership",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Spawned background work whose JoinHandle is immediately discarded or never supervised.",
+  "binding_location": "src/heuristics/rust/runtime_ownership.rs"
+}

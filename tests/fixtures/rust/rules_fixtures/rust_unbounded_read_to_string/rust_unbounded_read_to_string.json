@@ -1,0 +1,14 @@
+{
+  "id": "rust_unbounded_read_to_string",
+  "language": "rust",
+  "family": "boundary",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Production code that reads an entire file into a string without a size bound.",
+  "binding_location": "src/heuristics/rust/boundary.rs"
+}

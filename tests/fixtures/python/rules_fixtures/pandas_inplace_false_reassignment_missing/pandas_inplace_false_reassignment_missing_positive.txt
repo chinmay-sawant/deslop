@@ -1,0 +1,20 @@
+import pandas as pd
+
+
+def clean_data(df):
+    df.drop_duplicates()
+    df.sort_values("name")
+    df.reset_index(drop=True)
+    return df
+
+
+def transform_prices(df):
+    df.fillna(0)
+    df.drop(columns=["temp_col"])
+    return df
+
+
+def process_orders(df):
+    df.groupby("customer_id").sum()
+    df.merge(pd.DataFrame({"id": [1]}), on="id")
+    return df

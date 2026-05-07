@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for panic_for_expected_errors: `panic()` used for expected error conditions like invalid input or missing config
+// fixture polarity: negative; family: performance; severity: warning.
+type Rule621NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario621Negative(records []Rule621NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

@@ -1,0 +1,32 @@
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
+
+def get_active_users(db: Session, org_id: int):
+    query = text(
+        "SELECT u.id, u.name, u.email FROM users u "
+        "JOIN memberships m ON u.id = m.user_id "
+        "WHERE m.org_id = :org_id AND u.is_active = TRUE "
+        "AND u.deleted_at IS NULL ORDER BY u.name"
+    )
+    return db.execute(query, {"org_id": org_id}).fetchall()
+
+
+def get_active_users_with_roles(db: Session, org_id: int, role: str):
+    query = text(
+        "SELECT u.id, u.name, u.email FROM users u "
+        "JOIN memberships m ON u.id = m.user_id "
+        "WHERE m.org_id = :org_id AND u.is_active = TRUE "
+        "AND u.deleted_at IS NULL AND m.role = :role ORDER BY u.name"
+    )
+    return db.execute(query, {"org_id": org_id, "role": role}).fetchall()
+
+
+def count_active_users(db: Session, org_id: int):
+    query = text(
+        "SELECT COUNT(*) FROM users u "
+        "JOIN memberships m ON u.id = m.user_id "
+        "WHERE m.org_id = :org_id AND u.is_active = TRUE "
+        "AND u.deleted_at IS NULL"
+    )
+    return db.execute(query, {"org_id": org_id}).scalar()

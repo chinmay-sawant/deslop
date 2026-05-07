@@ -1,0 +1,33 @@
+use std::thread;
+
+fn process_items(items: Vec<String>) {
+    let mut handles = Vec::new();
+    for item in items {
+        let handle = thread::spawn(move || {
+            process_one(&item);
+        });
+        handles.push(handle);
+    }
+    for handle in handles {
+        handle.join().unwrap();
+    }
+}
+
+fn scan_all_targets(targets: Vec<String>) {
+    for target in targets {
+        thread::spawn(move || {
+            scan(&target);
+        });
+    }
+}
+
+fn parallel_map(items: Vec<u64>) -> Vec<u64> {
+    let mut handles = Vec::new();
+    for item in items {
+        handles.push(thread::spawn(move || item * 2));
+    }
+    handles.into_iter().map(|h| h.join().unwrap()).collect()
+}
+
+fn process_one(_item: &str) {}
+fn scan(_target: &str) {}

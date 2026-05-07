@@ -1,0 +1,48 @@
+from dataclasses import dataclass, field
+from datetime import datetime
+
+
+@dataclass
+class User:
+    id: int
+    name: str
+    email: str
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    is_active: bool = True
+
+    def deactivate(self):
+        self.is_active = False
+
+    def update_email(self, new_email: str):
+        if "@" not in new_email:
+            raise ValueError("Invalid email")
+        self.email = new_email
+
+
+@dataclass
+class Order:
+    id: int
+    total: float
+    status: str
+    created_at: datetime = field(default_factory=datetime.utcnow)
+
+    def mark_completed(self):
+        self.status = "completed"
+
+    def cancel(self):
+        if self.status == "completed":
+            raise ValueError("Cannot cancel completed order")
+        self.status = "cancelled"
+
+
+@dataclass
+class Product:
+    id: int
+    name: str
+    price: float
+    stock: int
+
+    def reduce_stock(self, quantity: int):
+        if quantity > self.stock:
+            raise ValueError("Insufficient stock")
+        self.stock -= quantity

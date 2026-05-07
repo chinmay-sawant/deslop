@@ -1,0 +1,14 @@
+{
+  "id": "gin_handler_uses_action_param_switch_for_many_use_cases",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that branch on `action`, `type`, or mode strings to serve many workflows from one endpoint function.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

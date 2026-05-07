@@ -1,0 +1,9 @@
+use std::collections::HashSet;
+
+fn find_common(left: &[u64], right: &[u64]) -> Vec<u64> {
+    let right_set: HashSet<u64> = right.iter().copied().collect();
+    left.iter()
+        .copied()
+        .filter(|x| right_set.contains(x))
+        .collect()
+}

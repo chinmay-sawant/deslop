@@ -1,0 +1,31 @@
+import asyncio
+from typing import Any
+
+
+async def fetch_all_user_data(user_ids: list) -> tuple[list[Any], list[Exception]]:
+    tasks = [fetch_user_data(uid) for uid in user_ids]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    successes = [r for r in results if not isinstance(r, Exception)]
+    failures = [r for r in results if isinstance(r, Exception)]
+    return successes, failures
+
+
+async def process_batch(items: list) -> tuple[list, list]:
+    tasks = [process_item(item) for item in items]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    successes = []
+    failures = []
+    for result in results:
+        if isinstance(result, Exception):
+            failures.append(result)
+        else:
+            successes.append(result)
+    return successes, failures
+
+
+async def notify_all_users(user_ids: list, message: str):
+    tasks = [send_notification(uid, message) for uid in user_ids]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    failed = [uid for uid, r in zip(user_ids, results) if isinstance(r, Exception)]
+    if failed:
+        logger.warning(f"Failed to notify {len(failed)} users: {failed}")

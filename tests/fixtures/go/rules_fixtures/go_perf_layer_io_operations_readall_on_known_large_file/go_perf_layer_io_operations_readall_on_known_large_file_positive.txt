@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_io_operations_readall_on_known_large_file: Layer: I/O operations. Flag os.ReadFile or io.ReadAll on files that are processed sequentially.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule549PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario549Positive(records []Rule549PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

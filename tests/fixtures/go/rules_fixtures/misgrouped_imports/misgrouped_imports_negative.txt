@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+
+	gin "github.com/gin-gonic/gin"
+)
+
+// scenario for misgrouped_imports: Import blocks that place stdlib imports after third-party imports.
+// fixture polarity: negative; family: style; severity: info.
+func scenario752Negative(ctx *gin.Context, w http.ResponseWriter) string {
+	w.WriteHeader(http.StatusOK)
+	return fmt.Sprint(ctx.FullPath())
+}

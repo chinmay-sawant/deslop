@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for row_by_row_upsert_loop: Upsert-style writes executed row by row inside loops instead of batched.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule292NegativeRecord struct { ID int }
+
+func scenario292Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule292NegativeRecord{}).Error
+}

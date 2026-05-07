@@ -1,0 +1,14 @@
+{
+  "id": "context_withvalue_used_for_dependencies_or_large_payloads",
+  "language": "go",
+  "family": "context",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "context.WithValue used for dependency-like objects or payload-like data instead of lightweight request metadata.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

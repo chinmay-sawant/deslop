@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for request_id_generation_duplicated_outside_middleware: Repeated request-id creation logic spread across handlers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule142NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule142NegativeService interface {
+	Run(context.Context, Rule142NegativeRecord) error
+}
+
+func scenario142Negative(ctx context.Context, service Rule142NegativeService, input Rule142NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

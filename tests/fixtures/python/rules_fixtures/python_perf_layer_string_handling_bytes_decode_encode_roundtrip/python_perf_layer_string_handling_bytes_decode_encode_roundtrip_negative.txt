@@ -1,0 +1,12 @@
+def process_payload(data: bytes) -> bytes:
+    lines = data.split(b"\n")
+    result = b"\n".join(line.strip() for line in lines)
+    return result
+
+
+def normalize_bytes(raw: bytes) -> bytes:
+    return raw.strip().lower()
+
+
+def transform(data: bytes) -> bytes:
+    return data.replace(b"old", b"new")

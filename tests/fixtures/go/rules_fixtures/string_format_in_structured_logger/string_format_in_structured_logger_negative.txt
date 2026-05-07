@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for string_format_in_structured_logger: `logger.Info(fmt.Sprintf("user %s logged in", user))` instead of structured fields
+// fixture polarity: negative; family: library; severity: info.
+type Rule430NegativeRecord struct {
+	client *http.Client
+}
+
+func scenario430Negative(ctx context.Context, holder Rule430NegativeRecord, url string) (*http.Response, error) {
+	client := holder.client
+	if client == nil {
+		client = &http.Client{Timeout: 2 * time.Second}
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

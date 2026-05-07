@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for init_side_effect: init() functions that perform network, file-system, or subprocess side effects.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario387Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

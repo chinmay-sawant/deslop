@@ -1,0 +1,14 @@
+{
+  "id": "tracing_span_names_duplicated_as_raw_strings",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated raw span-name literals across handlers and services.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

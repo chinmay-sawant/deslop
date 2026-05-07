@@ -1,0 +1,14 @@
+{
+  "id": "too_many_instance_attributes",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Classes that assign an unusually large number of instance attributes across their methods.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

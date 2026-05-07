@@ -1,0 +1,14 @@
+{
+  "id": "custom_validator_registration_inside_handler",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Per-request validator registration instead of startup-time validator wiring.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

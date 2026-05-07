@@ -1,0 +1,43 @@
+use std::sync::OnceLock;
+use tree_sitter::{Parser, Query, QueryCursor};
+
+static FUNCTION_QUERY: OnceLock<Query> = OnceLock::new();
+static IDENTIFIER_QUERY: OnceLock<Query> = OnceLock::new();
+
+fn get_function_query() -> &'static Query {
+    FUNCTION_QUERY.get_or_init(|| {
+        let language = tree_sitter_rust::LANGUAGE.into();
+        Query::new(&language, "(function_item name: (identifier) @name)").unwrap()
+    })
+}
+
+fn get_identifier_query() -> &'static Query {
+    IDENTIFIER_QUERY.get_or_init(|| {
+        let language = tree_sitter_rust::LANGUAGE.into();
+        Query::new(&language, "(identifier) @id").unwrap()
+    })
+}
+
+fn find_functions(source: &str, tree: &tree_sitter::Tree) -> Vec<String> {
+    let query = get_function_query();
+    let mut cursor = QueryCursor::new();
+    cursor
+        .matches(query, tree.root_node(), source.as_bytes())
+        .map(|m| {
+            let node = m.captures[0].node;
+            source[node.start_byte()..node.end_byte()].to_string()
+        })
+        .collect()
+}
+
+fn find_identifiers(source: &str, tree: &tree_sitter::Tree) -> Vec<String> {
+    let query = get_identifier_query();
+    let mut cursor = QueryCursor::new();
+    cursor
+        .matches(query, tree.root_node(), source.as_bytes())
+        .map(|m| {
+            let node = m.captures[0].node;
+            source[node.start_byte()..node.end_byte()].to_string()
+        })
+        .collect()
+}

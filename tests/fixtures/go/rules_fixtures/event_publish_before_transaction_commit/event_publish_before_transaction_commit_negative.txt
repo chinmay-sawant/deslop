@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for event_publish_before_transaction_commit: Event or message publication before durable commit is confirmed.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule031NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule031NegativeService interface {
+	Run(context.Context, Rule031NegativeRecord) error
+}
+
+func scenario031Negative(ctx context.Context, service Rule031NegativeService, input Rule031NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

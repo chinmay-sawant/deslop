@@ -1,0 +1,14 @@
+{
+  "id": "string_format_for_error_wrap",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`fmt.Errorf(\"failed: %s\", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

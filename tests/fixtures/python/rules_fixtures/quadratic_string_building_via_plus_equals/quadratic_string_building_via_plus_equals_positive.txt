@@ -1,0 +1,19 @@
+def build_report(items: list[dict]) -> str:
+    result = ""
+    for item in items:
+        result += f"id={item['id']} name={item['name']}\n"
+    return result
+
+
+def concatenate_log_entries(entries: list[str]) -> str:
+    log = ""
+    for entry in entries:
+        log += "[LOG] " + entry + "\n"
+    return log
+
+
+def build_sql_values(rows: list[tuple]) -> str:
+    values = ""
+    for row in rows:
+        values += f"({row[0]}, '{row[1]}'),"
+    return values.rstrip(",")

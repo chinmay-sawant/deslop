@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_error_handling_cost_panic_recover_for_control_flow: Layer: Error handling cost. Flag panic/recover used for expected branch control in performance-sensitive code.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule532PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario532Positive(records []Rule532PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

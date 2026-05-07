@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_data_structure_choice_slice_queue_pop_front: Layer: Data structure choice. Flag queue-style slice reslicing from the front that can retain backing arrays or shift too much data.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule522PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario522Positive(records []Rule522PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

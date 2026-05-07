@@ -1,0 +1,14 @@
+{
+  "id": "helper_name_hides_mutation_or_io_side_effect",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag helpers whose names sound pure but actually mutate state or perform I/O.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

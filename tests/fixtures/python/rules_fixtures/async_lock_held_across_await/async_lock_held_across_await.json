@@ -1,0 +1,14 @@
+{
+  "id": "async_lock_held_across_await",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Async lock scopes or explicit acquire/release regions that continue across unrelated await points.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

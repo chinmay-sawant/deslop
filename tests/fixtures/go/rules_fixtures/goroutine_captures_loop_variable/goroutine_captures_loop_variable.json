@@ -1,0 +1,14 @@
+{
+  "id": "goroutine_captures_loop_variable",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`for _, v := range items { go func() { use(v) }() }` without rebinding `v` inside the loop body (pre-Go 1.22)",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

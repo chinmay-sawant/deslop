@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen_set: Layer: Algorithmic complexity. Flag recursive graph or tree walks that do not track visited nodes for cyclic or shared inputs.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule501PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario501Positive(records []Rule501PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

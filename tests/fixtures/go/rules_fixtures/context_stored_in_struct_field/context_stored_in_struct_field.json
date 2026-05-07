@@ -1,0 +1,14 @@
+{
+  "id": "context_stored_in_struct_field",
+  "language": "go",
+  "family": "context",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Struct fields that store context.Context instead of keeping context request-scoped through method parameters.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

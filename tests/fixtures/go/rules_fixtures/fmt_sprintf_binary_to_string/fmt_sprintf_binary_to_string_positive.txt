@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for fmt_sprintf_binary_to_string: `fmt.Sprintf("%b", ...)` instead of direct `strconv` integer formatting.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario491Positive(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, fmt.Sprintf("%d", value))
+	}
+	return out
+}

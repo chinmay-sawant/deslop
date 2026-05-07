@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_sensitive_serialize",
+  "language": "rust",
+  "family": "domain_modeling",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Serialize is derived for secret-like fields that may need redaction or exclusion.",
+  "binding_location": "src/heuristics/rust/domain_modeling.rs"
+}

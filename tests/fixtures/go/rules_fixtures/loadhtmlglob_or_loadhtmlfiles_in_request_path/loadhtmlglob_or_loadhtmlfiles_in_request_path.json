@@ -1,0 +1,14 @@
+{
+  "id": "loadhtmlglob_or_loadhtmlfiles_in_request_path",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

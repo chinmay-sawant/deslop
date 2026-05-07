@@ -1,0 +1,12 @@
+package rulefixtures
+
+// scenario for go_perf_layer_algorithmic_complexity_per_request_topk_full_sort: Layer: Algorithmic complexity. Flag request paths that sort all candidates when heap-based top-k selection would bound work.
+// fixture polarity: negative; family: performance; severity: contextual.
+func scenario499Negative(values []string) string {
+	if len(values) == 0 { return "" }
+	best := values[0]
+	for _, value := range values[1:] {
+		if value < best { best = value }
+	}
+	return best
+}

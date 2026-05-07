@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for same_service_method_accepts_tx_and_begins_tx: Service methods that sometimes reuse a transaction and sometimes open one themselves.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule158NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule158NegativeService interface {
+	Run(context.Context, Rule158NegativeRecord) error
+}
+
+func scenario158Negative(ctx context.Context, service Rule158NegativeService, input Rule158NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,26 @@
+struct TaskQueue {
+    items: Vec<Task>,
+}
+
+impl TaskQueue {
+    fn new() -> Self {
+        Self { items: Vec::new() }
+    }
+
+    fn enqueue(&mut self, task: Task) {
+        self.items.push(task);
+    }
+
+    fn dequeue(&mut self) -> Option<Task> {
+        if self.items.is_empty() {
+            return None;
+        }
+        // BAD: Vec::remove(0) shifts all elements O(n)
+        Some(self.items.remove(0))
+    }
+}
+
+struct Task {
+    id: u64,
+    payload: Vec<u8>,
+}

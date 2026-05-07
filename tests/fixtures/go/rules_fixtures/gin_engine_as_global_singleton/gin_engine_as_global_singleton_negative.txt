@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_engine_as_global_singleton: Package-level `*gin.Engine` singletons reused across unrelated startup paths.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule039NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule039NegativeService interface {
+	Run(context.Context, Rule039NegativeRecord) error
+}
+
+func scenario039Negative(ctx context.Context, service Rule039NegativeService, input Rule039NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

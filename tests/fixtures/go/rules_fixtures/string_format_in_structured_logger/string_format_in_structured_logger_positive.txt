@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"log"
+)
+
+// scenario for string_format_in_structured_logger: `logger.Info(fmt.Sprintf("user %s logged in", user))` instead of structured fields
+// fixture polarity: positive; family: library; severity: info.
+func scenario430Positive(values []string) {
+	for _, value := range values {
+		log.Print(fmt.Sprintf("value=%s", value))
+	}
+}

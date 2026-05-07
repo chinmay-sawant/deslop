@@ -1,0 +1,34 @@
+import json
+import os
+
+import requests
+
+
+def process_user_upload(user_id: int, file_path: str) -> dict:
+    with open(file_path, "rb") as f:
+        file_data = f.read()
+
+    response = requests.post(
+        "https://storage.example.com/upload",
+        files={"file": file_data},
+        headers={"User-ID": str(user_id)},
+    )
+    response.raise_for_status()
+
+    upload_url = response.json()["url"]
+
+    with open("/var/log/uploads.log", "a") as log:
+        log.write(f"{user_id}: {upload_url}\n")
+
+    db_conn = get_db_connection()
+    db_conn.execute(
+        "UPDATE users SET last_upload = %s WHERE id = %s",
+        (upload_url, user_id),
+    )
+    db_conn.close()
+
+    return {"user_id": user_id, "url": upload_url}
+
+
+def get_db_connection():
+    pass

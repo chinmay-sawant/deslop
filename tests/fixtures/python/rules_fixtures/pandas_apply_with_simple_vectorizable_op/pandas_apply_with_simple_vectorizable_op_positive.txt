@@ -1,0 +1,21 @@
+import pandas as pd
+
+
+def compute_discount(df):
+    df["discount"] = df["price"].apply(lambda x: x * 0.1)
+    return df
+
+
+def classify_age(df):
+    df["age_group"] = df["age"].apply(lambda x: "adult" if x >= 18 else "minor")
+    return df
+
+
+def compute_full_name(df):
+    df["full_name"] = df.apply(lambda row: f"{row['first']} {row['last']}", axis=1)
+    return df
+
+
+def normalize_scores(df):
+    df["normalized"] = df["score"].apply(lambda x: (x - df["score"].mean()) / df["score"].std())
+    return df

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"crypto/tls"
+)
+
+// scenario for hardcoded_tls_min_version_too_low: `tls.Config{MinVersion: tls.VersionTLS10}` or `tls.VersionTLS11` or `tls.VersionSSL30`
+// fixture polarity: negative; family: security; severity: warning.
+func scenario715Negative() *tls.Config {
+	return &tls.Config{MinVersion: tls.VersionTLS13}
+}

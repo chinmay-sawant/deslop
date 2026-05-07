@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_logging_overhead_logger_created_per_request",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Logging overhead. Flag getLogger or adapter construction per request when stable module loggers are enough.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

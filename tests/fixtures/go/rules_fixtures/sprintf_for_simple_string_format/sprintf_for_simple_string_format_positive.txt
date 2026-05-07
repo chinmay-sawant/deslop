@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for sprintf_for_simple_string_format: `fmt.Sprintf("%s:%s", a, b)` where only `%s` verbs are used
+// fixture polarity: positive; family: performance; severity: info.
+func scenario642Positive(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, fmt.Sprintf("%d", value))
+	}
+	return out
+}

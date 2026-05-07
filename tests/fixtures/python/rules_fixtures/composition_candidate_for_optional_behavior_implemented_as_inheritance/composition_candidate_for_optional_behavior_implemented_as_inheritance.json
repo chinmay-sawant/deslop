@@ -1,0 +1,14 @@
+{
+  "id": "composition_candidate_for_optional_behavior_implemented_as_inheritance",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag optional behavior modeled through inheritance when composition would isolate concerns better.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

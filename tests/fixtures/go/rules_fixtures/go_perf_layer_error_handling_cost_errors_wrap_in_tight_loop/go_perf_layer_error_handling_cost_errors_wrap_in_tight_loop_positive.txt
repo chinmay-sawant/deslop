@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_error_handling_cost_errors_wrap_in_tight_loop: Layer: Error handling cost. Flag repeated error wrapping inside loops where one aggregated context would be cheaper.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule530PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario530Positive(records []Rule530PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

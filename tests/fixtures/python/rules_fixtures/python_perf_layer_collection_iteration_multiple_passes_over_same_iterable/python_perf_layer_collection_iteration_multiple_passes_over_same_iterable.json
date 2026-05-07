@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_collection_iteration_multiple_passes_over_same_iterable",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag independent loops over the same collection where aggregation can be fused.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

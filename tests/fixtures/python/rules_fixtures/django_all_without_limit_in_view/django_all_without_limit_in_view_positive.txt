@@ -1,0 +1,20 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Product
+
+
+class ProductListView(View):
+    def get(self, request):
+        products = Product.objects.all()
+        data = [
+            {"id": p.id, "name": p.name, "price": str(p.price)}
+            for p in products
+        ]
+        return JsonResponse({"products": data})
+
+
+class InventoryReportView(View):
+    def get(self, request):
+        items = Product.objects.all()
+        return JsonResponse({"count": items.count()})

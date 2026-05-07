@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for date_or_cast_wrapped_indexed_column: DATE/CAST wrapping indexed columns in WHERE clauses, preventing index usage.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule253NegativeRecord struct { ID int }
+
+func scenario253Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule253NegativeRecord{}).Error
+}

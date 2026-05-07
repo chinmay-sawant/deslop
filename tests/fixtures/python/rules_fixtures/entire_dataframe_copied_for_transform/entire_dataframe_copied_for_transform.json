@@ -1,0 +1,14 @@
+{
+  "id": "entire_dataframe_copied_for_transform",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Whole DataFrames are copied for transforms that could target a smaller subset or reuse views.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for generic_base_repository_with_reflection_dispatch: Catch-all repositories that depend on reflection-heavy generic CRUD instead of bounded repository APIs.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule035PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario035Positive(w http.ResponseWriter, r *http.Request, repo Rule035PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

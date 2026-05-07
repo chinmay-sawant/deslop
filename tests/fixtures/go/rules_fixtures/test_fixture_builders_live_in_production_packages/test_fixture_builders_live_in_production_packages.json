@@ -1,0 +1,14 @@
+{
+  "id": "test_fixture_builders_live_in_production_packages",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Fixture and factory helpers defined in non-test production files.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

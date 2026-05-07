@@ -1,0 +1,14 @@
+{
+  "id": "regex_compile_in_hot_path",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "re.compile(...) or similar regex compilation repeated inside hot code paths.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

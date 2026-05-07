@@ -1,0 +1,14 @@
+{
+  "id": "rust_large_future_stack",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Large allocations may be captured across await points and bloat future size.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

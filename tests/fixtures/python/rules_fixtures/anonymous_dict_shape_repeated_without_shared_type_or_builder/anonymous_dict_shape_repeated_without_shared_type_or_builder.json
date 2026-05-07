@@ -1,0 +1,14 @@
+{
+  "id": "anonymous_dict_shape_repeated_without_shared_type_or_builder",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag repeated ad hoc dict payload shapes with no shared type or builder.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for fmt_sprintf_quote_to_string: `fmt.Sprintf("%q", s)` instead of `strconv.Quote(s)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario496Positive(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, fmt.Sprintf("%d", value))
+	}
+	return out
+}

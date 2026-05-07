@@ -1,0 +1,14 @@
+{
+  "id": "unsafe_without_safety_comment",
+  "language": "rust",
+  "family": "hygiene",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "unsafe fn or unsafe block without a nearby SAFETY: comment within the previous two lines.",
+  "binding_location": "src/analysis/rust/findings/mod.rs"
+}

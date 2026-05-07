@@ -1,0 +1,22 @@
+use reqwest::Client;
+use std::sync::Arc;
+use tokio::sync::OnceCell;
+
+static CLIENT: OnceCell<Arc<Client>> = OnceCell::const_new();
+
+async fn get_client() -> Arc<Client> {
+    CLIENT
+        .get_or_init(|| async {
+            Arc::new(Client::builder().build().expect("client"))
+        })
+        .await
+        .clone()
+}
+
+// GOOD: reuse shared client
+async fn call_api(url: &str) -> Result<String, reqwest::Error> {
+    let client = get_client().await;
+    let resp = client.get(url).send().await?;
+    let body = resp.text().await?;
+    Ok(body)
+}

@@ -1,0 +1,32 @@
+import json
+import csv
+
+def stream_records(filepath):
+    with open(filepath, "r") as f:
+        for line in f:
+            yield json.loads(line)
+
+def fetch_users_paginated(db, batch_size=100):
+    offset = 0
+    while True:
+        cursor = db.execute("SELECT * FROM users LIMIT ? OFFSET ?", (batch_size, offset))
+        rows = cursor.fetchall()
+        if not rows:
+            break
+        yield from rows
+        offset += batch_size
+
+def iterate_log_lines(log_path):
+    with open(log_path, "r") as f:
+        for line in f:
+            yield line.rstrip("\n")
+
+def stream_csv_rows(csv_path):
+    with open(csv_path, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            yield row
+
+def get_products_page(client, page=1, per_page=50):
+    response = client.get(f"/api/products?page={page}&per_page={per_page}")
+    return response.json()

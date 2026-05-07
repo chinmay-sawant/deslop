@@ -1,0 +1,14 @@
+{
+  "id": "route_groups_created_inside_handlers",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Code that constructs or mutates route groups outside the startup router layer.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

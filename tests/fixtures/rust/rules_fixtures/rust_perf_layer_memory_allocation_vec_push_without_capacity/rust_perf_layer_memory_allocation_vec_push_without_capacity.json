@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_memory_allocation_vec_push_without_capacity",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag Vec pushes in builders where an obvious capacity is known.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "sql_query_text_asserted_in_handler_tests",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "SQL-shape assertions written at handler level instead of repository tests.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,23 @@
+fn process_data(data: &[u8]) {
+    for chunk in data.chunks(1024) {
+        let text = std::str::from_utf8(chunk).unwrap();
+        process_text(text);
+    }
+}
+
+fn validate_batch(items: &[&str]) -> Vec<bool> {
+    items.iter().map(|s| s.is_ascii()).collect()
+}
+
+fn filter_valid_utf8(chunks: &[Vec<u8>]) -> Vec<String> {
+    chunks
+        .iter()
+        .map(|chunk| String::from_utf8(chunk.clone()).unwrap())
+        .collect()
+}
+
+fn check_encoding(data: &[u8]) -> bool {
+    std::str::from_utf8(data).is_ok()
+}
+
+fn process_text(_text: &str) {}

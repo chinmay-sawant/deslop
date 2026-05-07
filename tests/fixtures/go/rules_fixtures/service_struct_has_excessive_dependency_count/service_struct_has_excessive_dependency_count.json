@@ -1,0 +1,14 @@
+{
+  "id": "service_struct_has_excessive_dependency_count",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Services with too many unrelated dependencies, which often signals a god-service.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

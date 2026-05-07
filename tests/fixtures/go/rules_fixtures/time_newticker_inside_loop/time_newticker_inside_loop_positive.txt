@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_newticker_inside_loop: `time.NewTicker(...)` inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario682Positive(items []string) int {
+	total := 0
+	for _, item := range items {
+		_ = time.Now()
+		_ = time.After(time.Millisecond)
+		total += len(item)
+	}
+	return total
+}

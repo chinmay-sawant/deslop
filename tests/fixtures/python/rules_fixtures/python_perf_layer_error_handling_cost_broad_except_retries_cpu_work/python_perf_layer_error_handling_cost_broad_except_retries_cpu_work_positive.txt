@@ -1,0 +1,21 @@
+import json
+
+def process_batch(records):
+    for attempt in range(3):
+        try:
+            parsed = []
+            for raw in records:
+                decoded = json.loads(raw["payload"])
+                enriched = {**decoded, "score": compute_score(decoded)}
+                normalized = normalize(enriched)
+                parsed.append(normalized)
+            return parsed
+        except Exception:
+            continue
+    raise RuntimeError("batch failed after retries")
+
+def compute_score(data):
+    return sum(v ** 2 for v in data.get("values", []))
+
+def normalize(record):
+    return {k.lower(): v for k, v in record.items()}

@@ -1,0 +1,14 @@
+{
+  "id": "counter_most_common_all_items_retrieved_for_top_one",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Counter.most_common() called without an argument and subscripted with [0]; pass n=1 or use max().",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

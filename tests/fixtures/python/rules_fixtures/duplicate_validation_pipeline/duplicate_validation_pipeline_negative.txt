@@ -1,0 +1,28 @@
+from typing import Any, Dict, Optional
+
+
+def _validate_person(data: Dict[str, Any], *, require_password: bool = True) -> Dict[str, Any]:
+    if not data.get("name"):
+        raise ValueError("Name is required")
+    if not data.get("email"):
+        raise ValueError("Email is required")
+    if "@" not in data["email"]:
+        raise ValueError("Invalid email format")
+    password = data.get("password", "")
+    if require_password and len(password) < 8:
+        raise ValueError("Password must be at least 8 characters")
+    if password and len(password) < 8:
+        raise ValueError("Password must be at least 8 characters")
+    return data
+
+
+def validate_create_user(data: Dict[str, Any]) -> Dict[str, Any]:
+    return _validate_person(data, require_password=True)
+
+
+def validate_update_user(data: Dict[str, Any]) -> Dict[str, Any]:
+    return _validate_person(data, require_password=False)
+
+
+def validate_create_invite(data: Dict[str, Any]) -> Dict[str, Any]:
+    return _validate_person(data, require_password=True)

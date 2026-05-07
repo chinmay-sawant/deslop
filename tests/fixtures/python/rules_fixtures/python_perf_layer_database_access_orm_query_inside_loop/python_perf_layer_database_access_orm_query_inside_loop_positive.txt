@@ -1,0 +1,23 @@
+def get_orders_with_users(order_ids: list[int]) -> list[dict]:
+    results = []
+    for order_id in order_ids:
+        order = session.query(Order).filter(Order.id == order_id).first()
+        user = session.query(User).filter(User.id == order.user_id).first()
+        results.append({"order": order, "user": user})
+    return results
+
+
+def enrich_products(category_ids: list[int]) -> list[dict]:
+    enriched = []
+    for cat_id in category_ids:
+        category = session.query(Category).filter(Category.id == cat_id).first()
+        products = session.query(Product).filter(Product.category_id == cat_id).all()
+        enriched.append({"category": category, "products": products})
+    return enriched
+
+
+def build_invoice(order_id: int) -> dict:
+    order = session.query(Order).filter(Order.id == order_id).first()
+    items = session.query(OrderItem).filter(OrderItem.order_id == order_id).all()
+    customer = session.query(Customer).filter(Customer.id == order.customer_id).first()
+    return {"order": order, "items": items, "customer": customer}

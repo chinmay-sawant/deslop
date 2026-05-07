@@ -1,0 +1,21 @@
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/users/{user_id}")
+async def get_user(user_id: int):
+    user = await fetch_user(user_id)
+    return {"id": user.id, "name": user.name, "email": user.email}
+
+
+@app.get("/orders")
+async def list_orders(status: str = "active"):
+    orders = await fetch_orders(status)
+    return [{"id": o.id, "total": o.total, "status": o.status} for o in orders]
+
+
+@app.post("/payments")
+async def create_payment(amount: int, currency: str):
+    result = await process_payment(amount, currency)
+    return {"id": result.id, "status": result.status, "amount": result.amount}

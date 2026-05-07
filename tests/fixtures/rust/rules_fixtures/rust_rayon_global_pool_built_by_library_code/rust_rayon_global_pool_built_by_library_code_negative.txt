@@ -1,0 +1,26 @@
+use rayon::ThreadPoolBuilder;
+
+// GOOD: global pool built in binary entry point only
+pub mod analytics {
+    pub fn process_events(events: &[Event]) -> Vec<ProcessedEvent> {
+        // Uses whatever global pool the binary configured
+        events.par_iter().map(|e| process(e)).collect()
+    }
+}
+
+pub mod indexer {
+    pub fn build_index(docs: &[Document]) -> Index {
+        docs.par_iter().map(|doc| index_doc(doc)).collect()
+    }
+}
+
+// In main.rs or test harness:
+fn main() {
+    ThreadPoolBuilder::new()
+        .num_threads(num_cpus::get())
+        .build_global()
+        .unwrap();
+
+    // Now run the application
+    run_app();
+}

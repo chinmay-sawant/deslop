@@ -1,0 +1,32 @@
+import os
+from pathlib import Path
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+@app.get("/api/files/{filename}")
+async def get_file(filename: str):
+    path = f"/data/uploads/{filename}"
+    if not os.path.exists(path):
+        return {"error": "not found"}
+    with open(path, "rb") as f:
+        content = f.read()
+    return {"filename": filename, "size": len(content)}
+
+@app.get("/api/config")
+async def get_config():
+    config_path = Path("/etc/myapp/config.json")
+    import json
+    with open(config_path) as f:
+        config = json.load(f)
+    return config
+
+@app.post("/api/export")
+async def export_data(request: Request):
+    body = await request.json()
+    export_path = f"/tmp/exports/{body['name']}.csv"
+    os.makedirs(os.path.dirname(export_path), exist_ok=True)
+    with open(export_path, "w") as f:
+        for row in body["data"]:
+            f.write(",".join(str(v) for v in row) + "\n")
+    return {"path": export_path}

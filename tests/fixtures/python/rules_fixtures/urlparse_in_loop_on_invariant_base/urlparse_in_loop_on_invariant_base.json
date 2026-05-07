@@ -1,0 +1,14 @@
+{
+  "id": "urlparse_in_loop_on_invariant_base",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "urlparse() or urlsplit() is repeated inside loops for invariant base values.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

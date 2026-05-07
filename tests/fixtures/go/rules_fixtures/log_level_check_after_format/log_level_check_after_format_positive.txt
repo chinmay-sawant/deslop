@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"log"
+)
+
+// scenario for log_level_check_after_format: `zap.S().Debugf("expensive %v", computeDebug())` or `logrus.Debugf("data: %v", expensiveCall())` where the expensive computation happens regardless of log level
+// fixture polarity: positive; family: library; severity: info.
+func scenario415Positive(values []string) {
+	for _, value := range values {
+		log.Print(fmt.Sprintf("value=%s", value))
+	}
+}

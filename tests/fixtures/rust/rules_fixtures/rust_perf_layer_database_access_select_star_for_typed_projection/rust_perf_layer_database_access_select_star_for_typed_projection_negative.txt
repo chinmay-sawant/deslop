@@ -1,0 +1,17 @@
+use sqlx::PgPool;
+
+#[derive(sqlx::FromRow)]
+struct OrderSummary {
+    id: i64,
+    customer_name: String,
+    total: f64,
+}
+
+async fn get_order_summaries(pool: &PgPool) -> Result<Vec<OrderSummary>, sqlx::Error> {
+    // GOOD: explicit column projection matches struct fields
+    sqlx::query_as::<_, OrderSummary>(
+        "SELECT id, customer_name, total FROM orders"
+    )
+    .fetch_all(pool)
+    .await
+}

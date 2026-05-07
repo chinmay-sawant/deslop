@@ -1,0 +1,30 @@
+import threading
+
+
+class ConnectionPool:
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._connections = []
+
+    def acquire_lock(self):
+        self._lock.acquire()
+
+    def release_lock(self):
+        self._lock.release()
+
+    def get_connection(self):
+        return self._connections.pop() if self._connections else None
+
+
+pool = ConnectionPool()
+
+
+def start_transaction():
+    pool.acquire_lock()
+    conn = pool.get_connection()
+    return conn
+
+
+def end_transaction(conn):
+    pool._connections.append(conn)
+    pool.release_lock()

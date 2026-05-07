@@ -1,0 +1,14 @@
+{
+  "id": "viper_get_in_hot_path",
+  "language": "go",
+  "family": "library",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`viper.GetString(\"key\")` or `viper.GetInt(\"key\")` inside handler functions or loops",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

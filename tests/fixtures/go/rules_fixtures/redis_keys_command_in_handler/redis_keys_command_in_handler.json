@@ -1,0 +1,14 @@
+{
+  "id": "redis_keys_command_in_handler",
+  "language": "go",
+  "family": "library",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`rdb.Keys(ctx, pattern)` in handler or loop code",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

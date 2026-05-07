@@ -1,0 +1,14 @@
+{
+  "id": "api_examples_embedded_in_handlers_instead_of_transport_docs_helpers",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Long example payload blocks hardcoded in handlers rather than doc or example helpers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

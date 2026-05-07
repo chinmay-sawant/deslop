@@ -1,0 +1,23 @@
+import openai
+
+openai.api_key = "sk-proj-abc123def456ghi789jkl012mno345pqr678stu901vwx234"
+
+def generate_embedding(text):
+    response = openai.Embedding.create(input=text, model="text-embedding-ada-002")
+    return response["data"][0]["embedding"]
+
+AWS_ACCESS_KEY = "AKIAIOSFODNN7EXAMPLE"
+AWS_SECRET_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+
+def send_to_s3(data):
+    client = boto3.client("s3", aws_access_key_id=AWS_ACCESS_KEY,
+                          aws_secret_access_key=AWS_SECRET_KEY)
+    client.put_object(Bucket="my-bucket", Key="data.json", Body=json.dumps(data))
+
+HF_TOKEN = "hf_aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789"
+
+def query_model(prompt):
+    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+    response = requests.post("https://api-inference.huggingface.co/models/gpt2",
+                            headers=headers, json={"inputs": prompt})
+    return response.json()

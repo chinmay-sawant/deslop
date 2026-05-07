@@ -1,0 +1,34 @@
+use serde_json::Value;
+use std::collections::HashMap;
+
+fn process_request(body: &[u8]) -> Result<String, Box<dyn std::error::Error>> {
+    let data: Value = serde_json::from_slice(body)?;
+
+    let name = data["user"]["name"].as_str().unwrap_or("unknown");
+    let email = data["user"]["email"].as_str().unwrap_or("");
+    let role = data["user"]["role"].as_str().unwrap_or("viewer");
+
+    let mut result = HashMap::new();
+    result.insert("name", name);
+    result.insert("email", email);
+    result.insert("role", role);
+
+    Ok(serde_json::to_string(&result)?)
+}
+
+fn extract_nested_field(config: &Value) -> String {
+    config["database"]["connection"]["host"]
+        .as_str()
+        .unwrap_or("localhost")
+        .to_string()
+}
+
+fn merge_values(a: &Value, b: &Value) -> Value {
+    let mut map = a.clone();
+    if let (Some(a_obj), Some(b_obj)) = (map.as_object_mut(), b.as_object()) {
+        for (k, v) in b_obj {
+            a_obj.insert(k.clone(), v.clone());
+        }
+    }
+    map
+}

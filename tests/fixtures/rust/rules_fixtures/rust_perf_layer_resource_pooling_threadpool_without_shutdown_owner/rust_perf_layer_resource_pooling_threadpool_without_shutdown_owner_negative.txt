@@ -1,0 +1,53 @@
+use std::sync::mpsc;
+use std::thread;
+
+struct ThreadPool {
+    sender: Option<mpsc::Sender<Box<dyn FnOnce() + Send>>>,
+    workers: Vec<thread::JoinHandle<()>>,
+}
+
+impl ThreadPool {
+    // GOOD: explicit shutdown with join handle ownership
+    fn new(size: usize) -> Self {
+        let (sender, receiver) = mpsc::channel::<Box<dyn FnOnce() + Send>>();
+        let receiver = std::sync::Arc::new(std::sync::Mutex::new(receiver));
+        let mut workers = Vec::with_capacity(size);
+
+        for _ in 0..size {
+            let rx = std::sync::Arc::clone(&receiver);
+            workers.push(thread::spawn(move || {
+                loop {
+                    let task = rx.lock().unwrap().recv();
+                    match task {
+                        Ok(task) => task(),
+                        Err(_) => break,
+                    }
+                }
+            }));
+        }
+
+        Self {
+            sender: Some(sender),
+            workers,
+        }
+    }
+
+    fn execute<F: FnOnce() + Send + 'static>(&self, f: F) {
+        if let Some(sender) = &self.sender {
+            sender.send(Box::new(f)).unwrap();
+        }
+    }
+
+    fn shutdown(&mut self) {
+        self.sender.take();
+        for worker in self.workers.drain(..) {
+            worker.join().unwrap();
+        }
+    }
+}
+
+impl Drop for ThreadPool {
+    fn drop(&mut self) {
+        self.shutdown();
+    }
+}

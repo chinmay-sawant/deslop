@@ -1,0 +1,13 @@
+package rulefixtures
+
+// #include <stdlib.h>
+import (
+	"C"
+)
+
+// scenario for cgo_string_lifetime: `C.CString(goString)` without a corresponding `C.free` in the same function, or deferred `C.free`
+// fixture polarity: positive; family: security; severity: warning.
+func scenario698Positive(value string) *C.char {
+	ptr := C.CString(value)
+	return ptr
+}

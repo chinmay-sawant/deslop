@@ -1,0 +1,22 @@
+#[derive(Clone)]
+struct Record {
+    id: u64,
+    name: String,
+    status: Status,
+}
+
+#[derive(Clone, PartialEq)]
+enum Status {
+    Active,
+    Inactive,
+    Pending,
+}
+
+fn get_active_names(records: &[Record]) -> Vec<String> {
+    // GOOD: filter by reference, clone only what passes
+    records
+        .iter()
+        .filter(|r| r.status == Status::Active)
+        .map(|r| r.name.clone())
+        .collect()
+}

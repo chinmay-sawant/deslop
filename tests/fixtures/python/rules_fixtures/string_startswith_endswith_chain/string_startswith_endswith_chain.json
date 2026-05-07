@@ -1,0 +1,14 @@
+{
+  "id": "string_startswith_endswith_chain",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated startswith(...) or endswith(...) checks that can often be combined into tuple-based calls.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

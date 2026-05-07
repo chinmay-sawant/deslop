@@ -1,0 +1,31 @@
+from jinja2 import Environment, FileSystemLoader
+
+env = Environment(loader=FileSystemLoader("templates"))
+
+def render_email_batch(users: list[dict]) -> list[str]:
+    template = env.get_template("welcome_email.html")
+    results = []
+    for user in users:
+        html = template.render(
+            username=user["name"],
+            email=user["email"],
+            plan=user["plan"],
+        )
+        results.append(html)
+    return results
+
+def generate_invoices(orders: list[dict]) -> list[str]:
+    tmpl = env.get_template("invoice.html")
+    invoices = []
+    for order in orders:
+        rendered = tmpl.render(
+            order_id=order["id"],
+            items=order["items"],
+            total=order["total"],
+        )
+        invoices.append(rendered)
+    return invoices
+
+def build_report_pages(data_chunks: list[list[dict]]) -> list[str]:
+    tpl = env.get_template("report_page.html")
+    return [tpl.render(rows=chunk) for chunk in data_chunks]

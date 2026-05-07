@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_resource_pooling_pool_created_per_request",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Resource pooling. Flag database, HTTP, or worker pools created per request instead of process or dependency ownership.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

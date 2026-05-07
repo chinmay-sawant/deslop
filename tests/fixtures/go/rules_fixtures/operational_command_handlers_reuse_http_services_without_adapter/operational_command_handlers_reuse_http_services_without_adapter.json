@@ -1,0 +1,14 @@
+{
+  "id": "operational_command_handlers_reuse_http_services_without_adapter",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "CLI or cron entrypoints that import Gin-only service contracts instead of neutral application services.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

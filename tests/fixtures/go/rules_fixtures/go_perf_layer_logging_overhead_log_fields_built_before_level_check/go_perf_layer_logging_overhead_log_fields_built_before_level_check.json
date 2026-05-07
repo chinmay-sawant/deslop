@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_logging_overhead_log_fields_built_before_level_check",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Logging overhead. Flag expensive log field construction before checking whether the level is enabled.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

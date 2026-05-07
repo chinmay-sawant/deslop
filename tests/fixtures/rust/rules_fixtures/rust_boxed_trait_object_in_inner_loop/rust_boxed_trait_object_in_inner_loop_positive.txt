@@ -1,0 +1,31 @@
+trait Validator {
+    fn validate(&self, input: &str) -> bool;
+}
+
+struct MinLength(usize);
+impl Validator for MinLength {
+    fn validate(&self, input: &str) -> bool {
+        input.len() >= self.0
+    }
+}
+
+struct NoSpaces;
+impl Validator for NoSpaces {
+    fn validate(&self, input: &str) -> bool {
+        !input.contains(' ')
+    }
+}
+
+fn validate_all(input: &str, rules: &[Box<dyn Validator>]) -> bool {
+    rules.iter().all(|r| r.validate(input))
+}
+
+fn run_validation_batch(inputs: &[&str]) {
+    for input in inputs {
+        let rules: Vec<Box<dyn Validator>> = vec![
+            Box::new(MinLength(3)),
+            Box::new(NoSpaces),
+        ];
+        let _ = validate_all(input, &rules);
+    }
+}

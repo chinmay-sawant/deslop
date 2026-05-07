@@ -1,0 +1,35 @@
+def calculate_discount(price: float, user_type: str) -> float:
+    if user_type == "premium":
+        return price * 0.8
+    elif user_type == "gold":
+        return price * 0.7
+    elif user_type == "vip":
+        return price * 0.6
+    else:
+        return price
+
+
+def get_priority_label(priority: int) -> str:
+    if priority == 1:
+        return "critical"
+    elif priority == 2:
+        return "high"
+    elif priority == 3:
+        return "medium"
+    elif priority == 4:
+        return "low"
+    else:
+        return "unknown"
+
+
+def classify_response(status_code: int) -> str:
+    if status_code == 200:
+        return "success"
+    elif status_code == 404:
+        return "not_found"
+    elif status_code == 500:
+        return "server_error"
+    elif status_code == 403:
+        return "forbidden"
+    else:
+        return "other"

@@ -1,0 +1,19 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_items(items: list[dict]) -> None:
+    [logger.info("Processing item: %s", item["id"]) for item in items]
+
+
+def validate_batch(records: list[dict]) -> None:
+    [record.update({"validated": True}) for record in records if record.get("active")]
+
+
+def send_notifications(users: list[dict]) -> None:
+    [print(f"Notification sent to {user['email']}") for user in users if user.get("subscribed")]
+
+
+def update_metrics(events: list[dict]) -> None:
+    [metrics_counter.inc() for event in events if event["type"] == "error"]

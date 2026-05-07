@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for http_server_bootstrap_without_graceful_shutdown_flow: HTTP server startup paths that lack visible signal handling and Shutdown ownership for graceful shutdown.
+// fixture polarity: positive; family: idioms; severity: warning.
+func scenario383Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

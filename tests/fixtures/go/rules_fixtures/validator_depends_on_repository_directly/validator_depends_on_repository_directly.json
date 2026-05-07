@@ -1,0 +1,14 @@
+{
+  "id": "validator_depends_on_repository_directly",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Reusable validator code that reaches into repositories instead of receiving precomputed facts or focused services.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

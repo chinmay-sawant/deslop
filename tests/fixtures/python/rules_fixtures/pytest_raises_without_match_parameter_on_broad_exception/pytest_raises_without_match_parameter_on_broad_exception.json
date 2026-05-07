@@ -1,0 +1,14 @@
+{
+  "id": "pytest_raises_without_match_parameter_on_broad_exception",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "pytest.raises used with a broad exception type without a match= pattern to verify the message.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

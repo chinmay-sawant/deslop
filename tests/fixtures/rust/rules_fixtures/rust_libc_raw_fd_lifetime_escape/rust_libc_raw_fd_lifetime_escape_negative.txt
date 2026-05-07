@@ -1,0 +1,21 @@
+use std::fs::File;
+use std::os::unix::io::{AsRawFd, OwnedFd};
+
+struct Connection {
+    _owned: OwnedFd,
+    fd: libc::c_int,
+}
+
+impl Connection {
+    fn new(file: File) -> Self {
+        let owned: OwnedFd = file.into();
+        let fd = owned.as_raw_fd();
+        Connection { _owned: owned, fd }
+    }
+
+    fn send(&self, data: &[u8]) -> isize {
+        unsafe {
+            libc::write(self.fd, data.as_ptr() as *const libc::c_void, data.len())
+        }
+    }
+}

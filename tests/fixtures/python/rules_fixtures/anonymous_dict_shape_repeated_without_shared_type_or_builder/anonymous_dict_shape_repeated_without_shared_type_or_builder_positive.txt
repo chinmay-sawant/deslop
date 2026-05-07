@@ -1,0 +1,42 @@
+def create_user_response(user):
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+        "created_at": user.created_at.isoformat(),
+    }
+
+
+def create_admin_user_response(user):
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+        "created_at": user.created_at.isoformat(),
+        "last_login": user.last_login.isoformat(),
+    }
+
+
+def serialize_user_for_export(user):
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+        "created_at": user.created_at.isoformat(),
+    }
+
+
+def build_api_user_payload(user, include_admin_fields=False):
+    result = {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+        "created_at": user.created_at.isoformat(),
+    }
+    if include_admin_fields:
+        result["last_login"] = user.last_login.isoformat()
+    return result

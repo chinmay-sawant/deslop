@@ -1,0 +1,14 @@
+{
+  "id": "sibling_modules_depend_on_private_helpers_from_each_other",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag sibling modules that reach into each other's private helpers instead of using a shared boundary.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

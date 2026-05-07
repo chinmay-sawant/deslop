@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for defer_in_loop_resource_growth: defer statements inside loops that can accumulate resources until function exit.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario376Positive(paths []string) error {
+	for _, path := range paths {
+		file, err := os.Open(path)
+		if err != nil { return err }
+		defer file.Close()
+	}
+	return nil
+}

@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for request_context_passed_to_background_task_without_detach: Background goroutines that still appear to inherit request-scoped context instead of detaching with context.WithoutCancel or equivalent.
+// fixture polarity: positive; family: context; severity: warning.
+func scenario243Positive(url string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return http.DefaultClient.Do(req)
+}

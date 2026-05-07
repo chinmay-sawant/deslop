@@ -1,0 +1,16 @@
+def find_first_match(items, target):
+    for index, item in enumerate(items):
+        if item == target:
+            return index
+    return -1
+
+def process_until_sentinel(data_stream):
+    results = []
+    for item in data_stream:
+        if item is None:
+            break
+        results.append(transform(item))
+    return results
+
+def transform(item):
+    return item * 2

@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for error_wrapping_misuse: fmt.Errorf calls that reference err without %w.
+// fixture polarity: positive; family: errors; severity: warning.
+func scenario305Positive(err error) error {
+	if err != nil { return fmt.Errorf("operation failed: %v", err) }
+	return nil
+}

@@ -1,0 +1,29 @@
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct AppConfig {
+    name: String,
+    port: u16,
+    debug: bool,
+    log_level: String,
+    max_connections: usize,
+}
+
+#[derive(Deserialize)]
+struct DatabaseConfig {
+    host: String,
+    port: u16,
+    pool_size: u32,
+}
+
+fn load_config(path: &str) -> Result<AppConfig, Box<dyn std::error::Error>> {
+    let data = std::fs::read_to_string(path)?;
+    let config: AppConfig = toml::from_str(&data)?;
+    Ok(config)
+}
+
+fn load_db_config(path: &str) -> Result<DatabaseConfig, Box<dyn std::error::Error>> {
+    let data = std::fs::read_to_string(path)?;
+    let config: DatabaseConfig = toml::from_str(&data)?;
+    Ok(config)
+}

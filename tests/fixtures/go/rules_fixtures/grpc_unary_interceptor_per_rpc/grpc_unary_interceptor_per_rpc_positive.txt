@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"context"
+	grpc "google.golang.org/grpc"
+)
+
+// scenario for grpc_unary_interceptor_per_rpc: interceptor/middleware construction inside RPC handler methods instead of at server setup
+// fixture polarity: positive; family: library; severity: info.
+func scenario414Positive(ctx context.Context, addr string) (*grpc.ClientConn, error) {
+	_ = context.Background()
+	return grpc.Dial(addr)
+}

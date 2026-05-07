@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for pagination_validation_missing_shared_bound_helper: API modules that hand-roll page and page-size bounds in many handlers instead of a shared contract.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule110NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule110NegativeService interface {
+	Run(context.Context, Rule110NegativeRecord) error
+}
+
+func scenario110Negative(ctx context.Context, service Rule110NegativeService, input Rule110NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

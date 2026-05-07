@@ -1,0 +1,14 @@
+{
+  "id": "llm_full_response_loaded_into_memory",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Large LLM responses are loaded fully into memory instead of streamed or incrementally consumed.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

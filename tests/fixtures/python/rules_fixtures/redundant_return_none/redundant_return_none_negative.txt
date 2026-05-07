@@ -1,0 +1,20 @@
+def check_permissions(user: dict) -> bool:
+    if not user.get("is_active"):
+        return False
+    return user.get("role") == "admin"
+
+
+def find_item(items: list[dict], target_id: str) -> dict | None:
+    for item in items:
+        if item["id"] == target_id:
+            return item
+    return None
+
+
+def process_if_valid(data: dict) -> int | None:
+    if "key" not in data:
+        return None
+    value = data["key"]
+    if value < 0:
+        return None
+    return value * 2

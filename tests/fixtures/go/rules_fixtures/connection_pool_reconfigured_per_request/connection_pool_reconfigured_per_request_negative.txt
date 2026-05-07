@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for connection_pool_reconfigured_per_request: DB pool sizing or lifetime settings changed on request paths.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule249NegativeRecord struct { ID int }
+
+func scenario249Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule249NegativeRecord{}).Error
+}

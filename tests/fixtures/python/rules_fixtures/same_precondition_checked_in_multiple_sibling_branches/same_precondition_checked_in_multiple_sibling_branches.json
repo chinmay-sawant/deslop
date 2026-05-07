@@ -1,0 +1,14 @@
+{
+  "id": "same_precondition_checked_in_multiple_sibling_branches",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions that repeat the same guard in several branches instead of normalizing once.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

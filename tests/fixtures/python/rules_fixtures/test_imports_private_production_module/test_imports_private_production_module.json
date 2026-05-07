@@ -1,0 +1,14 @@
+{
+  "id": "test_imports_private_production_module",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test file imports a private production module (._module) instead of going through the public API.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

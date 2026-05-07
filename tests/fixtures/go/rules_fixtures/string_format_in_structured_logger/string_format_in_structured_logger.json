@@ -1,0 +1,14 @@
+{
+  "id": "string_format_in_structured_logger",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`logger.Info(fmt.Sprintf(\"user %s logged in\", user))` instead of structured fields",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

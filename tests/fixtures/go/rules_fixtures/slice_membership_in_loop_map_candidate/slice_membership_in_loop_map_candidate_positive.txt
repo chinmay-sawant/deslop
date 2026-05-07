@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for slice_membership_in_loop_map_candidate: slices.Contains(...) or slices.Index(...) used inside loops against a stable-looking slice binding.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule364PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario364Positive(records []Rule364PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

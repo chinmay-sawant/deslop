@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_memory_allocation_list_append_without_generator_stream",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag large intermediate lists built only to feed another iterator-compatible consumer.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

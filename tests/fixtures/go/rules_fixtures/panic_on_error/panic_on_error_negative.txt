@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for panic_on_error: err != nil branches that jump straight to panic or log.Fatal style exits.
+// fixture polarity: negative; family: errors; severity: warning.
+func scenario306Negative(err error) error {
+	if err != nil { return fmt.Errorf("operation failed: %w", err) }
+	return nil
+}

@@ -1,0 +1,14 @@
+{
+  "id": "open_redirect_via_user_supplied_url_without_allowlist",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "HTTP redirect target constructed from user-supplied URL without allowlist validation.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

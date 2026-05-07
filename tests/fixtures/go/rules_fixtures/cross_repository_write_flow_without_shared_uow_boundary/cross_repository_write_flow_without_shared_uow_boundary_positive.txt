@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for cross_repository_write_flow_without_shared_uow_boundary: Service methods coordinating several repositories with no explicit shared transaction or consistency boundary.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule020PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario020Positive(w http.ResponseWriter, r *http.Request, repo Rule020PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

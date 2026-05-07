@@ -1,0 +1,14 @@
+{
+  "id": "find_all_then_manual_paginate_in_go",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "All rows fetched and then sliced in Go instead of using database-level pagination.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "pandas_iterrows_in_loop",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "iterrows() is used on DataFrames instead of vectorized operations or itertuples().",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

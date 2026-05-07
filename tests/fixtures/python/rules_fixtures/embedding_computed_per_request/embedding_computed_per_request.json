@@ -1,0 +1,14 @@
+{
+  "id": "embedding_computed_per_request",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Embeddings recomputed on request paths instead of cached or precomputed for stable inputs.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

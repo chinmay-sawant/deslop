@@ -1,0 +1,14 @@
+{
+  "id": "read_then_decode_duplicate_materialization",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

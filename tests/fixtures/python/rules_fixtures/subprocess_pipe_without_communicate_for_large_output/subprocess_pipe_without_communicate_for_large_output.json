@@ -1,0 +1,14 @@
+{
+  "id": "subprocess_pipe_without_communicate_for_large_output",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "subprocess.Popen with PIPE but .communicate() not called, risking deadlock on large output.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

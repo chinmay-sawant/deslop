@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for default_value_injection_scattered_across_handlers: Repeated defaulting logic for pagination, filters, or booleans across handlers.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule024PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario024Positive(w http.ResponseWriter, r *http.Request, repo Rule024PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

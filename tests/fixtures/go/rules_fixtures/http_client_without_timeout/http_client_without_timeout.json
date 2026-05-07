@@ -1,0 +1,14 @@
+{
+  "id": "http_client_without_timeout",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Local http.Client{} literals constructed without an explicit timeout.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

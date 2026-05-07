@@ -1,0 +1,14 @@
+{
+  "id": "same_feature_path_crosses_many_layers_for_simple_data_transform",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag simple transformations that bounce through too many layers or wrappers.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

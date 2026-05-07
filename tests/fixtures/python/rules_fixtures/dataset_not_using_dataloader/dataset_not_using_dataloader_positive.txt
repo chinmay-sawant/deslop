@@ -1,0 +1,38 @@
+import torch
+from torch.utils.data import Dataset
+
+
+class ReviewDataset(Dataset):
+    def __init__(self, texts, labels, tokenizer, max_len=128):
+        self.texts = texts
+        self.labels = labels
+        self.tokenizer = tokenizer
+        self.max_len = max_len
+
+    def __len__(self):
+        return len(self.texts)
+
+    def __getitem__(self, idx):
+        encoding = self.tokenizer(
+            self.texts[idx], max_length=self.max_len, padding="max_length", truncation=True, return_tensors="pt"
+        )
+        return encoding["input_ids"].squeeze(), encoding["attention_mask"].squeeze(), self.labels[idx]
+
+
+def train_model(dataset, model, optimizer, epochs=5):
+    for epoch in range(epochs):
+        for i in range(0, len(dataset), 32):
+            batch_texts = []
+            batch_labels = []
+            for j in range(i, min(i + 32, len(dataset))):
+                input_ids, mask, label = dataset[j]
+                batch_texts.append((input_ids, mask))
+                batch_labels.append(label)
+            input_ids = torch.stack([t[0] for t in batch_texts])
+            masks = torch.stack([t[1] for t in batch_texts])
+            labels = torch.tensor(batch_labels)
+            outputs = model(input_ids, attention_mask=masks)
+            loss = torch.nn.functional.cross_entropy(outputs, labels)
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()

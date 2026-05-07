@@ -1,0 +1,14 @@
+{
+  "id": "waitgroup_add_inside_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

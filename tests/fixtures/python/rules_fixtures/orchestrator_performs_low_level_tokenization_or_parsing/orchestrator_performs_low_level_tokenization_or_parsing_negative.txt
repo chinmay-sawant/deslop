@@ -1,0 +1,61 @@
+import json
+from typing import Dict, List, Any
+from .tokenizer import tokenize
+from .parser import parse_tokens
+from .executor import execute_nodes
+
+def execute_pipeline(config_path: str) -> Dict[str, Any]:
+    with open(config_path) as f:
+        raw = f.read()
+
+    tokens = tokenize(raw)
+    ast = parse_tokens(tokens)
+    results = execute_nodes(ast)
+
+    return {"results": results, "count": len(results)}
+
+# tokenizer.py
+def tokenize(text: str) -> List[str]:
+    tokens = []
+    current = ""
+    for char in text:
+        if char in '{}[]:,':
+            if current.strip():
+                tokens.append(current.strip())
+            tokens.append(char)
+            current = ""
+        else:
+            current += char
+    if current.strip():
+        tokens.append(current.strip())
+    return tokens
+
+# parser.py
+def parse_tokens(tokens: List[str]) -> List[dict]:
+    nodes = []
+    i = 0
+    while i < len(tokens):
+        if tokens[i] == "transform":
+            nodes.append({
+                "type": "transform",
+                "name": tokens[i + 1],
+                "source": tokens[i + 2],
+                "pattern": tokens[i + 3],
+            })
+            i += 4
+        else:
+            i += 1
+    return nodes
+
+# executor.py
+import re
+
+def execute_nodes(nodes: List[dict]) -> List[dict]:
+    results = []
+    for node in nodes:
+        if node["type"] == "transform":
+            with open(node["source"]) as f:
+                data = f.read()
+            cleaned = re.sub(node["pattern"], "", data)
+            results.append({"name": node["name"], "data": cleaned})
+    return results

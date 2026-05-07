@@ -1,0 +1,33 @@
+from fastapi import FastAPI
+import httpx
+import time
+
+app = FastAPI()
+
+
+@app.get("/users/{user_id}")
+def get_user(user_id: int):
+    response = httpx.get(f"https://api.example.com/users/{user_id}")
+    return response.json()
+
+
+@app.post("/process")
+def process_data(data: dict):
+    result = httpx.post("https://processor.example.com/run", json=data)
+    time.sleep(0.1)
+    return result.json()
+
+
+@app.get("/report")
+def generate_report():
+    db_data = fetch_from_database()
+    pdf = render_pdf(db_data)
+    storage.upload("report.pdf", pdf)
+    return {"status": "generated"}
+
+
+@app.post("/webhook")
+def handle_webhook(payload: dict):
+    response = httpx.post("https://external.service/hook", json=payload)
+    save_to_db(response.json())
+    return {"ok": True}

@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for range_over_local_channel_without_close: Functions that range over a locally owned channel without an observed close path.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario391Positive(paths []string) error {
+	for _, path := range paths {
+		file, err := os.Open(path)
+		if err != nil { return err }
+		defer file.Close()
+	}
+	return nil
+}

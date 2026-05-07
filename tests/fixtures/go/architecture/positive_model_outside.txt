@@ -1,5 +1,0 @@
-package entity
-
-type User struct {
-    ID int `gorm:"column:id" json:"id"`
-}

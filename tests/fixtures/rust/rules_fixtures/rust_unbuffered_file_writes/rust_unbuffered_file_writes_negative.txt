@@ -1,0 +1,45 @@
+use std::fs::File;
+use std::io::{BufWriter, Write};
+
+fn write_lines(path: &str, lines: &[&str]) -> Result<(), Box<dyn std::error::Error>> {
+    let file = File::create(path)?;
+    let mut writer = BufWriter::new(file);
+    for line in lines {
+        writeln!(writer, "{}", line)?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+fn write_records(path: &str, records: &[Record]) -> Result<(), Box<dyn std::error::Error>> {
+    let file = File::create(path)?;
+    let mut writer = BufWriter::new(file);
+    for record in records {
+        writeln!(writer, "{},{},{}", record.id, record.name, record.value)?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+fn append_log(path: &str, entries: &[String]) -> Result<(), Box<dyn std::error::Error>> {
+    let file = File::options().append(true).open(path)?;
+    let mut writer = BufWriter::new(file);
+    for entry in entries {
+        writeln!(writer, "{}", entry)?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+fn write_json_lines(path: &str, items: &[serde_json::Value]) -> Result<(), Box<dyn std::error::Error>> {
+    let file = File::create(path)?;
+    let mut writer = BufWriter::new(file);
+    for item in items {
+        serde_json::to_writer(&mut writer, item)?;
+        writer.write_all(b"\n")?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+struct Record { id: u64, name: String, value: String }

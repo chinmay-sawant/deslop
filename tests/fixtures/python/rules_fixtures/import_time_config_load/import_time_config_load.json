@@ -1,0 +1,14 @@
+{
+  "id": "import_time_config_load",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Module-scope configuration or secret loading that runs during import instead of an explicit startup path.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_route_registration_anonymous_function_overuse: Route registration that uses many inline anonymous handlers instead of named handler methods or functions.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule055NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule055NegativeService interface {
+	Run(context.Context, Rule055NegativeRecord) error
+}
+
+func scenario055Negative(ctx context.Context, service Rule055NegativeService, input Rule055NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

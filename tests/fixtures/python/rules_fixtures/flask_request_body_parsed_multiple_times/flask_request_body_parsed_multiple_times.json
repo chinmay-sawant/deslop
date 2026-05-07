@@ -1,0 +1,14 @@
+{
+  "id": "flask_request_body_parsed_multiple_times",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flask request handlers parse the same request body multiple times.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

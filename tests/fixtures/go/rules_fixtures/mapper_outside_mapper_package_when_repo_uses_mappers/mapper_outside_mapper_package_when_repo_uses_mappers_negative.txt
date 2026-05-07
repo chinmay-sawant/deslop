@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for mapper_outside_mapper_package_when_repo_uses_mappers: Mapper functions scattered across handlers and services when the repo already has a dedicated mapping package.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule082NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule082NegativeService interface {
+	Run(context.Context, Rule082NegativeRecord) error
+}
+
+func scenario082Negative(ctx context.Context, service Rule082NegativeService, input Rule082NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

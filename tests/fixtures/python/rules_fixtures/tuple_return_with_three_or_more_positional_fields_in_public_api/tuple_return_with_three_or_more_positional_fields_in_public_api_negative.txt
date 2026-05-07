@@ -1,0 +1,44 @@
+from typing import NamedTuple
+
+class ParseResult(NamedTuple):
+    timestamp: str
+    level: str
+    message: str
+    code: int
+
+def parse_log_line(line: str) -> ParseResult:
+    parts = line.split(" ", 3)
+    return ParseResult(parts[0], parts[1], parts[2], int(parts[3]))
+
+class UserStats(NamedTuple):
+    total_posts: int
+    avg_score: float
+    top_category: str
+    is_premium: bool
+    follower_count: int
+
+def get_user_stats(user_id: int) -> UserStats:
+    return UserStats(
+        total_posts=42,
+        avg_score=3.7,
+        top_category="tech",
+        is_premium=True,
+        follower_count=128,
+    )
+
+class FileMetadata(NamedTuple):
+    name: str
+    size: int
+    mime_type: str
+    encoding: str
+
+def extract_file_metadata(path: str) -> FileMetadata:
+    return FileMetadata(
+        name=path.split("/")[-1],
+        size=1024,
+        mime_type="text/plain",
+        encoding="utf-8",
+    )
+
+def get_user_score(user_id: int) -> tuple[float, int]:
+    return 4.5, 128

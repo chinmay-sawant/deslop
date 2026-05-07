@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"context"
+	redis "github.com/redis/go-redis/v9"
+)
+
+// scenario for redis_client_created_per_request: Redis clients created per request instead of reused as shared process infrastructure.
+// fixture polarity: negative; family: data_access; severity: warning.
+func scenario288Negative(ctx context.Context, client *redis.Client, values map[string]string) error {
+	pipe := client.Pipeline()
+	for key, value := range values {
+		pipe.Set(ctx, key, value, 15)
+	}
+	_, err := pipe.Exec(ctx)
+	return err
+}

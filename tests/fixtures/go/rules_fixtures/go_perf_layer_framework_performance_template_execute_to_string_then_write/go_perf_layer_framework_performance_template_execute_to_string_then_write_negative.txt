@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_framework_performance_template_execute_to_string_then_write: Layer: Framework-specific performance. Flag template rendering to strings before writing to the response writer.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule538NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario538Negative(records []Rule538NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

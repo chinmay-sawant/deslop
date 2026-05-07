@@ -1,0 +1,14 @@
+{
+  "id": "init_registers_routes_or_dependencies",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`init()` functions that register handlers, routes, or runtime dependencies.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

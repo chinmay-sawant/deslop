@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_database_access_count_then_fetch_every_page",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Database access. Flag count queries paired with every paginated fetch without product need or caching.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

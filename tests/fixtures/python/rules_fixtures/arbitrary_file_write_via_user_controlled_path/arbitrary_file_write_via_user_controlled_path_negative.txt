@@ -1,0 +1,42 @@
+import os
+from pathlib import Path
+from flask import Flask, request
+
+app = Flask(__name__)
+
+UPLOAD_DIR = Path("/data/uploads").resolve()
+EXPORT_DIR = Path("/tmp/exports").resolve()
+
+
+def validate_filename(filename: str) -> str:
+    name = os.path.basename(filename)
+    if not name or name.startswith("."):
+        raise ValueError("Invalid filename")
+    return name
+
+
+def validate_path_containment(filepath: Path, allowed_dir: Path) -> Path:
+    resolved = filepath.resolve()
+    if not str(resolved).startswith(str(allowed_dir)):
+        raise ValueError("Path traversal detected")
+    return resolved
+
+
+@app.route("/upload", methods=["POST"])
+def upload_file():
+    filename = validate_filename(request.form.get("filename"))
+    content = request.files["file"].read()
+    filepath = validate_path_containment(UPLOAD_DIR / filename, UPLOAD_DIR)
+    with open(filepath, "wb") as f:
+        f.write(content)
+    return {"status": "ok"}
+
+
+@app.route("/export/<filename>")
+def export_file(filename):
+    safe_name = validate_filename(filename)
+    data = generate_report()
+    filepath = validate_path_containment(EXPORT_DIR / safe_name, EXPORT_DIR)
+    with open(filepath, "w") as f:
+        f.write(data)
+    return {"path": str(filepath)}

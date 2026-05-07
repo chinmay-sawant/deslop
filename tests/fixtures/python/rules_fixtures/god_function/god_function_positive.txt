@@ -1,0 +1,32 @@
+def process_request(request):
+    if not request.headers.get("Authorization"):
+        return {"error": "unauthorized"}, 401
+    token = request.headers["Authorization"].split(" ")[1]
+    user = decode_token(token)
+    if not user:
+        return {"error": "invalid token"}, 401
+    if request.method == "POST":
+        data = request.get_json()
+        if not data.get("name"):
+            return {"error": "name required"}, 400
+        if not data.get("email"):
+            return {"error": "email required"}, 400
+        if len(data.get("password", "")) < 8:
+            return {"error": "password too short"}, 400
+        existing = db.query(User).filter_by(email=data["email"]).first()
+        if existing:
+            return {"error": "email taken"}, 409
+        password_hash = hash_password(data["password"])
+        user = User(name=data["name"], email=data["email"], password_hash=password_hash)
+        db.add(user)
+        db.commit()
+        send_email(data["email"], "Welcome!", f"Hello {data['name']}")
+        log_action(user.id, "register")
+        return {"status": "created", "user_id": user.id}, 201
+    elif request.method == "GET":
+        page = int(request.args.get("page", 1))
+        per_page = int(request.args.get("per_page", 20))
+        users = db.query(User).offset((page - 1) * per_page).limit(per_page).all()
+        total = db.query(User).count()
+        return {"users": [u.to_dict() for u in users], "total": total, "page": page}
+    return {"error": "method not allowed"}, 405

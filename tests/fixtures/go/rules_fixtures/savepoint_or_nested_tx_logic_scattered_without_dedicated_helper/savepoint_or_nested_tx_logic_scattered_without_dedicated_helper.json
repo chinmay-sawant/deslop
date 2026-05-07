@@ -1,0 +1,14 @@
+{
+  "id": "savepoint_or_nested_tx_logic_scattered_without_dedicated_helper",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Nested transaction or savepoint control scattered across services and repositories.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

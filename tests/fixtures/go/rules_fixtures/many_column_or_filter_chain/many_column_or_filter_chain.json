@@ -1,0 +1,14 @@
+{
+  "id": "many_column_or_filter_chain",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Query chains with many OR filter conditions that often scale poorly.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+)
+
+// scenario for go_perf_layer_serialization_json_decoder_without_reuse_for_stream: Layer: Serialization and deserialization. Flag JSON decoders created for each element of a stream instead of decoding the stream once.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule591NegativeRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario591Negative(writer io.Writer, value Rule591NegativeRecord) error {
+	return json.NewEncoder(writer).Encode(value)
+}

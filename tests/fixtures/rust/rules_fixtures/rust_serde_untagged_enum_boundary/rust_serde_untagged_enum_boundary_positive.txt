@@ -1,0 +1,28 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+#[serde(untagged)]
+enum ApiResponse {
+    Success { data: serde_json::Value },
+    Error { code: u32, message: String },
+    Redirect { url: String, status: u32 },
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(untagged)]
+enum ConfigValue {
+    Text(String),
+    Number(f64),
+    Flag(bool),
+    List(Vec<ConfigValue>),
+}
+
+fn parse_response(json: &str) -> Result<ApiResponse, Box<dyn std::error::Error>> {
+    let resp: ApiResponse = serde_json::from_str(json)?;
+    Ok(resp)
+}
+
+fn parse_config_value(json: &str) -> Result<ConfigValue, Box<dyn std::error::Error>> {
+    let val: ConfigValue = serde_json::from_str(json)?;
+    Ok(val)
+}

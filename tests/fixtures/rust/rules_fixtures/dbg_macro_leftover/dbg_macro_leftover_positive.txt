@@ -1,0 +1,32 @@
+use std::collections::HashMap;
+
+fn process_user_data(users: &[User]) -> HashMap<u64, String> {
+    let mut result = HashMap::new();
+    for user in users {
+        dbg!(&user.name);
+        let display = format!("{} ({})", user.name, user.email);
+        dbg!(&display);
+        result.insert(user.id, display);
+    }
+    result
+}
+
+fn calculate_discount(price: f64, quantity: u32) -> f64 {
+    let base = price * quantity as f64;
+    dbg!(base);
+    let discount = if quantity > 100 {
+        base * 0.15
+    } else if quantity > 50 {
+        base * 0.10
+    } else {
+        0.0
+    };
+    dbg!(discount);
+    base - discount
+}
+
+struct User {
+    id: u64,
+    name: String,
+    email: String,
+}

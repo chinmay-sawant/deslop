@@ -1,0 +1,14 @@
+{
+  "id": "stmt_without_close",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Prepared statements or similar DB handles without an observed Close() call.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

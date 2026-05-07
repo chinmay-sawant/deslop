@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_io_operations_stat_before_open_without_branch: Layer: I/O operations. Flag os.Stat checks immediately followed by open/read operations without using the stat result meaningfully.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule552PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario552Positive(records []Rule552PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

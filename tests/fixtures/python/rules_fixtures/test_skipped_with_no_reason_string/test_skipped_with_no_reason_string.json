@@ -1,0 +1,14 @@
+{
+  "id": "test_skipped_with_no_reason_string",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "@pytest.mark.skip used without a reason= string explaining why the test is disabled.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

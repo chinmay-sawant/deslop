@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_caching_unbounded_cache_map: Layer: Caching. Flag package-level cache maps without size, TTL, or eviction policy.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule513PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario513Positive(records []Rule513PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

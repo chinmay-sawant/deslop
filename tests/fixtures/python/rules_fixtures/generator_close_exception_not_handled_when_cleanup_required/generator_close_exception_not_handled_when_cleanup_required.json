@@ -1,0 +1,14 @@
+{
+  "id": "generator_close_exception_not_handled_when_cleanup_required",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Generator or context manager performs resource acquisition in a finally block without a try/finally guard.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

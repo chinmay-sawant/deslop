@@ -1,0 +1,16 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+def process_batch(records):
+    results = []
+    for record in records:
+        logger.info(f"Processing record {record['id']}")
+        result = transform(record)
+        logger.info(f"Record {record['id']} processed successfully")
+        results.append(result)
+    logger.info(f"Batch complete: {len(results)} records")
+    return results
+
+def transform(record):
+    return {"id": record["id"], "value": record["value"] * 2}

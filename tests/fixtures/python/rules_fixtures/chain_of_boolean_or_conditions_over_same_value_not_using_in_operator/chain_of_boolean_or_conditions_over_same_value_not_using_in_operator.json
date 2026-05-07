@@ -1,0 +1,14 @@
+{
+  "id": "chain_of_boolean_or_conditions_over_same_value_not_using_in_operator",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Three or more `x == 'a' or x == 'b' or ...` conditions chained; use `x in {'a', 'b', ...}`.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

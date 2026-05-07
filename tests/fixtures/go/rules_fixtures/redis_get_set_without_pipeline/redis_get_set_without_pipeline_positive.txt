@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"context"
+	redis "github.com/redis/go-redis/v9"
+)
+
+// scenario for redis_get_set_without_pipeline: multiple sequential `rdb.Get(ctx, key)` or `rdb.Set(ctx, key, val, ...)` calls in the same function without pipeline
+// fixture polarity: positive; family: library; severity: warning.
+func scenario424Positive(ctx context.Context, client *redis.Client, key string) error {
+	if err := client.Get(ctx, key).Err(); err != nil {
+		return err
+	}
+	return client.Set(ctx, key, "value", 0).Err()
+}

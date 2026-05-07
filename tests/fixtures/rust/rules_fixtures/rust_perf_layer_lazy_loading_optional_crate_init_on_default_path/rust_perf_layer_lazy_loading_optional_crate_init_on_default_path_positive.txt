@@ -1,0 +1,23 @@
+use std::sync::OnceLock;
+
+struct MetricsClient {
+    endpoint: String,
+}
+
+fn init_metrics() -> MetricsClient {
+    MetricsClient {
+        endpoint: "https://metrics.example.com".to_string(),
+    }
+}
+
+// BAD: optional crate initialization runs on default path
+static METRICS: OnceLock<MetricsClient> = OnceLock::new();
+
+fn get_metrics() -> &'static MetricsClient {
+    METRICS.get_or_init(|| init_metrics())
+}
+
+async fn handle_request() {
+    let metrics = get_metrics();
+    // even if metrics feature is disabled at runtime, init runs
+}

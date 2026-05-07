@@ -1,0 +1,14 @@
+{
+  "id": "mock_repository_types_duplicated_across_tests",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Many copy-pasted mock repository structs with the same method sets.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

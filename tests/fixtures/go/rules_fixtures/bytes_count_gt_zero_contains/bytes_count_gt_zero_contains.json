@@ -1,0 +1,14 @@
+{
+  "id": "bytes_count_gt_zero_contains",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.Count(...) > 0` instead of `bytes.Contains(...)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

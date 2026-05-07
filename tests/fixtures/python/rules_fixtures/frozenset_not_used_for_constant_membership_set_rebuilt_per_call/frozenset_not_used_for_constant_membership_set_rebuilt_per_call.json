@@ -1,0 +1,14 @@
+{
+  "id": "frozenset_not_used_for_constant_membership_set_rebuilt_per_call",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Constant set literal rebuilt on every function call; hoist as frozenset at module scope.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

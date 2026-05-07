@@ -1,0 +1,14 @@
+{
+  "id": "invariant_template_or_prefix_string_reformatted_inside_loop",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag loops that reformat constant template fragments on each iteration.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

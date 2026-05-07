@@ -1,0 +1,16 @@
+from importlib.metadata import version, requires
+
+
+def get_version() -> str:
+    return version("myapp")
+
+
+def get_package_info() -> dict:
+    return {
+        "version": version("myapp"),
+    }
+
+
+def check_compatibility() -> bool:
+    reqs = requires("myapp")
+    return reqs is not None and len(reqs) > 0

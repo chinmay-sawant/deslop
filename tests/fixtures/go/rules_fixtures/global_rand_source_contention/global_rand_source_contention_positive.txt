@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	rand "math/rand"
+	"net/http"
+)
+
+// scenario for global_rand_source_contention: `math/rand.Intn()`, `rand.Float64()`, etc. (global source) in hot handler or goroutine paths
+// fixture polarity: positive; family: security; severity: info.
+func scenario712Positive(w http.ResponseWriter, r *http.Request) int {
+	return rand.Intn(1000000)
+}

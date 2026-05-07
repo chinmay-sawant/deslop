@@ -1,0 +1,14 @@
+{
+  "id": "count_inside_loop",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "COUNT(...) or GORM Count(...) observed inside loops.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

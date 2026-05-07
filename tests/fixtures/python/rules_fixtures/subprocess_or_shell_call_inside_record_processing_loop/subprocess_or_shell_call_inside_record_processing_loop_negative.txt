@@ -1,0 +1,47 @@
+import subprocess
+import csv
+
+def process_csv_records(filepath: str):
+    with open(filepath, "r") as f:
+        reader = csv.DictReader(f)
+        hostnames = [row["hostname"] for row in reader]
+
+    ping_targets = "\n".join(hostnames)
+    result = subprocess.run(
+        ["fping", "-f", "-"],
+        input=ping_targets,
+        capture_output=True,
+        text=True,
+    )
+    alive_hosts = set(result.stdout.splitlines())
+
+    with open(filepath, "r") as f:
+        reader = csv.DictReader(f)
+        results = []
+        for row in reader:
+            row["alive"] = row["hostname"] in alive_hosts
+            results.append(row)
+    return results
+
+def export_users(users: list[dict]) -> list[str]:
+    user_ids = [u["id"] for u in users]
+    result = subprocess.run(
+        ["convert_batch", "--input", "-"],
+        input="\n".join(user_ids),
+        capture_output=True,
+    )
+    return [f"/tmp/{uid}.pdf" for uid in user_ids]
+
+def validate_batch(records: list[dict]) -> list[dict]:
+    import json
+    payload = json.dumps([r["data"] for r in records])
+    result = subprocess.run(
+        ["python", "validator.py", "--batch", "-"],
+        input=payload,
+        capture_output=True,
+        text=True,
+    )
+    flags = result.stdout.strip().split("\n")
+    for record, flag in zip(records, flags):
+        record["valid"] = flag == "valid"
+    return records

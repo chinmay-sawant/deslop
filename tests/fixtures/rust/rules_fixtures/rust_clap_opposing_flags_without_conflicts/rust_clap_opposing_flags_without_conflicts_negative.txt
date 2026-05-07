@@ -1,0 +1,29 @@
+use clap::{Parser, ArgGroup};
+
+#[derive(Parser)]
+#[command(group(
+    ArgGroup::new("output_format")
+        .args(["json", "text"])
+        .multiple(false)
+))]
+struct Cli {
+    #[arg(long)]
+    json: bool,
+
+    #[arg(long)]
+    text: bool,
+
+    #[arg(long, group = "filter_group")]
+    include: Vec<String>,
+
+    #[arg(long, group = "filter_group", conflicts_with = "include")]
+    exclude: Vec<String>,
+}
+
+fn run(cli: Cli) {
+    if cli.json {
+        println!("json mode");
+    } else {
+        println!("text mode");
+    }
+}

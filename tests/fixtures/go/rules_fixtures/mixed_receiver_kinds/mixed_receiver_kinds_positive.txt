@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for mixed_receiver_kinds: Methods on the same receiver type mix pointer and value receivers.
+// fixture polarity: positive; family: consistency; severity: contextual.
+type Rule231PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario231Positive(records []Rule231PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

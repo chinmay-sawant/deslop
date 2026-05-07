@@ -1,0 +1,14 @@
+{
+  "id": "rust_to_string_on_str_in_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `.to_string()` or `String::from(...)` on borrowed strings inside loops where borrowing would satisfy the callee.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

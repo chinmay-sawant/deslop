@@ -1,0 +1,25 @@
+import pandas as pd
+
+
+def analyze_sales(df: pd.DataFrame) -> pd.DataFrame:
+    filtered = df[df["region"] == "US"]
+    filtered = filtered[filtered["amount"] > 100]
+    filtered = filtered[filtered["status"] == "completed"]
+    filtered = filtered[filtered["year"] == 2024]
+    return filtered
+
+
+def get_active_users(df: pd.DataFrame) -> pd.DataFrame:
+    result = df[df["active"] == True]
+    result = result[result["age"] >= 18]
+    result = result[result["country"].isin(["US", "UK"])]
+    result = result[result["subscription"] != "free"]
+    return result
+
+
+def filter_orders(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["order_date"] >= "2024-01-01"]
+    df = df[df["total"] > 50]
+    df = df[df["cancelled"] == False]
+    df = df[df["items_count"] > 0]
+    return df

@@ -1,0 +1,15 @@
+import pandas as pd
+
+
+def run_feature_pipeline(source_path: str, dest_path: str):
+    df = pd.read_csv(source_path)
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df["hour"] = df["timestamp"].dt.hour
+    df["is_weekend"] = df["timestamp"].dt.dayofweek >= 5
+    df = df.dropna(subset=["user_id"])
+    df["revenue_bucket"] = pd.cut(df["revenue"], bins=[0, 10, 50, 100, float("inf")])
+    df = df.groupby("user_id").agg(
+        total_revenue=("revenue", "sum"),
+        session_count=("session_id", "nunique"),
+    ).reset_index()
+    df.to_parquet(dest_path, index=False)

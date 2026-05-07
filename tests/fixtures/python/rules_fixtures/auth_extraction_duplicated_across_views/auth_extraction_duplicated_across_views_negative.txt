@@ -1,0 +1,44 @@
+from flask import Flask, request, g
+from functools import wraps
+
+app = Flask(__name__)
+
+
+def require_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get("Authorization", "").replace("Bearer ", "")
+        user = decode_jwt(token)
+        if not user:
+            return {"error": "Unauthorized"}, 401
+        g.current_user = user
+        return f(*args, **kwargs)
+    return decorated
+
+
+@app.route("/api/orders", methods=["GET"])
+@require_auth
+def list_orders():
+    orders = get_orders_for_user(g.current_user["id"])
+    return {"orders": orders}
+
+
+@app.route("/api/orders", methods=["POST"])
+@require_auth
+def create_order():
+    order = create_order_for_user(g.current_user["id"], request.json)
+    return {"order": order}
+
+
+@app.route("/api/profile", methods=["GET"])
+@require_auth
+def get_profile():
+    profile = get_user_profile(g.current_user["id"])
+    return {"profile": profile}
+
+
+@app.route("/api/profile", methods=["PUT"])
+@require_auth
+def update_profile():
+    profile = update_user_profile(g.current_user["id"], request.json)
+    return {"profile": profile}

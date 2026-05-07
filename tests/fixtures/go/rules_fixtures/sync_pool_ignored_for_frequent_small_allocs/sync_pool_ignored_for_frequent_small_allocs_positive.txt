@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for sync_pool_ignored_for_frequent_small_allocs: repeated `make([]byte, size)` or `new(T)` in hot paths where the object is short-lived and could be pooled
+// fixture polarity: positive; family: performance; severity: info.
+type Rule678PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario678Positive(records []Rule678PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

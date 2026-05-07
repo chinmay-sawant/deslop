@@ -1,0 +1,15 @@
+{
+  "id": "rust_blocking_io_in_async",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "experimental",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override",
+    "rust_async_experimental"
+  ],
+  "description": "Blocking I/O or blocking work observed in async Rust code.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

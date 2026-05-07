@@ -1,0 +1,14 @@
+{
+  "id": "rust_internal_anyhow_result",
+  "language": "rust",
+  "family": "boundary",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Internal library functions that return anyhow-style error surfaces instead of crate-local errors.",
+  "binding_location": "src/heuristics/rust/boundary.rs"
+}

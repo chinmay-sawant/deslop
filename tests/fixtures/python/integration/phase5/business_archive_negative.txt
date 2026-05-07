@@ -1,8 +1,0 @@
-ARCHIVE_LIMIT = 5000
-
-def rotate_archive(size, plan):
-    if size > ARCHIVE_LIMIT:
-        return "archive"
-    elif plan == "enterprise":
-        return "archive"
-    return "keep"

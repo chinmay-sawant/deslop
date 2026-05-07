@@ -1,0 +1,23 @@
+import hashlib
+from dataclasses import dataclass, field
+from typing import List, Optional
+
+
+@dataclass
+class ModelConfig:
+    model_name: str
+    region: str = "us-east-1"
+    tags: List[str] = field(default_factory=list)
+    checksum: Optional[str] = None
+
+
+class ModelLoader:
+    def __init__(self, s3_client):
+        self._s3_client = s3_client
+
+    def load(self, config: ModelConfig) -> bytes:
+        artifact = self._s3_client.get_object(
+            Bucket="models-bucket", Key=f"{config.model_name}/artifact.bin"
+        )["Body"].read()
+        config.checksum = hashlib.sha256(artifact).hexdigest()
+        return artifact

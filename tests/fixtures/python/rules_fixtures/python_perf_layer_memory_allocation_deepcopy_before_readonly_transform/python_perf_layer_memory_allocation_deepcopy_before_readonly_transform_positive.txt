@@ -1,0 +1,17 @@
+import copy
+
+def summarize_config(config):
+    config_copy = copy.deepcopy(config)
+    return {
+        "name": config_copy["name"],
+        "version": config_copy["version"],
+        "count": len(config_copy["items"]),
+    }
+
+def format_user_profile(user):
+    user_copy = copy.deepcopy(user)
+    return f"{user_copy['name']} ({user_copy['email']})"
+
+def calculate_totals(items):
+    items_copy = copy.deepcopy(items)
+    return sum(item["price"] * item["qty"] for item in items_copy)

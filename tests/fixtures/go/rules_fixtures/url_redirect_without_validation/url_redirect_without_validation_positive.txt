@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for url_redirect_without_validation: `http.Redirect(w, r, r.FormValue("redirect_url"), 302)` or `c.Redirect(302, c.Query("url"))` without URL validation
+// fixture polarity: positive; family: security; severity: warning.
+func scenario744Positive(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, r.FormValue("next"), http.StatusFound)
+}

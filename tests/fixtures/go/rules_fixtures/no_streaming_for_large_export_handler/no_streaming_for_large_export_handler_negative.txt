@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for no_streaming_for_large_export_handler: Large list or export handlers that materialize everything before writing rather than using chunked or streaming output.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule330NegativeRecord struct {
+	Name string
+}
+
+type Rule330NegativeService interface {
+	Handle(context.Context, Rule330NegativeRecord) (Rule330NegativeRecord, error)
+}
+
+func scenario330Negative(ctx context.Context, service Rule330NegativeService, input Rule330NegativeRecord) (Rule330NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule330NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

@@ -1,0 +1,15 @@
+{
+  "id": "rust_async_invariant_broken_at_await",
+  "language": "rust",
+  "family": "async_patterns",
+  "default_severity": "contextual",
+  "status": "experimental",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override",
+    "rust_async_experimental"
+  ],
+  "description": "Related state mutations appear split around an await boundary.",
+  "binding_location": "src/heuristics/rust/async_patterns.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_garbage_collection_cleanup_drop_impl_does_io_or_blocking_work",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag Drop implementations that perform I/O, locking, or other blocking cleanup.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

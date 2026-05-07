@@ -1,0 +1,21 @@
+import os
+from pathlib import Path
+
+
+def read_file(user_path):
+    with open(user_path, "r") as f:
+        return f.read()
+
+
+def save_upload(filename, content):
+    path = os.path.join("uploads", filename)
+    with open(path, "w") as f:
+        f.write(content)
+
+
+def resolve_config(config_path):
+    return Path(config_path).read_text()
+
+
+def list_directory(dir_path):
+    return os.listdir(dir_path)

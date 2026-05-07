@@ -1,0 +1,14 @@
+{
+  "id": "lookup_table_derived_from_constants_rebuilt_per_invocation",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions that reconstruct lookup tables from static constants every call.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

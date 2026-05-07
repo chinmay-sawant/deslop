@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for test_fixture_builders_live_in_production_packages: Fixture and factory helpers defined in non-test production files.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule200NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule200NegativeService interface {
+	Run(context.Context, Rule200NegativeRecord) error
+}
+
+func scenario200Negative(ctx context.Context, service Rule200NegativeService, input Rule200NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

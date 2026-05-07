@@ -1,0 +1,42 @@
+from contextlib import contextmanager
+import threading
+
+
+@contextmanager
+def open_connection(db_url):
+    conn = create_connection(db_url)
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+
+@contextmanager
+def transactional_cache():
+    local_cache = {}
+    try:
+        yield local_cache
+    finally:
+        local_cache.clear()
+
+
+@contextmanager
+def scoped_buffer():
+    buffer = []
+    try:
+        yield buffer
+    finally:
+        buffer.clear()
+
+
+class PooledConnection:
+    def __init__(self, pool):
+        self._pool = pool
+        self._conn = None
+
+    def __enter__(self):
+        self._conn = self._pool.acquire()
+        return self._conn
+
+    def __exit__(self, *args):
+        self._pool.release(self._conn)

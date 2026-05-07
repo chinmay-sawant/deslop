@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_untagged_enum_boundary",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Boundary-facing enums that derive #[serde(untagged)] and risk ambiguous wire formats.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

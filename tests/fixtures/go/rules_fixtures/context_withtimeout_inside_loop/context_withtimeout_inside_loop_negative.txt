@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for context_withtimeout_inside_loop: `context.WithTimeout(...)` inside loops.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario471Negative(items []string) int {
+	started := time.Now()
+	total := 0
+	for _, item := range items {
+		if !started.IsZero() { total += len(item) }
+	}
+	return total
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_nested_parallel_iterators",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag nested `par_iter`, `into_par_iter`, or `par_bridge` calls that can oversubscribe worker threads or fragment work.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

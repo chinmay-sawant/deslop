@@ -1,0 +1,35 @@
+ALLOWED_EXTENSIONS = [".jpg", ".png", ".gif", ".bmp", ".webp"]
+ALLOWED_METHODS = ["GET", "POST", "PUT", "DELETE"]
+
+
+def filter_valid_files(filenames: list[str]) -> list[str]:
+    result = []
+    for name in filenames:
+        if name.endswith(".jpg") or name.endswith(".png") or name.endswith(".gif"):
+            result.append(name)
+    return result
+
+
+def validate_request_methods(requests: list[dict]) -> list[dict]:
+    valid = []
+    for req in requests:
+        if req["method"] in ALLOWED_METHODS:
+            valid.append(req)
+    return valid
+
+
+def find_matching_users(users: list[dict], target_ids: list[int]) -> list[dict]:
+    matches = []
+    for user in users:
+        if user["id"] in target_ids:
+            matches.append(user)
+    return matches
+
+
+def process_batch(items: list[str]) -> list[str]:
+    processed = []
+    blocklist = ["spam", "junk", "trash", "garbage"]
+    for item in items:
+        if item not in blocklist:
+            processed.append(item.upper())
+    return processed

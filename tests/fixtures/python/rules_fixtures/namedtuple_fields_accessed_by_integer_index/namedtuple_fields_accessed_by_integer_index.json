@@ -1,0 +1,14 @@
+{
+  "id": "namedtuple_fields_accessed_by_integer_index",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "namedtuple fields accessed by integer index instead of by named attribute.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

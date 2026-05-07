@@ -1,7 +1,0 @@
-package sample
-
-import render "github.com/acme/project/pkg/render"
-
-func Run(address string) string {
-    return render.Sanitize(address)
-}

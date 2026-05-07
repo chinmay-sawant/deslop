@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for route_groups_created_inside_handlers: Code that constructs or mutates route groups outside the startup router layer.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule149PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario149Positive(w http.ResponseWriter, r *http.Request, repo Rule149PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

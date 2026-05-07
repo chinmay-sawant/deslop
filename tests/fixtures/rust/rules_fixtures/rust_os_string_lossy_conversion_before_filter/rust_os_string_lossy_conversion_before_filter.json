@@ -1,0 +1,14 @@
+{
+  "id": "rust_os_string_lossy_conversion_before_filter",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag lossy path/string conversions before simple extension, file-name, or component filters.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

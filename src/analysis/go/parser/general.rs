@@ -8,8 +8,6 @@ mod literals;
 mod symbols;
 
 pub(super) use calls::{collect_calls, extract_call_target};
-#[cfg(test)]
-pub(super) use imports::alias_from_path;
 pub(super) use imports::collect_imports;
 pub(super) use literals::{
     build_test_summary, collect_local_strings, collect_pkg_strings, collect_struct_tags,

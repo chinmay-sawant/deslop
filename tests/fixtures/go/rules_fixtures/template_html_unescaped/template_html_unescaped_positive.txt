@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"html/template"
+)
+
+// scenario for template_html_unescaped: `template.HTML(userInput)` or `template.JS(userInput)` type conversions on data from request parameters
+// fixture polarity: positive; family: security; severity: warning.
+func scenario739Positive(userInput string) template.HTML {
+	return template.HTML(userInput)
+}

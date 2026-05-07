@@ -1,0 +1,21 @@
+mod utils {
+    pub fn helper_a() -> i32 { 1 }
+    pub fn helper_b() -> i32 { 2 }
+
+    #[cfg(test)]
+    pub fn test_helper() -> i32 { 3 }
+}
+
+pub fn compute(x: i32) -> i32 {
+    x + utils::helper_a() + utils::helper_b()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_compute() {
+        assert_eq!(compute(1), 4);
+    }
+}

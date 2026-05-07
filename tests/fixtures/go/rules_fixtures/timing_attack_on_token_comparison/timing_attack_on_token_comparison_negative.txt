@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"crypto/subtle"
+)
+
+// scenario for timing_attack_on_token_comparison: `token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values
+// fixture polarity: negative; family: security; severity: warning.
+func scenario741Negative(token []byte, expected []byte) bool {
+	return subtle.ConstantTimeCompare(token, expected) == 1
+}

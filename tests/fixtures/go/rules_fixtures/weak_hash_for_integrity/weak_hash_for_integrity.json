@@ -1,0 +1,14 @@
+{
+  "id": "weak_hash_for_integrity",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`md5.New()`, `sha1.New()`, `md5.Sum()`, `sha1.Sum()` used for integrity checks, checksums, or MAC operations (not just `weak_crypto` import-level detection)",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "fastapi_background_task_exception_silent",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "FastAPI background task dispatches appear to rely on default exception behavior without visible error handling.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

@@ -1,0 +1,15 @@
+fn process_large_file(content: &str) -> usize {
+    let mut count = 0;
+    for line in content.split('\n') {
+        if line.contains("error") {
+            count += 1;
+        }
+    }
+    count
+}
+
+fn find_matching_lines(content: &str, needle: &str) -> Vec<&str> {
+    content.split('\n')
+        .filter(|l| l.contains(needle))
+        .collect()
+}

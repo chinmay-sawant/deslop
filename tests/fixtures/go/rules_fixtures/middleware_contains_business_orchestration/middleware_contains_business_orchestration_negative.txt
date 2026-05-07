@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for middleware_contains_business_orchestration: Middleware that performs domain workflows instead of cross-cutting concerns such as auth, tracing, or request enrichment.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule087NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule087NegativeService interface {
+	Run(context.Context, Rule087NegativeRecord) error
+}
+
+func scenario087Negative(ctx context.Context, service Rule087NegativeService, input Rule087NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

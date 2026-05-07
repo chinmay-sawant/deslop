@@ -1,0 +1,14 @@
+{
+  "id": "cookie_without_samesite",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`http.Cookie{...}` without `SameSite` set, particularly for auth/session cookies",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

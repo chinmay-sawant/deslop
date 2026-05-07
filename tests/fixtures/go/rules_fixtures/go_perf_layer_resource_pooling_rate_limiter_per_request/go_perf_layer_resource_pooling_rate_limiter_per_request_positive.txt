@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_resource_pooling_rate_limiter_per_request: Layer: Resource pooling. Flag rate limiter construction inside request handlers instead of per identity or dependency.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule582PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario582Positive(records []Rule582PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

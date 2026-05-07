@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for csv_writer_flush_per_row: csv.Writer.Flush() called inside per-row loops, reducing buffering effectiveness.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule349NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario349Negative(records []Rule349NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

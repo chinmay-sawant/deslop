@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for string_concatenation_for_path_join: `dir + "/" + file` or manual path assembly via `+` concatenation
+// fixture polarity: positive; family: performance; severity: info.
+func scenario646Positive(haystack string, needle string, left string, right string) bool {
+	return strings.Index(haystack, needle) != -1
+}

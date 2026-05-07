@@ -1,0 +1,34 @@
+import subprocess
+
+def check_disk_usage():
+    result = subprocess.run(
+        ["df", "-h"],
+        capture_output=True,
+        text=True,
+    )
+    for line in result.stdout.splitlines():
+        if "/dev/sda1" in line:
+            return line
+    return ""
+
+def list_running_processes():
+    result = subprocess.run(
+        ["ps", "aux"],
+        capture_output=True,
+        text=True,
+    )
+    return "\n".join(
+        line for line in result.stdout.splitlines() if "python" in line
+    )
+
+def copy_files(src: str, dst: str):
+    subprocess.run(["cp", "-r", src, dst], check=True)
+
+def get_git_log():
+    proc = subprocess.Popen(
+        ["git", "log", "--oneline", "-20"],
+        stdout=subprocess.PIPE,
+        cwd="/app",
+    )
+    stdout, _ = proc.communicate()
+    return stdout.decode()

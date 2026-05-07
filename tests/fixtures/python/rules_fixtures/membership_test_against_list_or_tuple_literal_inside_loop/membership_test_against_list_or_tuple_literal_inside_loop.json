@@ -1,0 +1,14 @@
+{
+  "id": "membership_test_against_list_or_tuple_literal_inside_loop",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag repeated membership tests against small linear containers in a hot path.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

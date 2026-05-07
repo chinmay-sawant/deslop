@@ -1,0 +1,14 @@
+{
+  "id": "click_typer_http_client_created_per_command",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "click or typer commands allocate HTTP clients inside command bodies instead of reusing a shared client factory.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

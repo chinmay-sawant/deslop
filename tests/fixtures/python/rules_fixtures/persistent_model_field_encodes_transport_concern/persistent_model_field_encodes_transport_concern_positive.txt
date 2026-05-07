@@ -1,0 +1,23 @@
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
+
+
+class Order(Base):
+    __tablename__ = "orders"
+    id = Column(Integer, primary_key=True)
+    status_code = Column(Integer)
+    content_type = Column(String(64))
+    http_method = Column(String(10))
+    request_headers = Column(String)
+    response_encoding = Column(String(32))
+
+
+class UserSession(Base):
+    __tablename__ = "user_sessions"
+    id = Column(Integer, primary_key=True)
+    csrf_token = Column(String(128))
+    accept_language = Column(String(64))
+    user_agent = Column(String(512))
+    remote_addr = Column(String(45))

@@ -1,0 +1,24 @@
+from typing import TypeVar, Sequence
+from numbers import Real
+
+T = TypeVar("T", bound=Real)
+
+def clamp(value: T, low: T, high: T) -> T:
+    return max(low, min(value, high))
+
+T_co = TypeVar("T_co", covariant=True)
+
+def first(items: Sequence[T_co]) -> T_co:
+    return items[0]
+
+T_str_or_bytes = TypeVar("T_str_or_bytes", str, bytes)
+
+def encode_or_passthrough(value: T_str_or_bytes) -> bytes:
+    if isinstance(value, str):
+        return value.encode("utf-8")
+    return value
+
+Numeric = TypeVar("Numeric", int, float)
+
+def normalize(value: Numeric, maximum: Numeric) -> float:
+    return float(value) / float(maximum)

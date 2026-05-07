@@ -1,0 +1,27 @@
+from typing import Any
+
+
+def process_items(items: list[dict], config: dict[str, Any]) -> list[dict]:
+    current_item_key = config.get("current_item_key", "id")
+    results = []
+    for item in items:
+        result = transform(item, config, current_item_key)
+        results.append(result)
+    return results
+
+
+def transform(item, config, key):
+    return {**item, "processed": True, "config_mode": config.get("mode")}
+
+
+def run_pipeline(records, settings):
+    record_id_key = settings.get("record_id_key", "id")
+    timestamp_key = settings.get("timestamp_key", "ts")
+    outputs = []
+    for record in records:
+        outputs.append(process(record, settings, record_id_key, timestamp_key))
+    return outputs
+
+
+def process(record, ctx, id_key, ts_key):
+    return record

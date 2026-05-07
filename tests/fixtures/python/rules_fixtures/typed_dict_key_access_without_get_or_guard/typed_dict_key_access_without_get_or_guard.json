@@ -1,0 +1,14 @@
+{
+  "id": "typed_dict_key_access_without_get_or_guard",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "TypedDict with total=False has a key accessed via direct subscript without .get() or a guard.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

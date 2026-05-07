@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for upstream_consumed_interface_declared_in_provider_package: Provider packages that declare an interface even though upstream packages appear to own the abstraction seam.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule215PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario215Positive(w http.ResponseWriter, r *http.Request, repo Rule215PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

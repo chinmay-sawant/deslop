@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"crypto/sha256"
+)
+
+// scenario for sha256_sum_in_loop: `sha256.Sum256(...)` inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario637Positive(chunks [][]byte) uint32 {
+	var total uint32
+	for _, payload := range chunks {
+		total += uint32(sha256.Sum256(payload)[0])
+	}
+	return total
+}

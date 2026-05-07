@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_collection_iteration_list_comprehension_only_for_side_effect",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag list comprehensions used only for side effects, forcing unnecessary list allocation.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

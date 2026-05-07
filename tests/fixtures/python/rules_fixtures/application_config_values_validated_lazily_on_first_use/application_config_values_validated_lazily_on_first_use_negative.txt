@@ -1,0 +1,35 @@
+import os
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class AppConfig:
+    database_url: str
+    redis_url: str
+    secret_key: str
+
+
+def load_config() -> AppConfig:
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise ValueError("DATABASE_URL environment variable is required")
+    if not database_url.startswith("postgresql://"):
+        raise ValueError("DATABASE_URL must be a postgresql:// URL")
+
+    redis_url = os.environ.get("REDIS_URL")
+    if not redis_url:
+        raise ValueError("REDIS_URL environment variable is required")
+
+    secret_key = os.environ.get("SECRET_KEY")
+    if not secret_key or len(secret_key) < 32:
+        raise ValueError("SECRET_KEY must be at least 32 characters")
+
+    return AppConfig(database_url=database_url, redis_url=redis_url, secret_key=secret_key)
+
+
+config = load_config()
+
+
+def handle_request(request):
+    db = connect(config.database_url)
+    return db.query("SELECT 1")

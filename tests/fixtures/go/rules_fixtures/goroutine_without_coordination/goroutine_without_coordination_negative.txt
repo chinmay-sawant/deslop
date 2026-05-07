@@ -1,0 +1,28 @@
+package rulefixtures
+
+import (
+	"context"
+	"sync"
+)
+
+// scenario for goroutine_without_coordination: Raw go statements without an obvious context or WaitGroup-like coordination signal.
+// fixture polarity: negative; family: concurrency; severity: contextual.
+func scenario224Negative(ctx context.Context, items []string) []int {
+	results := make([]int, len(items))
+	var wg sync.WaitGroup
+	wg.Add(len(items))
+	for index, item := range items {
+		index, item := index, item
+		go func() {
+			defer wg.Done()
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				results[index] = len(item)
+			}
+		}()
+	}
+	wg.Wait()
+	return results
+}

@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for fmt_hot_path: fmt formatting calls such as Sprintf inside loops.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario490Positive(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, fmt.Sprintf("%d", value))
+	}
+	return out
+}

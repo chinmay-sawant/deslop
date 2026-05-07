@@ -1,0 +1,40 @@
+from dataclasses import dataclass
+from typing import List
+
+
+@dataclass
+class PricingRule:
+    min_quantity: int
+    max_quantity: int
+    unit_price: float
+    discount_tier: str
+
+    def applies_to(self, quantity: int) -> bool:
+        return self.min_quantity <= quantity <= self.max_quantity
+
+
+class PricingEngine:
+    def __init__(self, rules: List[PricingRule]):
+        self.rules = rules
+
+    def calculate(self, quantity: int) -> float:
+        for rule in self.rules:
+            if rule.applies_to(quantity):
+                return rule.unit_price * quantity
+        raise ValueError(f"No pricing rule for quantity {quantity}")
+
+
+def build_pricing_router(engine: PricingEngine):
+    from fastapi import APIRouter
+    from pydantic import BaseModel
+
+    router = APIRouter()
+
+    class QuoteRequest(BaseModel):
+        quantity: int
+
+    @router.post("/quote")
+    def get_quote(req: QuoteRequest):
+        return {"total": engine.calculate(req.quantity)}
+
+    return router

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for bufio_writer_missing_in_bulk_export: File or socket writes inside loops without visible bufio buffering.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule344NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario344Negative(records []Rule344NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

@@ -1,0 +1,14 @@
+{
+  "id": "strings_splitn_two_index_one_cut",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`strings.SplitN(..., 2)[1]` instead of `strings.Cut(...)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_clap_opposing_flags_without_conflicts",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag pairs such as `--json/--text`, `--include/--exclude`, or `--enable/--disable` without `conflicts_with`, `overrides_with`, or explicit precedence.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

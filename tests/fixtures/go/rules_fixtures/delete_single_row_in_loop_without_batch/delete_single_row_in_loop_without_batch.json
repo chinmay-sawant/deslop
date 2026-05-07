@@ -1,0 +1,14 @@
+{
+  "id": "delete_single_row_in_loop_without_batch",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "GORM Delete(...) chains observed inside loops one row at a time.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

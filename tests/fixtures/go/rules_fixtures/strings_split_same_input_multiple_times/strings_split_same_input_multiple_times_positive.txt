@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_split_same_input_multiple_times: The same string input is passed through strings.Split* or strings.Fields* helpers multiple times in one function.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario369Positive(haystack string, needle string, left string, right string) bool {
+	return len(strings.SplitN(haystack, needle, 2)[0]) >= 0
+}

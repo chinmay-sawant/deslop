@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_method_combines_unrelated_write_paths_via_action_string: Services that branch on action strings to implement many create, update, or delete variants in one method.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule170NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule170NegativeService interface {
+	Run(context.Context, Rule170NegativeRecord) error
+}
+
+func scenario170Negative(ctx context.Context, service Rule170NegativeService, input Rule170NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

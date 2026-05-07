@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for mock_repository_types_duplicated_across_tests: Many copy-pasted mock repository structs with the same method sets.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule097NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule097NegativeService interface {
+	Run(context.Context, Rule097NegativeRecord) error
+}
+
+func scenario097Negative(ctx context.Context, service Rule097NegativeService, input Rule097NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

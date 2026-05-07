@@ -1,0 +1,23 @@
+import pickle
+import json
+from flask import Flask, request
+
+app = Flask(__name__)
+
+
+@app.route("/api/process", methods=["POST"])
+def process():
+    data = pickle.loads(request.data)
+    result = transform(data)
+    return pickle.dumps(result)
+
+
+@app.route("/api/batch", methods=["POST"])
+def batch_process():
+    items = pickle.loads(request.data)
+    results = [transform(item) for item in items]
+    return pickle.dumps(results)
+
+
+def transform(item: dict) -> dict:
+    return {k: str(v).upper() for k, v in item.items()}

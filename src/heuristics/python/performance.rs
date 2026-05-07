@@ -3,6 +3,8 @@ use std::collections::BTreeMap;
 use crate::analysis::{CallSite, ImportSpec, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+use super::super::performance_layers::{PerfLayerLanguage, performance_layer_findings};
+
 pub(crate) const BINDING_LOCATION: &str = file!();
 
 const REQUEST_METHODS: &[&str] = &[
@@ -497,7 +499,15 @@ pub(super) fn project_agnostic_performance_findings(
     if contains_any(&lower_body, &["tempfile.", "namedtemporaryfile", "mkdtemp"])
         && !contains_any(
             &lower_body,
-            &["external", "subprocess", "popen", "run(", "command", "whisper", "ffmpeg"],
+            &[
+                "external",
+                "subprocess",
+                "popen",
+                "run(",
+                "command",
+                "whisper",
+                "ffmpeg",
+            ],
         )
     {
         findings.push(push(
@@ -555,7 +565,10 @@ pub(super) fn project_agnostic_performance_findings(
     }
 
     if contains_any(&lower_body, &["write(", "save(", "insert("])
-        && !contains_any(&lower_body, &[".extend(", "extend(", "bulk_", "batch_", "executemany"])
+        && !contains_any(
+            &lower_body,
+            &[".extend(", "extend(", "bulk_", "batch_", "executemany"],
+        )
         && (lower_body.matches("for ").count() >= 1 || lower_body.matches("while ").count() >= 1)
         && (lower_body.matches("write(").count()
             + lower_body.matches("save(").count()
@@ -651,8 +664,22 @@ pub(super) fn project_agnostic_performance_findings(
     }
 
     if contains_any(&lower_body, &["dict(", ".copy("])
-        && !contains_any(&lower_body, &["update(", "pop(", "setdefault(", "[", "del ", "hydrat"])
-        && !contains_any(&lower_body, &["dict(row", "dict(r)", "sqlite", "cursor", "fetchone", "fetchall", "row_factory"])
+        && !contains_any(
+            &lower_body,
+            &["update(", "pop(", "setdefault(", "[", "del ", "hydrat"],
+        )
+        && !contains_any(
+            &lower_body,
+            &[
+                "dict(row",
+                "dict(r)",
+                "sqlite",
+                "cursor",
+                "fetchone",
+                "fetchall",
+                "row_factory",
+            ],
+        )
     {
         findings.push(push(
             "copy_of_mapping_created_only_to_read_values",
@@ -691,6 +718,13 @@ pub(super) fn project_agnostic_performance_findings(
     }
 
     findings
+}
+
+pub(super) fn performance_layer_rule_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    performance_layer_findings(PerfLayerLanguage::Python, file, function)
 }
 
 fn repeated_normalization_on_same_dataset(body: &str) -> bool {
@@ -746,7 +780,11 @@ fn extract_normalizing_loops(body: &str) -> Vec<(String, bool)> {
     loops
 }
 
-fn indented_loop_block<'a>(lines: &'a [&'a str], index: usize, header_line: &'a str) -> Vec<&'a str> {
+fn indented_loop_block<'a>(
+    lines: &'a [&'a str],
+    index: usize,
+    header_line: &'a str,
+) -> Vec<&'a str> {
     let base_indent = line_indent(header_line);
     let mut block = Vec::new();
 

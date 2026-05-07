@@ -1,0 +1,25 @@
+import re
+from typing import Dict, List, Tuple
+
+PATTERNS: List[Tuple[str, str, str]] = [
+    ("email", r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', "[EMAIL]"),
+    ("phone", r'\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}', "[PHONE]"),
+    ("date", r'\d{4}-\d{2}-\d{2}', "[DATE]"),
+    ("url", r'https?://[^\s]+', "[URL]"),
+    ("ip", r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', "[IP]"),
+]
+
+COMPILED_PATTERNS = [(name, re.compile(pattern), replacement) for name, pattern, replacement in PATTERNS]
+
+def extract_data(text: str) -> Dict[str, str]:
+    result: Dict[str, str] = {}
+    sanitized = text
+
+    for name, compiled, replacement in COMPILED_PATTERNS:
+        match = compiled.search(text)
+        if match:
+            result[name] = match.group()
+        sanitized = compiled.sub(replacement, sanitized)
+
+    result["sanitized"] = sanitized
+    return result

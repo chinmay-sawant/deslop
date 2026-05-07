@@ -1,8 +1,0 @@
-import asyncio
-import httpx
-
-
-async def fetch_snapshot(client: httpx.AsyncClient, url: str) -> str:
-    response = await client.get(url)
-    await asyncio.sleep(0)
-    return response.text

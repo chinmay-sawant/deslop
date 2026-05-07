@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for cmd_or_main_contains_domain_rules: `main` or `cmd` packages that contain business-rule branches instead of wiring and startup concerns.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule014NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule014NegativeService interface {
+	Run(context.Context, Rule014NegativeRecord) error
+}
+
+func scenario014Negative(ctx context.Context, service Rule014NegativeService, input Rule014NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

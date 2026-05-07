@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_algorithmic_complexity_cartesian_product_materialized_before_filter",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag itertools product or nested loops materialized before cheap filters narrow the pairs.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

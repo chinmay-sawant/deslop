@@ -1,0 +1,38 @@
+import re
+from typing import Dict, List
+
+def normalize_email(email: str) -> str:
+    email = email.strip().lower()
+    email = re.sub(r'\s+', '', email)
+    return email
+
+def normalize_phone(phone: str) -> str:
+    digits = re.sub(r'\D', '', phone)
+    if len(digits) == 11 and digits.startswith('1'):
+        digits = digits[1:]
+    return f"({digits[:3]}) {digits[3:6]}-{digits[6:]}"
+
+def normalize_address(address: str) -> str:
+    address = address.strip()
+    address = re.sub(r'\s+', ' ', address)
+    address = address.replace("Street", "St").replace("Avenue", "Ave")
+    address = address.replace("Boulevard", "Blvd").replace("Drive", "Dr")
+    return address
+
+def process_user(user: dict) -> dict:
+    user["email"] = normalize_email(user["email"])
+    user["phone"] = normalize_phone(user["phone"])
+    user["address"] = normalize_address(user["address"])
+    return user
+
+def process_lead(lead: dict) -> dict:
+    lead["email"] = normalize_email(lead["email"])
+    lead["phone"] = normalize_phone(lead["phone"])
+    lead["address"] = normalize_address(lead["address"])
+    return lead
+
+def process_contact(contact: dict) -> dict:
+    contact["email"] = normalize_email(contact["email"])
+    contact["phone"] = normalize_phone(contact["phone"])
+    contact["address"] = normalize_address(contact["address"])
+    return contact

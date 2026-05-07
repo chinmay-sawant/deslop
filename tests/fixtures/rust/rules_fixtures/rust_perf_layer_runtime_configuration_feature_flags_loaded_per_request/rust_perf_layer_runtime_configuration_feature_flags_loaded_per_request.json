@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_runtime_configuration_feature_flags_loaded_per_request",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Build and runtime configuration. Flag feature flag or config files loaded in request paths.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

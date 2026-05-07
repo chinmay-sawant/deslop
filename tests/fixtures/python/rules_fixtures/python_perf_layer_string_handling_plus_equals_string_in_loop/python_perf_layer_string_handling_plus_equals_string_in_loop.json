@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_string_handling_plus_equals_string_in_loop",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: String handling. Flag repeated += string growth in loops where join or StringIO avoids quadratic copying.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

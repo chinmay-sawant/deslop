@@ -1,0 +1,14 @@
+{
+  "id": "rust_drain_collect_then_drop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `drain(..).collect::<Vec<_>>()` followed by drop or one-pass processing that can operate directly on the drain iterator.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

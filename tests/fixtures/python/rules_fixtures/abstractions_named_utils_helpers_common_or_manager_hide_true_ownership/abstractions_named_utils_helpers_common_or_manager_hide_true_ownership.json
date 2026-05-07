@@ -1,0 +1,14 @@
+{
+  "id": "abstractions_named_utils_helpers_common_or_manager_hide_true_ownership",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag vague abstractions whose names obscure actual ownership and responsibility.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

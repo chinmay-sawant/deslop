@@ -1,0 +1,26 @@
+use std::sync::OnceLock;
+
+struct ConnectionPool {
+    connections: Vec<String>,
+}
+
+fn create_pool() -> ConnectionPool {
+    // simulate expensive pool creation
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    ConnectionPool {
+        connections: (0..100).map(|i| format!("conn_{}", i)).collect(),
+    }
+}
+
+// BAD: lazy_static hides tail latency on first request
+static POOL: OnceLock<ConnectionPool> = OnceLock::new();
+
+fn get_pool() -> &'static ConnectionPool {
+    POOL.get_or_init(|| create_pool())
+}
+
+async fn handle_request() -> String {
+    let pool = get_pool();
+    // first request pays 5-second cold start
+    format!("using {} connections", pool.connections.len())
+}

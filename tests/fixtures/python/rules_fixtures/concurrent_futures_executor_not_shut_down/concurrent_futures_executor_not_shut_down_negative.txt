@@ -1,0 +1,29 @@
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+import time
+
+
+def process_items(items):
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(work, item) for item in items]
+        results = [f.result() for f in futures]
+    return results
+
+
+def parallel_compute(data):
+    with ProcessPoolExecutor(max_workers=8) as pool:
+        futures = [pool.submit(heavy_task, chunk) for chunk in data]
+        output = [f.result() for f in futures]
+    return output
+
+
+def fetch_urls(urls):
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        results = list(executor.map(fetch_url, urls))
+    return results
+
+
+def batch_upload(files):
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures = [pool.submit(upload_file, f) for f in files]
+        for future in futures:
+            future.result()

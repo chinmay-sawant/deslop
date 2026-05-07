@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_network_calls_transport_without_connection_limits",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Network calls. Flag custom http.Transport values missing MaxIdleConns or MaxIdleConnsPerHost for service clients.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

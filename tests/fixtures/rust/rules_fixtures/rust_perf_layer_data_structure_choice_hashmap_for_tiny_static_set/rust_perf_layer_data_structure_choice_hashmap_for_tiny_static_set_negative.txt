@@ -1,0 +1,4 @@
+fn is_valid_status(status: &str) -> bool {
+    // GOOD: match on tiny static set avoids hashing entirely
+    matches!(status, "active" | "pending" | "suspended")
+}

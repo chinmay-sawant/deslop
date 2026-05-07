@@ -1,0 +1,14 @@
+{
+  "id": "correctness_depends_on_specific_call_order_not_encoded_in_api",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag APIs whose safe use depends on an undocumented sequence of method calls.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

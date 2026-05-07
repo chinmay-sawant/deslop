@@ -1,0 +1,26 @@
+from fastapi import HTTPException
+from werkzeug.exceptions import NotFound, Forbidden
+
+
+class UserService:
+    def get_user(self, user_id: int) -> dict:
+        if user_id <= 0:
+            raise HTTPException(status_code=400, detail="Invalid user ID")
+        return {"id": user_id, "name": "John"}
+
+    def delete_user(self, user_id: int, requester_role: str) -> None:
+        if requester_role != "admin":
+            raise HTTPException(status_code=403, detail="Forbidden")
+        pass
+
+
+class OrderService:
+    def get_order(self, order_id: int) -> dict:
+        if order_id == 0:
+            raise NotFound("Order not found")
+        return {"id": order_id}
+
+    def cancel_order(self, order_id: int, user_id: int) -> None:
+        if user_id != 1:
+            raise Forbidden("Not your order")
+        pass

@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for goroutine_derived_context_unmanaged: Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.
+// fixture polarity: positive; family: concurrency; severity: contextual.
+func scenario222Positive(items []string) chan int {
+	results := make(chan int)
+	for _, item := range items {
+		go func() {
+			time.Sleep(time.Millisecond)
+			results <- len(item)
+		}()
+	}
+	return results
+}

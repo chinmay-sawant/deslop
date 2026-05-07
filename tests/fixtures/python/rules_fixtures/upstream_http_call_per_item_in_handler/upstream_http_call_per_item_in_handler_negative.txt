@@ -1,0 +1,44 @@
+import httpx
+import asyncio
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+BATCH_TIMEOUT = httpx.Timeout(10.0, connect=3.0)
+
+@app.post("/api/enrich-users")
+async def enrich_users(request: Request):
+    body = await request.json()
+    user_ids = [u["id"] for u in body["users"]]
+    async with httpx.AsyncClient(timeout=BATCH_TIMEOUT) as client:
+        tasks = [client.get(f"https://profiles.example.com/{uid}") for uid in user_ids]
+        responses = await asyncio.gather(*tasks)
+    enriched = []
+    for user, resp in zip(body["users"], responses):
+        resp.raise_for_status()
+        user["profile"] = resp.json()
+        enriched.append(user)
+    return {"users": enriched}
+
+@app.post("/api/check-inventory")
+async def check_inventory(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=BATCH_TIMEOUT) as client:
+        tasks = [client.get(f"https://inventory.example.com/stock/{sku}") for sku in body["skus"]]
+        responses = await asyncio.gather(*tasks)
+    results = [resp.json() for resp in responses]
+    return {"stock": results}
+
+@app.post("/api/send-notifications")
+async def send_notifications(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=BATCH_TIMEOUT) as client:
+        tasks = [
+            client.post(
+                "https://notifications.example.com/send",
+                json={"to": r, "message": body["message"]},
+            )
+            for r in body["recipients"]
+        ]
+        await asyncio.gather(*tasks)
+    return {"sent": len(body["recipients"])}

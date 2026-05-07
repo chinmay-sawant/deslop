@@ -1,0 +1,14 @@
+{
+  "id": "admin_or_debug_endpoint_registration_mixed_into_public_router_setup",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Operational endpoints registered alongside public routes with no clear boundary.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

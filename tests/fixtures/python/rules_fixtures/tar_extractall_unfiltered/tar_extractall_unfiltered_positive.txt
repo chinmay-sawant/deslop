@@ -1,0 +1,22 @@
+import tarfile
+import os
+
+def extract_archive(archive_path: str, dest: str):
+    with tarfile.open(archive_path, "r:gz") as tar:
+        tar.extractall(path=dest)
+
+def unpack_upload(upload_path: str):
+    target = "/tmp/uploads"
+    with tarfile.open(upload_path, "r:*") as tar:
+        tar.extractall(target)
+    return target
+
+def restore_backup(backup_file: str, restore_dir: str):
+    with tarfile.open(backup_file, "r:bz2") as archive:
+        archive.extractall(path=restore_dir)
+
+def deploy_package(pkg_path: str):
+    extract_to = "/opt/app"
+    with tarfile.open(pkg_path, "r:gz") as tarball:
+        tarball.extractall(extract_to)
+    return extract_to

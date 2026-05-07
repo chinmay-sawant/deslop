@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for request_body_read_without_size_limit: HTTP request bodies read or decoded without an observed size limit such as io.LimitReader or http.MaxBytesReader.
+// fixture polarity: positive; family: idioms; severity: warning.
+func scenario392Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

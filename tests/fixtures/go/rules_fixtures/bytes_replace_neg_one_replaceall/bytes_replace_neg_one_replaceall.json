@@ -1,0 +1,14 @@
+{
+  "id": "bytes_replace_neg_one_replaceall",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.Replace(..., -1)` instead of `bytes.ReplaceAll(...)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

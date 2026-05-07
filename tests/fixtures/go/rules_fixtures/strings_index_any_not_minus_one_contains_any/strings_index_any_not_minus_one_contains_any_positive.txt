@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_index_any_not_minus_one_contains_any: `strings.IndexAny(...) != -1` presence checks instead of `strings.ContainsAny(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario658Positive(haystack string, needle string, left string, right string) bool {
+	return strings.Index(haystack, needle) != -1
+}

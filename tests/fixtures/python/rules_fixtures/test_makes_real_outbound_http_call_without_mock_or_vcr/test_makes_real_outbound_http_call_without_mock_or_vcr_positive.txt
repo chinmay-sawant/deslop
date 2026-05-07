@@ -1,0 +1,25 @@
+import pytest
+import requests
+from myapp.client import ApiClient
+
+def test_fetch_user():
+    client = ApiClient(base_url="https://jsonplaceholder.typicode.com")
+    response = client.get("/users/1")
+    assert response["id"] == 1
+    assert "name" in response
+
+def test_create_post():
+    result = requests.post(
+        "https://jsonplaceholder.typicode.com/posts",
+        json={"title": "test", "body": "content", "userId": 1},
+    )
+    assert result.status_code == 201
+
+def test_health_check():
+    resp = requests.get("https://api.example.com/health")
+    assert resp.status_code == 200
+
+def test_search_users():
+    client = ApiClient(base_url="https://api.example.com")
+    results = client.search_users(query="alice")
+    assert len(results) > 0

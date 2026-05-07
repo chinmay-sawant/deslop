@@ -1,0 +1,14 @@
+{
+  "id": "context_not_first_parameter",
+  "language": "go",
+  "family": "context",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Functions that accept context.Context but not as the first non-receiver parameter on context-aware call paths.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

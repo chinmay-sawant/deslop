@@ -1,5 +1,0 @@
-use super::super::render;
-
-pub fn run_helper() {
-    render::normalize();
-}

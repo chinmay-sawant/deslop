@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for errors_new_for_static_sentinel: `errors.New("some error")` called repeatedly in hot paths instead of a package-level sentinel
+// fixture polarity: negative; family: performance; severity: info.
+type Rule480NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario480Negative(records []Rule480NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

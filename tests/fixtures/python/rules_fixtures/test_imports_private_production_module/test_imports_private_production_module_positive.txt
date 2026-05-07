@@ -1,0 +1,23 @@
+import pytest
+from myapp._internal.auth import hash_password
+from myapp._db.connection import get_connection
+from myapp.service._utils import format_response
+from myapp._cache.backend import RedisBackend
+
+def test_hash_password():
+    result = hash_password("mypassword")
+    assert result.startswith("$2b$")
+
+def test_get_connection():
+    conn = get_connection()
+    assert conn is not None
+    conn.close()
+
+def test_format_response():
+    result = format_response({"status": "ok"}, code=200)
+    assert result["code"] == 200
+
+def test_redis_backend():
+    backend = RedisBackend(url="redis://localhost:6379")
+    backend.set("key", "value")
+    assert backend.get("key") == "value"

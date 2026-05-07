@@ -1,0 +1,14 @@
+{
+  "id": "pgxpool_acquire_in_loop",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated pgxpool acquire calls inside loops that may churn pooled resources.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

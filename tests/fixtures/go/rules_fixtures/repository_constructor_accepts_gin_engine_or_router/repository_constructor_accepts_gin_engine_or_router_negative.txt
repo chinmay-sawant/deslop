@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_constructor_accepts_gin_engine_or_router: Repository constructors that take transport objects.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule125NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule125NegativeService interface {
+	Run(context.Context, Rule125NegativeRecord) error
+}
+
+func scenario125Negative(ctx context.Context, service Rule125NegativeService, input Rule125NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

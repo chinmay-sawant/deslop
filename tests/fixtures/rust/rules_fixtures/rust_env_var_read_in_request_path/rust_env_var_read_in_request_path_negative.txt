@@ -1,0 +1,41 @@
+struct AppConfig {
+    mode: String,
+    log_level: String,
+    feature_x: bool,
+    api_base_url: String,
+}
+
+impl AppConfig {
+    fn from_env() -> Self {
+        Self {
+            mode: std::env::var("APP_MODE").unwrap_or_else(|_| "production".into()),
+            log_level: std::env::var("LOG_LEVEL").unwrap_or_else(|_| "info".into()),
+            feature_x: std::env::var("FEATURE_X").map(|v| v == "true").unwrap_or(false),
+            api_base_url: std::env::var("API_BASE_URL")
+                .unwrap_or_else(|_| "https://api.example.com".into()),
+        }
+    }
+}
+
+struct Server {
+    config: AppConfig,
+}
+
+impl Server {
+    async fn handle_request(&self, req: Request) -> Response {
+        if self.config.mode == "debug" {
+            return Response::debug();
+        }
+        let result = process(&req, &self.config).await;
+        Response::ok(result)
+    }
+}
+
+async fn process(_req: &Request, _config: &AppConfig) -> String { todo!() }
+
+struct Request;
+struct Response;
+impl Response {
+    fn debug() -> Self { Self }
+    fn ok(_body: String) -> Self { Self }
+}

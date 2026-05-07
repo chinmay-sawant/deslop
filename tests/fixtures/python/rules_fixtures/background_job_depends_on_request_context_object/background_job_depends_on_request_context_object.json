@@ -1,0 +1,14 @@
+{
+  "id": "background_job_depends_on_request_context_object",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Celery, RQ, or background task function holds a reference to an HTTP request context object across the task boundary.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

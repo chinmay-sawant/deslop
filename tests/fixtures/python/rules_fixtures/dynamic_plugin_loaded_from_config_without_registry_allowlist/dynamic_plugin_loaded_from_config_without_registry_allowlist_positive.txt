@@ -1,0 +1,38 @@
+import importlib
+import json
+
+
+def load_plugins_from_config(config_path: str) -> list:
+    with open(config_path) as f:
+        config = json.load(f)
+    
+    plugins = []
+    for plugin_name in config.get("plugins", []):
+        module = importlib.import_module(plugin_name)
+        plugins.append(module)
+    return plugins
+
+
+def load_transformer(config: dict):
+    transformer_path = config["transformer_module"]
+    return importlib.import_module(transformer_path)
+
+
+def load_middleware_chain(config_path: str) -> list:
+    with open(config_path) as f:
+        cfg = json.load(f)
+    
+    middlewares = []
+    for mw_path in cfg["middleware"]:
+        mod = importlib.import_module(mw_path)
+        middlewares.append(mod.create())
+    return middlewares
+
+
+ALLOWED_PLUGINS = {"myapp.plugins.auth", "myapp.plugins.logging"}
+
+
+def load_plugin(name: str):
+    if name not in ALLOWED_PLUGINS:
+        raise ValueError(f"Plugin {name} not in allowlist")
+    return importlib.import_module(name)

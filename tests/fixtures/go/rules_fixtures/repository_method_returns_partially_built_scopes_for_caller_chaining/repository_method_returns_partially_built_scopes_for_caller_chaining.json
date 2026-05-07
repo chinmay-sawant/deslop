@@ -1,0 +1,14 @@
+{
+  "id": "repository_method_returns_partially_built_scopes_for_caller_chaining",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repositories that expose scope-building fragments instead of complete query APIs.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,22 @@
+def paginate(items, page_size):
+    pages = []
+    current = []
+    for item in items:
+        current.append(item)
+        if len(current) >= page_size:
+            pages.append(current)
+            current = []
+    if current:
+        pages.append(current)
+    return pages
+
+
+def validate_batch(records):
+    total = len(records)
+    if total > 1000:
+        return [f"Batch too large: {total}"]
+    errors = []
+    for i, record in enumerate(records):
+        if not record.get("id"):
+            errors.append(f"Missing id at index {i}")
+    return errors

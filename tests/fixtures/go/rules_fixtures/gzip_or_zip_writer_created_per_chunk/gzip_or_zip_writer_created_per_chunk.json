@@ -1,0 +1,14 @@
+{
+  "id": "gzip_or_zip_writer_created_per_chunk",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gzip or zip writers recreated per chunk inside handler loops instead of reusing per stream.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

@@ -1,0 +1,9 @@
+package rulefixtures
+
+// scenario for goroutine_captures_loop_variable: `for _, v := range items { go func() { use(v) }() }` without rebinding `v` inside the loop body (pre-Go 1.22)
+// fixture polarity: positive; family: security; severity: warning.
+func scenario713Positive(items []string) {
+	for _, item := range items {
+		go func() { _ = item }()
+	}
+}

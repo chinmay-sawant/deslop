@@ -1,0 +1,43 @@
+import time
+
+
+def benchmark_json_parse(payload: str) -> float:
+    import json
+    for _ in range(50):
+        json.loads(payload)
+    start = time.perf_counter()
+    for _ in range(1000):
+        data = json.loads(payload)
+    elapsed = time.perf_counter() - start
+    print(f"JSON parse: {elapsed:.4f}s")
+    return elapsed
+
+
+def benchmark_sort(data: list[int]) -> float:
+    for _ in range(20):
+        sorted(data)
+    start = time.perf_counter()
+    for _ in range(500):
+        sorted_data = sorted(data)
+    elapsed = time.perf_counter() - start
+    print(f"Sort: {elapsed:.4f}s")
+    return elapsed
+
+
+def benchmark_encrypt(data: bytes) -> float:
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+    from cryptography.hazmat.backends import default_backend
+    import os
+    key = os.urandom(32)
+    for _ in range(10):
+        cipher = Cipher(algorithms.AES(key), modes.CFB(os.urandom(16)), backend=default_backend())
+        enc = cipher.encryptor()
+        enc.update(data) + enc.finalize()
+    start = time.perf_counter()
+    for _ in range(200):
+        cipher = Cipher(algorithms.AES(key), modes.CFB(os.urandom(16)), backend=default_backend())
+        encryptor = cipher.encryptor()
+        ct = encryptor.update(data) + encryptor.finalize()
+    elapsed = time.perf_counter() - start
+    print(f"Encrypt: {elapsed:.4f}s")
+    return elapsed

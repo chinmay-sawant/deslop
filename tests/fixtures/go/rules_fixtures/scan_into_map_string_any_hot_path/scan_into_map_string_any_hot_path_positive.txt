@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for scan_into_map_string_any_hot_path: Rows scanned into map[string]any instead of typed structs on hot paths.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule296PositiveRecord struct { ID int }
+
+func scenario296Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule296PositiveRecord{}).Error
+}

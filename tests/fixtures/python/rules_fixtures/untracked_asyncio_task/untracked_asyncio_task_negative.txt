@@ -1,0 +1,34 @@
+import asyncio
+from typing import Set
+
+async def handle_connection(reader, writer):
+    task = asyncio.create_task(heartbeat(writer))
+    try:
+        data = await reader.read(1024)
+        writer.write(data)
+        await writer.drain()
+    finally:
+        task.cancel()
+        writer.close()
+
+_background_tasks: Set[asyncio.Task] = set()
+
+async def start_background_workers():
+    tasks = [
+        asyncio.create_task(process_queue()),
+        asyncio.create_task(cleanup_stale_entries()),
+        asyncio.create_task(sync_remote_state()),
+    ]
+    for task in tasks:
+        _background_tasks.add(task)
+        task.add_done_callback(_background_tasks.discard)
+
+async def on_message_received(message):
+    log_task = asyncio.create_task(log_message(message))
+    metric_task = asyncio.create_task(update_metrics(message))
+    _background_tasks.add(log_task)
+    _background_tasks.add(metric_task)
+    log_task.add_done_callback(_background_tasks.discard)
+    metric_task.add_done_callback(_background_tasks.discard)
+    result = await process_message(message)
+    return result

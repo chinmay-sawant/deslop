@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_async_concurrency_mutex_held_during_slow_call: Layer: Async and concurrency. Flag mutex-protected regions that include network, disk, or database calls.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule507PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario507Positive(records []Rule507PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

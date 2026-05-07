@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+	gin "github.com/gin-gonic/gin"
+	binding "github.com/gin-gonic/gin/binding"
+)
+
+// scenario for large_h_payload_built_only_for_json_response: Large gin.H payloads built as transient dynamic maps right before JSON rendering.
+// fixture polarity: positive; family: gin; severity: contextual.
+type Rule322PositiveRecord struct {
+	Name string `json:"name"`
+}
+
+func scenario322Positive(ctx *gin.Context) error {
+	var first Rule322PositiveRecord
+	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
+		return err
+	}
+	body, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		return err
+	}
+	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
+	if err != nil {
+		return err
+	}
+	ctx.Data(200, "application/json", data)
+	return nil
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for copy_append_idiom_waste: `dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known
+// fixture polarity: positive; family: performance; severity: info.
+type Rule472PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario472Positive(records []Rule472PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

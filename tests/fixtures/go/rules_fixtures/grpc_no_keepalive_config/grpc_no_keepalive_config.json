@@ -1,0 +1,14 @@
+{
+  "id": "grpc_no_keepalive_config",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`grpc.NewServer()` without keepalive server parameters in long-running services",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

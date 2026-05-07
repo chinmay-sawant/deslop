@@ -1,0 +1,27 @@
+import numpy as np
+from typing import List
+
+def compute_features(data: List[float]) -> np.ndarray:
+    result = np.array([])
+    for value in data:
+        feature = np.sin(value) + np.cos(value)
+        result = np.append(result, feature)
+    return result
+
+def aggregate_scores(scores: List[np.ndarray]) -> np.ndarray:
+    combined = np.array([])
+    for score in scores:
+        normalized = (score - score.mean()) / score.std()
+        combined = np.append(combined, normalized)
+    return combined
+
+def build_matrix(rows: List[List[float]]) -> np.ndarray:
+    matrix = np.array([])
+    for row in rows:
+        arr = np.array(row)
+        squared = arr ** 2
+        if matrix.size == 0:
+            matrix = squared.reshape(1, -1)
+        else:
+            matrix = np.append(matrix, squared.reshape(1, -1), axis=0)
+    return matrix

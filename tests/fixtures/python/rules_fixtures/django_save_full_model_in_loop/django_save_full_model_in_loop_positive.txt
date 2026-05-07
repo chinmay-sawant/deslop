@@ -1,0 +1,16 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Product
+
+
+class BulkPriceUpdateView(View):
+    def post(self, request):
+        price_changes = request.POST.getlist("changes")
+        updated_ids = []
+        for change in price_changes:
+            product = Product.objects.get(id=change["product_id"])
+            product.price = change["new_price"]
+            product.save()
+            updated_ids.append(product.id)
+        return JsonResponse({"updated": updated_ids})

@@ -1,0 +1,38 @@
+import pytest
+from unittest.mock import patch, MagicMock
+from myapp.client import ApiClient
+
+@pytest.fixture
+def mock_http():
+    with patch("myapp.client.requests.get") as mock_get, \
+         patch("myapp.client.requests.post") as mock_post:
+        yield {"get": mock_get, "post": mock_post}
+
+def test_fetch_user(mock_http):
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"id": 1, "name": "Alice"}
+    mock_http["get"].return_value = mock_response
+
+    client = ApiClient(base_url="https://api.example.com")
+    response = client.get("/users/1")
+    assert response["id"] == 1
+    assert "name" in response
+
+def test_create_post(mock_http):
+    mock_response = MagicMock()
+    mock_response.status_code = 201
+    mock_response.json.return_value = {"id": 101}
+    mock_http["post"].return_value = mock_response
+
+    client = ApiClient(base_url="https://api.example.com")
+    result = client.create_post({"title": "test", "body": "content"})
+    assert result["id"] == 101
+
+def test_health_check(mock_http):
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_http["get"].return_value = mock_response
+
+    client = ApiClient(base_url="https://api.example.com")
+    assert client.health_check() is True

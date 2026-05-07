@@ -1,0 +1,14 @@
+{
+  "id": "duplicate_error_handler_block",
+  "language": "python",
+  "family": "duplication",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated exception-handling block shapes in one file.",
+  "binding_location": "src/heuristics/python/duplication.rs"
+}

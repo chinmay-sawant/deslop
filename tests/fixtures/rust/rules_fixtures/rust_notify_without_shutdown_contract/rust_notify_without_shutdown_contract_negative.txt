@@ -1,0 +1,16 @@
+use tokio::sync::Notify;
+use tokio::sync::watch;
+use std::sync::Arc;
+
+async fn wait_for_data(notify: Arc<Notify>, mut shutdown: watch::Receiver<bool>) {
+    tokio::select! {
+        _ = notify.notified() => {
+            process_data();
+        }
+        _ = shutdown.changed() => {
+            return;
+        }
+    }
+}
+
+fn process_data() {}

@@ -1,0 +1,14 @@
+{
+  "id": "boolean_flag_parameter_controls_unrelated_behaviors",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag parameters whose boolean value switches between materially different behaviors instead of selecting clear separate entrypoints.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

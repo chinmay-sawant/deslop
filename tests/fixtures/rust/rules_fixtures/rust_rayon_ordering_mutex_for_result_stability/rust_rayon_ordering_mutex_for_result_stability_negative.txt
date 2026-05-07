@@ -1,0 +1,14 @@
+use rayon::prelude::*;
+
+// GOOD: collect results directly, Rayon preserves order with collect
+fn process_ordered(items: &[Item]) -> Vec<Output> {
+    items.par_iter()
+        .map(|item| process(item))
+        .collect()
+}
+
+fn rank_documents(docs: &[Document]) -> Vec<Score> {
+    docs.par_iter()
+        .map(|doc| compute_score(doc))
+        .collect()
+}

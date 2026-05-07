@@ -1,0 +1,14 @@
+{
+  "id": "dependency_injection_bypassed_via_global_singleton",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Function bypasses the DI container and retrieves a collaborator via a global variable or module-level singleton.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for stable_value_normalization_in_inner_loop: Stable value normalization (ToLower, TrimSpace, etc.) repeated inside inner loops.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule366PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario366Positive(records []Rule366PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

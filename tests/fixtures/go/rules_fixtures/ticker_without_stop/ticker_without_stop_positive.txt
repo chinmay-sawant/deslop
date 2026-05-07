@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for ticker_without_stop: time.NewTicker(...) is created without an observed Stop() call.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario399Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

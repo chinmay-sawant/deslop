@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for test_bootstrap_package_reused_by_production_wiring: Production startup code that imports test-only bootstrap helpers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule199NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule199NegativeService interface {
+	Run(context.Context, Rule199NegativeRecord) error
+}
+
+func scenario199Negative(ctx context.Context, service Rule199NegativeService, input Rule199NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

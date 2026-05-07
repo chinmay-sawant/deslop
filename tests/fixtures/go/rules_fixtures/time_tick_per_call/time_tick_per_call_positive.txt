@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_tick_per_call: `time.Tick(...)` on regular call paths instead of owning a reusable ticker.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario686Positive(items []string) int {
+	total := 0
+	for _, item := range items {
+		_ = time.Now()
+		_ = time.After(time.Millisecond)
+		total += len(item)
+	}
+	return total
+}

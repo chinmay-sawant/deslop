@@ -1,0 +1,14 @@
+{
+  "id": "s3_getobject_without_range",
+  "language": "go",
+  "family": "library",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`s3.GetObject` downloading full objects when only partial data is needed (inferred from subsequent `io.LimitReader` or partial reads)",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

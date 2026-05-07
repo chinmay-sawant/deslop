@@ -1,0 +1,28 @@
+STAGE_RESULTS = {}
+
+def run_preprocessing(data):
+    global STAGE_RESULTS
+    cleaned = [remove_nulls(row) for row in data]
+    STAGE_RESULTS["preprocessing"] = len(cleaned)
+    return cleaned
+
+def run_feature_engineering(data):
+    global STAGE_RESULTS
+    features = [extract_features(row) for row in data]
+    STAGE_RESULTS["features"] = len(features)
+    return features
+
+def run_training(data):
+    global STAGE_RESULTS
+    model = train_model(data)
+    STAGE_RESULTS["model_score"] = model.score()
+    return model
+
+METRIC_CACHE = []
+
+def compute_metrics(dataset):
+    global METRIC_CACHE
+    for batch in dataset.batches():
+        result = evaluate(batch)
+        METRIC_CACHE.append(result)
+    return METRIC_CACHE

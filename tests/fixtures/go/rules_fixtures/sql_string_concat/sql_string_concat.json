@@ -1,0 +1,14 @@
+{
+  "id": "sql_string_concat",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Query execution calls where SQL is constructed dynamically with concatenation or fmt.Sprintf.",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

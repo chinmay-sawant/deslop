@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for http_writeheader_after_write: Handlers that write the response body before calling WriteHeader(...).
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario386Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

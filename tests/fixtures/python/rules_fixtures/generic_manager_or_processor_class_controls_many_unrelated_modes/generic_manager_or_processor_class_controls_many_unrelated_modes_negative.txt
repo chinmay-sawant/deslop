@@ -1,0 +1,27 @@
+class BatchProcessor:
+    def __init__(self):
+        self.results = []
+
+    def run(self, data):
+        for item in data:
+            self.results.append(transform(item))
+        return self.results
+
+class StreamProcessor:
+    def process(self, data):
+        for item in data:
+            yield transform(item)
+
+class DataValidator:
+    def validate_all(self, data):
+        return all(validate(item) for item in data)
+
+class DataExporter:
+    def export_json(self, data, filepath):
+        with open(filepath, "w") as f:
+            json.dump(data, f)
+
+class DataImporter:
+    def import_json(self, filepath):
+        with open(filepath, "r") as f:
+            return json.load(f)

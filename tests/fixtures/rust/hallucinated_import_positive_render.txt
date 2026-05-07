@@ -1,3 +1,0 @@
-pub fn normalize() -> String {
-    "ok".to_string()
-}

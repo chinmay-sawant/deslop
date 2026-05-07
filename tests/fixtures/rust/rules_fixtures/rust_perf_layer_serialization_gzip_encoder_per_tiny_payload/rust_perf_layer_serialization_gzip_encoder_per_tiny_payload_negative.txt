@@ -1,0 +1,24 @@
+use flate2::write::GzEncoder;
+use flate2::Compression;
+use std::io::Write;
+
+const MIN_COMPRESS_SIZE: usize = 1024;
+
+fn compress_response(body: &[u8]) -> Vec<u8> {
+    let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
+    encoder.write_all(body).unwrap();
+    encoder.finish().unwrap()
+}
+
+// GOOD: skip compression for tiny payloads where overhead exceeds savings
+fn handle_request(request: &Request) -> Response {
+    let body = format!("{{\"status\": \"ok\", \"id\": {}}}", request.id);
+    let body_bytes = body.as_bytes();
+
+    if body_bytes.len() >= MIN_COMPRESS_SIZE {
+        let compressed = compress_response(body_bytes);
+        Response::with_body(compressed)
+    } else {
+        Response::with_body(body_bytes.to_vec())
+    }
+}

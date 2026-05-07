@@ -1,0 +1,24 @@
+fn extend_from_temp(a: &[u8], b: &[u8]) -> Vec<u8> {
+    let temp: Vec<u8> = a.to_vec();
+    let mut result = Vec::new();
+    result.extend_from_slice(&temp);
+    result.extend_from_slice(b);
+    result
+}
+
+fn merge_slices(slices: &[&[i32]]) -> Vec<i32> {
+    let mut result = Vec::new();
+    for slice in slices {
+        let temp: Vec<i32> = slice.to_vec();
+        result.extend(temp);
+    }
+    result
+}
+
+fn concat_strings(a: &str, b: &str) -> String {
+    let temp = a.to_string();
+    let mut result = String::new();
+    result.push_str(&temp);
+    result.push_str(b);
+    result
+}

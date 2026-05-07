@@ -1,0 +1,14 @@
+{
+  "id": "print_metrics_instead_of_logging",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Training or evaluation code prints metrics directly instead of using logging or experiment tracking.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

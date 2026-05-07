@@ -1,0 +1,14 @@
+{
+  "id": "list_pop_zero_used_as_queue_operation",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "list.pop(0) or list.insert(0, ...) used as a FIFO queue; use collections.deque.popleft().",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

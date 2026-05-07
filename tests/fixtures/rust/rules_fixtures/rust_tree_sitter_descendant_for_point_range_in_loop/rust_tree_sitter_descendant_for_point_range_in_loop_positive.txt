@@ -1,0 +1,28 @@
+use tree_sitter::{Parser, Node};
+
+fn find_nodes_at_ranges(root: Node, source: &str, points: &[(usize, usize)]) {
+    for &(row, col) in points {
+        let node = root.descendant_for_point_range(
+            tree_sitter::Point { row, column: col },
+            tree_sitter::Point { row, column: col + 1 },
+        );
+        if let Some(node) = node {
+            let text = &source[node.start_byte()..node.end_byte()];
+            println!("node: {}", text);
+        }
+    }
+}
+
+fn walk_and_query(root: Node, source: &str) {
+    let mut cursor = root.walk();
+    for child in root.named_children(&mut cursor) {
+        let start = child.start_position();
+        let node = root.descendant_for_point_range(start, child.end_position());
+        if let Some(node) = node {
+            let text = &source[node.start_byte()..node.end_position().column];
+            process_node(node, source);
+        }
+    }
+}
+
+fn process_node(_node: Node, _source: &str) {}

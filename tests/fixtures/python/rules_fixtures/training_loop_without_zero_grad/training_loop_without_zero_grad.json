@@ -1,0 +1,14 @@
+{
+  "id": "training_loop_without_zero_grad",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "optimizer.step() appears without an obvious zero_grad() reset.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

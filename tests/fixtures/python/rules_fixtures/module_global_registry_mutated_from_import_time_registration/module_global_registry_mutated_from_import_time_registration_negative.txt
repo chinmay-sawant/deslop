@@ -1,0 +1,34 @@
+from typing import Callable
+from dataclasses import dataclass, field
+
+
+@dataclass
+class EventRegistry:
+    _handlers: dict[str, Callable] = field(default_factory=dict)
+
+    def register(self, name: str):
+        def decorator(func: Callable) -> Callable:
+            self._handlers[name] = func
+            return func
+        return decorator
+
+    def get_handler(self, name: str) -> Callable | None:
+        return self._handlers.get(name)
+
+    def process_event(self, event: dict) -> None:
+        handler = self.get_handler(event["type"])
+        if handler:
+            handler(event)
+
+
+registry = EventRegistry()
+
+
+@registry.register("user_created")
+def handle_user_created(event: dict) -> None:
+    print(f"User created: {event['user_id']}")
+
+
+@registry.register("order_placed")
+def handle_order_placed(event: dict) -> None:
+    print(f"Order placed: {event['order_id']}")

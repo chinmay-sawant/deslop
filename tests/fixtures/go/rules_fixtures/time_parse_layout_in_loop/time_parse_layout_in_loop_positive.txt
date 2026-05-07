@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_parse_layout_in_loop: time.Parse(...) or ParseInLocation(...) observed inside loops with a stable layout.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario371Positive(items []string) int {
+	total := 0
+	for _, item := range items {
+		_ = time.Now()
+		_ = time.After(time.Millisecond)
+		total += len(item)
+	}
+	return total
+}

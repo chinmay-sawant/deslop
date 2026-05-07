@@ -1,0 +1,31 @@
+from typing import Any
+
+_cache: dict[str, Any] = {}
+
+
+def get_user(user_id: str) -> dict:
+    if user_id in _cache:
+        return _cache[user_id]
+    user = fetch_user_from_db(user_id)
+    _cache[user_id] = user
+    return user
+
+
+def update_user(user_id: str, data: dict) -> dict:
+    user = get_user(user_id)
+    user.update(data)
+    save_user_to_db(user_id, user)
+    _cache[user_id] = user
+    return user
+
+
+def invalidate_user(user_id: str) -> None:
+    _cache.pop(user_id, None)
+
+
+def fetch_user_from_db(user_id: str) -> dict:
+    return {"id": user_id, "name": "Alice"}
+
+
+def save_user_to_db(user_id: str, data: dict) -> None:
+    pass

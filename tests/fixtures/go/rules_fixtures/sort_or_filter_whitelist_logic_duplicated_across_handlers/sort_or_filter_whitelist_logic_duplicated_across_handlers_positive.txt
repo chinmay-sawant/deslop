@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for sort_or_filter_whitelist_logic_duplicated_across_handlers: Repeated client-field whitelist logic across endpoints.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule189PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario189Positive(w http.ResponseWriter, r *http.Request, repo Rule189PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

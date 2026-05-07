@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for multiple_shouldbind_calls_same_handler: Gin handlers that bind the request body multiple times in one function.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule328NegativeRecord struct {
+	Name string
+}
+
+type Rule328NegativeService interface {
+	Handle(context.Context, Rule328NegativeRecord) (Rule328NegativeRecord, error)
+}
+
+func scenario328Negative(ctx context.Context, service Rule328NegativeService, input Rule328NegativeRecord) (Rule328NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule328NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

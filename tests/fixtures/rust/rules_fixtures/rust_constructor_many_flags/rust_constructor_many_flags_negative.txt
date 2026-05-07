@@ -1,0 +1,68 @@
+#[derive(Default)]
+struct QueryOptions {
+    limit: Option<usize>,
+    offset: Option<usize>,
+    distinct: bool,
+    case_sensitive: bool,
+}
+
+enum DeletedPolicy {
+    Exclude,
+    Include,
+    OnlyDeleted,
+}
+
+struct QueryBuilder {
+    table: String,
+    filters: Vec<String>,
+    options: QueryOptions,
+    deleted_policy: DeletedPolicy,
+    mode: QueryMode,
+}
+
+enum QueryMode {
+    Select,
+    Count,
+}
+
+impl QueryBuilder {
+    fn new(table: &str) -> Self {
+        Self {
+            table: table.into(),
+            filters: Vec::new(),
+            options: QueryOptions::default(),
+            deleted_policy: DeletedPolicy::Exclude,
+            mode: QueryMode::Select,
+        }
+    }
+
+    fn options(mut self, opts: QueryOptions) -> Self {
+        self.options = opts;
+        self
+    }
+
+    fn deleted_policy(mut self, policy: DeletedPolicy) -> Self {
+        self.deleted_policy = policy;
+        self
+    }
+
+    fn mode(mut self, mode: QueryMode) -> Self {
+        self.mode = mode;
+        self
+    }
+
+    fn build(self) -> String {
+        format!("SELECT * FROM {}", self.table)
+    }
+}
+
+fn run_query() {
+    let qb = QueryBuilder::new("users")
+        .options(QueryOptions {
+            limit: Some(100),
+            distinct: true,
+            ..Default::default()
+        })
+        .deleted_policy(DeletedPolicy::Exclude);
+    let _ = qb.build();
+}

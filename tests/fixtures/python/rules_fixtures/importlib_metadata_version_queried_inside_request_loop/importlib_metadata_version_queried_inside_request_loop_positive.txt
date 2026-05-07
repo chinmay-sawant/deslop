@@ -1,0 +1,22 @@
+from fastapi import FastAPI
+import importlib.metadata
+
+app = FastAPI()
+
+
+@app.get("/health")
+async def health_check():
+    version = importlib.metadata.version("myapp")
+    return {"status": "healthy", "version": version}
+
+
+@app.get("/info")
+async def app_info():
+    app_version = importlib.metadata.version("myapp")
+    db_version = importlib.metadata.version("sqlalchemy")
+    cache_version = importlib.metadata.version("redis")
+    return {
+        "app": app_version,
+        "db_driver": db_version,
+        "cache_driver": cache_version,
+    }

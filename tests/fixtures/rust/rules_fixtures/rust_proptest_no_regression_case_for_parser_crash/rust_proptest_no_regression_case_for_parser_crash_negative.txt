@@ -1,0 +1,32 @@
+use proptest::prelude::*;
+
+fn parse_query(input: &str) -> Result<Query, ParseError> {
+    todo!()
+}
+
+const REGRESSION_CASES: &[&str] = &[
+    "SELECT * FROM users WHERE id = '",
+    "DROP TABLE --",
+    "\x00\x01\x02",
+    "((((((((((",
+];
+
+#[test]
+fn test_parse_regression_cases() {
+    for case in REGRESSION_CASES {
+        let result = std::panic::catch_unwind(|| {
+            let _ = parse_query(case);
+        });
+        assert!(result.is_ok(), "Parser panicked on input: {:?}", case);
+    }
+}
+
+proptest! {
+    #[test]
+    fn test_parse_never_panics(input in "[a-zA-Z0-9 ]{0,100}") {
+        let result = std::panic::catch_unwind(|| {
+            let _ = parse_query(&input);
+        });
+        prop_assert!(result.is_ok());
+    }
+}

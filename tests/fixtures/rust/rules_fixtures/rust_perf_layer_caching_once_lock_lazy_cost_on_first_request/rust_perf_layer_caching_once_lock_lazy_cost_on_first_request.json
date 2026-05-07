@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_caching_once_lock_lazy_cost_on_first_request",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Caching. Flag OnceLock/LazyLock initialization that puts large first-use cost on a user request without warmup.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

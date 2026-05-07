@@ -1,0 +1,14 @@
+{
+  "id": "entrypoint_builds_dependency_graph_inside_hot_function",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag request, batch, or loop entrypoints that reconstruct clients, caches, or providers on each call instead of wiring them once.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

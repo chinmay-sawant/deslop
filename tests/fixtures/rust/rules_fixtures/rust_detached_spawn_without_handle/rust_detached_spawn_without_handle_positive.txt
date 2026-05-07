@@ -1,0 +1,22 @@
+use tokio::task;
+
+fn spawn_workers(data: Vec<WorkItem>) {
+    for item in data {
+        task::spawn(async move {
+            process(item).await;
+        });
+    }
+}
+
+fn spawn_cleanup() {
+    task::spawn(async move {
+        loop {
+            cleanup().await;
+            tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+        }
+    });
+}
+
+async fn process(_item: WorkItem) { todo!() }
+async fn cleanup() { todo!() }
+struct WorkItem;

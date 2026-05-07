@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for middleware_contains_business_orchestration: Middleware that performs domain workflows instead of cross-cutting concerns such as auth, tracing, or request enrichment.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule087PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario087Positive(w http.ResponseWriter, r *http.Request, repo Rule087PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

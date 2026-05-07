@@ -1,0 +1,14 @@
+{
+  "id": "json_encoder_recreated_per_item",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "A JSON encoder object is recreated per item instead of being reused for the stream.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

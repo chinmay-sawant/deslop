@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for route_registration_tests_duplicate_full_bootstrap_per_file: Tests that rebuild the full application bootstrap repeatedly instead of using shared test setup.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule152PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario152Positive(w http.ResponseWriter, r *http.Request, repo Rule152PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

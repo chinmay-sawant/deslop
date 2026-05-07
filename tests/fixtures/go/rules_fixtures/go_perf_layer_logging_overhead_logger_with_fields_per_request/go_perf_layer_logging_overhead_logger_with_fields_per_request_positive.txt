@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_logging_overhead_logger_with_fields_per_request: Layer: Logging overhead. Flag derived logger construction per request when stable fields can be attached once.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule562PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario562Positive(records []Rule562PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

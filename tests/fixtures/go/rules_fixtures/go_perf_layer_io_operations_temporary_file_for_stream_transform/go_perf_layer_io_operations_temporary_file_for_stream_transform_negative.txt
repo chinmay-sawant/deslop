@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_io_operations_temporary_file_for_stream_transform: Layer: I/O operations. Flag temporary files used only to bridge streaming transformations.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule553NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario553Negative(records []Rule553NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

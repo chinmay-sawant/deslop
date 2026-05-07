@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_io_operations_unbuffered_writes_in_loop",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag repeated file or socket writes without BufWriter or batching.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_condvar_wait_without_predicate_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `Condvar::wait` not wrapped in a predicate loop.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

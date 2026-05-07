@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for path_split_dir_only: `path.Split(...)` when only the directory is used.
+// fixture polarity: positive; family: performance; severity: info.
+type Rule623PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario623Positive(records []Rule623PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

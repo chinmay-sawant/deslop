@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for len_string_for_empty_check: `len(s) == 0` used interchangeably with `s == ""`
+// fixture polarity: negative; family: performance; severity: info.
+type Rule611NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario611Negative(records []Rule611NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

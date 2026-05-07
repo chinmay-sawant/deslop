@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for exists_via_count_star: COUNT(*) used for an existence check instead of EXISTS or LIMIT 1.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule261PositiveRecord struct { ID int }
+
+func scenario261Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule261PositiveRecord{}).Error
+}

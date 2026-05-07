@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for gin_handler_parses_config_or_feature_flags_inline: Handlers that read feature flags, tenant configuration, or rollout toggles directly instead of using injected policy/config abstractions.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule046PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario046Positive(w http.ResponseWriter, r *http.Request, repo Rule046PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

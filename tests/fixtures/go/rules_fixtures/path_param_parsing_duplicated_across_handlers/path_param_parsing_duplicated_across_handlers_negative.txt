@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for path_param_parsing_duplicated_across_handlers: Repeated `strconv` or UUID path-param parsing logic that should live in helpers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule112NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule112NegativeService interface {
+	Run(context.Context, Rule112NegativeRecord) error
+}
+
+func scenario112Negative(ctx context.Context, service Rule112NegativeService, input Rule112NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

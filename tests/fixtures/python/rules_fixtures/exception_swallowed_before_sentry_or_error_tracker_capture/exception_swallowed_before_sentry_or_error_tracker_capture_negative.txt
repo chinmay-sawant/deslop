@@ -1,0 +1,27 @@
+import sentry_sdk
+
+
+def process_webhook(payload: dict) -> dict:
+    try:
+        result = handle_payload(payload)
+        return {"status": "ok"}
+    except Exception:
+        sentry_sdk.capture_exception()
+        return {"status": "error"}
+
+
+def sync_user(user_id: str) -> dict:
+    try:
+        data = external_api.get_user(user_id)
+        return save_user(data)
+    except Exception:
+        sentry_sdk.capture_exception()
+        raise
+
+
+def process_payment(order_id: str, amount: float) -> dict:
+    try:
+        return charge(amount)
+    except PaymentError:
+        sentry_sdk.capture_exception()
+        raise

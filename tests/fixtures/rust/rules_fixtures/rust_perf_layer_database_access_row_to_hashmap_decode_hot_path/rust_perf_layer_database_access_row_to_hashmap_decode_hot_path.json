@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_database_access_row_to_hashmap_decode_hot_path",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Database access. Flag database row decoding into HashMap<String, Value> on hot typed paths.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

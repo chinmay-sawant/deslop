@@ -1,0 +1,21 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Article
+
+
+class ArticleSummaryView(View):
+    def get(self, request):
+        articles = Article.objects.filter(published=True)
+        count = articles.count()
+        if count > 0:
+            first_title = articles.first().title
+            ids = [a.id for a in articles[:10]]
+        else:
+            first_title = None
+            ids = []
+        return JsonResponse({
+            "count": count,
+            "first_title": first_title,
+            "recent_ids": ids,
+        })

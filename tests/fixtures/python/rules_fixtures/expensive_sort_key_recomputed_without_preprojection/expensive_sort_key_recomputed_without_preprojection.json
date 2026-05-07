@@ -1,0 +1,14 @@
+{
+  "id": "expensive_sort_key_recomputed_without_preprojection",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag repeated expensive key computation during sorting when values could be precomputed once.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

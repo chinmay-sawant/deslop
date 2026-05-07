@@ -1,0 +1,14 @@
+{
+  "id": "rust_once_lock_initializes_fallible_resource_with_unwrap",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `OnceLock`, `LazyLock`, or lazy initialization that unwraps fallible setup instead of returning initialization errors at bootstrap.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

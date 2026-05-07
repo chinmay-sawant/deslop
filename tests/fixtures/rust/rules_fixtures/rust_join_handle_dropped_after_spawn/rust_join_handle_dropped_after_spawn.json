@@ -1,0 +1,14 @@
+{
+  "id": "rust_join_handle_dropped_after_spawn",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag spawned threads whose join handles are immediately dropped outside explicit detached-worker patterns.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "flask_no_streaming_for_large_response",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flask views build large in-memory responses where generator or streaming responses would fit better.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

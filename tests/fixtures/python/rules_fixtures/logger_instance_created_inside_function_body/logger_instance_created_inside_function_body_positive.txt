@@ -1,0 +1,29 @@
+def process_order(order_id: int) -> dict:
+    import logging
+
+    logger = logging.getLogger("order_processor")
+    logger.info(f"Processing order {order_id}")
+
+    order = fetch_order(order_id)
+    validated = validate_order(order)
+    return submit_order(validated)
+
+
+def send_notification(user_id: int, message: str) -> None:
+    import logging
+
+    logger = logging.getLogger("notifier")
+    logger.info(f"Sending notification to {user_id}")
+
+    user = get_user(user_id)
+    if user.email:
+        email_client.send(user.email, message)
+
+
+def sync_inventory(product_ids: list[int]) -> None:
+    import logging
+
+    logger = logging.getLogger("inventory_sync")
+    for pid in product_ids:
+        logger.debug(f"Syncing product {pid}")
+        update_stock(pid)

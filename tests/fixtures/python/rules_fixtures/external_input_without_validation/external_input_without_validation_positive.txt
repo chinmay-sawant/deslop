@@ -1,0 +1,34 @@
+from flask import Flask, request
+
+app = Flask(__name__)
+
+
+@app.route("/users", methods=["POST"])
+def create_user():
+    data = request.get_json()
+    user = db.create_user(
+        name=data["name"],
+        email=data["email"],
+        role=data.get("role", "user"),
+    )
+    return {"id": user.id}
+
+
+@app.route("/search")
+def search():
+    query = request.args.get("q")
+    results = search_engine.search(query)
+    return {"results": results}
+
+
+@app.route("/files/<path:filepath>")
+def serve_file(filepath):
+    with open(f"/data/{filepath}") as f:
+        return f.read()
+
+
+@app.route("/execute", methods=["POST"])
+def execute_command():
+    cmd = request.json["command"]
+    result = subprocess.run(cmd, shell=True, capture_output=True)
+    return {"output": result.stdout.decode()}

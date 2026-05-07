@@ -1,0 +1,21 @@
+use rayon::prelude::*;
+
+// BAD: unwrap/expect in parallel closures can abort entire batch
+fn scan_files(paths: &[PathBuf]) -> Vec<ScanResult> {
+    paths.par_iter()
+        .map(|path| {
+            let content = std::fs::read_to_string(path).unwrap();
+            let parsed = serde_json::from_str::<Document>(&content).unwrap();
+            scan_document(&parsed)
+        })
+        .collect()
+}
+
+fn process_items(items: &[Item]) -> Vec<Output> {
+    items.par_iter()
+        .map(|item| {
+            let value = item.parse_value().expect("invalid value format");
+            transform(value)
+        })
+        .collect()
+}

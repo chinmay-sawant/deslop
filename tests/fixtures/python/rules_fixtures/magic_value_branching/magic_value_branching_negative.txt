@@ -1,0 +1,56 @@
+from enum import Enum
+
+
+class UserType(Enum):
+    REGULAR = "regular"
+    PREMIUM = "premium"
+    GOLD = "gold"
+    VIP = "vip"
+
+
+DISCOUNT_MAP = {
+    UserType.REGULAR: 1.0,
+    UserType.PREMIUM: 0.8,
+    UserType.GOLD: 0.7,
+    UserType.VIP: 0.6,
+}
+
+
+class Priority(Enum):
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+
+PRIORITY_LABELS = {
+    Priority.CRITICAL: "critical",
+    Priority.HIGH: "high",
+    Priority.MEDIUM: "medium",
+    Priority.LOW: "low",
+}
+
+
+class HttpStatus(Enum):
+    OK = 200
+    NOT_FOUND = 404
+    SERVER_ERROR = 500
+    FORBIDDEN = 403
+
+
+def calculate_discount(price: float, user_type: UserType) -> float:
+    return price * DISCOUNT_MAP.get(user_type, 1.0)
+
+
+def get_priority_label(priority: Priority) -> str:
+    return PRIORITY_LABELS.get(priority, "unknown")
+
+
+def classify_response(status_code: HttpStatus) -> str:
+    labels = {
+        HttpStatus.OK: "success",
+        HttpStatus.NOT_FOUND: "not_found",
+        HttpStatus.SERVER_ERROR: "server_error",
+        HttpStatus.FORBIDDEN: "forbidden",
+    }
+    return labels.get(status_code, "other")

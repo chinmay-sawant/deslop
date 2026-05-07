@@ -1,0 +1,35 @@
+from fastapi import HTTPException
+from pydantic import BaseModel, ValidationError
+
+
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    full_name: str = ""
+
+    model_config = {"populate_by_name": True}
+
+
+def _format_validation_errors(exc: ValidationError) -> list[dict]:
+    return [
+        {"field": ".".join(str(loc) for loc in err["loc"]), "message": err["msg"]}
+        for err in exc.errors()
+    ]
+
+
+@app.post("/users")
+async def create_user(request: UserCreate):
+    try:
+        validated = UserCreate.model_validate(request)
+    except ValidationError as exc:
+        raise HTTPException(status_code=422, detail=_format_validation_errors(exc))
+    return db.create_user(validated)
+
+
+@app.post("/orders")
+async def create_order(payload: OrderSchema):
+    try:
+        order = OrderSchema.model_validate(payload)
+    except ValidationError as exc:
+        raise HTTPException(status_code=400, detail=_format_validation_errors(exc))
+    return process_order(order)

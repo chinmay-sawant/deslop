@@ -1,0 +1,14 @@
+{
+  "id": "sqlx_select_large_slice_without_limit",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "sqlx.Select used on request paths without a visible LIMIT in the query.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

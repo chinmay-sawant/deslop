@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for response_dto_uses_omitempty_on_required_contract_fields: Response shapes that silently drop fields that should be stable parts of the API contract.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule146NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule146NegativeService interface {
+	Run(context.Context, Rule146NegativeRecord) error
+}
+
+func scenario146Negative(ctx context.Context, service Rule146NegativeService, input Rule146NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

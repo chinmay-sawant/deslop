@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for migration_runner_and_api_server_bootstrap_coupled: One startup path that always runs migrations and serves traffic together.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule095NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule095NegativeService interface {
+	Run(context.Context, Rule095NegativeRecord) error
+}
+
+func scenario095Negative(ctx context.Context, service Rule095NegativeService, input Rule095NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

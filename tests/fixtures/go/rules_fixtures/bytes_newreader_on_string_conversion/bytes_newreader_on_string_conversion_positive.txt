@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_newreader_on_string_conversion: `bytes.NewReader([]byte(s))` instead of `strings.NewReader(s)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario456Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.Index(haystack, needle) != -1
+}

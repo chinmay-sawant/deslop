@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_newreplacer_per_call: `strings.NewReplacer(...)` recreated on request or loop paths.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario660Negative(haystack string, needle string, left string, right string) bool {
+	return strings.Contains(haystack, needle)
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_old_tree_discarded_in_reparse_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated parse loops over the same buffer that always pass `None` instead of reusing an old tree for incremental parsing.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

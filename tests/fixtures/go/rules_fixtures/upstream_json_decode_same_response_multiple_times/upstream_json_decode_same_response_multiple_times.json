@@ -1,0 +1,14 @@
+{
+  "id": "upstream_json_decode_same_response_multiple_times",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "One upstream HTTP response body decoded into multiple targets in the same handler.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

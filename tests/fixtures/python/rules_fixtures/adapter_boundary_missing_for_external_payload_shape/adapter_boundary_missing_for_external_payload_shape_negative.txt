@@ -1,0 +1,44 @@
+import requests
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class StripePayment:
+    id: str
+    amount: int
+    currency: str
+    status: str
+
+
+@dataclass(frozen=True)
+class StripeWebhookEvent:
+    event_type: str
+    payment: StripePayment
+    customer_id: str
+
+
+def parse_stripe_payment(event_id: str) -> StripePayment:
+    resp = requests.get(f"https://api.stripe.com/v1/events/{event_id}")
+    raw = resp.json()["data"]["object"]
+    return StripePayment(
+        id=raw["id"],
+        amount=raw["amount"],
+        currency=raw["currency"],
+        status=raw["status"],
+    )
+
+
+def parse_webhook_event(payload: dict) -> StripeWebhookEvent:
+    obj = payload["data"]["object"]
+    return StripeWebhookEvent(
+        event_type=payload["type"],
+        payment=StripePayment(
+            id=obj["id"], amount=obj["amount"], currency=obj["currency"], status=obj["status"]
+        ),
+        customer_id=obj["customer"],
+    )
+
+
+def process_webhook(payload: dict):
+    event = parse_webhook_event(payload)
+    save_transaction(event.event_type, event.payment.amount, event.customer_id)

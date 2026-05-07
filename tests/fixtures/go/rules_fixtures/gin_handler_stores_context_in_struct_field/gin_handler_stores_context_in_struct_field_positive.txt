@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for gin_handler_stores_context_in_struct_field: Code that saves `*gin.Context` onto long-lived structs.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule051PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario051Positive(w http.ResponseWriter, r *http.Request, repo Rule051PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

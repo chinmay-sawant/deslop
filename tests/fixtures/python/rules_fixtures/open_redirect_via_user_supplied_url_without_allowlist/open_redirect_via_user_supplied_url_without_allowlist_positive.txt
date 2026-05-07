@@ -1,0 +1,23 @@
+from flask import Flask, redirect, request
+
+app = Flask(__name__)
+
+@app.route("/login")
+def login():
+    next_url = request.args.get("next", "/")
+    return redirect(next_url)
+
+@app.route("/logout")
+def logout():
+    return_url = request.args.get("return_to", "/")
+    return redirect(return_url)
+
+@app.route("/redirect")
+def custom_redirect():
+    target = request.args.get("url", "/")
+    return redirect(target)
+
+@app.route("/sso/callback")
+def sso_callback():
+    redirect_uri = request.args.get("redirect_uri", "/dashboard")
+    return redirect(redirect_uri)

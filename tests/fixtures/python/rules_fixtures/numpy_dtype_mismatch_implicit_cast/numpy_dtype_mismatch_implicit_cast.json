@@ -1,0 +1,14 @@
+{
+  "id": "numpy_dtype_mismatch_implicit_cast",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Arrays are constructed and immediately cast, implying a missing upfront dtype choice.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

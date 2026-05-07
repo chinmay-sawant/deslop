@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for test_fixture_builders_live_in_production_packages: Fixture and factory helpers defined in non-test production files.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule200PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario200Positive(w http.ResponseWriter, r *http.Request, repo Rule200PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

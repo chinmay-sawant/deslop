@@ -1,0 +1,6 @@
+// GOOD: use abort for smaller binary, or omit to use default
+// Cargo.toml
+[profile.release]
+opt-level = 3
+lto = "fat"
+panic = "abort"

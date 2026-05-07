@@ -1,0 +1,14 @@
+{
+  "id": "order_by_clause_literals_scattered_across_layers",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Raw sort expressions duplicated in handlers and services instead of query helpers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

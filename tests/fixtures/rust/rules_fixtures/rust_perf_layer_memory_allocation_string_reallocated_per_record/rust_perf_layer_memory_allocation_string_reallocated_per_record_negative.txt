@@ -1,0 +1,22 @@
+use std::io::Write;
+
+fn format_records(records: &[Record]) -> Vec<u8> {
+    let mut output = Vec::new();
+    let mut buf = String::with_capacity(256);
+    for record in records {
+        // GOOD: reuse buffer, clear per record
+        buf.clear();
+        use std::fmt::Write;
+        write!(buf, "{}\t{}\t{}\t{}\n",
+            record.id, record.name, record.email, record.score).unwrap();
+        output.write_all(buf.as_bytes()).unwrap();
+    }
+    output
+}
+
+struct Record {
+    id: u64,
+    name: String,
+    email: String,
+    score: f64,
+}

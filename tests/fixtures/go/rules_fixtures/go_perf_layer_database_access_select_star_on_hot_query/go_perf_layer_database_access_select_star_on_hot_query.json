@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_database_access_select_star_on_hot_query",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Database access. Flag SELECT * in hot queries where narrow projections reduce scan and decode cost.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

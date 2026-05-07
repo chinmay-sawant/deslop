@@ -1,0 +1,14 @@
+{
+  "id": "rust_read_to_string_for_line_scan",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag whole-file `read_to_string` or `fs::read_to_string` followed only by line scanning or predicate checks.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "gin_handler_executes_raw_sql_inline",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that execute literal SQL or repository-unaware raw queries.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

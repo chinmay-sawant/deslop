@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for type_assertion_without_comma_ok: `v := i.(T)` without the comma-ok form in non-panic-safe code
+// fixture polarity: positive; family: performance; severity: warning.
+type Rule688PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario688Positive(records []Rule688PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

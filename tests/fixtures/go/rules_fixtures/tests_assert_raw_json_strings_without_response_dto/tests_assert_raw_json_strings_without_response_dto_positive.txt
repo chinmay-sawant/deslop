@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for tests_assert_raw_json_strings_without_response_dto: Brittle raw-JSON string assertions when typed response DTOs exist.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule202PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario202Positive(w http.ResponseWriter, r *http.Request, repo Rule202PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

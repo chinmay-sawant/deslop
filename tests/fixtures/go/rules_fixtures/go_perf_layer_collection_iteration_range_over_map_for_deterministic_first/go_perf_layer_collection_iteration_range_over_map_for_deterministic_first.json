@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_collection_iteration_range_over_map_for_deterministic_first",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag map iteration used to pick a deterministic first value, causing unstable work and extra sorting later.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for url_parse_in_loop_on_invariant_base: url.Parse(...) or ParseRequestURI(...) observed inside loops with a stable-looking base input.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule372PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario372Positive(records []Rule372PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

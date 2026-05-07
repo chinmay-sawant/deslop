@@ -1,0 +1,14 @@
+{
+  "id": "rust_manual_tempdir_lifecycle",
+  "language": "rust",
+  "family": "boundary",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Manual temp-directory setup and cleanup that should usually use RAII helpers.",
+  "binding_location": "src/heuristics/rust/boundary.rs"
+}

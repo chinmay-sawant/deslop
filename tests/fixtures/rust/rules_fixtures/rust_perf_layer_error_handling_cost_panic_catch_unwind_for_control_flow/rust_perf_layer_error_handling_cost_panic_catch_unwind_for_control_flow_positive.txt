@@ -1,0 +1,16 @@
+use std::panic;
+
+fn safe_parse(input: &str) -> i64 {
+    // BAD: using catch_unwind for expected control flow
+    let result = panic::catch_unwind(|| {
+        input.parse::<i64>().unwrap()
+    });
+    match result {
+        Ok(val) => val,
+        Err(_) => 0,
+    }
+}
+
+fn process_items(items: &[&str]) -> Vec<i64> {
+    items.iter().map(|s| safe_parse(s)).collect()
+}

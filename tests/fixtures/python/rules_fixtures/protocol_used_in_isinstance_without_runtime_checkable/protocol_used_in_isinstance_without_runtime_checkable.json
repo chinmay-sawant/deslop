@@ -1,0 +1,14 @@
+{
+  "id": "protocol_used_in_isinstance_without_runtime_checkable",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "typing.Protocol used in isinstance() call without @runtime_checkable decorator.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

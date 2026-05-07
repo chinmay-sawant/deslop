@@ -1,0 +1,14 @@
+{
+  "id": "string_mode_parameter_replaces_enum_or_literal_contract",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag string mode parameters that should be constrained by an enum or literal contract.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

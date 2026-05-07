@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_descendant_for_point_range_in_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated descendant/range queries inside loops over sibling nodes, which can turn a tree walk into avoidable quadratic traversal.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

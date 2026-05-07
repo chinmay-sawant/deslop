@@ -1,0 +1,14 @@
+{
+  "id": "rust_error_logged_and_returned",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag functions that log an error and then return the same error upward, causing duplicate logging at callers.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

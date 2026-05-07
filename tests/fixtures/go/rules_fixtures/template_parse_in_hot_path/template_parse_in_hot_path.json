@@ -1,0 +1,14 @@
+{
+  "id": "template_parse_in_hot_path",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "html/template or text/template parse calls observed on request-style paths instead of startup-time caching.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

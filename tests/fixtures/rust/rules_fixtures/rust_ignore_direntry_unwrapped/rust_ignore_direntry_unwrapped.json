@@ -1,0 +1,14 @@
+{
+  "id": "rust_ignore_direntry_unwrapped",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `entry.unwrap ()` or `expect (...)` on walker entries in production scan code.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

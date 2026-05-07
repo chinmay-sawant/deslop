@@ -1,0 +1,14 @@
+{
+  "id": "gin_handler_parses_config_or_feature_flags_inline",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that read feature flags, tenant configuration, or rollout toggles directly instead of using injected policy/config abstractions.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

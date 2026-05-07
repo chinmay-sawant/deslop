@@ -1,0 +1,25 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_order(order_id: int) -> dict:
+    logger.info(f"Processing order {order_id}")
+
+    order = fetch_order(order_id)
+    validated = validate_order(order)
+    return submit_order(validated)
+
+
+def send_notification(user_id: int, message: str) -> None:
+    logger.info(f"Sending notification to {user_id}")
+
+    user = get_user(user_id)
+    if user.email:
+        email_client.send(user.email, message)
+
+
+def sync_inventory(product_ids: list[int]) -> None:
+    for pid in product_ids:
+        logger.debug(f"Syncing product {pid}")
+        update_stock(pid)

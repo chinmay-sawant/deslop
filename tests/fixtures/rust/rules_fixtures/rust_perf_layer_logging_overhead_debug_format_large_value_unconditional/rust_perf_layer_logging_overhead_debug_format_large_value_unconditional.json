@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_logging_overhead_debug_format_large_value_unconditional",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Logging overhead. Flag debug formatting before log level checks.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

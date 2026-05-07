@@ -1,0 +1,14 @@
+{
+  "id": "defer_in_loop_resource_growth",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "defer statements inside loops that can accumulate resources until function exit.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

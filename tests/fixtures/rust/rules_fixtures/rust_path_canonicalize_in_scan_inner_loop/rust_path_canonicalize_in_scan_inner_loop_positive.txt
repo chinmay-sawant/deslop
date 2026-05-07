@@ -1,0 +1,11 @@
+use std::path::PathBuf;
+
+fn scan_and_resolve(root: &str) -> Vec<PathBuf> {
+    let mut results = Vec::new();
+    for entry in walkdir::WalkDir::new(root) {
+        let entry = entry.unwrap();
+        let canonical = entry.path().canonicalize().unwrap();
+        results.push(canonical);
+    }
+    results
+}

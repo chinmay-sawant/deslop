@@ -1,0 +1,14 @@
+{
+  "id": "copy_append_idiom_waste",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+	gin "github.com/gin-gonic/gin"
+	binding "github.com/gin-gonic/gin/binding"
+)
+
+// scenario for gin_context_copy_for_each_item_fanout: Gin handlers that call c.Copy() once per loop iteration before goroutine fanout.
+// fixture polarity: positive; family: gin; severity: contextual.
+type Rule316PositiveRecord struct {
+	Name string `json:"name"`
+}
+
+func scenario316Positive(ctx *gin.Context) error {
+	var first Rule316PositiveRecord
+	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
+		return err
+	}
+	body, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		return err
+	}
+	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
+	if err != nil {
+		return err
+	}
+	ctx.Data(200, "application/json", data)
+	return nil
+}

@@ -1,0 +1,39 @@
+from abc import ABC, abstractmethod
+
+
+class Notifier(ABC):
+    @abstractmethod
+    def send(self, recipient, message):
+        pass
+
+
+class EmailNotifier(Notifier):
+    def send(self, recipient, message):
+        print(f"Email to {recipient}: {message}")
+
+
+class SlackNotifier(Notifier):
+    def send(self, recipient, message):
+        print(f"Slack to {recipient}: {message}")
+
+
+class EmailWithAttachmentNotifier(EmailNotifier):
+    def send(self, recipient, message):
+        super().send(recipient, message)
+        print(f"Attachment sent to {recipient}")
+
+
+class EmailWithRetryNotifier(EmailNotifier):
+    def send(self, recipient, message):
+        for attempt in range(3):
+            try:
+                super().send(recipient, message)
+                return
+            except Exception:
+                continue
+
+
+class SlackWithThreadNotifier(SlackNotifier):
+    def send(self, recipient, message):
+        super().send(recipient, message)
+        print(f"Thread created for {recipient}")

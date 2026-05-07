@@ -1,0 +1,14 @@
+{
+  "id": "structured_log_record_missing_trace_or_correlation_id",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Structured log record in a request handler lacks trace_id or request_id for distributed tracing.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

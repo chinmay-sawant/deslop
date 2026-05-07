@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_network_calls_reqwest_client_created_per_call",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Network calls. Flag reqwest::Client construction per call instead of reuse per upstream.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

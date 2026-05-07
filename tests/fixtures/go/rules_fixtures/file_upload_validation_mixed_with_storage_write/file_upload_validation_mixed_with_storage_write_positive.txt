@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for file_upload_validation_mixed_with_storage_write: Functions that validate upload metadata and also persist the upload in the same boundary step.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule034PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario034Positive(w http.ResponseWriter, r *http.Request, repo Rule034PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

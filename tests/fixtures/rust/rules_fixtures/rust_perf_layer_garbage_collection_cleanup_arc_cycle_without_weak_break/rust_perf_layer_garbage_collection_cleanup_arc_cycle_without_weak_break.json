@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_garbage_collection_cleanup_arc_cycle_without_weak_break",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag Arc graphs that appear cyclic without Weak ownership edges.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

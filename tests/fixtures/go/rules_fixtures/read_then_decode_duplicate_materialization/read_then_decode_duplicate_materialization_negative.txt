@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for read_then_decode_duplicate_materialization: io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule359NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario359Negative(records []Rule359NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

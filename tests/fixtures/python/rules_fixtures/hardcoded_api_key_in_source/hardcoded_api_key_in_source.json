@@ -1,0 +1,14 @@
+{
+  "id": "hardcoded_api_key_in_source",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Hardcoded model-provider API keys or secret-like tokens appear in source.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

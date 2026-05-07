@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_tick_per_call: `time.Tick(...)` on regular call paths instead of owning a reusable ticker.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario686Negative(items []string) int {
+	started := time.Now()
+	total := 0
+	for _, item := range items {
+		if !started.IsZero() { total += len(item) }
+	}
+	return total
+}

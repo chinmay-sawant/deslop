@@ -1,0 +1,54 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum EventType {
+    UserCreated,
+    UserDeleted,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Status {
+    Active,
+    Pending,
+    Suspended,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Priority {
+    Low,
+    Medium,
+    High,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct WebhookEvent {
+    pub event_type: EventType,
+    pub status: Status,
+    pub priority: Priority,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ActionType {
+    Create,
+    Read,
+    Update,
+    Delete,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct UserAction {
+    pub action: ActionType,
+    pub resource_type: String,
+    pub severity: Priority,
+}
+
+fn match_event_type(event: &WebhookEvent) -> &'static str {
+    match event.event_type {
+        EventType::UserCreated => "new_user",
+        EventType::UserDeleted => "removed",
+    }
+}

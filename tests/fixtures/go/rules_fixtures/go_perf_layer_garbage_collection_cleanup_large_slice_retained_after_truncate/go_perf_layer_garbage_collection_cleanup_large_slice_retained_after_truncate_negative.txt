@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate: Layer: Garbage collection and cleanup. Flag long-lived slices truncated to zero that still retain large backing arrays.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule540NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario540Negative(records []Rule540NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

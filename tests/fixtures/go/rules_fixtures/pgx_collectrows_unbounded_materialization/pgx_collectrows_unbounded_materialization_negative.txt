@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for pgx_collectrows_unbounded_materialization: pgx.CollectRows used on request paths without a visible LIMIT in the query.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule279NegativeRecord struct { ID int }
+
+func scenario279Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule279NegativeRecord{}).Error
+}

@@ -1,0 +1,19 @@
+fn greet(name: &String) -> String {
+    format!("Hello, {name}!")
+}
+
+fn count_words(text: &String) -> usize {
+    text.split_whitespace().count()
+}
+
+fn truncate(s: &String, max_len: usize) -> &str {
+    if s.len() <= max_len {
+        s.as_str()
+    } else {
+        &s[..max_len]
+    }
+}
+
+fn is_empty(input: &String) -> bool {
+    input.is_empty()
+}

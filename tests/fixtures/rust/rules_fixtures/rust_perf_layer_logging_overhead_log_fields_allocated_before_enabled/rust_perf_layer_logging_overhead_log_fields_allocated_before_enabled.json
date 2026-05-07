@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_logging_overhead_log_fields_allocated_before_enabled",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Logging overhead. Flag expensive tracing/log fields allocated before level or subscriber filters can skip them.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

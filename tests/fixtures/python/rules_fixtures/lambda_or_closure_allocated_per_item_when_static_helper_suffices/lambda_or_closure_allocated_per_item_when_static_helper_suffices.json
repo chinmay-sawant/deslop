@@ -1,0 +1,14 @@
+{
+  "id": "lambda_or_closure_allocated_per_item_when_static_helper_suffices",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag per-item closure allocation in hot loops when a stable helper would work.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

@@ -1,0 +1,35 @@
+from abc import ABC, abstractmethod
+
+class UserRepository(ABC):
+    @abstractmethod
+    def get_user(self, user_id: str) -> dict:
+        ...
+
+    @abstractmethod
+    async def save_user(self, user: dict) -> None:
+        ...
+
+    @abstractmethod
+    def delete_user(self, user_id: str) -> None:
+        ...
+
+    @abstractmethod
+    async def find_by_email(self, email: str) -> dict | None:
+        ...
+
+class CacheStore(ABC):
+    @abstractmethod
+    def get(self, key: str) -> bytes | None:
+        ...
+
+    @abstractmethod
+    async def put(self, key: str, value: bytes, ttl: int) -> None:
+        ...
+
+    @abstractmethod
+    async def evict(self, key: str) -> bool:
+        ...
+
+    @abstractmethod
+    def exists(self, key: str) -> bool:
+        ...

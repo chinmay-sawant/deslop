@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my-package"
+version = "1.0.0"
+requires-python = ">=3.10"
+
+[project.scripts]
+mycli = "my_package.cli:main"
+analyze = "my_package.tools.analyze:main"
+serve = "my_package.server:start"

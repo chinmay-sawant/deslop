@@ -1,0 +1,14 @@
+{
+  "id": "method_mutates_state_and_emits_user_facing_representation",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag methods that both change internal state and format user-facing output.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

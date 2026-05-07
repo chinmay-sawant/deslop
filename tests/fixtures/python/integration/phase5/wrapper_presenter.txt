@@ -1,7 +1,0 @@
-class ExportPresenter:
-    def __init__(self, renderer, prefix):
-        self.renderer = renderer
-        self.prefix = prefix
-
-    def render(self, payload):
-        return self.renderer.render(f"{self.prefix}:{payload}")

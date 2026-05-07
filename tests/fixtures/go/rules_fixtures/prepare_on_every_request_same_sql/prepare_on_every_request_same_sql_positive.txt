@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+)
+
+// scenario for prepare_on_every_request_same_sql: The same literal SQL is prepared multiple times on one request path.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule285PositiveRecord struct { ID int }
+
+func scenario285Positive(ctx context.Context, db *sql.DB, ids []int) error {
+	for _, id := range ids {
+		row := db.QueryRowContext(ctx, "select count(*) from orders where account_id=$1", id)
+		var count int
+		if err := row.Scan(&count); err != nil {
+			return err
+		}
+	}
+	return nil
+}

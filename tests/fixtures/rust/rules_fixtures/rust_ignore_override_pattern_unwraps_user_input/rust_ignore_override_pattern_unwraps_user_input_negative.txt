@@ -1,0 +1,7 @@
+use ignore::overrides::OverrideBuilder;
+
+fn build_overrides(root: &str, pattern: &str) -> Result<ignore::overrides::Override, String> {
+    let mut builder = OverrideBuilder::new(root);
+    builder.add(pattern).map_err(|e| format!("invalid pattern: {}", e))?;
+    builder.build().map_err(|e| format!("failed to build overrides: {}", e))
+}

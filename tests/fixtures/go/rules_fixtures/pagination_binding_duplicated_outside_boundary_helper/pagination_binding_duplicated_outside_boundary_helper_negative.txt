@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for pagination_binding_duplicated_outside_boundary_helper: Repeated pagination DTO binding and defaulting logic across handler files.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule109NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule109NegativeService interface {
+	Run(context.Context, Rule109NegativeRecord) error
+}
+
+func scenario109Negative(ctx context.Context, service Rule109NegativeService, input Rule109NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

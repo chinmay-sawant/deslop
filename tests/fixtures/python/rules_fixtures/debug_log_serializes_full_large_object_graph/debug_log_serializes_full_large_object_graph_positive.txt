@@ -1,0 +1,31 @@
+import json
+import logging
+from dataclasses import dataclass, field
+from typing import List
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class Order:
+    order_id: int
+    customer_id: int
+    line_items: List[dict] = field(default_factory=list)
+    payment_info: dict = field(default_factory=dict)
+    shipping_address: dict = field(default_factory=dict)
+
+
+@dataclass
+class Customer:
+    customer_id: int
+    name: str
+    orders: List[Order] = field(default_factory=list)
+    preferences: dict = field(default_factory=dict)
+
+
+def process_order(customer: Customer, order: Order):
+    logger.debug("Processing order: %s", json.dumps(order.__dict__, default=str))
+    logger.debug("Customer details: %s", json.dumps(customer.__dict__, default=str))
+    logger.debug("Full state: %s", json.dumps(
+        {"customer": customer.__dict__, "order": order.__dict__}, default=str
+    ))

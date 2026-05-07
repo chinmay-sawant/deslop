@@ -1,0 +1,14 @@
+{
+  "id": "repository_returns_http_status_errors",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repositories that construct transport-layer error objects or status-code wrappers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

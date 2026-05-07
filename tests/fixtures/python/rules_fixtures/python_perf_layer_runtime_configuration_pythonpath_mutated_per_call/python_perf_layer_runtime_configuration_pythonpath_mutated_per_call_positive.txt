@@ -1,0 +1,22 @@
+import sys
+
+
+def load_plugin(plugin_name: str) -> object:
+    plugin_path = f"/opt/plugins/{plugin_name}"
+    if plugin_path not in sys.path:
+        sys.path.insert(0, plugin_path)
+    mod = __import__(plugin_name)
+    return mod
+
+
+def load_extension(ext_name: str) -> object:
+    ext_dir = f"/opt/extensions/{ext_name}"
+    sys.path.append(ext_dir)
+    mod = __import__(ext_name)
+    return mod
+
+
+def ensure_vendor_deps():
+    vendor_path = "/opt/vendor/lib"
+    if vendor_path not in sys.path:
+        sys.path.insert(0, vendor_path)

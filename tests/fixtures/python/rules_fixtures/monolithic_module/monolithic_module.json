@@ -1,0 +1,14 @@
+{
+  "id": "monolithic_module",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Non-__init__.py modules that are unusually large and combine many imports with orchestration-heavy behavior.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

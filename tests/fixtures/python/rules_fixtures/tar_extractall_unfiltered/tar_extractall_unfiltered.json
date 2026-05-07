@@ -1,0 +1,14 @@
+{
+  "id": "tar_extractall_unfiltered",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "tarfile.extractall(...) without an obvious filter, members list, or path-validation helper.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

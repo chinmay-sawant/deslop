@@ -1,0 +1,22 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from myapp.models import Order, OrderResult, OrderProcessor
+
+
+def process(order: Order) -> OrderResult:
+    from myapp.models import OrderProcessor
+    processor = OrderProcessor()
+    return processor.process(order)
+
+
+def create_order(data: dict) -> Order:
+    from myapp.models import Order
+    return Order(id=data["id"], items=data["items"])
+
+
+def process_and_get_result(order: Order) -> OrderResult:
+    from myapp.models import OrderProcessor
+    processor = OrderProcessor()
+    return processor.process(order)

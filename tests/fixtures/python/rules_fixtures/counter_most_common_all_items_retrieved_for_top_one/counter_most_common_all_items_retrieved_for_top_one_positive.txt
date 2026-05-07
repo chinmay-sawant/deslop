@@ -1,0 +1,25 @@
+from collections import Counter
+
+
+def most_frequent_word(words):
+    counter = Counter(words)
+    top = counter.most_common()[0]
+    return top[0]
+
+
+def get_top_error(errors):
+    counts = Counter(errors)
+    most_common = counts.most_common()
+    return most_common[0][0]
+
+
+def find_dominant_color(pixels):
+    color_counts = Counter(pixels)
+    all_items = color_counts.most_common()
+    return all_items[0][0]
+
+
+def get_popular_tag(tags):
+    tag_counts = Counter(tags)
+    top_tags = tag_counts.most_common()
+    return top_tags[0][0]

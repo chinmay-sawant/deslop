@@ -1,0 +1,14 @@
+{
+  "id": "hack_doc_comment_leftover",
+  "language": "rust",
+  "family": "hygiene",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Rust doc comments that still contain a HACK marker in non-test code.",
+  "binding_location": "src/analysis/rust/findings/mod.rs"
+}

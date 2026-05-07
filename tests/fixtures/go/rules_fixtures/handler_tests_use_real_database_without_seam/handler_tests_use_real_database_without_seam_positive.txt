@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for handler_tests_use_real_database_without_seam: Handler tests that hit real DB setup even though repository or service seams exist.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule074PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario074Positive(w http.ResponseWriter, r *http.Request, repo Rule074PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

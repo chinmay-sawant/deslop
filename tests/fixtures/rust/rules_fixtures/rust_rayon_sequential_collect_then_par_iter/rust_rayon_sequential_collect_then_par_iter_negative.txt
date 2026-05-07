@@ -1,0 +1,19 @@
+use rayon::prelude::*;
+
+// GOOD: feed parallel stage directly from producer
+fn process_entries(dir: &Path) -> Vec<Output> {
+    std::fs::read_dir(dir)
+        .unwrap()
+        .filter_map(|e| e.ok())
+        .par_bridge()
+        .map(|entry| process_entry(&entry))
+        .collect()
+}
+
+// GOOD: filter in parallel stage
+fn transform_data(records: &[Record]) -> Vec<Output> {
+    records.par_iter()
+        .filter(|r| r.is_valid())
+        .map(|r| transform(r))
+        .collect()
+}

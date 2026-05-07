@@ -1,0 +1,46 @@
+use std::sync::Arc;
+use tokio::sync::RwLock;
+
+enum ServiceState {
+    Disconnected,
+    Connected { db: DbConnection },
+    Ready { db: DbConnection, cache: CacheHandle },
+}
+
+struct Service {
+    state: Arc<RwLock<ServiceState>>,
+}
+
+impl Service {
+    fn new() -> Self {
+        Self {
+            state: Arc::new(RwLock::new(ServiceState::Disconnected)),
+        }
+    }
+
+    async fn connect(&self) {
+        let conn = DbConnection::connect("localhost");
+        let mut state = self.state.write().await;
+        *state = ServiceState::Connected { db: conn };
+    }
+
+    async fn is_ready(&self) -> bool {
+        matches!(&*self.state.read().await, ServiceState::Ready { .. })
+    }
+
+    async fn query(&self, sql: &str) -> Option<String> {
+        let state = self.state.read().await;
+        match &*state {
+            ServiceState::Ready { db, .. } => Some(db.execute(sql)),
+            _ => None,
+        }
+    }
+}
+
+struct DbConnection;
+impl DbConnection {
+    fn connect(_addr: &str) -> Self { Self }
+    fn execute(&self, _sql: &str) -> String { todo!() }
+}
+
+struct CacheHandle;

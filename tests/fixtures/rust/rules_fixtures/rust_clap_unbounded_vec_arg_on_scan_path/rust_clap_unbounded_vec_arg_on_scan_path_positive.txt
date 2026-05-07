@@ -1,0 +1,17 @@
+use clap::Parser;
+use std::path::PathBuf;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long)]
+    paths: Vec<PathBuf>,
+}
+
+fn run(cli: Cli) {
+    for path in &cli.paths {
+        for entry in walkdir::WalkDir::new(path) {
+            let entry = entry.unwrap();
+            let _ = std::fs::read_to_string(entry.path());
+        }
+    }
+}

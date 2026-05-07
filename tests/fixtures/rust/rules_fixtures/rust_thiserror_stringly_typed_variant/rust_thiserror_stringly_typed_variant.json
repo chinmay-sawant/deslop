@@ -1,0 +1,14 @@
+{
+  "id": "rust_thiserror_stringly_typed_variant",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag error enum variants whose only payload is `String` or `&'static str` and whose name does not encode a specific error kind.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "bytes_buffer_truncate_zero_reset",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`buf.Truncate(0)` instead of `buf.Reset()`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for service_tests_import_gin: Service-level tests that depend on Gin when the service contract is supposed to be transport-neutral.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule182PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario182Positive(w http.ResponseWriter, r *http.Request, repo Rule182PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

@@ -1,0 +1,14 @@
+{
+  "id": "repeated_string_format_invariant_template",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "An invariant string template is formatted repeatedly in a loop instead of being partially precomputed.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

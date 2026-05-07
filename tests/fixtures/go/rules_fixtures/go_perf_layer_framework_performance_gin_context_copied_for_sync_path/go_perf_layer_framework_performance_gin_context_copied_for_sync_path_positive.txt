@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_framework_performance_gin_context_copied_for_sync_path: Layer: Framework-specific performance. Flag Gin context Copy calls where work remains synchronous and request-scoped.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule534PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario534Positive(records []Rule534PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

@@ -1,0 +1,32 @@
+import os
+
+
+def get_database_url() -> str:
+    url = os.environ.get("DATABASE_URL")
+    if not url:
+        raise ValueError("DATABASE_URL environment variable is required")
+    return url
+
+
+def get_api_key() -> str:
+    key = os.environ.get("API_KEY")
+    if not key:
+        raise ValueError("API_KEY environment variable is required")
+    return key
+
+
+def get_redis_url() -> str:
+    return os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+
+
+def get_log_level() -> str:
+    return os.environ.get("LOG_LEVEL", "INFO")
+
+
+def configure_app():
+    db_url = get_database_url()
+    secret = os.environ.get("SECRET_KEY")
+    if not secret:
+        raise ValueError("SECRET_KEY is required")
+    region = os.environ.get("AWS_REGION", "us-east-1")
+    return {"db": db_url, "secret": secret, "region": region}

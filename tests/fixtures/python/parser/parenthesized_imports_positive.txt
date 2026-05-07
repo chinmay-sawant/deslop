@@ -1,5 +1,0 @@
-from widgets import (  # exported widget surface
-    WidgetTemplate,
-    LayoutConfig,
-    Heading,
-)

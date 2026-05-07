@@ -1,0 +1,14 @@
+{
+  "id": "sprintf_for_simple_int_to_string",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`fmt.Sprintf(\"%d\", n)` where `n` is clearly an integer type",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

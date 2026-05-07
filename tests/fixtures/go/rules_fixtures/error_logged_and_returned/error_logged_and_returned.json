@@ -1,0 +1,14 @@
+{
+  "id": "error_logged_and_returned",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`log.Error(err); return err` or `logger.Error(\"failed\", zap.Error(err)); return fmt.Errorf(\"failed: %w\", err)` \u2014 logging the error then returning it",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

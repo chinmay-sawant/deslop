@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_data_structure_choice_slice_queue_pop_front",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag queue-style slice reslicing from the front that can retain backing arrays or shift too much data.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

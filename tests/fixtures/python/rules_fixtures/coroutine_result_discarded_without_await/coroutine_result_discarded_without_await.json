@@ -1,0 +1,14 @@
+{
+  "id": "coroutine_result_discarded_without_await",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Coroutine object assigned or returned without await, so the coroutine body never executes.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

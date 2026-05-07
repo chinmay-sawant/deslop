@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"context"
+	redis "github.com/redis/go-redis/v9"
+)
+
+// scenario for redis_large_value_without_compression: `rdb.Set(ctx, key, largePayload, ...)` where `largePayload` is the result of `json.Marshal` on a large struct or slice, without visible compression
+// fixture polarity: positive; family: library; severity: info.
+func scenario426Positive(ctx context.Context, client *redis.Client, key string) error {
+	if err := client.Get(ctx, key).Err(); err != nil {
+		return err
+	}
+	return client.Set(ctx, key, "value", 0).Err()
+}

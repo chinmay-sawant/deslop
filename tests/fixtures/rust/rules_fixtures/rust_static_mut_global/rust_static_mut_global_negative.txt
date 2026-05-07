@@ -1,0 +1,31 @@
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Mutex;
+
+static COUNTER: AtomicU64 = AtomicU64::new(0);
+static GLOBAL_BUFFER: Mutex<Vec<u8>> = Mutex::new(Vec::new());
+
+fn increment_counter() {
+    COUNTER.fetch_add(1, Ordering::Relaxed);
+}
+
+fn get_counter() -> u64 {
+    COUNTER.load(Ordering::Relaxed)
+}
+
+fn append_to_buffer(data: &[u8]) {
+    let mut buf = GLOBAL_BUFFER.lock().unwrap();
+    buf.extend_from_slice(data);
+}
+
+fn process_batch(items: &[u64]) {
+    for item in items {
+        COUNTER.fetch_add(item, Ordering::Relaxed);
+    }
+}
+
+fn main() {
+    increment_counter();
+    append_to_buffer(b"hello");
+    process_batch(&[1, 2, 3]);
+    println!("counter: {}", get_counter());
+}

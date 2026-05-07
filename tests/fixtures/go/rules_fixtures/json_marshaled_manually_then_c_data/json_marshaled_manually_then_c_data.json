@@ -1,0 +1,14 @@
+{
+  "id": "json_marshaled_manually_then_c_data",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that manually marshal JSON and then write it through gin.Context.Data(...).",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

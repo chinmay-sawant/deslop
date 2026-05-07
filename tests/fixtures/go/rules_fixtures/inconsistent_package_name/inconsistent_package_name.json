@@ -1,0 +1,14 @@
+{
+  "id": "inconsistent_package_name",
+  "language": "go",
+  "family": "style",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Directories that mix base Go package names after ignoring the _test suffix.",
+  "binding_location": "src/heuristics/go/style.rs"
+}

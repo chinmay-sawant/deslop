@@ -1,0 +1,14 @@
+{
+  "id": "constructor_reads_global_config_inline",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag classes whose constructors pull environment variables or global config directly instead of receiving normalized dependencies.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

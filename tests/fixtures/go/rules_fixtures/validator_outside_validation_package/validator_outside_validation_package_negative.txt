@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for validator_outside_validation_package: Reusable validators that are scattered across handlers instead of living in a dedicated validation helper package.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule219NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule219NegativeService interface {
+	Run(context.Context, Rule219NegativeRecord) error
+}
+
+func scenario219Negative(ctx context.Context, service Rule219NegativeService, input Rule219NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_io_operations_scanner_used_for_large_token_stream: Layer: I/O operations. Flag bufio.Scanner on potentially large tokens without Buffer sizing or Reader alternatives.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule550PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario550Positive(records []Rule550PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

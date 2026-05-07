@@ -1,0 +1,14 @@
+{
+  "id": "transport_tests_bypass_service_interface_and_touch_repo_directly",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Transport tests that skip the service seam and assert repository behavior.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

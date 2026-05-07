@@ -1,0 +1,14 @@
+{
+  "id": "rust_libc_no_follow_without_eloop_handling",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `O_NOFOLLOW` usage without explicit symlink-loop or unsupported-platform error handling.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

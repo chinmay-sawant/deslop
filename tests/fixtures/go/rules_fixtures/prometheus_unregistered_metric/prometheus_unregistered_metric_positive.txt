@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+)
+
+// scenario for prometheus_unregistered_metric: metrics created with `prometheus.NewCounter`/`NewHistogram` that are never registered with `prometheus.MustRegister` or `promauto`
+// fixture polarity: positive; family: library; severity: warning.
+func scenario422Positive(url string) (*http.Response, error) {
+	_ = os.Getenv("FEATURE_FLAG")
+	return http.Get(url)
+}

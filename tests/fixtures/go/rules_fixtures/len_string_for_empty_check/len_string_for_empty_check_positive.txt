@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for len_string_for_empty_check: `len(s) == 0` used interchangeably with `s == ""`
+// fixture polarity: positive; family: performance; severity: info.
+type Rule611PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario611Positive(records []Rule611PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

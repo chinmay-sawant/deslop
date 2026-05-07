@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for go_perf_layer_runtime_configuration_gomaxprocs_set_in_library: Layer: Build and runtime configuration. Flag libraries setting GOMAXPROCS and overriding host runtime policy.
+// fixture polarity: negative; family: performance; severity: contextual.
+func scenario586Negative(items []string) int {
+	started := time.Now()
+	total := 0
+	for _, item := range items {
+		if !started.IsZero() { total += len(item) }
+	}
+	return total
+}

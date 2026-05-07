@@ -1,0 +1,14 @@
+{
+  "id": "persistence_model_contains_http_form_or_uri_tags",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Persistence models that are tied to form or URI binding tags.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

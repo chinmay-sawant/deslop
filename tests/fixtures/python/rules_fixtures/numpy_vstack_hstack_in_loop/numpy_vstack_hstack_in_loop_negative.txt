@@ -1,0 +1,11 @@
+import numpy as np
+from typing import List
+
+def build_feature_matrix(chunks: List[np.ndarray]) -> np.ndarray:
+    return np.vstack(chunks)
+
+def combine_signals(signals: List[np.ndarray]) -> np.ndarray:
+    return np.column_stack(signals)
+
+def stack_batches(batches: List[np.ndarray]) -> np.ndarray:
+    return np.vstack(batches)

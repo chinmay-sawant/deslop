@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for many_column_or_filter_chain: Query chains with many OR filter conditions that often scale poorly.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule274PositiveRecord struct { ID int }
+
+func scenario274Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule274PositiveRecord{}).Error
+}

@@ -1,0 +1,23 @@
+import csv
+
+
+def load_students(path):
+    names = []
+    ages = []
+    grades = []
+    with open(path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            names.append(row["name"])
+            ages.append(int(row["age"]))
+            grades.append(float(row["grade"]))
+    return names, ages, grades
+
+
+def find_top_student(names, ages, grades):
+    best_idx = grades.index(max(grades))
+    return {
+        "name": names[best_idx],
+        "age": ages[best_idx],
+        "grade": grades[best_idx],
+    }

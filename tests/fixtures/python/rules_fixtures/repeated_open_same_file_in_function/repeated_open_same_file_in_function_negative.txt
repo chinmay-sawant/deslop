@@ -1,0 +1,15 @@
+def migrate_user_data(source_path, target_path):
+    with open(source_path, "r") as f:
+        content = f.read()
+
+    lines = content.splitlines()
+    header = lines[0].strip() if lines else ""
+    metadata = content.count(",")
+
+    with open(target_path, "w") as out:
+        out.write(f"Header: {header}\n")
+        for line in lines:
+            out.write(line.strip() + "\n")
+
+    with open(target_path, "r") as f:
+        return f.read()

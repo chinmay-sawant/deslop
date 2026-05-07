@@ -1,0 +1,14 @@
+{
+  "id": "datetime_boundary_mixes_naive_and_aware_values",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag APIs that accept or combine timezone-aware and timezone-naive datetimes without normalization.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

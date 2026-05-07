@@ -1,0 +1,14 @@
+{
+  "id": "public_iterator_yields_heterogeneous_item_shapes",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag iterators that yield different shapes or types without an explicit sum-type contract.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

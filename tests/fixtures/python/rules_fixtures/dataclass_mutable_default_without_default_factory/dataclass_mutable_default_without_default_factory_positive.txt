@@ -1,0 +1,11 @@
+from dataclasses import dataclass
+from typing import Dict, List, Set
+
+
+@dataclass
+class ExperimentConfig:
+    name: str
+    hyperparameters: Dict[str, float] = {"learning_rate": 0.01, "batch_size": 32}
+    feature_columns: List[str] = ["user_id", "timestamp"]
+    excluded_models: Set[str] = set()
+    augmentation_pipeline: List[str] = ["flip", "rotate"]

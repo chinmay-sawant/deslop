@@ -1,0 +1,20 @@
+import pickle
+import dill
+
+
+def load_model(path):
+    with open(path, "rb") as f:
+        return pickle.load(f)
+
+
+def load_state(path):
+    with open(path, "rb") as f:
+        return dill.load(f)
+
+
+def deserialize_cache(data):
+    return pickle.loads(data)
+
+
+def restore_session(raw_bytes):
+    return dill.loads(raw_bytes)

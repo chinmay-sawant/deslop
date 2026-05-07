@@ -1,0 +1,14 @@
+{
+  "id": "rust_clap_subcommand_reloads_config_in_each_branch",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated config loading inside every subcommand branch instead of a shared pre-dispatch normalization step.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

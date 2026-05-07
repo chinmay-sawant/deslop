@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for mutex_value_receiver: `func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field
+// fixture polarity: negative; family: performance; severity: warning.
+type Rule619NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario619Negative(records []Rule619NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

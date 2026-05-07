@@ -1,0 +1,14 @@
+{
+  "id": "byte_string_conversion_in_loop",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Byte-to-string or string-to-byte conversion observed inside loops in short-lived lookup or append paths.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

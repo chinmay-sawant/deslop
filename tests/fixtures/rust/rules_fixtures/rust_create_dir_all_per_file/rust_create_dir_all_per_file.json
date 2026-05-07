@@ -1,0 +1,14 @@
+{
+  "id": "rust_create_dir_all_per_file",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `create_dir_all` inside loops for the same parent directory.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

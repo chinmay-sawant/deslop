@@ -1,0 +1,25 @@
+use base64::{Engine as _, engine::general_purpose};
+
+fn store_token(token: &[u8]) -> String {
+    general_purpose::STANDARD.encode(token)
+}
+
+fn retrieve_token(encoded: &str) -> Vec<u8> {
+    general_purpose::STANDARD.decode(encoded).unwrap()
+}
+
+// GOOD: base64 used for cross-boundary transport, raw bytes used in-process
+fn send_to_remote_service(token: &[u8]) {
+    let encoded = store_token(token);
+    http_post("https://auth.example.com/token", encoded.as_bytes());
+}
+
+fn receive_from_remote_service(encoded: &str) -> Vec<u8> {
+    retrieve_token(encoded)
+}
+
+fn process_auth_local(token: &[u8]) {
+    // Use raw bytes for in-process operations
+    cache_insert("auth_token", token);
+    validate_token(token);
+}

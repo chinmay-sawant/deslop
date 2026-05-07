@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for http_status_ignored_before_decode: Response decoding or body consumption that happens without an observed StatusCode check.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario385Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

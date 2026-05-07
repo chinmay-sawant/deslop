@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_logging_overhead_log_fields_built_before_level_check: Layer: Logging overhead. Flag expensive log field construction before checking whether the level is enabled.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule560PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario560Positive(records []Rule560PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

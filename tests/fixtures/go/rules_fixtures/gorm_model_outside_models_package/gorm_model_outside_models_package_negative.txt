@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_model_outside_models_package: GORM-backed structs with `gorm` tags declared outside `model` or `models` packages unless an explicit `entity` or `schema` package already exists.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule065NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule065NegativeService interface {
+	Run(context.Context, Rule065NegativeRecord) error
+}
+
+func scenario065Negative(ctx context.Context, service Rule065NegativeService, input Rule065NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

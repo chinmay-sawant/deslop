@@ -1,0 +1,30 @@
+from pathlib import Path
+
+
+def find_files(base_dir, filenames):
+    base = Path(base_dir).resolve()
+    results = []
+    for name in filenames:
+        path = base / name
+        if path.exists():
+            results.append(path)
+    return results
+
+
+def process_logs(log_dir, dates):
+    base = Path(log_dir).expanduser()
+    entries = []
+    for date in dates:
+        path = base / f"{date}.log"
+        if path.exists():
+            entries.append(path.read_text())
+    return entries
+
+
+def check_configs(base, environments):
+    resolved_base = Path(base).resolve()
+    configs = {}
+    for env in environments:
+        cfg = resolved_base / f"{env}.yaml"
+        configs[env] = cfg.exists()
+    return configs

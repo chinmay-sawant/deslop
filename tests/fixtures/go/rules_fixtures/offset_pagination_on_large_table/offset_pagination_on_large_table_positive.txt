@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for offset_pagination_on_large_table: Request-path GORM Find(...) chains that page with Offset(...), which often scales poorly on large lists.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule276PositiveRecord struct { ID int }
+
+func scenario276Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule276PositiveRecord{}).Error
+}

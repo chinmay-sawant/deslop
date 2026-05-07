@@ -1,0 +1,41 @@
+from typing import Union
+
+
+def process_request(request):
+    if request.is_json:
+        return {"status": "ok"}
+    elif request.is_file:
+        return b"file content"
+    elif request.is_error:
+        return 500
+    elif request.is_redirect:
+        return "https://example.com"
+    else:
+        return None
+
+
+def fetch_resource(resource_id: str) -> Union[dict, list, str, bytes, int, None]:
+    resource = db.get(resource_id)
+    if resource is None:
+        return None
+    if resource.type == "json":
+        return resource.data
+    if resource.type == "list":
+        return resource.items
+    if resource.type == "text":
+        return resource.content
+    if resource.type == "binary":
+        return resource.bytes
+    return resource.status_code
+
+
+def transform_value(value):
+    if isinstance(value, str):
+        return int(value)
+    elif isinstance(value, int):
+        return str(value)
+    elif isinstance(value, list):
+        return tuple(value)
+    elif isinstance(value, dict):
+        return list(value.keys())
+    return value

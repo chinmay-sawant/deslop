@@ -1,0 +1,14 @@
+{
+  "id": "comment_required_to_explain_opaque_branching_that_code_could_express",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code whose control flow stays unclear even with comments because the structure itself is weak.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

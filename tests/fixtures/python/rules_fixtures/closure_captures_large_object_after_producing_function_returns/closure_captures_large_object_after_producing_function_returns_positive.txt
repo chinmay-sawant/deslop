@@ -1,0 +1,36 @@
+def build_processor(dataset_path):
+    with open(dataset_path, "rb") as f:
+        huge_dataset = f.read()
+
+    records = parse_records(huge_dataset)
+
+    def process(item):
+        return lookup(item, records)
+
+    return process
+
+
+def create_validator(schema_path):
+    with open(schema_path) as f:
+        schema_data = f.read()
+
+    compiled_schema = compile_schema(schema_data)
+    all_references = extract_references(compiled_schema)
+
+    def validate(payload):
+        return check(payload, compiled_schema, all_references)
+
+    return validate
+
+
+def make_filter_fn(config_path):
+    with open(config_path) as f:
+        raw_config = f.read()
+
+    parsed = parse_config(raw_config)
+    full_index = build_index(parsed)
+
+    def filter_fn(item):
+        return match(item, full_index)
+
+    return filter_fn

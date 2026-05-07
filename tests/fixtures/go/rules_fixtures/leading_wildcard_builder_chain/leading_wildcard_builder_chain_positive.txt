@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for leading_wildcard_builder_chain: LIKE queries with leading wildcards that prevent index usage.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule272PositiveRecord struct { ID int }
+
+func scenario272Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule272PositiveRecord{}).Error
+}

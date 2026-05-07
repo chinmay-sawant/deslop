@@ -1,0 +1,14 @@
+{
+  "id": "bootstrap_builds_clients_inside_route_registration",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Startup code that hides dependency construction inside route registration functions.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

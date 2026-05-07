@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"strconv"
+)
+
+// scenario for go_perf_layer_logging_overhead_fmt_log_message_in_loop: Layer: Logging overhead. Flag formatted log strings built inside loops instead of structured lazy fields.
+// fixture polarity: negative; family: performance; severity: contextual.
+func scenario559Negative(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, strconv.Itoa(value))
+	}
+	return out
+}

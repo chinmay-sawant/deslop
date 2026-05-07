@@ -1,0 +1,14 @@
+{
+  "id": "class_mixes_factory_parsing_persistence_and_presentation_roles",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag classes that combine unrelated lifecycle roles.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag append-based filter pipelines that rescan accumulated results for every input item.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

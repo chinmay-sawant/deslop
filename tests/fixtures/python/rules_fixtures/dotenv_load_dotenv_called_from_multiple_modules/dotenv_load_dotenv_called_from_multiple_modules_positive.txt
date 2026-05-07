@@ -1,0 +1,30 @@
+# app/config.py
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import os
+
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret")
+
+
+# app/database.py
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import os
+
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
+
+
+# app/auth.py
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import os
+
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret")
+JWT_EXPIRY = int(os.environ.get("JWT_EXPIRY", "3600"))

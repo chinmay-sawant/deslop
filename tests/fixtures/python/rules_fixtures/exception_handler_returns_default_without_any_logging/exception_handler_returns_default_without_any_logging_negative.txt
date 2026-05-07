@@ -1,0 +1,46 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def get_user_name(user_id: str) -> str:
+    try:
+        user = db.fetch_user(user_id)
+        return user["name"]
+    except Exception:
+        logger.warning("Failed to fetch user %s, returning default", user_id)
+        return "Unknown"
+
+
+def get_config_value(key: str) -> str | None:
+    try:
+        return config.get(key)
+    except Exception:
+        logger.warning("Config lookup failed for key '%s'", key)
+        return None
+
+
+def calculate_score(data: dict) -> float:
+    try:
+        return data["total"] / data["count"]
+    except (KeyError, ZeroDivisionError) as e:
+        logger.warning("Score calculation failed: %s", e)
+        return 0.0
+
+
+def load_feature_flags() -> dict:
+    try:
+        with open("flags.json") as f:
+            return json.load(f)
+    except Exception:
+        logger.info("Feature flags file not found, using defaults")
+        return {"default": True}
+
+
+def fetch_remote_config(url: str) -> dict:
+    try:
+        response = http_client.get(url)
+        return response.json()
+    except Exception:
+        logger.error("Failed to fetch remote config from %s", url)
+        return {}

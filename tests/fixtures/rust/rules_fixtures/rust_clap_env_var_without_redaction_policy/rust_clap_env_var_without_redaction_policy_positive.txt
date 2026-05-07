@@ -1,0 +1,18 @@
+use clap::Parser;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long, env = "API_TOKEN")]
+    api_token: String,
+
+    #[arg(long, env = "DATABASE_PASSWORD")]
+    database_password: String,
+
+    #[arg(long)]
+    host: String,
+}
+
+fn main() {
+    let cli = Cli::parse();
+    println!("connecting to {} with token {}", cli.host, cli.api_token);
+}

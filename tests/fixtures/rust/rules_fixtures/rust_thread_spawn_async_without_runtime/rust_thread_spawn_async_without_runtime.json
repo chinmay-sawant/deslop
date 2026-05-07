@@ -1,0 +1,14 @@
+{
+  "id": "rust_thread_spawn_async_without_runtime",
+  "language": "rust",
+  "family": "security_footguns",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Raw std::thread::spawn blocks that call async work without an explicit runtime handoff.",
+  "binding_location": "src/heuristics/rust/security_footguns.rs"
+}

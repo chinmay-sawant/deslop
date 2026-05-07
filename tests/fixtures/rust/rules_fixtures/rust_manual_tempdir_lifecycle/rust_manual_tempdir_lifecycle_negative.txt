@@ -1,0 +1,8 @@
+use tempfile::TempDir;
+
+fn run_job() {
+    let workdir = TempDir::new().unwrap();
+    do_work(workdir.path());
+}
+
+fn do_work(_dir: &std::path::Path) {}

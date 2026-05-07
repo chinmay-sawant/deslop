@@ -1,0 +1,14 @@
+{
+  "id": "quadratic_string_building_via_plus_equals",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag loops that grow large strings with repeated +=.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

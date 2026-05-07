@@ -1,0 +1,14 @@
+{
+  "id": "flask_json_encoder_per_request",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flask views instantiate JSON encoders per request instead of reusing app-level serialization setup.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

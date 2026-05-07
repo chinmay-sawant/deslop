@@ -1,0 +1,17 @@
+import threading
+
+
+def wait_for_ready(done_event, timeout=30):
+    return done_event.wait(timeout=timeout)
+
+
+def poll_for_result(result_queue):
+    return result_queue.get()
+
+
+def wait_until_complete(condition):
+    with condition:
+        while True:
+            status = condition.wait()
+            if status == "done":
+                break

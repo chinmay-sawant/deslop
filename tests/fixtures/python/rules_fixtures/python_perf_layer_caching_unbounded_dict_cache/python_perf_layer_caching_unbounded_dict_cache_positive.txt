@@ -1,0 +1,25 @@
+cache = {}
+
+
+def get_user_profile(user_id: str) -> dict:
+    if user_id in cache:
+        return cache[user_id]
+    profile = fetch_profile(user_id)
+    cache[user_id] = profile
+    return profile
+
+
+def get_product(product_id: str) -> dict:
+    if product_id in cache:
+        return cache[product_id]
+    product = fetch_product(product_id)
+    cache[product_id] = product
+    return product
+
+
+def get_order(order_id: str) -> dict:
+    if order_id in cache:
+        return cache[order_id]
+    order = fetch_order(order_id)
+    cache[order_id] = order
+    return order

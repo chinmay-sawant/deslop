@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"fmt"
+)
+
+// scenario for sql_string_concat: Query execution calls where SQL is constructed dynamically with concatenation or fmt.Sprintf.
+// fixture polarity: positive; family: security; severity: warning.
+func scenario734Positive(db *sql.DB, userInput string) (*sql.Rows, error) {
+	query := "select * from users where name = '" + userInput + "'"
+	_ = fmt.Sprintf("(&(uid=%s))", userInput)
+	return db.Query(query)
+}

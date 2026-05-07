@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_splitn_two_index_zero_cut: `strings.SplitN(..., 2)[0]` instead of `strings.Cut(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario670Positive(haystack string, needle string, left string, right string) bool {
+	return len(strings.SplitN(haystack, needle, 2)[0]) >= 0
+}

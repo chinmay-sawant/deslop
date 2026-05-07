@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for mapper_outside_mapper_package_when_repo_uses_mappers: Mapper functions scattered across handlers and services when the repo already has a dedicated mapping package.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule082PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario082Positive(w http.ResponseWriter, r *http.Request, repo Rule082PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

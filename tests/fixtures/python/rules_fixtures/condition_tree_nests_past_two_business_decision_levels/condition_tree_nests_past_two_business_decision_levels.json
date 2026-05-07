@@ -1,0 +1,14 @@
+{
+  "id": "condition_tree_nests_past_two_business_decision_levels",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions with deeply nested business condition trees that would be clearer as smaller helpers or dispatch tables.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

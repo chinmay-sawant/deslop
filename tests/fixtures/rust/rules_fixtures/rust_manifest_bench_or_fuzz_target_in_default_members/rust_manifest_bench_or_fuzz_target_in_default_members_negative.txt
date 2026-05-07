@@ -1,0 +1,11 @@
+[workspace]
+members = [
+    "core",
+    "cli",
+    "fuzz",
+    "bench",
+]
+default-members = [
+    "core",
+    "cli",
+]

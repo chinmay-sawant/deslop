@@ -1,0 +1,14 @@
+{
+  "id": "socket_opened_without_context_manager_or_guaranteed_close",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "socket.socket opened without a context manager or explicit .close() in a finally block.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

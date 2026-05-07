@@ -1,0 +1,14 @@
+{
+  "id": "exception_swallowed",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Broad exception handlers like except: or except Exception: that immediately suppress the error with pass, continue, break, or return.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

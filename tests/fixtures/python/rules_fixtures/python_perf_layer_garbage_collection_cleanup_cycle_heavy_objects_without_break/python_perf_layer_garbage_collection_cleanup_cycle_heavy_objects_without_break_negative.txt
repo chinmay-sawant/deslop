@@ -1,0 +1,29 @@
+class EventBus:
+    def __init__(self):
+        self.listeners = []
+
+    def subscribe(self, callback):
+        self.listeners.append(callback)
+
+    def clear(self):
+        self.listeners.clear()
+
+def process_requests(requests):
+    for req in requests:
+        bus = EventBus()
+        handler = RequestHandler(bus)
+        bus.subscribe(handler.handle)
+        handler.process(req)
+        bus.clear()
+        handler.buffer = None
+
+class RequestHandler:
+    def __init__(self, bus):
+        self.bus = bus
+        self.buffer = bytearray(1024 * 1024)
+
+    def handle(self, event):
+        pass
+
+    def process(self, request):
+        pass

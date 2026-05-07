@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for repeated_same_query_template_same_function: The same query template executed multiple times in one function.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule291NegativeRecord struct { ID int }
+
+func scenario291Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule291NegativeRecord{}).Error
+}

@@ -1,0 +1,31 @@
+import asyncio
+import aiohttp
+
+
+async def fetch_user_data(user_id: int):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://api.example.com/users/{user_id}") as response:
+            return await response.json()
+
+
+async def process_batch(items: list):
+    await asyncio.sleep(1)
+    async with aiohttp.ClientSession() as session:
+        results = []
+        for item in items:
+            async with session.post("https://api.example.com/process", json=item) as resp:
+                results.append(await resp.json())
+        return results
+
+
+async def upload_file(file_path: str):
+    async with aiohttp.ClientSession() as session:
+        with open(file_path, "rb") as f:
+            data = f.read()
+        async with session.put("https://api.example.com/upload", data=data) as response:
+            return response.status
+
+
+async def wait_for_completion():
+    await asyncio.sleep(5)
+    return await check_status()

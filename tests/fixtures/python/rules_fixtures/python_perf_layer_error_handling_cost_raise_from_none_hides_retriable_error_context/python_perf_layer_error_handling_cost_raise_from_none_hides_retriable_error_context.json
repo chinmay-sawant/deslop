@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_error_handling_cost_raise_from_none_hides_retriable_error_context",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag error translation that drops cause context needed to avoid repeated failed retries.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

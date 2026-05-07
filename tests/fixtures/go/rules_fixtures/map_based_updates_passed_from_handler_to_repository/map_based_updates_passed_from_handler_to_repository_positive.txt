@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for map_based_updates_passed_from_handler_to_repository: Update maps built from request payloads and passed through layers without typed ownership.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule081PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario081Positive(w http.ResponseWriter, r *http.Request, repo Rule081PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

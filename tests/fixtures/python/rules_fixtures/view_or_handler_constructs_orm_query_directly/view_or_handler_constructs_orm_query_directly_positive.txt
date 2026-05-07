@@ -1,0 +1,38 @@
+from fastapi import FastAPI, Request, Depends
+from sqlalchemy.orm import Session
+
+app = FastAPI()
+
+@app.get("/api/users")
+async def list_users(request: Request, db: Session = Depends(get_db)):
+    query = db.query(User).filter(User.is_active == True)
+    role = request.query_params.get("role")
+    if role:
+        query = query.filter(User.role == role)
+    users = query.order_by(User.created_at.desc()).limit(100).all()
+    return [{"id": u.id, "name": u.name} for u in users]
+
+@app.get("/api/orders/{user_id}")
+async def get_user_orders(user_id: int, db: Session = Depends(get_db)):
+    orders = (
+        db.query(Order)
+        .filter(Order.user_id == user_id)
+        .join(OrderItem)
+        .filter(OrderItem.quantity > 0)
+        .order_by(Order.created_at.desc())
+        .all()
+    )
+    return [{"id": o.id, "total": o.total} for o in orders]
+
+@app.get("/api/search/products")
+async def search_products(request: Request, db: Session = Depends(get_db)):
+    q = request.query_params.get("q", "")
+    products = (
+        db.query(Product)
+        .filter(Product.name.ilike(f"%{q}%"))
+        .filter(Product.stock > 0)
+        .order_by(Product.price)
+        .limit(50)
+        .all()
+    )
+    return [{"id": p.id, "name": p.name, "price": p.price} for p in products]

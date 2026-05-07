@@ -1,0 +1,32 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Deserialize)]
+struct EventPayload {
+    data: String,
+    priority: u8,
+}
+
+#[derive(Deserialize)]
+struct RawEvent {
+    #[serde(rename = "type")]
+    event_type: String,
+    timestamp: u64,
+    payload: EventPayload,
+}
+
+// GOOD: deserialize directly into typed struct
+fn process_event(json_str: &str) -> Result<Event, Error> {
+    let raw: RawEvent = serde_json::from_str(json_str)?;
+
+    Ok(Event {
+        event_type: raw.event_type,
+        timestamp: raw.timestamp,
+        payload: raw.payload,
+    })
+}
+
+fn handle_stream(messages: &[String]) -> Vec<Event> {
+    messages.iter()
+        .filter_map(|msg| process_event(msg).ok())
+        .collect()
+}

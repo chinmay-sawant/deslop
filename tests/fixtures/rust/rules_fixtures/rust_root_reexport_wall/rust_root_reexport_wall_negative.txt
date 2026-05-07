@@ -1,0 +1,23 @@
+// GOOD: organize re-exports into focused modules
+// lib.rs
+pub mod handlers {
+    pub use crate::handlers::handle_request;
+    pub use crate::handlers::handle_response;
+}
+
+pub mod models {
+    pub use crate::models::User;
+    pub use crate::models::Order;
+}
+
+pub mod config {
+    pub use crate::config::Config;
+}
+
+pub mod errors {
+    pub use crate::errors::AppError;
+}
+
+// Keep internal modules private
+mod utils;
+mod internal;

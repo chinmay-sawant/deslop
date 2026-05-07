@@ -1,0 +1,14 @@
+{
+  "id": "rust_proptest_unbounded_string_or_vec_strategy",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `\".*\"`, `any::<String>()`, or unbounded `vec(...)` strategies in parser/scanner tests without a size cap.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

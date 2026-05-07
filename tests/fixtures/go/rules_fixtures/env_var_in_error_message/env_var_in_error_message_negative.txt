@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"log"
+)
+
+// scenario for env_var_in_error_message: `fmt.Errorf("... %s", os.Getenv("SECRET_KEY"))` or similar patterns that embed environment variable values in errors
+// fixture polarity: negative; family: security; severity: warning.
+type Rule708NegativeRecord struct { PasswordHash string; TokenID string }
+
+func scenario708Negative(config Rule708NegativeRecord) error {
+	log.Printf("credential id=%s", config.TokenID)
+	return nil
+}

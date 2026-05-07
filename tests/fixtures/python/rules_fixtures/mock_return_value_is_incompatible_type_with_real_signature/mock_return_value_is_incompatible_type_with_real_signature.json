@@ -1,0 +1,14 @@
+{
+  "id": "mock_return_value_is_incompatible_type_with_real_signature",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Mock return value set to a type that is incompatible with the real object's declared return type.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

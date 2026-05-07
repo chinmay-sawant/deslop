@@ -1,0 +1,22 @@
+use std::time::Instant;
+
+fn process_items(items: &[Item]) -> Vec<ProcessedItem> {
+    // GOOD: single Instant::now at batch level
+    let start = Instant::now();
+    let results: Vec<ProcessedItem> = items
+        .iter()
+        .map(|item| {
+            let parsed = parse_item(item);
+            let validated = validate(parsed);
+            transform(validated)
+        })
+        .collect();
+    let elapsed = start.elapsed();
+    results
+}
+
+struct Item { data: String }
+struct ProcessedItem { result: String }
+fn parse_item(i: &Item) -> Item { Item { data: i.data.clone() } }
+fn validate(i: Item) -> Item { i }
+fn transform(i: Item) -> ProcessedItem { ProcessedItem { result: i.data } }

@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for fmt_sprintf_bool_to_string: `fmt.Sprintf("%t", ...)` instead of `strconv.FormatBool(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario492Positive(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, fmt.Sprintf("%d", value))
+	}
+	return out
+}

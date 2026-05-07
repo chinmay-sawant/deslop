@@ -1,0 +1,14 @@
+{
+  "id": "public_api_mutates_argument_in_place_without_signal",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag public APIs that rewrite caller-owned containers or objects without naming or documentation that makes the mutation obvious.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

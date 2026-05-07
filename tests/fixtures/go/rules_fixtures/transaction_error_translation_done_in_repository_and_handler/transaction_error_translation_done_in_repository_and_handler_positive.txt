@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for transaction_error_translation_done_in_repository_and_handler: Both repository and handler layers translating the same transaction errors.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule207PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario207Positive(w http.ResponseWriter, r *http.Request, repo Rule207PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

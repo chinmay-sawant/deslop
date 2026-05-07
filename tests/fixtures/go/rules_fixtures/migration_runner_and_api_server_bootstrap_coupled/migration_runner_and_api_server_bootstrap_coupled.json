@@ -1,0 +1,14 @@
+{
+  "id": "migration_runner_and_api_server_bootstrap_coupled",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "One startup path that always runs migrations and serves traffic together.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

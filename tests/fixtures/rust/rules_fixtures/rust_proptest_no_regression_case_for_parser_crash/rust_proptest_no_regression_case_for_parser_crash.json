@@ -1,0 +1,14 @@
+{
+  "id": "rust_proptest_no_regression_case_for_parser_crash",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag parser property tests without a regression fixture or seed-capture path for minimized failures.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

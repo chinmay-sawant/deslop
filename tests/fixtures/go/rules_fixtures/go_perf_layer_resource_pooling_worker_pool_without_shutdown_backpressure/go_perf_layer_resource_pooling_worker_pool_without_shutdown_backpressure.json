@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_resource_pooling_worker_pool_without_shutdown_backpressure",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Resource pooling. Flag worker pools that accept unlimited jobs without bounded queues or shutdown draining.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

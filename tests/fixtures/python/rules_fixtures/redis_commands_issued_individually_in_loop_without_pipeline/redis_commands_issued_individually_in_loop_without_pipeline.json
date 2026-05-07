@@ -1,0 +1,14 @@
+{
+  "id": "redis_commands_issued_individually_in_loop_without_pipeline",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Redis SETEX/HSET/GET commands issued one per loop iteration without using a pipeline.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "broad_exception_handler",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Broad except Exception: style handlers that still obscure failure shape even when not fully swallowed.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

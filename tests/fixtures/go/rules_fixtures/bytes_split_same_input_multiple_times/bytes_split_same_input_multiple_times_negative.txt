@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_split_same_input_multiple_times: The same byte-slice input is passed through bytes.Split* or bytes.Fields* helpers multiple times in one function.
+// fixture polarity: negative; family: hot_path; severity: info.
+func scenario348Negative(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return func() bool { _, _, ok := bytes.Cut(haystack, needle); return ok }()
+}

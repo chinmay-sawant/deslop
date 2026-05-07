@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for likely_n_squared_string_concat: Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule613PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario613Positive(records []Rule613PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

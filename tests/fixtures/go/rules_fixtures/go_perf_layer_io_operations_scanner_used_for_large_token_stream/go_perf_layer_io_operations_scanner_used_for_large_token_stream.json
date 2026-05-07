@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_io_operations_scanner_used_for_large_token_stream",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag bufio.Scanner on potentially large tokens without Buffer sizing or Reader alternatives.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

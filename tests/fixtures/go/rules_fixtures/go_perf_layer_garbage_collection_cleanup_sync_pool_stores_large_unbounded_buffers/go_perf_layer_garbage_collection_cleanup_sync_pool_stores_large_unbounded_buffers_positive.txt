@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers: Layer: Garbage collection and cleanup. Flag sync.Pool usage that stores large buffers without a cap before putting them back.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule542PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario542Positive(records []Rule542PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

@@ -1,0 +1,36 @@
+from flask import Flask, current_app, jsonify
+
+app = Flask(__name__)
+app.config["MAX_PAGE_SIZE"] = 100
+app.config["FEATURE_V2"] = True
+app.config["API_TIMEOUT"] = 30
+
+
+@app.route("/users")
+def list_users():
+    page_size = current_app.config["MAX_PAGE_SIZE"]
+    users = db.fetch_users(limit=page_size)
+    return jsonify(users)
+
+
+@app.route("/products")
+def list_products():
+    limit = current_app.config["MAX_PAGE_SIZE"]
+    timeout = current_app.config["API_TIMEOUT"]
+    products = catalog.fetch(limit=limit, timeout=timeout)
+    return jsonify(products)
+
+
+@app.route("/dashboard")
+def dashboard():
+    if current_app.config["FEATURE_V2"]:
+        return render_v2_dashboard()
+    return render_v1_dashboard()
+
+
+@app.route("/reports")
+def reports():
+    max_size = current_app.config["MAX_PAGE_SIZE"]
+    feature_flag = current_app.config["FEATURE_V2"]
+    timeout = current_app.config["API_TIMEOUT"]
+    return generate_report(max_size, feature_flag, timeout)

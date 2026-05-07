@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_caching_cached_json_string_deserialized_each_use",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Caching. Flag caches storing JSON strings only to deserialize before every read.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

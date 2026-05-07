@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_string_handling_format_in_loop_for_simple_append",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: String handling. Flag format! in loops for simple string appends where write! or push_str can reuse buffers.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "import_time_subprocess",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Subprocess launches triggered from module scope during import.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

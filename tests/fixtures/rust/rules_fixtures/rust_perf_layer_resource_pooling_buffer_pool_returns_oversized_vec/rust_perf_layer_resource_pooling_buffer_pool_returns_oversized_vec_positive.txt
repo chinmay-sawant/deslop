@@ -1,0 +1,33 @@
+use std::sync::Mutex;
+
+struct BufferPool {
+    buffers: Mutex<Vec<Vec<u8>>>,
+}
+
+impl BufferPool {
+    fn new() -> Self {
+        Self {
+            buffers: Mutex::new(Vec::new()),
+        }
+    }
+
+    fn acquire(&self) -> Vec<u8> {
+        let mut pool = self.buffers.lock().unwrap();
+        pool.pop().unwrap_or_else(|| Vec::with_capacity(8192))
+    }
+
+    // BAD: returns buffer without shrinking oversized allocations
+    fn release(&self, buf: Vec<u8>) {
+        let mut pool = self.buffers.lock().unwrap();
+        pool.push(buf);
+    }
+}
+
+fn handle_request(pool: &BufferPool) {
+    let mut buf = pool.acquire();
+    // Small write that uses ~200 bytes
+    buf.extend_from_slice(b"small response payload");
+    process(&buf);
+    // Buffer with 64KB capacity returned to pool, never shrunk
+    pool.release(buf);
+}

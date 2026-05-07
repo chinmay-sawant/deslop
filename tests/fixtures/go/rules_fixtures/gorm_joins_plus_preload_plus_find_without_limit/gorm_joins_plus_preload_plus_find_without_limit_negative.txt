@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_joins_plus_preload_plus_find_without_limit: GORM chains combining Joins, Preload, and unbounded Find on request paths.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule267NegativeRecord struct { ID int }
+
+func scenario267Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule267NegativeRecord{}).Error
+}

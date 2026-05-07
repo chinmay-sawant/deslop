@@ -1,0 +1,44 @@
+fn build_csv_row(fields: &[&str]) -> String {
+    let total_len: usize = fields.iter().map(|f| f.len()).sum::<usize>() + fields.len().saturating_sub(1);
+    let mut row = String::with_capacity(total_len);
+    for (i, field) in fields.iter().enumerate() {
+        if i > 0 {
+            row.push(',');
+        }
+        row.push_str(field);
+    }
+    row
+}
+
+fn format_query_params(pairs: &[(&str, &str)]) -> String {
+    let total_len: usize = pairs.iter().map(|(k, v)| k.len() + v.len() + 2).sum::<usize>();
+    let mut query = String::with_capacity(total_len);
+    for (i, (key, value)) in pairs.iter().enumerate() {
+        if i > 0 {
+            query.push('&');
+        }
+        query.push_str(key);
+        query.push('=');
+        query.push_str(value);
+    }
+    query
+}
+
+fn build_log_line(parts: &[String]) -> String {
+    let total_len: usize = parts.iter().map(|p| p.len() + 3).sum::<usize>();
+    let mut line = String::with_capacity(total_len);
+    for part in parts {
+        line.push_str("[");
+        line.push_str(part);
+        line.push_str("] ");
+    }
+    line
+}
+
+fn repeat_char(ch: char, count: usize) -> String {
+    let mut s = String::with_capacity(count * ch.len_utf8());
+    for _ in 0..count {
+        s.push(ch);
+    }
+    s
+}

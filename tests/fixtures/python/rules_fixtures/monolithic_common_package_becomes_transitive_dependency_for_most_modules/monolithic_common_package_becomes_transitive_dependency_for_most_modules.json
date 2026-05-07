@@ -1,0 +1,14 @@
+{
+  "id": "monolithic_common_package_becomes_transitive_dependency_for_most_modules",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag package designs where one vague common package becomes a hidden dependency hub.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

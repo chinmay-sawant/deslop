@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for handler_tests_use_real_database_without_seam: Handler tests that hit real DB setup even though repository or service seams exist.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule074NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule074NegativeService interface {
+	Run(context.Context, Rule074NegativeRecord) error
+}
+
+func scenario074Negative(ctx context.Context, service Rule074NegativeService, input Rule074NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

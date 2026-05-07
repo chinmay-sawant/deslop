@@ -1,0 +1,14 @@
+{
+  "id": "hardcoded_path_string",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Hardcoded filesystem path literals assigned inside non-test Python functions.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

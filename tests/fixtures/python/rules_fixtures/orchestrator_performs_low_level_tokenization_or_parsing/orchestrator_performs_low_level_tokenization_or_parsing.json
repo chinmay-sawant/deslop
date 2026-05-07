@@ -1,0 +1,14 @@
+{
+  "id": "orchestrator_performs_low_level_tokenization_or_parsing",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag high-level workflow functions that also own low-level parsing logic better isolated in helpers.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

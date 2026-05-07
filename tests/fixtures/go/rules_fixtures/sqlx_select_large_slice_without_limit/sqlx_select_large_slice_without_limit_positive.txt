@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+)
+
+// scenario for sqlx_select_large_slice_without_limit: sqlx.Select used on request paths without a visible LIMIT in the query.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule299PositiveRecord struct { ID int }
+
+func scenario299Positive(ctx context.Context, db *sql.DB, ids []int) error {
+	for _, id := range ids {
+		row := db.QueryRowContext(ctx, "select count(*) from orders where account_id=$1", id)
+		var count int
+		if err := row.Scan(&count); err != nil {
+			return err
+		}
+	}
+	return nil
+}

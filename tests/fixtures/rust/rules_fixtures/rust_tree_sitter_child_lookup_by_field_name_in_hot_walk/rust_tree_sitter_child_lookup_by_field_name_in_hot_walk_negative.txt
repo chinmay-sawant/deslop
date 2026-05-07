@@ -1,0 +1,38 @@
+use tree_sitter::{Parser, Node, TreeCursor};
+
+const FIELD_NAME: u16 = 0;
+const FIELD_VALUE: u16 = 1;
+const FIELD_BODY: u16 = 2;
+const FIELD_PARAMS: u16 = 3;
+const FIELD_RETURN_TYPE: u16 = 4;
+
+fn walk_with_ids(node: Node, source: &str, language: tree_sitter::Language) {
+    let field_id_name = language.field_id_for_name("name").unwrap();
+    let field_id_value = language.field_id_for_name("value").unwrap();
+
+    let mut cursor = node.walk();
+    for child in node.children(&mut cursor) {
+        if child.field_id() == Some(field_id_name) {
+            let text = &source[child.start_byte()..child.end_byte()];
+            println!("name: {}", text);
+        }
+        walk_with_ids(child, source, language.clone());
+    }
+}
+
+fn extract_with_cursor(node: Node, source: &str) {
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        let kind = child.kind();
+        match kind {
+            "function_item" => {
+                let name = child.child_by_field_name("name");
+                if let Some(name) = name {
+                    let text = &source[name.start_byte()..name.end_byte()];
+                    println!("fn: {}", text);
+                }
+            }
+            _ => {}
+        }
+    }
+}

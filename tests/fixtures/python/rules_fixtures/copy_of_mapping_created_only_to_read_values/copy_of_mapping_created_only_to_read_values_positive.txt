@@ -1,0 +1,25 @@
+def get_user_name(config):
+    local_config = dict(config)
+    return local_config["user"]["name"]
+
+
+def get_setting(settings):
+    copy = settings.copy()
+    return copy["database"]["host"]
+
+
+def lookup_value(data, key):
+    snapshot = dict(data)
+    return snapshot[key]["nested"]["value"]
+
+
+def extract_headers(request):
+    headers_copy = dict(request.headers)
+    return headers_copy["Authorization"]
+
+
+def read_config(config):
+    cfg = dict(config)
+    host = cfg["host"]
+    port = cfg["port"]
+    return f"{host}:{port}"

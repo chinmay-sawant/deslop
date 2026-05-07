@@ -1,0 +1,24 @@
+from fastapi import FastAPI
+import sentry_sdk
+
+app = FastAPI()
+_initialized = False
+
+
+def _ensure_sentry():
+    global _initialized
+    if not _initialized:
+        sentry_sdk.init(dsn="https://examplePublicKey@o0.ingest.sentry.io/0")
+        _initialized = True
+
+
+@app.get("/api/data")
+async def get_data():
+    _ensure_sentry()
+    return {"data": [1, 2, 3]}
+
+
+@app.get("/api/users")
+async def get_users():
+    _ensure_sentry()
+    return {"users": []}

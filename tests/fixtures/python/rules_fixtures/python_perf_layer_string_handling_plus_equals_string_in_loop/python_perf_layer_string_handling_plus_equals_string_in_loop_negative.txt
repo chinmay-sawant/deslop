@@ -1,0 +1,10 @@
+def build_csv_header(columns: list[str]) -> str:
+    return ",".join(columns)
+
+
+def build_report(lines: list[str]) -> str:
+    return "\n".join(lines) + "\n"
+
+
+def concatenate_parts(parts: list[str]) -> str:
+    return "".join(parts)

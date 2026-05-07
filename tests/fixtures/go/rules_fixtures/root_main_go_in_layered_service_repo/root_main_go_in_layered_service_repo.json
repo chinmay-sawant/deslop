@@ -1,0 +1,14 @@
+{
+  "id": "root_main_go_in_layered_service_repo",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layered service repos that keep the primary binary at repository-root `main.go` instead of `cmd/<name>/main.go`.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

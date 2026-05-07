@@ -1,0 +1,14 @@
+{
+  "id": "wide_select_query",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Literal SELECT * query shapes.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

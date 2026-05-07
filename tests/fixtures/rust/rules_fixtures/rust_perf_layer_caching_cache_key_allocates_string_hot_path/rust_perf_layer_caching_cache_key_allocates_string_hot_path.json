@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_caching_cache_key_allocates_string_hot_path",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Caching. Flag cache keys built as allocated Strings in hot paths where borrowed or structured keys fit.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

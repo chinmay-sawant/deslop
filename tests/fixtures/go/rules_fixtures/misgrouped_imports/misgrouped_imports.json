@@ -1,0 +1,14 @@
+{
+  "id": "misgrouped_imports",
+  "language": "go",
+  "family": "style",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Import blocks that place stdlib imports after third-party imports.",
+  "binding_location": "src/heuristics/go/style.rs"
+}

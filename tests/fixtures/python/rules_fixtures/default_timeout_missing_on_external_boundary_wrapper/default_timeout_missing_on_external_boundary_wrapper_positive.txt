@@ -1,0 +1,30 @@
+import requests
+
+
+class PaymentGateway:
+    def __init__(self, base_url: str):
+        self.base_url = base_url
+        self.session = requests.Session()
+
+    def charge(self, amount: float, currency: str, token: str) -> dict:
+        response = self.session.post(
+            f"{self.base_url}/charges",
+            json={"amount": amount, "currency": currency, "token": token},
+        )
+        return response.json()
+
+    def refund(self, charge_id: str) -> dict:
+        response = self.session.post(f"{self.base_url}/charges/{charge_id}/refund")
+        return response.json()
+
+
+class ShippingClient:
+    def __init__(self, api_url: str):
+        self.api_url = api_url
+
+    def get_rates(self, weight: float, destination: str) -> dict:
+        response = requests.get(
+            f"{self.api_url}/rates",
+            params={"weight": weight, "dest": destination},
+        )
+        return response.json()

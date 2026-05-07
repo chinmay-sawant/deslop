@@ -1,0 +1,29 @@
+def process_event(event):
+    if isinstance(event, dict):
+        pass
+    elif isinstance(event, list):
+        pass
+    elif isinstance(event, tuple):
+        pass
+    elif isinstance(event, set):
+        pass
+
+    if isinstance(event, dict):
+        return event.get("type")
+    elif isinstance(event, list):
+        return event[0] if event else None
+    elif isinstance(event, tuple):
+        return event[0] if event else None
+    elif isinstance(event, set):
+        return next(iter(event), None)
+    return None
+
+
+def validate_payload(payload):
+    if isinstance(payload, dict):
+        pass
+    if isinstance(payload, dict) and "id" in payload:
+        return True
+    if isinstance(payload, dict) and payload.get("active"):
+        return True
+    return False

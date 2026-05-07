@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for transport_metrics_emitted_from_repository_layer: Repositories that record HTTP-route or handler-oriented metrics.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule211NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule211NegativeService interface {
+	Run(context.Context, Rule211NegativeRecord) error
+}
+
+func scenario211Negative(ctx context.Context, service Rule211NegativeService, input Rule211NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

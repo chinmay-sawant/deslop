@@ -1,0 +1,14 @@
+{
+  "id": "numpy_append_in_loop",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "np.append(...) is used inside loops, forcing repeated reallocations.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

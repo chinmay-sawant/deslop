@@ -1,0 +1,23 @@
+use tokio::task::JoinHandle;
+
+fn spawn_workers(data: Vec<WorkItem>) {
+    for item in data {
+        tokio::spawn(async move {
+            process(item).await;
+        });
+    }
+}
+
+fn spawn_background_cleanup(pool: Pool) {
+    tokio::spawn(async move {
+        loop {
+            pool.cleanup().await;
+            tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+        }
+    });
+}
+
+async fn process(_item: WorkItem) { todo!() }
+struct WorkItem;
+struct Pool;
+impl Pool { async fn cleanup(&self) { todo!() } }

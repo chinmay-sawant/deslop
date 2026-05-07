@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_error_handling_cost_error_message_formatted_on_success_path",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag expensive error messages built before checking whether an error exists.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

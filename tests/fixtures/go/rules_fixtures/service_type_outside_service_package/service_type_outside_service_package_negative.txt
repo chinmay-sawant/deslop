@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_type_outside_service_package: Concrete use-case services declared outside `service` or `services` packages in layered web-service repos.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule183NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule183NegativeService interface {
+	Run(context.Context, Rule183NegativeRecord) error
+}
+
+func scenario183Negative(ctx context.Context, service Rule183NegativeService, input Rule183NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

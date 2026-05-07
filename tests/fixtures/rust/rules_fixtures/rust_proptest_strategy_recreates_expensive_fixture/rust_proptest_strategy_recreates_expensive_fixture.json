@@ -1,0 +1,14 @@
+{
+  "id": "rust_proptest_strategy_recreates_expensive_fixture",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag strategies that rebuild repositories, parsers, or large fixtures for each case rather than sharing setup safely.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

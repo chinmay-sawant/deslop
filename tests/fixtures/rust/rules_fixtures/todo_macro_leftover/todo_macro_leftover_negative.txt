@@ -1,0 +1,28 @@
+pub fn process_request(req: &Request) -> Result<Response, Error> {
+    let body = parse_body(req);
+    let value = validate(&body)?;
+    Ok(Response { data: value })
+}
+
+pub fn validate_input(data: &[u8]) -> Result<(), Error> {
+    if data.is_empty() {
+        return Err(Error::Empty);
+    }
+    Ok(())
+}
+
+pub fn serialize_response(resp: &Response) -> Vec<u8> {
+    serde_json::to_vec(resp).unwrap_or_default()
+}
+
+pub fn connect_to_database(url: &str) -> Result<Connection, Error> {
+    Connection::connect(url).map_err(|_| Error::ConnectionFailed)
+}
+
+struct Request;
+struct Response { data: Vec<u8> }
+enum Error { Empty, ConnectionFailed }
+struct Connection;
+impl Connection { fn connect(_url: &str) -> Result<Self, ()> { Ok(Self) } }
+fn parse_body(_req: &Request) -> Vec<u8> { vec![] }
+fn validate(_data: &[u8]) -> Result<Vec<u8>, Error> { Ok(vec![]) }

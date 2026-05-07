@@ -1,0 +1,14 @@
+{
+  "id": "semaphore_acquired_without_async_with_context_manager",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "asyncio.Semaphore acquired via .acquire() without async with, risking a missed release on exception.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

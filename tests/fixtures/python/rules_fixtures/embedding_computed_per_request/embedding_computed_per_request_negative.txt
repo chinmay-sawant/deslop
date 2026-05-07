@@ -1,0 +1,33 @@
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+
+class EmbeddingCache:
+    def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
+        self._model = SentenceTransformer(model_name)
+        self._cache: dict[str, np.ndarray] = {}
+
+    def encode(self, text: str) -> np.ndarray:
+        if text not in self._cache:
+            self._cache[text] = self._model.encode(text)
+        return self._cache[text]
+
+    def encode_batch(self, texts: list[str]) -> np.ndarray:
+        uncached = [t for t in texts if t not in self._cache]
+        if uncached:
+            embeddings = self._model.encode(uncached)
+            for text, emb in zip(uncached, embeddings):
+                self._cache[text] = emb
+        return np.array([self._cache[t] for t in texts])
+
+
+embedding_cache = EmbeddingCache()
+
+
+def search_similar_documents(query: str, documents: list[str]) -> list[str]:
+    query_embedding = embedding_cache.encode(query)
+    doc_embeddings = embedding_cache.encode_batch(documents)
+    
+    similarities = np.dot(doc_embeddings, query_embedding)
+    top_indices = np.argsort(similarities)[::-1][:5]
+    return [documents[i] for i in top_indices]

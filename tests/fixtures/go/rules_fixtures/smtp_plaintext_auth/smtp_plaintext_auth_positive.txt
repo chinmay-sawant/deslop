@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"net/smtp"
+)
+
+// scenario for smtp_plaintext_auth: `smtp.PlainAuth` used without TLS (`smtp.SendMail` to non-TLS endpoints)
+// fixture polarity: positive; family: security; severity: warning.
+func scenario733Positive(password string) smtp.Auth {
+	return smtp.PlainAuth("", "user", password, "mail.example.com")
+}

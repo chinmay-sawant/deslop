@@ -1,0 +1,14 @@
+{
+  "id": "save_for_single_column_change",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "GORM Save used for a single-column update instead of a targeted Update call.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

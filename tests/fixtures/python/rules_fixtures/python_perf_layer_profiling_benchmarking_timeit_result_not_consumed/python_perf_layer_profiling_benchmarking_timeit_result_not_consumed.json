@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_profiling_benchmarking_timeit_result_not_consumed",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag microbenchmarks whose results are unused and may measure optimized-away or irrelevant work.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

@@ -1,0 +1,35 @@
+use std::sync::Mutex;
+use std::collections::HashMap;
+
+// GOOD: interior mutability fields are private, with public methods
+pub struct SharedState {
+    cache: Mutex<HashMap<String, String>>,
+    counters: Mutex<Vec<u64>>,
+    flags: std::sync::atomic::AtomicU32,
+}
+
+impl SharedState {
+    pub fn new() -> Self {
+        Self {
+            cache: Mutex::new(HashMap::new()),
+            counters: Mutex::new(Vec::new()),
+            flags: std::sync::atomic::AtomicU32::new(0),
+        }
+    }
+
+    pub fn get_cached(&self, key: &str) -> Option<String> {
+        self.cache.lock().unwrap().get(key).cloned()
+    }
+
+    pub fn set_cached(&self, key: String, value: String) {
+        self.cache.lock().unwrap().insert(key, value);
+    }
+
+    pub fn add_counter(&self, value: u64) {
+        self.counters.lock().unwrap().push(value);
+    }
+
+    pub fn set_flag(&self, flag: u32) {
+        self.flags.fetch_or(flag, std::sync::atomic::Ordering::Relaxed);
+    }
+}

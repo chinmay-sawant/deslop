@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for gin_handler_returns_persistence_model_directly: Handlers that serialize database models directly to the client instead of mapping to response DTOs.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule048PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario048Positive(w http.ResponseWriter, r *http.Request, repo Rule048PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

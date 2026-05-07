@@ -1,0 +1,32 @@
+def process_file(path):
+    handle = open(path, "r")
+    try:
+        data = handle.read()
+        return data.upper()
+    finally:
+        handle.close()
+
+
+def write_result(path, content):
+    handle = open(path, "w")
+    try:
+        handle.write(content)
+    finally:
+        handle.close()
+
+
+def append_log(log_path, message):
+    handle = open(log_path, "a")
+    try:
+        handle.write(message + "\n")
+    finally:
+        handle.close()
+
+
+def read_and_close(path):
+    handle = open(path, "r")
+    try:
+        lines = handle.readlines()
+        return [l.strip() for l in lines]
+    finally:
+        handle.close()

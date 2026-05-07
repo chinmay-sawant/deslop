@@ -1,0 +1,14 @@
+{
+  "id": "validation_only_happens_after_expensive_side_effect_has_started",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag flows where validation happens only after I/O or irreversible work has begun.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

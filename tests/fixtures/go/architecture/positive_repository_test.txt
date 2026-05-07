@@ -1,7 +1,0 @@
-package repository
-
-import "net/http"
-
-func TestRepositoryUsesHTTP() {
-    _ = http.StatusOK
-}

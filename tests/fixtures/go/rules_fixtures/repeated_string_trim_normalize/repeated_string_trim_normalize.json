@@ -1,0 +1,14 @@
+{
+  "id": "repeated_string_trim_normalize",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "chains like `strings.TrimSpace(strings.ToLower(strings.TrimPrefix(s, ...)))` that scan the string multiple times",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

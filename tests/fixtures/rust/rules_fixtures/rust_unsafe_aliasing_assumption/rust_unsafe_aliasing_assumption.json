@@ -1,0 +1,14 @@
+{
+  "id": "rust_unsafe_aliasing_assumption",
+  "language": "rust",
+  "family": "unsafe_soundness",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Unsafe code mixes interior mutability and mutable references in ways that need careful aliasing review.",
+  "binding_location": "src/heuristics/rust/unsafe_soundness.rs"
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for likely_unindexed_query: Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule614PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario614Positive(records []Rule614PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

@@ -1,0 +1,21 @@
+use tracing::{info, debug, info_span};
+
+fn process_batch(records: &[Record]) {
+    // GOOD: single batch span, debug-level per item
+    let span = info_span!("batch", count = records.len());
+    let _enter = span.enter();
+    info!("starting batch");
+
+    for record in records {
+        debug!(id = record.id, "processing record");
+        // process...
+    }
+
+    info!("batch complete");
+}
+
+struct Record {
+    id: u64,
+    name: String,
+    data: Vec<u8>,
+}

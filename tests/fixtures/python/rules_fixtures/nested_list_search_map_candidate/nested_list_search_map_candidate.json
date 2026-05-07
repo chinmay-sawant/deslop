@@ -1,0 +1,14 @@
+{
+  "id": "nested_list_search_map_candidate",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Nested linear list searches that look like they want a temporary map or set index.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

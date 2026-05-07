@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for find_all_then_manual_paginate_in_go: All rows fetched and then sliced in Go instead of using database-level pagination.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule262PositiveRecord struct { ID int }
+
+func scenario262Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule262PositiveRecord{}).Error
+}

@@ -1,0 +1,22 @@
+import pandas as pd
+
+
+def save_dataframe_to_db(df: pd.DataFrame, table_name: str, engine):
+    for _, row in df.iterrows():
+        engine.execute(
+            f"INSERT INTO {table_name} (name, value, timestamp) VALUES (?, ?, ?)",
+            row["name"],
+            row["value"],
+            row["timestamp"],
+        )
+
+
+def export_users_to_database(users_df: pd.DataFrame, conn):
+    for idx, row in users_df.iterrows():
+        conn.execute(
+            "INSERT INTO users (username, email, age) VALUES (?, ?, ?)",
+            row["username"],
+            row["email"],
+            row["age"],
+        )
+    conn.commit()

@@ -1,0 +1,14 @@
+{
+  "id": "ssh_host_key_callback_insecure",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`ssh.ClientConfig{HostKeyCallback: ssh.InsecureIgnoreHostKey()}` in non-test code",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

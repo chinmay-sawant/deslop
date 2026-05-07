@@ -1,0 +1,21 @@
+from flask import Flask, jsonify
+from datetime import datetime, date
+
+app = Flask(__name__)
+
+class CustomEncoder(app.json_encoder):
+    def default(self, obj):
+        if isinstance(obj, (datetime, date)):
+            return obj.isoformat()
+        return super().default(obj)
+
+app.json_encoder = CustomEncoder
+
+@app.route("/events")
+def list_events():
+    events = [{"name": "launch", "date": datetime.now()}]
+    return jsonify(events)
+
+@app.route("/status")
+def get_status():
+    return jsonify({"timestamp": datetime.now(), "healthy": True})

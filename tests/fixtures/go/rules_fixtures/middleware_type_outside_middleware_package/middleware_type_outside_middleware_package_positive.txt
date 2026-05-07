@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for middleware_type_outside_middleware_package: Shared middleware types and constructors declared in handlers or services instead of a middleware-focused package.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule091PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario091Positive(w http.ResponseWriter, r *http.Request, repo Rule091PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

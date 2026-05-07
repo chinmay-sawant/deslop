@@ -1,0 +1,21 @@
+import asyncio
+
+
+async def process_all_items(items: list):
+    tasks = []
+    for item in items:
+        task = asyncio.create_task(process_item(item))
+        tasks.append(task)
+    results = await asyncio.gather(*tasks)
+    return results
+
+
+async def fetch_all_urls(urls: list[str]):
+    tasks = [asyncio.create_task(fetch_url(url)) for url in urls]
+    return await asyncio.gather(*tasks)
+
+
+async def batch_upload(files: list):
+    coroutines = [upload_file(f) for f in files]
+    results = await asyncio.gather(*coroutines)
+    return results

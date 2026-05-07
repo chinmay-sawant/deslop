@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for route_registration_tests_duplicate_full_bootstrap_per_file: Tests that rebuild the full application bootstrap repeatedly instead of using shared test setup.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule152NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule152NegativeService interface {
+	Run(context.Context, Rule152NegativeRecord) error
+}
+
+func scenario152Negative(ctx context.Context, service Rule152NegativeService, input Rule152NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

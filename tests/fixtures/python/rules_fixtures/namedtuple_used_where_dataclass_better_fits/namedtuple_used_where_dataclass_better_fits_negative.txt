@@ -1,0 +1,34 @@
+from dataclasses import dataclass
+from typing import Optional
+from datetime import datetime
+
+@dataclass
+class User:
+    id: Optional[int] = None
+    name: str = ""
+    email: str = ""
+    role: str = "user"
+    active: bool = True
+
+    def deactivate(self) -> None:
+        self.active = False
+
+@dataclass
+class Order:
+    id: Optional[int] = None
+    user_id: int = 0
+    amount: float = 0.0
+    status: str = "pending"
+    created_at: Optional[datetime] = None
+
+    def update_status(self, status: str) -> None:
+        self.status = status
+
+def create_user(name: str, email: str) -> User:
+    return User(name=name, email=email)
+
+def create_order(user_id: int, amount: float) -> Order:
+    return Order(user_id=user_id, amount=amount)
+
+def format_user(user: User) -> str:
+    return f"{user.name} <{user.email}> ({user.role})"

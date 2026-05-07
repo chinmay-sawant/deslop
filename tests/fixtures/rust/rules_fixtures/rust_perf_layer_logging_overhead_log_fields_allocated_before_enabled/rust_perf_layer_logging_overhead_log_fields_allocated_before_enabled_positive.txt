@@ -1,0 +1,17 @@
+use tracing::{info, span, Level};
+
+fn process_batch(records: &[Record]) {
+    for record in records {
+        // BAD: tracing fields allocated before subscriber can filter
+        let details = format!("id={}, name={}, data={:?}", record.id, record.name, record.data);
+        let span = span!(Level::INFO, "record", details = %details);
+        let _enter = span.enter();
+        // process record...
+    }
+}
+
+struct Record {
+    id: u64,
+    name: String,
+    data: Vec<u8>,
+}

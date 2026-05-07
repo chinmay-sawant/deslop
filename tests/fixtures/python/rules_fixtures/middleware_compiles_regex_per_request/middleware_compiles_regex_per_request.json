@@ -1,0 +1,14 @@
+{
+  "id": "middleware_compiles_regex_per_request",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Middleware compiles regex patterns per request instead of precompiling them.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

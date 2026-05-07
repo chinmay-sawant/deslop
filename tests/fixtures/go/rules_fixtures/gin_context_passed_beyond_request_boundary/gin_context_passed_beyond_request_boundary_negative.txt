@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_context_passed_beyond_request_boundary: Code that passes `*gin.Context` into goroutines, repositories, or long-lived service objects instead of extracting `context.Context` and request values.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule038NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule038NegativeService interface {
+	Run(context.Context, Rule038NegativeRecord) error
+}
+
+func scenario038Negative(ctx context.Context, service Rule038NegativeService, input Rule038NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,35 @@
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+struct Credentials {
+    username: String,
+    password: String,
+    api_token: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct DatabaseConfig {
+    host: String,
+    port: u16,
+    connection_string: String,
+    secret_key: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct OAuthConfig {
+    client_id: String,
+    client_secret: String,
+    private_key: String,
+}
+
+fn load_credentials(path: &str) -> Result<Credentials, Box<dyn std::error::Error>> {
+    let data = std::fs::read_to_string(path)?;
+    let creds: Credentials = serde_json::from_str(&data)?;
+    Ok(creds)
+}
+
+fn load_db_config(path: &str) -> Result<DatabaseConfig, Box<dyn std::error::Error>> {
+    let data = std::fs::read_to_string(path)?;
+    let config: DatabaseConfig = toml::from_str(&data)?;
+    Ok(config)
+}

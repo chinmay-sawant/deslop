@@ -1,0 +1,30 @@
+import time
+import threading
+import pytest
+
+def test_background_task_completes():
+    results = []
+
+    def worker():
+        time.sleep(0.5)
+        results.append("done")
+
+    t = threading.Thread(target=worker)
+    t.start()
+    time.sleep(1)
+    assert results == ["done"]
+
+def test_rate_limiter():
+    from myapp.limiter import RateLimiter
+    limiter = RateLimiter(max_calls=3, period=1.0)
+    for _ in range(3):
+        limiter.allow()
+    time.sleep(1.1)
+    assert limiter.allow() is True
+
+def test_cache_expiry():
+    from myapp.cache import TTLCache
+    cache = TTLCache(ttl=0.5)
+    cache.set("k", "v")
+    time.sleep(0.6)
+    assert cache.get("k") is None

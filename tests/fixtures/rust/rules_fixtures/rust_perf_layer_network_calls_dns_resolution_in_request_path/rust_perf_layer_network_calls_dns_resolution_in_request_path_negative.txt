@@ -1,0 +1,36 @@
+use std::net::SocketAddr;
+use std::sync::Arc;
+use tokio::sync::OnceCell;
+
+struct ResolvedEndpoint {
+    addr: SocketAddr,
+    cached_at: std::time::Instant,
+}
+
+// GOOD: cache resolved address, refresh periodically
+static RESOLVED: OnceCell<ResolvedEndpoint> = OnceCell::const_new();
+
+async fn get_addr(host: &str, port: u16) -> SocketAddr {
+    let endpoint = RESOLVED
+        .get_or_init(|| async {
+            let addr = (host, port)
+                .to_socket_addrs()
+                .unwrap()
+                .next()
+                .unwrap();
+            ResolvedEndpoint {
+                addr,
+                cached_at: std::time::Instant::now(),
+            }
+        })
+        .await;
+    endpoint.addr
+}
+
+use std::net::ToSocketAddrs;
+
+async fn make_request(host: &str, port: u16) -> Result<String, Box<dyn std::error::Error>> {
+    let addr = get_addr(host, port).await;
+    let stream = tokio::net::TcpStream::connect(addr).await?;
+    Ok("response".to_string())
+}

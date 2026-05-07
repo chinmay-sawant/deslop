@@ -1,0 +1,16 @@
+from dataclasses import dataclass
+from typing import Dict, List
+
+
+@dataclass
+class PipelineStage:
+    name: str
+    params: Dict[str, str] = {"mode": "default"}
+    steps: List[str] = ["validate", "transform"]
+
+
+@dataclass
+class TrainingRun:
+    run_id: str
+    metrics: Dict[str, float] = {}
+    artifacts: List[str] = []

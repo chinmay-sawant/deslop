@@ -1,0 +1,28 @@
+import time
+
+
+def get_user(user_id):
+    for attempt in range(3):
+        try:
+            return db.query(User).get(user_id)
+        except ConnectionError:
+            time.sleep(2 ** attempt)
+    return None
+
+
+def get_order(order_id):
+    for attempt in range(3):
+        try:
+            return db.query(Order).get(order_id)
+        except ConnectionError:
+            time.sleep(2 ** attempt)
+    return None
+
+
+def get_product(product_id):
+    for i in range(3):
+        try:
+            return db.query(Product).get(product_id)
+        except ConnectionError:
+            time.sleep(2 ** i)
+    return None

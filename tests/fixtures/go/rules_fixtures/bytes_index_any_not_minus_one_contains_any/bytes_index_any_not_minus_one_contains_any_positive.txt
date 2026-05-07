@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_index_any_not_minus_one_contains_any: `bytes.IndexAny(...) != -1` presence checks instead of `bytes.ContainsAny(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario453Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.Index(haystack, needle) != -1
+}

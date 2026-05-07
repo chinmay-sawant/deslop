@@ -1,0 +1,14 @@
+{
+  "id": "base64_decode_string_in_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Base64 decode from string inside loops.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

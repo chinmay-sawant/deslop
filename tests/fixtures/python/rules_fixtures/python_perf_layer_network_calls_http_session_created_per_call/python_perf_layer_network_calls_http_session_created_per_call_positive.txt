@@ -1,0 +1,28 @@
+import requests
+
+
+def fetch_user_profile(user_id: str) -> dict:
+    session = requests.Session()
+    response = session.get(f"https://api.example.com/users/{user_id}")
+    return response.json()
+
+
+def fetch_order_history(user_id: str) -> list:
+    session = requests.Session()
+    response = session.get(f"https://api.example.com/orders?user_id={user_id}")
+    return response.json()
+
+
+def fetch_recommendations(user_id: str) -> list:
+    session = requests.Session()
+    response = session.get(f"https://api.example.com/recs/{user_id}")
+    return response.json()
+
+
+def process_batch(user_ids: list[str]) -> dict:
+    results = {}
+    for uid in user_ids:
+        session = requests.Session()
+        resp = session.get(f"https://api.example.com/users/{uid}")
+        results[uid] = resp.json()
+    return results

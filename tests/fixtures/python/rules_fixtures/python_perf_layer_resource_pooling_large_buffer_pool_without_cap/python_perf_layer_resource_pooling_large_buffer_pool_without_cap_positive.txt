@@ -1,0 +1,35 @@
+import io
+
+
+class BufferPool:
+    def __init__(self):
+        self._buffers: list[bytearray] = []
+
+    def acquire(self, size_hint: int = 8192) -> bytearray:
+        if self._buffers:
+            buf = self._buffers.pop()
+            if len(buf) < size_hint:
+                buf.extend(bytearray(size_hint - len(buf)))
+            return buf
+        return bytearray(size_hint)
+
+    def release(self, buf: bytearray) -> None:
+        self._buffers.append(buf)
+
+
+pool = BufferPool()
+
+
+def process_chunk(data: bytes) -> bytes:
+    buf = pool.acquire(len(data))
+    buf[:len(data)] = data
+    result = bytes(buf[:len(data)])
+    pool.release(buf)
+    return result
+
+
+def handle_spike(items: list[bytes]) -> list[bytes]:
+    results = []
+    for chunk in items:
+        results.append(process_chunk(chunk))
+    return results

@@ -1,0 +1,14 @@
+{
+  "id": "orm_model_mixes_domain_logic_and_persistence_mapping",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "ORM model class contains domain business logic methods alongside column mapping, coupling persistence and domain concerns.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

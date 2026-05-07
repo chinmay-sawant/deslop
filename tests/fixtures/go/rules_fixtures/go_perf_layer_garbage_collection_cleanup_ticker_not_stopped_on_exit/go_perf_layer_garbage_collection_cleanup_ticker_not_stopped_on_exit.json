@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_garbage_collection_cleanup_ticker_not_stopped_on_exit",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag time.Ticker creation without a visible Stop path in services or workers.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

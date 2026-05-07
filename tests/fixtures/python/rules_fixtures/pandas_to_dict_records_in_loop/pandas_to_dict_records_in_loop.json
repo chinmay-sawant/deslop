@@ -1,0 +1,14 @@
+{
+  "id": "pandas_to_dict_records_in_loop",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "DataFrame to_dict conversions are repeated inside loops.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

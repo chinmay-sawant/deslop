@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_profiling_benchmarking_optimization_comment_without_benchmark: Layer: Profiling and benchmarking. Flag performance-claim comments that lack benchmark, profile, or trace evidence.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule577NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario577Negative(records []Rule577NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

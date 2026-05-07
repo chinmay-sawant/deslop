@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for multiple_error_envelope_shapes_same_api_module: Endpoints in the same API surface that serialize unrelated error payload structures.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule101NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule101NegativeService interface {
+	Run(context.Context, Rule101NegativeRecord) error
+}
+
+func scenario101Negative(ctx context.Context, service Rule101NegativeService, input Rule101NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,6 @@
+// BAD: explicit panic = "unwind" in release profile
+// Cargo.toml
+[profile.release]
+opt-level = 3
+lto = "fat"
+panic = "unwind"

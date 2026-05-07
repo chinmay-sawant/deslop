@@ -1,0 +1,14 @@
+{
+  "id": "router_setup_runs_migrations",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin router or handler setup code that also performs migrations.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

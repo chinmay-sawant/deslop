@@ -1,0 +1,27 @@
+def classify_region(country_code):
+    if country_code in {"US", "CA", "MX"}:
+        return "north_america"
+    elif country_code in {"GB", "FR", "DE", "IT", "ES"}:
+        return "europe"
+    elif country_code in {"JP", "CN", "KR"}:
+        return "asia"
+    return "other"
+
+def is_valid_status(status):
+    return status in {"active", "pending", "suspended"}
+
+def get_priority_color(priority):
+    if priority in {"critical", "high"}:
+        return "red"
+    elif priority in {"medium"}:
+        return "yellow"
+    elif priority in {"low", "none"}:
+        return "green"
+    return "gray"
+
+def format_currency(amount, currency):
+    if currency in {"USD", "CAD", "AUD"}:
+        return f"${amount:.2f}"
+    elif currency in {"EUR", "GBP"}:
+        return f"€{amount:.2f}"
+    return f"{amount:.2f} {currency}"

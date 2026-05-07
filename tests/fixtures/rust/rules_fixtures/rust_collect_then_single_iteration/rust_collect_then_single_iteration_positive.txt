@@ -1,0 +1,20 @@
+fn has_invalid_entry(entries: &[Entry]) -> bool {
+    let names: Vec<&str> = entries.iter().map(|e| e.name.as_str()).collect();
+    names.iter().any(|n| n.is_empty())
+}
+
+fn count_matching(items: &[Item], threshold: f64) -> usize {
+    let filtered: Vec<&Item> = items.iter().filter(|i| i.score > threshold).collect();
+    filtered.len()
+}
+
+fn find_first_error(results: &[Result<(), String>]) -> Option<String> {
+    let errors: Vec<&str> = results
+        .iter()
+        .filter_map(|r| r.as_ref().err().map(|e| e.as_str()))
+        .collect();
+    errors.first().map(|s| s.to_string())
+}
+
+struct Entry { name: String }
+struct Item { score: f64 }

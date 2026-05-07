@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for tool_appeasement_noop_type_in_production_package: Production no-op or dummy types that appear to exist mainly to satisfy tooling instead of runtime behavior.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule205PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario205Positive(w http.ResponseWriter, r *http.Request, repo Rule205PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

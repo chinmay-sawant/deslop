@@ -1,0 +1,14 @@
+{
+  "id": "type_branch_and_mode_branch_compounded_in_same_function",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions that branch on both runtime type and mode string in the same decision tree.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for parsemultipartform_large_default_memory: Gin handlers that call ParseMultipartForm(...) with large in-memory thresholds on request paths.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule331NegativeRecord struct {
+	Name string
+}
+
+type Rule331NegativeService interface {
+	Handle(context.Context, Rule331NegativeRecord) (Rule331NegativeRecord, error)
+}
+
+func scenario331Negative(ctx context.Context, service Rule331NegativeService, input Rule331NegativeRecord) (Rule331NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule331NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

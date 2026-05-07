@@ -1,0 +1,35 @@
+use rayon::{ThreadPool, ThreadPoolBuilder};
+use std::sync::Arc;
+
+struct Processor {
+    pool: Arc<ThreadPool>,
+}
+
+impl Processor {
+    // GOOD: pool created once, shared across calls
+    fn new(num_threads: usize) -> Self {
+        let pool = ThreadPoolBuilder::new()
+            .num_threads(num_threads)
+            .build()
+            .unwrap();
+        Self { pool: Arc::new(pool) }
+    }
+
+    fn process_batch(&self, items: &[Item]) -> Vec<Output> {
+        self.pool.install(|| {
+            items.par_iter()
+                .map(|item| transform(item))
+                .collect()
+        })
+    }
+
+    fn analyze_dataset(&self, data: &[f64]) -> Stats {
+        self.pool.install(|| {
+            let mean = data.par_iter().sum::<f64>() / data.len() as f64;
+            let variance = data.par_iter()
+                .map(|x| (x - mean).powi(2))
+                .sum::<f64>() / data.len() as f64;
+            Stats { mean, variance }
+        })
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag nested slice scans that should be indexed or mapped before joining large collections.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

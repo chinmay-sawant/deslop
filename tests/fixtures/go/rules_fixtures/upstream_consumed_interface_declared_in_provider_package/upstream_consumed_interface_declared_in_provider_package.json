@@ -1,0 +1,14 @@
+{
+  "id": "upstream_consumed_interface_declared_in_provider_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Provider packages that declare an interface even though upstream packages appear to own the abstraction seam.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

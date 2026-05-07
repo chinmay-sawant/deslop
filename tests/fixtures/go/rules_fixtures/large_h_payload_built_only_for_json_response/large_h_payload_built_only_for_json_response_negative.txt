@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for large_h_payload_built_only_for_json_response: Large gin.H payloads built as transient dynamic maps right before JSON rendering.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule322NegativeRecord struct {
+	Name string
+}
+
+type Rule322NegativeService interface {
+	Handle(context.Context, Rule322NegativeRecord) (Rule322NegativeRecord, error)
+}
+
+func scenario322Negative(ctx context.Context, service Rule322NegativeService, input Rule322NegativeRecord) (Rule322NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule322NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

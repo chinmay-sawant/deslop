@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for cmd_or_main_contains_domain_rules: `main` or `cmd` packages that contain business-rule branches instead of wiring and startup concerns.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule014PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario014Positive(w http.ResponseWriter, r *http.Request, repo Rule014PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

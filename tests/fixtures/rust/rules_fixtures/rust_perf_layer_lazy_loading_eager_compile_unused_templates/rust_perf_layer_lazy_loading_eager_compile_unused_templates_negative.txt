@@ -1,0 +1,33 @@
+use std::collections::HashMap;
+use std::sync::OnceLock;
+
+struct TemplateEngine {
+    templates: HashMap<String, CompiledTemplate>,
+}
+
+struct CompiledTemplate {
+    name: String,
+    bytecode: Vec<u8>,
+}
+
+// GOOD: compile on demand, cache compiled result
+static ENGINE: OnceLock<TemplateEngine> = OnceLock::new();
+
+fn get_engine() -> &'static TemplateEngine {
+    ENGINE.get_or_init(|| TemplateEngine {
+        templates: HashMap::new(),
+    })
+}
+
+fn get_template(name: &str, source: &str) -> &'static CompiledTemplate {
+    let engine = get_engine();
+    // compile only when first requested
+    engine.templates.entry(name.to_string()).or_insert_with(|| CompiledTemplate {
+        name: name.to_string(),
+        bytecode: compile_template(source),
+    })
+}
+
+fn compile_template(source: &str) -> Vec<u8> {
+    source.bytes().collect()
+}

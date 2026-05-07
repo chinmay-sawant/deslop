@@ -1,0 +1,39 @@
+use std::collections::HashMap;
+
+struct TemplateEngine {
+    templates: HashMap<String, CompiledTemplate>,
+}
+
+struct CompiledTemplate {
+    name: String,
+    bytecode: Vec<u8>,
+}
+
+fn build_engine() -> TemplateEngine {
+    let mut templates = HashMap::new();
+    // BAD: compile all templates eagerly, even unused ones
+    let all_templates = vec![
+        ("home", "Hello {{name}}"),
+        ("admin", "Admin: {{name}}"),
+        ("report", "Report: {{data}}"),
+        ("email", "Dear {{name}}, {{body}}"),
+        ("error", "Error: {{code}}: {{message}}"),
+        ("invoice", "Invoice #{{id}}: {{amount}}"),
+    ];
+
+    for (name, source) in all_templates {
+        templates.insert(
+            name.to_string(),
+            CompiledTemplate {
+                name: name.to_string(),
+                bytecode: compile_template(source),
+            },
+        );
+    }
+
+    TemplateEngine { templates }
+}
+
+fn compile_template(source: &str) -> Vec<u8> {
+    source.bytes().collect()
+}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for multiple_error_envelope_shapes_same_api_module: Endpoints in the same API surface that serialize unrelated error payload structures.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule101PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario101Positive(w http.ResponseWriter, r *http.Request, repo Rule101PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

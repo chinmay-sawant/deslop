@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for defer_in_tight_loop: `defer` statements inside loops with > 100 iterations or visible hot-path markers
+// fixture polarity: positive; family: performance; severity: warning.
+type Rule476PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario476Positive(records []Rule476PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

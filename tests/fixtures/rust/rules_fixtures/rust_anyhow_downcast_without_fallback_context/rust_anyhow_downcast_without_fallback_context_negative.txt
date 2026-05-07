@@ -1,0 +1,36 @@
+use anyhow::{Context, Result};
+use std::io;
+
+fn handle_request(raw: &[u8]) -> Result<Response> {
+    let req = parse_request(raw).context("parsing inbound request")?;
+    process(req).context("processing request")
+}
+
+fn parse_request(_raw: &[u8]) -> Result<Request> {
+    todo!()
+}
+
+fn process(_req: Request) -> Result<Response> {
+    todo!()
+}
+
+fn handle_with_downcast(raw: &[u8]) -> Result<Response> {
+    let req = parse_request(raw).context("parsing inbound request")?;
+    match process(req) {
+        Ok(resp) => Ok(resp),
+        Err(e) => {
+            if let Some(timeout) = e.downcast_ref::<TimeoutError>() {
+                Err(anyhow::anyhow!("service timeout after {}ms: {e}", timeout.ms)
+                    .context("request handling failed"))
+            } else {
+                Err(e).context("request handling failed")
+            }
+        }
+    }
+}
+
+struct Request;
+struct Response;
+struct TimeoutError {
+    ms: u64,
+}

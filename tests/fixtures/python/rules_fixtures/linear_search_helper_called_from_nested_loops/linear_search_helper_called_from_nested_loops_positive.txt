@@ -1,0 +1,31 @@
+def find_product_by_sku(products: list[dict], sku: str) -> dict | None:
+    for product in products:
+        if product["sku"] == sku:
+            return product
+    return None
+
+
+def match_orders_to_products(orders: list[dict], products: list[dict]) -> list[dict]:
+    results = []
+    for order in orders:
+        for item in order["items"]:
+            product = find_product_by_sku(products, item["sku"])
+            if product:
+                results.append({"order_id": order["id"], "product": product, "qty": item["qty"]})
+    return results
+
+
+def find_user_by_id(users: list[dict], user_id: int) -> dict | None:
+    for user in users:
+        if user["id"] == user_id:
+            return user
+    return None
+
+
+def build_report(events: list[dict], users: list[dict]) -> list[dict]:
+    report = []
+    for event in events:
+        user = find_user_by_id(users, event["user_id"])
+        if user:
+            report.append({"event": event["type"], "user": user["name"]})
+    return report

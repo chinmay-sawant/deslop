@@ -1,0 +1,25 @@
+import pandas as pd
+
+
+def export_to_api(df, endpoint):
+    records = df.to_dict(orient="records")
+    for record in records:
+        send_record(endpoint, record)
+
+
+def batch_process(df):
+    records = df.to_dict(orient="records")
+    for record in records:
+        process_row(record)
+
+
+def serialize_rows(df):
+    return df.to_dict(orient="records")
+
+
+def send_record(endpoint, record):
+    pass
+
+
+def process_row(row_dict):
+    pass

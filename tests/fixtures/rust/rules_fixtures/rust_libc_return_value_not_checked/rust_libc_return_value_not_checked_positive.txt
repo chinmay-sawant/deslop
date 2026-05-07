@@ -1,0 +1,11 @@
+fn close_fd(fd: libc::c_int) {
+    unsafe {
+        libc::close(fd);
+    }
+}
+
+fn write_data(fd: libc::c_int, data: &[u8]) {
+    unsafe {
+        libc::write(fd, data.as_ptr() as *const libc::c_void, data.len());
+    }
+}

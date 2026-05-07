@@ -1,0 +1,14 @@
+{
+  "id": "rust_block_in_place_request_path",
+  "language": "rust",
+  "family": "runtime_ownership",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Blocking runtime bridges such as block_in_place or block_on inside request-handling code.",
+  "binding_location": "src/heuristics/rust/runtime_ownership.rs"
+}

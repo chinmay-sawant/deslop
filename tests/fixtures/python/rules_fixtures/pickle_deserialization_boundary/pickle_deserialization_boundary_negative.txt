@@ -1,0 +1,21 @@
+import json
+from pathlib import Path
+
+
+def load_model(path):
+    with open(path, "r") as f:
+        return json.load(f)
+
+
+def load_state(path):
+    content = Path(path).read_text()
+    return json.loads(content)
+
+
+def deserialize_cache(data):
+    return json.loads(data)
+
+
+def save_model(model, path):
+    with open(path, "w") as f:
+        json.dump(model, f)

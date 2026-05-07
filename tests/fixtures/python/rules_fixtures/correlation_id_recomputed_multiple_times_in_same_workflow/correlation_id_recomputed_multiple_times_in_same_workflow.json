@@ -1,0 +1,14 @@
+{
+  "id": "correlation_id_recomputed_multiple_times_in_same_workflow",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that regenerates correlation IDs instead of propagating one value.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

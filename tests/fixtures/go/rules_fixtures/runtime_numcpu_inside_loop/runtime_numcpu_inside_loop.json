@@ -1,0 +1,14 @@
+{
+  "id": "runtime_numcpu_inside_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`runtime.NumCPU()` inside loops instead of caching once.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

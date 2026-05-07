@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_method_accepts_map_string_any_input: Services that use map-shaped dynamic input instead of typed request contracts.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule169NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule169NegativeService interface {
+	Run(context.Context, Rule169NegativeRecord) error
+}
+
+func scenario169Negative(ctx context.Context, service Rule169NegativeService, input Rule169NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

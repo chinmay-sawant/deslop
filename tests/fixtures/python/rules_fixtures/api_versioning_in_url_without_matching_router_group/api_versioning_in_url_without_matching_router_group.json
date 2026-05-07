@@ -1,0 +1,14 @@
+{
+  "id": "api_versioning_in_url_without_matching_router_group",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "URL path contains a version segment (/v1/) without a corresponding versioned router or blueprint.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

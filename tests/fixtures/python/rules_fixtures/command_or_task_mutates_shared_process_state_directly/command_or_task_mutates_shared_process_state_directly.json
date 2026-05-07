@@ -1,0 +1,14 @@
+{
+  "id": "command_or_task_mutates_shared_process_state_directly",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag command handlers or task functions that directly rewrite module-level caches or registries used elsewhere.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

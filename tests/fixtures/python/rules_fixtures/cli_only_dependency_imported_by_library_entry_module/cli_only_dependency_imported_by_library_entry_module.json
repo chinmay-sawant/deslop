@@ -1,0 +1,14 @@
+{
+  "id": "cli_only_dependency_imported_by_library_entry_module",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag library entry modules that pull in CLI-only dependencies on import.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

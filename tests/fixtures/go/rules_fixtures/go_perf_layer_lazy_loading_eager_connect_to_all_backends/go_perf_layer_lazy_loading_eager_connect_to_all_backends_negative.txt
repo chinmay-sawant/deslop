@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_lazy_loading_eager_connect_to_all_backends: Layer: Lazy loading. Flag services connecting to every optional backend at startup instead of lazy initialization.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule554NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario554Negative(records []Rule554NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

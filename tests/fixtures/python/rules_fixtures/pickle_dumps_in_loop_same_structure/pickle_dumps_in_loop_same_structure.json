@@ -1,0 +1,14 @@
+{
+  "id": "pickle_dumps_in_loop_same_structure",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "pickle.dumps(...) is called repeatedly for the same structural shape in a loop.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

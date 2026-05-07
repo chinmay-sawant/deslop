@@ -1,0 +1,30 @@
+def handle_user_registration(request_data):
+    if not request_data.get("email"):
+        return {"error": "email required"}, 400
+    if not request_data.get("password"):
+        return {"error": "password required"}, 400
+    if len(request_data["password"]) < 8:
+        return {"error": "password too short"}, 400
+
+    password_hash = bcrypt.hashpw(request_data["password"].encode(), bcrypt.gensalt())
+    user = {
+        "email": request_data["email"],
+        "password_hash": password_hash,
+        "name": request_data.get("name", ""),
+        "created_at": datetime.utcnow().isoformat(),
+    }
+    db = get_database()
+    db.execute("INSERT INTO users (email, password_hash, name, created_at) VALUES (?, ?, ?, ?)",
+               user["email"], user["password_hash"], user["name"], user["created_at"])
+    db.commit()
+
+    welcome_template = "Welcome, {name}! Your account has been created."
+    email_body = welcome_template.format(name=user["name"])
+    send_email(user["email"], "Welcome!", email_body)
+
+    return {
+        "status": "created",
+        "user_id": user["email"],
+        "message": f"Account created for {user['name']}",
+        "timestamp": user["created_at"],
+    }, 201

@@ -1,0 +1,34 @@
+import torch
+import gc
+
+def run_experiment_a(dataset):
+    model = torch.nn.Linear(10, 1)
+    optimizer = torch.optim.Adam(model.parameters())
+    for epoch in range(100):
+        for batch in dataset:
+            loss = model(batch)
+            loss.backward()
+            optimizer.step()
+    return model
+
+def run_experiment_b(dataset):
+    torch.cuda.empty_cache()
+    gc.collect()
+    model = torch.nn.Linear(10, 1)
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+    for epoch in range(100):
+        for batch in dataset:
+            loss = model(batch)
+            loss.backward()
+            optimizer.step()
+    return model
+
+def run_all_experiments(datasets):
+    results = []
+    for dataset in datasets:
+        model_a = run_experiment_a(dataset)
+        model_b = run_experiment_b(dataset)
+        results.append((model_a, model_b))
+        torch.cuda.empty_cache()
+        gc.collect()
+    return results

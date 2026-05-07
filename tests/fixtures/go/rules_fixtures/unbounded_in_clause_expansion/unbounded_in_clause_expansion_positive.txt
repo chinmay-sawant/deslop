@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for unbounded_in_clause_expansion: IN clauses built from request-driven collections without bound limits.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule301PositiveRecord struct { ID int }
+
+func scenario301Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule301PositiveRecord{}).Error
+}

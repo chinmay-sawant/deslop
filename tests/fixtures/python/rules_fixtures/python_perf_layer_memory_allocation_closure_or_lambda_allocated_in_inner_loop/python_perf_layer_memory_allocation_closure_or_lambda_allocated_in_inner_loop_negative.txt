@@ -1,0 +1,24 @@
+def is_above_threshold(x, threshold):
+    return x > threshold
+
+def square(x):
+    return x ** 2
+
+def process_matrix(matrix, threshold):
+    result = []
+    for row in matrix:
+        filtered = [x for x in row if is_above_threshold(x, threshold)]
+        mapped = [square(x) for x in filtered]
+        result.append(sum(mapped))
+    return result
+
+def in_range(value, rule):
+    return rule["min"] <= value <= rule["max"]
+
+def apply_rules(data, rules):
+    output = []
+    for item in data:
+        for rule in rules:
+            if in_range(item["value"], rule):
+                output.append(item)
+    return output

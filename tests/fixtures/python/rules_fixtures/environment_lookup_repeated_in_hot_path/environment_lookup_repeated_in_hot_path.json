@@ -1,0 +1,14 @@
+{
+  "id": "environment_lookup_repeated_in_hot_path",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag hot functions that repeatedly read environment variables or global config values that do not change.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

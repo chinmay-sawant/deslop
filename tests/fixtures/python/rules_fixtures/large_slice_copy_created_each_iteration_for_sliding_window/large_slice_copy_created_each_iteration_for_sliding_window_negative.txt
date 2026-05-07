@@ -1,0 +1,34 @@
+from collections import deque
+
+
+def moving_average(values: list[float], window: int) -> list[float]:
+    result = []
+    window_sum = sum(values[:window])
+    result.append(window_sum / window)
+    for i in range(window, len(values)):
+        window_sum += values[i] - values[i - window]
+        result.append(window_sum / window)
+    return result
+
+
+def detect_spikes(readings: list[float], window: int, threshold: float) -> list[int]:
+    spike_indices = []
+    window_sum = sum(readings[:window])
+    for i in range(window, len(readings)):
+        mean = window_sum / window
+        if readings[i] > mean * threshold:
+            spike_indices.append(i)
+        window_sum += readings[i] - readings[i - window]
+    return spike_indices
+
+
+def sliding_correlation(series_a: list[float], series_b: list[float], window: int) -> list[float]:
+    correlations = []
+    for i in range(len(series_a) - window + 1):
+        mean_a = sum(series_a[i:i + window]) / window
+        mean_b = sum(series_b[i:i + window]) / window
+        cov = 0.0
+        for j in range(window):
+            cov += (series_a[i + j] - mean_a) * (series_b[i + j] - mean_b)
+        correlations.append(cov / window)
+    return correlations

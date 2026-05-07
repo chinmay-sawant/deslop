@@ -1,0 +1,40 @@
+def process_orders(orders: list[dict]) -> list[dict]:
+    results = []
+    for order in orders:
+        total = 0.0
+        categories = set()
+        for item in order["items"]:
+            if item["qty"] > 0:
+                total += item["price"] * item["qty"]
+                categories.add(item["category"])
+        results.append({
+            "order_id": order["id"],
+            "total": total,
+            "categories": list(categories),
+        })
+    return results
+
+def analyze_logs(log_lines: list[str]) -> list[dict]:
+    summaries = []
+    for line in log_lines:
+        fields = {}
+        for p in line.split(","):
+            part = p.strip()
+            if "=" in part:
+                k, v = part.split("=", 1)
+                fields[k] = v
+        summaries.append(fields)
+    return summaries
+
+def transform_records(records: list[dict]) -> list[dict]:
+    output = []
+    for record in records:
+        cleaned = {}
+        text_fields = []
+        for k, v in record.items():
+            if v is not None:
+                cleaned[k] = v.strip() if isinstance(v, str) else v
+                if isinstance(v, str):
+                    text_fields.append(cleaned[k])
+        output.append({"data": cleaned, "text_fields": text_fields})
+    return output

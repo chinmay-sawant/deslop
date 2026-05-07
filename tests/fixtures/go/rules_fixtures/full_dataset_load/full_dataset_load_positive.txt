@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for full_dataset_load: Calls that load an entire payload into memory instead of streaming.
+// fixture polarity: positive; family: performance; severity: info.
+type Rule498PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario498Positive(records []Rule498PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

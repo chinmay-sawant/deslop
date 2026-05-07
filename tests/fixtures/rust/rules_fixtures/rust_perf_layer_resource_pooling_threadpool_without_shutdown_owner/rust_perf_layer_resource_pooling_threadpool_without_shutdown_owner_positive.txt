@@ -1,0 +1,33 @@
+use std::sync::mpsc;
+use std::thread;
+
+// BAD: thread pool with no shutdown mechanism or join handle ownership
+struct ThreadPool {
+    sender: mpsc::Sender<Box<dyn FnOnce() + Send>>,
+}
+
+impl ThreadPool {
+    fn new(size: usize) -> Self {
+        let (sender, receiver) = mpsc::channel::<Box<dyn FnOnce() + Send>>();
+        let receiver = std::sync::Arc::new(std::sync::Mutex::new(receiver));
+
+        for _ in 0..size {
+            let rx = std::sync::Arc::clone(&receiver);
+            thread::spawn(move || {
+                loop {
+                    let task = rx.lock().unwrap().recv();
+                    match task {
+                        Ok(task) => task(),
+                        Err(_) => break,
+                    }
+                }
+            });
+        }
+
+        Self { sender }
+    }
+
+    fn execute<F: FnOnce() + Send + 'static>(&self, f: F) {
+        self.sender.send(Box::new(f)).unwrap();
+    }
+}

@@ -1,0 +1,23 @@
+import pandas as pd
+
+
+def calculate_discount(df: pd.DataFrame) -> pd.DataFrame:
+    discounts = []
+    for _, row in df.iterrows():
+        if row["amount"] > 1000:
+            discounts.append(row["amount"] * 0.1)
+        elif row["amount"] > 500:
+            discounts.append(row["amount"] * 0.05)
+        else:
+            discounts.append(0)
+    df["discount"] = discounts
+    return df
+
+
+def compute_tax(df: pd.DataFrame) -> pd.DataFrame:
+    taxes = []
+    for _, row in df.iterrows():
+        tax = row["price"] * row["quantity"] * 0.08
+        taxes.append(tax)
+    df["tax"] = taxes
+    return df

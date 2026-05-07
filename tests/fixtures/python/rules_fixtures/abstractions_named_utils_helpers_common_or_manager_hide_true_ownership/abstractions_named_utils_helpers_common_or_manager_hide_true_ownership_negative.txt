@@ -1,0 +1,25 @@
+class UserRepository:
+    def __init__(self, db_connection):
+        self._db = db_connection
+
+    def get_user(self, user_id: int) -> dict:
+        row = self._db.query("SELECT * FROM users WHERE id = %s", (user_id,))
+        return {"id": row["id"], "name": row["name"].strip()}
+
+
+class PricingService:
+    def __init__(self, discount_policy):
+        self._discount_policy = discount_policy
+
+    def calculate_order_total(self, order_items: list) -> float:
+        subtotal = sum(item["price"] for item in order_items)
+        return self._discount_policy.apply(subtotal)
+
+
+class NotificationService:
+    def __init__(self, channel_resolver):
+        self._channel_resolver = channel_resolver
+
+    def send_notification(self, user_id: int, message: str):
+        channel = self._channel_resolver.resolve(user_id)
+        channel.send(message)

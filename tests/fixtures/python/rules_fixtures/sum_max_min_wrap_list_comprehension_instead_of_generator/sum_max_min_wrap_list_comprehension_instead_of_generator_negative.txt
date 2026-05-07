@@ -1,0 +1,17 @@
+def calculate_total_price(items: list[dict]) -> float:
+    return sum(item["price"] * item["qty"] for item in items)
+
+def find_max_score(students: list[dict]) -> float:
+    return max(s["score"] for s in students if s["active"])
+
+def find_min_latency(measurements: list[float]) -> float:
+    return min(m for m in measurements if m > 0)
+
+def count_errors(logs: list[str]) -> int:
+    return sum(1 for line in logs if "ERROR" in line)
+
+def total_memory(processes: list[dict]) -> int:
+    return sum(p["rss_mb"] for p in processes if p["status"] == "running")
+
+def get_longest_word(words: list[str]) -> str:
+    return max((w for w in words if len(w) > 3), key=len)

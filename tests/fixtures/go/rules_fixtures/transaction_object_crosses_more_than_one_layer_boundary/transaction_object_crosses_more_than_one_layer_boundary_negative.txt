@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for transaction_object_crosses_more_than_one_layer_boundary: Transaction handles passed through multiple layers as ordinary arguments.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule209NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule209NegativeService interface {
+	Run(context.Context, Rule209NegativeRecord) error
+}
+
+func scenario209Negative(ctx context.Context, service Rule209NegativeService, input Rule209NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,57 @@
+class Connection:
+    def __init__(self):
+        self._connected = False
+        self._data = None
+
+    def connect(self):
+        self._connected = True
+
+    def send(self, data):
+        if not self._connected:
+            raise RuntimeError("Not connected")
+        self._data = data
+
+    def recv(self):
+        if not self._connected:
+            raise RuntimeError("Not connected")
+        return self._data
+
+
+class Builder:
+    def __init__(self):
+        self._result = None
+
+    def set_name(self, name):
+        self._result = {"name": name}
+        return self
+
+    def set_value(self, value):
+        if self._result is None:
+            raise RuntimeError("Call set_name first")
+        self._result["value"] = value
+        return self
+
+    def build(self):
+        if self._result is None:
+            raise RuntimeError("Nothing to build")
+        return self._result
+
+
+class Pipeline:
+    def __init__(self):
+        self._stages = []
+        self._executed = False
+
+    def add_stage(self, fn):
+        self._stages.append(fn)
+
+    def execute(self, data):
+        result = data
+        for stage in self._stages:
+            result = stage(result)
+        self._executed = True
+        return result
+
+    def get_result(self):
+        if not self._executed:
+            raise RuntimeError("Pipeline not executed")

@@ -1,0 +1,14 @@
+{
+  "id": "global_state_in_data_pipeline",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Pipeline-style functions mutate global state, making concurrency and reproducibility brittle.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

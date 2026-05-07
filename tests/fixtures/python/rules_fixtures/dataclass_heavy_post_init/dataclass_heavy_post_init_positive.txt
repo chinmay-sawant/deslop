@@ -1,0 +1,26 @@
+import os
+import subprocess
+from dataclasses import dataclass, field
+from typing import List
+
+import boto3
+
+
+@dataclass
+class ModelConfig:
+    model_name: str
+    region: str = "us-east-1"
+    tags: List[str] = field(default_factory=list)
+    _s3_client: object = field(init=False, repr=False)
+    _model_artifact: bytes = field(init=False, repr=False, default=b"")
+
+    def __post_init__(self):
+        self._s3_client = boto3.client("s3", region_name=self.region)
+        self._model_artifact = self._s3_client.get_object(
+            Bucket="models-bucket", Key=f"{self.model_name}/artifact.bin"
+        )["Body"].read()
+        result = subprocess.run(
+            ["sha256sum", "/tmp/artifact.bin"],
+            capture_output=True, text=True, timeout=30,
+        )
+        self._checksum = result.stdout.strip()

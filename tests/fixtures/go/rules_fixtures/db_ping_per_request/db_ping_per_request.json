@@ -1,0 +1,14 @@
+{
+  "id": "db_ping_per_request",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "database Ping(...) or PingContext(...) called on request paths instead of startup or explicit health checks.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

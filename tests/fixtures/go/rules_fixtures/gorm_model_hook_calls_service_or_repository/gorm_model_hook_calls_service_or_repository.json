@@ -1,0 +1,14 @@
+{
+  "id": "gorm_model_hook_calls_service_or_repository",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Model hooks that depend on higher-layer services or repositories.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

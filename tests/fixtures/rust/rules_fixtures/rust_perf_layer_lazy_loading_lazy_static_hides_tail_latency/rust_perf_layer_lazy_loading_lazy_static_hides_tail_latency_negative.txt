@@ -1,0 +1,25 @@
+use std::sync::OnceLock;
+
+struct ConnectionPool {
+    connections: Vec<String>,
+}
+
+fn create_pool() -> ConnectionPool {
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    ConnectionPool {
+        connections: (0..100).map(|i| format!("conn_{}", i)).collect(),
+    }
+}
+
+static POOL: OnceLock<ConnectionPool> = OnceLock::new();
+
+// GOOD: explicit warmup during startup, before serving traffic
+async fn startup() {
+    tokio::task::spawn_blocking(|| {
+        POOL.get_or_init(|| create_pool());
+    }).await.unwrap();
+}
+
+async fn handle_request() -> &'static ConnectionPool {
+    POOL.get().expect("startup must complete first")
+}

@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_profiling_benchmarking_benchmark_includes_setup_in_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag Go benchmarks that perform setup inside the timed loop without ResetTimer.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

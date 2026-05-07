@@ -1,0 +1,14 @@
+{
+  "id": "rust_process_global_env_toggle",
+  "language": "rust",
+  "family": "runtime_ownership",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Process-global environment mutation used as runtime control flow.",
+  "binding_location": "src/heuristics/rust/runtime_ownership.rs"
+}

@@ -1,0 +1,14 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+def process_batch(items):
+    for item in items:
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Processing item %s with payload %s", item["id"], item["payload"])
+        result = transform(item)
+        if logger.isEnabledFor(logging.INFO):
+            logger.info("Completed item %s in %.3fs", item["id"], result["elapsed"])
+
+def transform(item):
+    return {"id": item["id"], "elapsed": 0.01}

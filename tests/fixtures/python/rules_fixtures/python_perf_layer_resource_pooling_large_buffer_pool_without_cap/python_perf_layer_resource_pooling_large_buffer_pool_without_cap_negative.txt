@@ -1,0 +1,39 @@
+import io
+
+MAX_POOL_SIZE = 10
+MAX_BUFFER_SIZE = 1 << 20
+
+
+class BufferPool:
+    def __init__(self, max_buffers: int = MAX_POOL_SIZE, max_buf_size: int = MAX_BUFFER_SIZE):
+        self._buffers: list[bytearray] = []
+        self._max_buffers = max_buffers
+        self._max_buf_size = max_buf_size
+
+    def acquire(self, size_hint: int = 8192) -> bytearray:
+        size_hint = min(size_hint, self._max_buf_size)
+        if self._buffers:
+            buf = self._buffers.pop()
+            if len(buf) < size_hint:
+                buf.extend(bytearray(size_hint - len(buf)))
+            elif len(buf) > self._max_buf_size:
+                buf = bytearray(size_hint)
+            return buf
+        return bytearray(size_hint)
+
+    def release(self, buf: bytearray) -> None:
+        if len(buf) > self._max_buf_size:
+            return
+        if len(self._buffers) < self._max_buffers:
+            self._buffers.append(buf)
+
+
+pool = BufferPool()
+
+
+def process_chunk(data: bytes) -> bytes:
+    buf = pool.acquire(len(data))
+    buf[:len(data)] = data
+    result = bytes(buf[:len(data)])
+    pool.release(buf)
+    return result

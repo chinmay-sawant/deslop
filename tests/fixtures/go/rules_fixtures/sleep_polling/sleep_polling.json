@@ -1,0 +1,14 @@
+{
+  "id": "sleep_polling",
+  "language": "go",
+  "family": "context",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "time.Sleep inside loops \u2014 often indicates polling or busy-wait style code.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

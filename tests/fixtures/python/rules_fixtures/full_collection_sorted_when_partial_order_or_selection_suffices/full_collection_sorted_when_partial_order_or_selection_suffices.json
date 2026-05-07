@@ -1,0 +1,14 @@
+{
+  "id": "full_collection_sorted_when_partial_order_or_selection_suffices",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag full sorts used where top-k or one-pass selection would work.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

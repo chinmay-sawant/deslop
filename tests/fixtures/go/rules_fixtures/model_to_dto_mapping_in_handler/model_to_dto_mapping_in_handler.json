@@ -1,0 +1,14 @@
+{
+  "id": "model_to_dto_mapping_in_handler",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that manually shape every response from persistence structs rather than using dedicated mapping helpers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

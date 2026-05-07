@@ -1,0 +1,43 @@
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum AppError {
+    #[error("failed to load config: {source}")]
+    ConfigLoad {
+        #[source]
+        source: std::io::Error,
+        path: String,
+    },
+
+    #[error("failed to parse response from {endpoint}")]
+    ResponseParse {
+        #[source]
+        source: serde_json::Error,
+        endpoint: String,
+    },
+
+    #[error("database query failed on table {table}")]
+    DatabaseQuery {
+        #[source]
+        source: sqlx::Error,
+        table: String,
+    },
+
+    #[error("HTTP request to {url} failed")]
+    HttpRequest {
+        #[source]
+        source: reqwest::Error,
+        url: String,
+    },
+}
+
+fn load_config(path: &str) -> Result<Config, AppError> {
+    let data = std::fs::read_to_string(path).map_err(|e| AppError::ConfigLoad {
+        source: e,
+        path: path.to_string(),
+    })?;
+    let config: Config = serde_json::from_str(&data)?;
+    Ok(config)
+}
+
+struct Config;

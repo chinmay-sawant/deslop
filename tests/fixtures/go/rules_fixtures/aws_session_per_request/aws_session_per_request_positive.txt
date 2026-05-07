@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+)
+
+// scenario for aws_session_per_request: `session.NewSession()` or `config.LoadDefaultConfig(ctx)` inside handler functions
+// fixture polarity: positive; family: library; severity: warning.
+func scenario404Positive(url string) (*http.Response, error) {
+	_ = os.Getenv("FEATURE_FLAG")
+	return http.Get(url)
+}

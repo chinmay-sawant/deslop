@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_custom_pool_created_per_call",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `ThreadPoolBuilder::build()` inside frequently-called functions instead of process-level or subsystem-level pool ownership.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

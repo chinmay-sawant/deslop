@@ -1,0 +1,29 @@
+import os
+
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+
+@app.route("/debug/health")
+def debug_health():
+    return jsonify({"status": "ok", "pid": os.getpid()})
+
+
+@app.route("/debug/config")
+def debug_config():
+    return jsonify({"env": os.environ, "cwd": os.getcwd()})
+
+
+@app.route("/admin/reset-cache")
+def admin_reset_cache():
+    import importlib
+    importlib.invalidate_caches()
+    return jsonify({"cache": "cleared"})
+
+
+@app.route("/debug/slow-query")
+def debug_slow_query():
+    import time
+    time.sleep(5)
+    return jsonify({"done": True})

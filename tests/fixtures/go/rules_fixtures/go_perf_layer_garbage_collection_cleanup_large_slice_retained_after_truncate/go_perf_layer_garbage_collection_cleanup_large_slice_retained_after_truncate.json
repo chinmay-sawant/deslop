@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag long-lived slices truncated to zero that still retain large backing arrays.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

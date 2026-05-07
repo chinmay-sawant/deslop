@@ -1,0 +1,27 @@
+struct BatchProcessor {
+    buffer: Vec<Record>,
+    max_capacity: usize,
+}
+
+impl BatchProcessor {
+    fn new(max_capacity: usize) -> Self {
+        Self {
+            buffer: Vec::new(),
+            max_capacity,
+        }
+    }
+
+    fn process_batch(&mut self, records: Vec<Record>) {
+        self.buffer.extend(records);
+        // ... process buffer ...
+        self.buffer.clear();
+        // GOOD: trim capacity after spike
+        if self.buffer.capacity() > self.max_capacity {
+            self.buffer.shrink_to(self.max_capacity);
+        }
+    }
+}
+
+struct Record {
+    data: Vec<u8>,
+}

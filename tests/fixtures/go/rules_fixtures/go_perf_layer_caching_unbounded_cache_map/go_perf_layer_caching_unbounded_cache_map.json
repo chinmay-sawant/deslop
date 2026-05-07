@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_caching_unbounded_cache_map",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Caching. Flag package-level cache maps without size, TTL, or eviction policy.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

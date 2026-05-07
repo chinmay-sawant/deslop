@@ -1,0 +1,14 @@
+{
+  "id": "middleware_uses_global_logger_or_config_singleton",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Middleware that depends on mutable globals instead of injected config and logger instances.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

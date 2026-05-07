@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for buffer_write_string_single_byte_literal: `bytes.Buffer.WriteString("x")` for single-byte literals instead of `WriteByte`.
+// fixture polarity: negative; family: performance; severity: info.
+type Rule442NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario442Negative(records []Rule442NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

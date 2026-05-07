@@ -1,0 +1,29 @@
+import time
+from functools import wraps
+
+
+def with_retry(func, max_attempts=3):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        for attempt in range(max_attempts):
+            try:
+                return func(*args, **kwargs)
+            except ConnectionError:
+                time.sleep(2 ** attempt)
+        return None
+    return wrapper
+
+
+@with_retry
+def get_user(user_id):
+    return db.query(User).get(user_id)
+
+
+@with_retry
+def get_order(order_id):
+    return db.query(Order).get(order_id)
+
+
+@with_retry
+def get_product(product_id):
+    return db.query(Product).get(product_id)

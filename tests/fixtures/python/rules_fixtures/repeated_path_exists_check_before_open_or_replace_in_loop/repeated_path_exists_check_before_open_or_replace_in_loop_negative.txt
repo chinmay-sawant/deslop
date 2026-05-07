@@ -1,0 +1,21 @@
+import os
+
+
+def load_all_configs(config_dir, filenames):
+    configs = []
+    for name in filenames:
+        path = os.path.join(config_dir, name)
+        try:
+            with open(path, "r") as f:
+                configs.append(f.read())
+        except FileNotFoundError:
+            continue
+    return configs
+
+
+def backup_and_replace(file_pairs):
+    for src, dst in file_pairs:
+        try:
+            os.replace(src, dst)
+        except FileNotFoundError:
+            continue

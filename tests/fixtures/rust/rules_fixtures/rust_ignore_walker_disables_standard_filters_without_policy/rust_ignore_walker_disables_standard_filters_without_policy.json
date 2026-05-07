@@ -1,0 +1,14 @@
+{
+  "id": "rust_ignore_walker_disables_standard_filters_without_policy",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `.ignore(false)`, `.git_ignore(false)`, `.git_exclude(false)`, `.hidden(false)`, or `.parents(false)` unless paired with a named user option or security review note.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

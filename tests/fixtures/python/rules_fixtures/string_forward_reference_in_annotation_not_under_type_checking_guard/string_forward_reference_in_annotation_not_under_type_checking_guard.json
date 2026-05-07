@@ -1,0 +1,14 @@
+{
+  "id": "string_forward_reference_in_annotation_not_under_type_checking_guard",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "String forward reference annotation not placed under `if TYPE_CHECKING:`, causing import at runtime.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "mixed_concerns_function",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Functions that mix HTTP, persistence, and filesystem-style concerns in one body.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

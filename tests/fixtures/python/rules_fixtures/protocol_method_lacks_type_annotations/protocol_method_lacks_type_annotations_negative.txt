@@ -1,0 +1,17 @@
+from typing import Protocol, Any
+
+
+class Renderer(Protocol):
+    def render(self, data: dict[str, Any]) -> str:
+        ...
+
+    def get_output(self) -> bytes:
+        ...
+
+
+class Serializer(Protocol):
+    def serialize(self, obj: Any) -> str:
+        ...
+
+    def deserialize(self, raw: str) -> Any:
+        ...

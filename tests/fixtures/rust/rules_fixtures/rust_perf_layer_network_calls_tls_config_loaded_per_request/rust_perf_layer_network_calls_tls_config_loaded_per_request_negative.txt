@@ -1,0 +1,36 @@
+use rustls::{ClientConfig, RootCertStore};
+use std::sync::Arc;
+use tokio::sync::OnceCell;
+
+static TLS_CONFIG: OnceCell<Arc<ClientConfig>> = OnceCell::const_new();
+
+async fn get_tls_config() -> Arc<ClientConfig> {
+    TLS_CONFIG
+        .get_or_init(|| async {
+            // GOOD: TLS config built once, shared immutably
+            let mut root_store = RootCertStore::empty();
+            root_store.add_server_trust_anchors(
+                webpki_roots::TLS_SERVER_ROOTS.iter().map(|ta| {
+                    rustls::OwnedTrustAnchor::from_subject_spki_name_constraints(
+                        ta.subject,
+                        ta.spki,
+                        ta.name_constraints,
+                    )
+                }),
+            );
+            let config = ClientConfig::builder()
+                .with_safe_defaults()
+                .with_root_certificates(root_store)
+                .with_no_client_auth();
+            Arc::new(config)
+        })
+        .await
+        .clone()
+}
+
+async fn make_tls_request(url: &str) -> Result<String, Box<dyn std::error::Error>> {
+    let config = get_tls_config().await;
+    let connector = tokio_rustls::TlsConnector::from(config);
+    // ... make request ...
+    Ok("response".to_string())
+}

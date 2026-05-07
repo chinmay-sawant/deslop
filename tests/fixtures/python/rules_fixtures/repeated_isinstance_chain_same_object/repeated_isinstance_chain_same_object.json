@@ -1,0 +1,14 @@
+{
+  "id": "repeated_isinstance_chain_same_object",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same object goes through repeated isinstance(...) checks that could be consolidated.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

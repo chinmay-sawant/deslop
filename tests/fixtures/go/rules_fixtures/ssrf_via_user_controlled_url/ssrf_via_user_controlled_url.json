@@ -1,0 +1,14 @@
+{
+  "id": "ssrf_via_user_controlled_url",
+  "language": "go",
+  "family": "security",
+  "default_severity": "error",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`http.Get(userInput)` or `http.NewRequest(\"GET\", userInput, nil)` where the URL comes from request parameters",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

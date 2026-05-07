@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for background_jobs_registered_from_gin_packages_instead_of_bootstrap: Scheduler or worker registration hidden inside Gin transport packages.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule007NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule007NegativeService interface {
+	Run(context.Context, Rule007NegativeRecord) error
+}
+
+func scenario007Negative(ctx context.Context, service Rule007NegativeService, input Rule007NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

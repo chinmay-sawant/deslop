@@ -1,0 +1,14 @@
+{
+  "id": "namedtuple_used_where_dataclass_better_fits",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "collections.namedtuple used for a record that needs default values, mutation, or methods.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

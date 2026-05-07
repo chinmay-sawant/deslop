@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_error_handling_cost_panic_recover_for_control_flow",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag panic/recover used for expected branch control in performance-sensitive code.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

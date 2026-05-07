@@ -1,0 +1,33 @@
+from typing import Any
+import copy
+
+
+class UserCache:
+    def __init__(self):
+        self._cache: dict[str, dict] = {}
+
+    def get(self, user_id: str) -> dict | None:
+        if user_id in self._cache:
+            return copy.deepcopy(self._cache[user_id])
+        user = self._load(user_id)
+        if user is not None:
+            self._cache[user_id] = copy.deepcopy(user)
+        return user
+
+    def update(self, user_id: str, data: dict) -> dict:
+        user = self._load(user_id)
+        if user is None:
+            raise KeyError(f"User {user_id} not found")
+        user.update(data)
+        self._save(user_id, user)
+        self._cache[user_id] = copy.deepcopy(user)
+        return copy.deepcopy(user)
+
+    def invalidate(self, user_id: str) -> None:
+        self._cache.pop(user_id, None)
+
+    def _load(self, user_id: str) -> dict | None:
+        return {"id": user_id, "name": "Alice"}
+
+    def _save(self, user_id: str, data: dict) -> None:
+        pass

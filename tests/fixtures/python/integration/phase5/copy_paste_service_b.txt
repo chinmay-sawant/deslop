@@ -1,9 +1,0 @@
-def build_account(records):
-    output = []
-    for record in records:
-        cleaned = str(record).strip().lower()
-        if not cleaned:
-            continue
-        payload = {"value": cleaned, "length": len(cleaned)}
-        output.append(payload)
-    return output

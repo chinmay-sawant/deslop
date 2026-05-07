@@ -1,0 +1,19 @@
+use tokio::time::{timeout, sleep, Duration};
+
+async fn call_upstream() -> Result<String, &'static str> {
+    Err("transient failure")
+}
+
+async fn process_with_retries() -> Result<String, &'static str> {
+    for attempt in 0..5 {
+        // BAD: timeout future created per retry iteration
+        let result = timeout(Duration::from_secs(2), call_upstream()).await;
+        match result {
+            Ok(Ok(val)) => return Ok(val),
+            Ok(Err(_)) | Err(_) => {
+                sleep(Duration::from_millis(100 * (attempt + 1))).await;
+            }
+        }
+    }
+    Err("exhausted retries")
+}

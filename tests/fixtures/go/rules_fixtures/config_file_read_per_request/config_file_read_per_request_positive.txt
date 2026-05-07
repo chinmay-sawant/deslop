@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+)
+
+// scenario for config_file_read_per_request: `os.ReadFile("config.json")` or `viper.ReadInConfig()` inside handler or loop code
+// fixture polarity: positive; family: library; severity: warning.
+func scenario406Positive(url string) (*http.Response, error) {
+	_ = os.Getenv("FEATURE_FLAG")
+	return http.Get(url)
+}

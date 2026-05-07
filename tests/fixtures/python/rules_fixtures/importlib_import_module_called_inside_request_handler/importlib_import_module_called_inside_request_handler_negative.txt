@@ -1,0 +1,28 @@
+from fastapi import FastAPI
+import importlib
+
+app = FastAPI()
+
+PLUGIN_MODULES = {}
+REPORT_MODULES = {}
+
+
+@app.on_event("startup")
+async def load_plugins():
+    for name in ["auth", "analytics", "notifications"]:
+        PLUGIN_MODULES[name] = importlib.import_module(f"plugins.{name}")
+    for name in ["monthly", "weekly", "daily"]:
+        REPORT_MODULES[name] = importlib.import_module(f"reports.{name}")
+
+
+@app.get("/plugins/{plugin_name}")
+async def run_plugin(plugin_name: str):
+    module = PLUGIN_MODULES[plugin_name]
+    return module.execute()
+
+
+@app.get("/reports/{report_type}")
+async def generate_report(report_type: str):
+    mod = REPORT_MODULES[report_type]
+    data = mod.generate()
+    return {"report": report_type, "data": data}

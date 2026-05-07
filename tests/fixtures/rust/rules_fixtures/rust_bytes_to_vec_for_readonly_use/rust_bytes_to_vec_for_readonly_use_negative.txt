@@ -1,0 +1,13 @@
+fn parse_header(data: &[u8]) -> &[u8] {
+    &data[..8]
+}
+
+fn hash_content(content: &[u8]) -> [u8; 32] {
+    compute_hash(content)
+}
+
+fn compute_hash(_data: &[u8]) -> [u8; 32] { [0u8; 32] }
+
+fn extract_name(full: &[u8]) -> &str {
+    std::str::from_utf8(full).unwrap_or_default()
+}

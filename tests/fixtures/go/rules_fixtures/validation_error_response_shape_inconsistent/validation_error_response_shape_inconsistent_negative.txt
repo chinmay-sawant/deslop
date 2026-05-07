@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for validation_error_response_shape_inconsistent: Handlers in the same API module that emit different validation error contracts.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule216NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule216NegativeService interface {
+	Run(context.Context, Rule216NegativeRecord) error
+}
+
+func scenario216Negative(ctx context.Context, service Rule216NegativeService, input Rule216NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

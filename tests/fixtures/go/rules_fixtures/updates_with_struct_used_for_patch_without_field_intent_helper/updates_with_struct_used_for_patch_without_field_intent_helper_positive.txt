@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for updates_with_struct_used_for_patch_without_field_intent_helper: PATCH-style repository writes that rely on struct zero-value semantics without explicit field intent.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule214PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario214Positive(w http.ResponseWriter, r *http.Request, repo Rule214PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

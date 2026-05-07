@@ -1,0 +1,25 @@
+import re
+
+LOG_PATTERN = re.compile(r"^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) \[(\w+)\] (.+)$")
+INPUT_PATTERN = re.compile(r"^[a-zA-Z0-9_]{3,50}$")
+FIELD_PATTERN = re.compile(r"\{\{(\w+)\}\}")
+
+
+def parse_log_line(line: str) -> dict:
+    match = LOG_PATTERN.match(line)
+    if match:
+        return {
+            "date": match.group(1),
+            "time": match.group(2),
+            "level": match.group(3),
+            "message": match.group(4),
+        }
+    return {}
+
+
+def validate_input(value: str) -> bool:
+    return bool(INPUT_PATTERN.match(value))
+
+
+def extract_fields(text: str) -> list[str]:
+    return FIELD_PATTERN.findall(text)

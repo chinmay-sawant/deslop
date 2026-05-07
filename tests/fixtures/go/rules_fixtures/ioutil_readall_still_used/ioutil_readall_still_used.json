@@ -1,0 +1,14 @@
+{
+  "id": "ioutil_readall_still_used",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`ioutil.ReadAll` usage when `io.ReadAll` is available (Go 1.16+)",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

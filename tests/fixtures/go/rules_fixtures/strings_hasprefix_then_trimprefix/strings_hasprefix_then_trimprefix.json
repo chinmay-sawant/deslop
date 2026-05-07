@@ -1,0 +1,14 @@
+{
+  "id": "strings_hasprefix_then_trimprefix",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`if strings.HasPrefix(s, p) { s = strings.TrimPrefix(s, p) }`",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

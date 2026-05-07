@@ -1,0 +1,8 @@
+package rulefixtures
+
+// scenario for public_bool_parameter_api: Exported functions or methods that expose raw boolean mode switches in their signatures.
+// fixture polarity: positive; family: idioms; severity: info.
+func Scenario390(userID string, force bool) string {
+	if force { return userID + ":forced" }
+	return userID
+}

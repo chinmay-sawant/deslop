@@ -1,0 +1,34 @@
+from typing import Dict, Any
+
+class UserService:
+    def __init__(self, api_url: str, analytics: Any, cache: Any) -> None:
+        self.api_url = api_url
+        self.analytics = analytics
+        self.cache = cache
+
+    def get_user(self, user_id: int) -> dict:
+        import requests
+        response = requests.get(f"{self.api_url}/users/{user_id}", timeout=30)
+        return response.json()
+
+class Analytics:
+    def track(self, event: str, data: dict) -> None:
+        import requests
+        requests.post("https://analytics.example.com/events", json={
+            "event": event,
+            "data": data,
+        }, timeout=10)
+
+class Cache:
+    def __init__(self, redis_url: str) -> None:
+        import redis
+        self.client = redis.from_url(redis_url)
+
+    def get(self, key: str) -> Any:
+        return self.client.get(key)
+
+    def set(self, key: str, value: Any, ttl: int = 3600) -> None:
+        self.client.set(key, value, ex=ttl)
+
+def calculate_shipping(weight: float, rate: float, tax_rate: float) -> float:
+    return weight * rate * (1 + tax_rate)

@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"sort"
+)
+
+// scenario for sort_slice_vs_sort_sort: `sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types
+// fixture polarity: positive; family: performance; severity: info.
+func scenario640Positive(values []string) string {
+	for range values {
+		sort.Sort(sort.StringSlice(values))
+	}
+	if len(values) == 0 { return "" }
+	return values[0]
+}

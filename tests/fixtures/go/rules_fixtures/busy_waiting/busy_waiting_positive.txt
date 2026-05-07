@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for busy_waiting: select { default: ... } inside loops, which often spins instead of blocking.
+// fixture polarity: positive; family: context; severity: contextual.
+func scenario232Positive(url string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return http.DefaultClient.Do(req)
+}

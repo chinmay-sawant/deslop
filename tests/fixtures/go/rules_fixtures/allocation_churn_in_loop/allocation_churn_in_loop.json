@@ -1,0 +1,14 @@
+{
+  "id": "allocation_churn_in_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Obvious make, new, or buffer-construction calls inside loops.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

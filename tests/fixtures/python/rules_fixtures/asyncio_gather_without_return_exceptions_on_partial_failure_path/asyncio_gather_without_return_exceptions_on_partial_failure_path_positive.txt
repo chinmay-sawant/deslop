@@ -1,0 +1,23 @@
+import asyncio
+
+
+async def fetch_all_user_data(user_ids: list) -> list:
+    tasks = [fetch_user_data(uid) for uid in user_ids]
+    results = await asyncio.gather(*tasks)
+    return results
+
+
+async def process_batch(items: list):
+    tasks = [process_item(item) for item in items]
+    results = await asyncio.gather(*tasks)
+    return results
+
+
+async def notify_all_users(user_ids: list, message: str):
+    tasks = [send_notification(uid, message) for uid in user_ids]
+    await asyncio.gather(*tasks)
+
+
+async def sync_all_products(product_ids: list):
+    tasks = [sync_product(pid) for pid in product_ids]
+    await asyncio.gather(*tasks)

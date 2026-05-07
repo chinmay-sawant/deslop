@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_framework_performance_gorm_preload_all_associations",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag GORM Preload of broad association sets on list endpoints.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

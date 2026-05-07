@@ -1,0 +1,30 @@
+use anyhow::{anyhow, Result};
+use std::io;
+
+fn handle_request(raw: &[u8]) -> Result<Response> {
+    let req = parse_request(raw).map_err(|e| anyhow!("request failed: {e}"))?;
+    match process(req) {
+        Ok(resp) => Ok(resp),
+        Err(e) => {
+            if e.downcast_ref::<TimeoutError>().is_some() {
+                Err(anyhow!("service timeout"))
+            } else if e.downcast_ref::<io::Error>().is_some() {
+                Err(anyhow!("io failure"))
+            } else {
+                Err(anyhow!("unknown error"))
+            }
+        }
+    }
+}
+
+fn parse_request(_raw: &[u8]) -> Result<Request> {
+    todo!()
+}
+
+fn process(_req: Request) -> Result<Response> {
+    todo!()
+}
+
+struct Request;
+struct Response;
+struct TimeoutError;

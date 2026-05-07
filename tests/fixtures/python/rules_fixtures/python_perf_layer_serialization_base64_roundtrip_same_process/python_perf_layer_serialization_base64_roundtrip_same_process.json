@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_serialization_base64_roundtrip_same_process",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside one process boundary.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

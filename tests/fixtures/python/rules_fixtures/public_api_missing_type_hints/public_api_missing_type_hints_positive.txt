@@ -1,0 +1,25 @@
+def calculate_total(items):
+    return sum(item["price"] for item in items)
+
+
+def find_user(users, name):
+    for user in users:
+        if user["name"] == name:
+            return user
+    return None
+
+
+def process_batch(records, batch_size):
+    results = []
+    for i in range(0, len(records), batch_size):
+        batch = records[i:i + batch_size]
+        results.extend(batch)
+    return results
+
+
+class UserService:
+    def get_by_id(self, user_id):
+        return {}
+
+    def create(self, data):
+        return data

@@ -1,0 +1,14 @@
+{
+  "id": "service_method_returns_map_string_any_output",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Services that return dynamic maps instead of typed result contracts.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,7 +1,0 @@
-import requests
-
-
-def sync_reports(url, session):
-    response = requests.get(url)
-    response.raise_for_status()
-    return session.render(response.text)

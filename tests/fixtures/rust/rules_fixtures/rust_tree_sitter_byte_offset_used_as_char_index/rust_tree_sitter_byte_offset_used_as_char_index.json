@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_byte_offset_used_as_char_index",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag byte offsets from `start_byte` or `end_byte` used as character counts, `chars().nth(...)`, or display-column positions without conversion.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

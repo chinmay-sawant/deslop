@@ -1,0 +1,26 @@
+use std::collections::VecDeque;
+
+fn remove_zeros(data: &mut Vec<i32>) {
+    data.retain(|x| *x != 0);
+}
+
+fn pop_front_items(queue: &mut VecDeque<String>) -> Vec<String> {
+    let mut result = Vec::new();
+    while let Some(item) = queue.pop_front() {
+        result.push(item);
+    }
+    result
+}
+
+fn drain_matching(data: &mut Vec<u64>, threshold: u64) {
+    data.retain(|x| *x >= threshold);
+}
+
+fn process_queue(items: &mut VecDeque<WorkItem>) {
+    while let Some(item) = items.pop_front() {
+        process_item(item);
+    }
+}
+
+struct WorkItem { id: u64 }
+fn process_item(_item: WorkItem) {}

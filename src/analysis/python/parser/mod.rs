@@ -5,9 +5,8 @@ mod hotpath;
 mod hotpath_ext;
 mod performance;
 mod phase4;
-#[cfg(test)]
-mod tests;
 
+use std::cell::RefCell;
 use std::path::Path;
 
 use tree_sitter::Parser;
@@ -24,15 +23,16 @@ use self::general::{
     module_name_for_path,
 };
 
-pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
-    let mut parser = Parser::new();
-    parser
-        .set_language(&tree_sitter_python::LANGUAGE.into())
-        .map_err(|error| Error::parser_configuration("Python", error.to_string()))?;
+thread_local! {
+    static PYTHON_PARSER: RefCell<Option<Parser>> = const { RefCell::new(None) };
+}
 
-    let tree = parser
-        .parse(source, None)
-        .ok_or_else(|| Error::missing_parse_tree("Python"))?;
+pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
+    let tree = with_python_parser(|parser| {
+        parser
+            .parse(source, None)
+            .ok_or_else(|| Error::missing_parse_tree("Python"))
+    })?;
 
     let root = tree.root_node();
     let is_test_file = is_test_file(path);
@@ -68,6 +68,30 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
             class_summaries,
             python_models,
         }),
+    })
+}
+
+fn with_python_parser<T>(
+    action: impl FnOnce(&mut Parser) -> AnalysisResult<T>,
+) -> AnalysisResult<T> {
+    PYTHON_PARSER.with(|parser_cell| {
+        let mut parser_slot = parser_cell.borrow_mut();
+        if parser_slot.is_none() {
+            let mut parser = Parser::new();
+            parser
+                .set_language(&tree_sitter_python::LANGUAGE.into())
+                .map_err(|error| Error::parser_configuration("Python", error.to_string()))?;
+            *parser_slot = Some(parser);
+        }
+
+        let Some(parser) = parser_slot.as_mut() else {
+            return Err(Error::parser_configuration(
+                "Python",
+                "thread-local parser cache was not initialized",
+            ));
+        };
+
+        action(parser)
     })
 }
 

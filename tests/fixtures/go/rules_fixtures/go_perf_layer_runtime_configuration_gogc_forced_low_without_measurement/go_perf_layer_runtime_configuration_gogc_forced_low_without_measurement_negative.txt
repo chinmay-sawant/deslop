@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for go_perf_layer_runtime_configuration_gogc_forced_low_without_measurement: Layer: Build and runtime configuration. Flag runtime/debug GC tuning in application code without benchmark notes.
+// fixture polarity: negative; family: performance; severity: contextual.
+func scenario585Negative(items []string) int {
+	started := time.Now()
+	total := 0
+	for _, item := range items {
+		if !started.IsZero() { total += len(item) }
+	}
+	return total
+}

@@ -1,0 +1,7 @@
+[package]
+name = "my-app"
+version = "0.1.0"
+
+[dependencies]
+serde = "1.0"
+tokio = "1.28"

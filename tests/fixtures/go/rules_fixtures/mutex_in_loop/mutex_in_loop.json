@@ -1,0 +1,14 @@
+{
+  "id": "mutex_in_loop",
+  "language": "go",
+  "family": "concurrency",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated Lock or RLock acquisition inside loops.",
+  "binding_location": "src/heuristics/go/concurrency.rs"
+}

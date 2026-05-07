@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_lazy_loading_lazy_once_hides_slow_first_request: Layer: Lazy loading. Flag sync.Once lazy initialization on request paths without warmup or latency accounting.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule558PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario558Positive(records []Rule558PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

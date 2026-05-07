@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for many_column_or_filter_chain: Query chains with many OR filter conditions that often scale poorly.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule274NegativeRecord struct { ID int }
+
+func scenario274Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule274NegativeRecord{}).Error
+}

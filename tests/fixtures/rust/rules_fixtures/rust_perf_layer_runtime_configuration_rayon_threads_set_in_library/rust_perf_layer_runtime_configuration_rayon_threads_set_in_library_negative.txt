@@ -1,0 +1,23 @@
+use rayon::ThreadPool;
+
+// GOOD: library accepts host-provided pool or uses the global default
+pub struct Processor {
+    pool: Option<ThreadPool>,
+}
+
+impl Processor {
+    pub fn new() -> Self {
+        Self { pool: None }
+    }
+
+    pub fn with_pool(pool: ThreadPool) -> Self {
+        Self { pool: Some(pool) }
+    }
+
+    pub fn process_data(&self, data: &[u8]) -> Vec<u8> {
+        match &self.pool {
+            Some(pool) => pool.install(|| data.par_iter().map(|b| b.wrapping_add(1)).collect()),
+            None => data.par_iter().map(|b| b.wrapping_add(1)).collect(),
+        }
+    }
+}

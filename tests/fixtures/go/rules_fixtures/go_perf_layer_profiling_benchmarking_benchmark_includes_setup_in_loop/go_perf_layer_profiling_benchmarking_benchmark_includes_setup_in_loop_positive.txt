@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_profiling_benchmarking_benchmark_includes_setup_in_loop: Layer: Profiling and benchmarking. Flag Go benchmarks that perform setup inside the timed loop without ResetTimer.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule574PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario574Positive(records []Rule574PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

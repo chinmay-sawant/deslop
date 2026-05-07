@@ -1,0 +1,26 @@
+def analyze_scores(students):
+    total = 0
+    maximum = float("-inf")
+    minimum = float("inf")
+    passing = 0
+
+    for s in students:
+        score = s["score"]
+        total += score
+        if score > maximum:
+            maximum = score
+        if score < minimum:
+            minimum = score
+        if score >= 60:
+            passing += 1
+
+    average = total / len(students)
+    above_avg = sum(1 for s in students if s["score"] > average)
+
+    return {
+        "average": average,
+        "max": maximum,
+        "min": minimum,
+        "above_average": above_avg,
+        "passing": passing,
+    }

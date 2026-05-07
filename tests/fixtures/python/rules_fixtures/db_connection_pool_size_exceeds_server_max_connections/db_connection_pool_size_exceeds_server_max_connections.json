@@ -1,0 +1,14 @@
+{
+  "id": "db_connection_pool_size_exceeds_server_max_connections",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Database connection pool max_overflow or pool_size configured above the database server's max_connections.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

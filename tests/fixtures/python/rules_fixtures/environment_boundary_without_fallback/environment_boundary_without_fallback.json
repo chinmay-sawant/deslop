@@ -1,0 +1,14 @@
+{
+  "id": "environment_boundary_without_fallback",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Environment-variable lookups that omit a default value or explicit failure handler.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

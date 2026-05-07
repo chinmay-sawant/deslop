@@ -1,0 +1,28 @@
+# app/config.py
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret")
+JWT_EXPIRY = int(os.environ.get("JWT_EXPIRY", "3600"))
+
+
+# app/database.py
+from app.config import DATABASE_URL
+
+
+def get_engine():
+    from sqlalchemy import create_engine
+    return create_engine(DATABASE_URL)
+
+
+# app/auth.py
+from app.config import JWT_EXPIRY, SECRET_KEY
+
+
+def create_token(payload: dict) -> str:
+    import jwt
+    return jwt.encode(payload, SECRET_KEY, algorithm="HS256")

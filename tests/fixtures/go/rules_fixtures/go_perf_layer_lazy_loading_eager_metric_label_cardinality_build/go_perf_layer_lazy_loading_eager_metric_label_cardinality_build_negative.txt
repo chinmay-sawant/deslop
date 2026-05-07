@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_lazy_loading_eager_metric_label_cardinality_build: Layer: Lazy loading. Flag eager construction of high-cardinality metric labels before the metric is emitted.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule556NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario556Negative(records []Rule556NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

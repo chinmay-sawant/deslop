@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for gin_handler_returns_multiple_response_shapes: Handlers that manually build several unrelated success payload shapes instead of delegating to clearer endpoints or render helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule047PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario047Positive(w http.ResponseWriter, r *http.Request, repo Rule047PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

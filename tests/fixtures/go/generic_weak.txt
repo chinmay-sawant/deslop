@@ -1,5 +1,0 @@
-package sample
-
-func convertPayload(payload any) any {
-	return payload
-}

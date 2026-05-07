@@ -1,0 +1,13 @@
+// Cargo.toml
+// BAD: performance claims without benchmark evidence
+// [profile.release]
+// lto = "fat"
+// codegen-units = 1
+// "Enabling LTO gives us 40% faster serialization"
+// "codegen-units=1 ensures maximum optimization for our hot paths"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+opt-level = 3
+strip = true

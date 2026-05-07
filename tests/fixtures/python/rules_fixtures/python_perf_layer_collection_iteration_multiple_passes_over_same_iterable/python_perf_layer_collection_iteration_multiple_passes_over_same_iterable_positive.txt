@@ -1,0 +1,20 @@
+def analyze_data(items: list[dict]) -> dict:
+    total = sum(item["value"] for item in items)
+    count = len(items)
+    avg = total / count if count else 0
+
+    max_val = max(item["value"] for item in items)
+    min_val = min(item["value"] for item in items)
+
+    above_avg = sum(1 for item in items if item["value"] > avg)
+
+    return {"total": total, "avg": avg, "max": max_val, "min": min_val, "above_avg": above_avg}
+
+
+def process_orders(orders: list) -> dict:
+    revenue = sum(o.amount for o in orders)
+    tax = sum(o.tax for o in orders)
+    count = len(orders)
+    avg_amount = revenue / count if count else 0
+    high_value = sum(1 for o in orders if o.amount > 1000)
+    return {"revenue": revenue, "tax": tax, "avg": avg_amount, "high_value": high_value}

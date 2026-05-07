@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+)
+
+// scenario for json_valid_then_unmarshal: Code that validates JSON and then unmarshals the same payload again.
+// fixture polarity: negative; family: performance; severity: info.
+type Rule610NegativeRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario610Negative(writer io.Writer, value Rule610NegativeRecord) error {
+	return json.NewEncoder(writer).Encode(value)
+}

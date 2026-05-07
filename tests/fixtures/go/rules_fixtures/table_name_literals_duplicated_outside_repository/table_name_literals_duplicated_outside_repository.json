@@ -1,0 +1,14 @@
+{
+  "id": "table_name_literals_duplicated_outside_repository",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated table-name strings across handlers, services, and jobs.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

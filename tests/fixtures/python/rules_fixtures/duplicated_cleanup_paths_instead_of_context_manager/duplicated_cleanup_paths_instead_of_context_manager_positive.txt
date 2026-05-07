@@ -1,0 +1,48 @@
+import tempfile
+import os
+
+
+def process_upload(file_data: bytes) -> str:
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".csv")
+    try:
+        tmp.write(file_data)
+        tmp.flush()
+        tmp.close()
+        result = parse_csv(tmp.name)
+    except Exception as e:
+        if os.path.exists(tmp.name):
+            os.unlink(tmp.name)
+        raise
+    os.unlink(tmp.name)
+    return result
+
+
+def generate_report(data: dict) -> str:
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+    try:
+        tmp.write(str(data).encode())
+        tmp.flush()
+        tmp.close()
+        result = render_pdf(tmp.name)
+    except Exception as e:
+        if os.path.exists(tmp.name):
+            os.unlink(tmp.name)
+        raise
+    os.unlink(tmp.name)
+    return result
+
+
+def export_snapshot(records: list) -> str:
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+    try:
+        import json
+        tmp.write(json.dumps(records).encode())
+        tmp.flush()
+        tmp.close()
+        result = upload_to_s3(tmp.name)
+    except Exception as e:
+        if os.path.exists(tmp.name):
+            os.unlink(tmp.name)
+        raise
+    os.unlink(tmp.name)
+    return result

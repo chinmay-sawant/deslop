@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for shared_gorm_db_state_mutated_and_reused_across_requests: Code that mutates shared `*gorm.DB` state and reuses it as if it were immutable configuration.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule185NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule185NegativeService interface {
+	Run(context.Context, Rule185NegativeRecord) error
+}
+
+func scenario185Negative(ctx context.Context, service Rule185NegativeService, input Rule185NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

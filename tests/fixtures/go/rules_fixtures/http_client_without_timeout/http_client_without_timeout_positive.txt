@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for http_client_without_timeout: Local http.Client{} literals constructed without an explicit timeout.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario380Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

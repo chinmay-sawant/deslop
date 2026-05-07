@@ -1,0 +1,30 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+def process_orders(orders):
+    results = []
+    for order in orders:
+        total = calculate_total(order)
+        logger.debug(
+            "Order %s: customer=%s items=%d total=%.2f status=%s",
+            order["id"],
+            order["customer"],
+            len(order["items"]),
+            total,
+            order["status"],
+        )
+        results.append(total)
+    return results
+
+def sync_users(users):
+    for user in users:
+        logger.info(
+            "Syncing user id=%s name=%s email=%s role=%s last_login=%s",
+            user.id,
+            user.name,
+            user.email,
+            user.role,
+            user.last_login,
+        )
+        update_remote(user)

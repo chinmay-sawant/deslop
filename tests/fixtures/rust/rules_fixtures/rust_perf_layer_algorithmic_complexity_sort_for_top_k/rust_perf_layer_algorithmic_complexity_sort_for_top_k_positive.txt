@@ -1,0 +1,4 @@
+fn top_k(values: &mut Vec<u64>, k: usize) -> Vec<u64> {
+    values.sort_unstable();
+    values.iter().rev().take(k).copied().collect()
+}

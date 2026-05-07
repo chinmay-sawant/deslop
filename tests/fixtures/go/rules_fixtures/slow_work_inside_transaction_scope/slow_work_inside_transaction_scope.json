@@ -1,0 +1,14 @@
+{
+  "id": "slow_work_inside_transaction_scope",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Loop-heavy or slow work performed while a transaction appears open.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

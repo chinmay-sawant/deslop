@@ -1,0 +1,41 @@
+fn build_csv_row(fields: &[&str]) -> String {
+    let mut row = String::new();
+    for (i, field) in fields.iter().enumerate() {
+        if i > 0 {
+            row.push(',');
+        }
+        row.push_str(field);
+    }
+    row
+}
+
+fn format_query_params(pairs: &[(&str, &str)]) -> String {
+    let mut query = String::new();
+    for (i, (key, value)) in pairs.iter().enumerate() {
+        if i > 0 {
+            query.push('&');
+        }
+        query.push_str(key);
+        query.push('=');
+        query.push_str(value);
+    }
+    query
+}
+
+fn build_log_line(parts: &[String]) -> String {
+    let mut line = String::new();
+    for part in parts {
+        line.push_str("[");
+        line.push_str(part);
+        line.push_str("] ");
+    }
+    line
+}
+
+fn repeat_char(ch: char, count: usize) -> String {
+    let mut s = String::new();
+    for _ in 0..count {
+        s.push(ch);
+    }
+    s
+}

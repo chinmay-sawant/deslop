@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for dropped_error: Blank identifier assignments that discard an err-like value.
+// fixture polarity: negative; family: errors; severity: warning.
+func scenario304Negative(err error) error {
+	if err != nil { return fmt.Errorf("operation failed: %w", err) }
+	return nil
+}

@@ -1,0 +1,40 @@
+use tokio::sync::{mpsc, oneshot};
+use std::sync::Arc;
+
+struct Server {
+    db: Arc<Db>,
+    event_tx: mpsc::Sender<Event>,
+}
+
+impl Server {
+    fn new(db: Arc<Db>) -> Self {
+        let (event_tx, event_rx) = mpsc::channel(256);
+        let db_clone = db.clone();
+        tokio::spawn(collect_events(db_clone, event_rx));
+        Self { db, event_tx }
+    }
+
+    async fn handle_request(&self, req: Request) -> Response {
+        let result = process_request(&self.db, &req, &self.event_tx).await;
+        Response { body: result }
+    }
+}
+
+async fn process_request(
+    _db: &Arc<Db>,
+    _req: &Request,
+    _events: &mpsc::Sender<Event>,
+) -> String {
+    todo!()
+}
+
+async fn collect_events(_db: Arc<Db>, mut rx: mpsc::Receiver<Event>) {
+    while let Some(_event) = rx.recv().await {
+        // process event
+    }
+}
+
+struct Request { body: String }
+struct Response { body: String }
+struct Db;
+struct Event;

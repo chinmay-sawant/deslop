@@ -1,0 +1,14 @@
+{
+  "id": "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag operations that are named inconsistently across observability surfaces.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

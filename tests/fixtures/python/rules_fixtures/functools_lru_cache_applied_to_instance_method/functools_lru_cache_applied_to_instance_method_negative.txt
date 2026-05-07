@@ -1,0 +1,23 @@
+import functools
+
+@functools.lru_cache(maxsize=128)
+def get_schema(table_name):
+    return _fetch_schema_from_db(table_name)
+
+@functools.lru_cache(maxsize=64)
+def compute_hash(data_block):
+    return hashlib.sha256(data_block.encode()).hexdigest()
+
+@functools.lru_cache(maxsize=32)
+def get_user_permissions(user_id):
+    return _query_permissions(user_id)
+
+class DataProcessor:
+    def __init__(self, config):
+        self.config = config
+        self._results = []
+
+    def process(self, table_name, user_id):
+        schema = get_schema(table_name)
+        permissions = get_user_permissions(user_id)
+        return {"schema": schema, "permissions": permissions}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for transport_tests_bypass_service_interface_and_touch_repo_directly: Transport tests that skip the service seam and assert repository behavior.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule212PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario212Positive(w http.ResponseWriter, r *http.Request, repo Rule212PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

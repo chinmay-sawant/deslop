@@ -1,0 +1,19 @@
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum ApiError {
+    #[error("request failed: {0}")]
+    RequestFailed(String),
+
+    #[error("invalid response: {0}")]
+    InvalidResponse(String),
+
+    #[error("parse error: {0}")]
+    ParseError(String),
+
+    #[error("config error: {0}")]
+    ConfigError(String),
+
+    #[error("connection error: {0}")]
+    ConnectionError(String),
+}

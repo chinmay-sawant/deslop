@@ -1,0 +1,22 @@
+from datetime import datetime
+
+LOG_FMT = "%Y-%m-%d %H:%M:%S"
+
+
+def _parse_ts(raw):
+    return datetime.strptime(raw, LOG_FMT)
+
+
+def parse_log_entry(line):
+    parts = line.split(" | ")
+    return {"timestamp": _parse_ts(parts[0]), "message": parts[1]}
+
+
+def parse_access_log(line):
+    fields = line.split(",")
+    return {"timestamp": _parse_ts(fields[0]), "ip": fields[1], "path": fields[2]}
+
+
+def parse_audit_record(line):
+    segments = line.split(";")
+    return {"timestamp": _parse_ts(segments[0]), "user": segments[1], "action": segments[2]}

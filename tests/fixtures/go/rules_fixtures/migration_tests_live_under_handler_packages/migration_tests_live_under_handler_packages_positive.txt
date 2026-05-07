@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for migration_tests_live_under_handler_packages: Migration-specific tests located in transport packages.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule096PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario096Positive(w http.ResponseWriter, r *http.Request, repo Rule096PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

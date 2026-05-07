@@ -1,0 +1,14 @@
+{
+  "id": "ent_open_per_request",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "ent clients opened directly inside request handlers instead of shared startup wiring.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

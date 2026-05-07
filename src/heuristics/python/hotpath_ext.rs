@@ -333,9 +333,7 @@ pub(super) fn nested_list_search_findings(
         }
 
         if trimmed.starts_with("for ") && trimmed.ends_with(':') {
-            if !loop_stack.is_empty()
-                && nested_lookup_condition_after(&lines, index, indent)
-            {
+            if !loop_stack.is_empty() && nested_lookup_condition_after(&lines, index, indent) {
                 findings.push(Finding {
                     rule_id: "nested_list_search_map_candidate".to_string(),
                     severity: Severity::Info,
@@ -523,9 +521,8 @@ pub(super) fn repeated_format_findings(
             let trimmed = line.trim();
             let (name, value) = trimmed.split_once('=')?;
             let value = value.trim();
-            ((value.starts_with('"') || value.starts_with('\''))
-                && value.contains("{}"))
-            .then(|| name.trim().to_string())
+            ((value.starts_with('"') || value.starts_with('\'')) && value.contains("{}"))
+                .then(|| name.trim().to_string())
         })
         .collect::<std::collections::BTreeSet<_>>();
     for (i, line) in body.lines().enumerate() {
@@ -1064,9 +1061,7 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if has_invariant_template_reformatting(body)
-        && function.fingerprint.line_count >= 12
-    {
+    if has_invariant_template_reformatting(body) && function.fingerprint.line_count >= 12 {
         findings.push(push(
             "invariant_template_or_prefix_string_reformatted_inside_loop",
             format!(
@@ -1129,7 +1124,7 @@ fn has_invariant_template_reformatting(body: &str) -> bool {
             let value = value.trim();
             ((value.starts_with('"') || value.starts_with('\''))
                 && (value.contains("{}") || value.len() >= 12))
-            .then(|| name.trim().to_string())
+                .then(|| name.trim().to_string())
         })
         .collect::<std::collections::BTreeSet<_>>();
 

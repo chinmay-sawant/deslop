@@ -1,0 +1,14 @@
+{
+  "id": "client_input_error_mapped_to_internal_server_error",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request parsing or binding errors that are translated into `500` responses instead of client-error status codes.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

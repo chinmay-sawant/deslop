@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for audit_logging_executed_in_handler_before_service_success: Audit writes that happen before the service has confirmed success.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule004PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario004Positive(w http.ResponseWriter, r *http.Request, repo Rule004PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

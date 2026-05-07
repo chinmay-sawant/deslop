@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_serialization_gzip_compress_tiny_payloads",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag gzip compression of tiny payloads where CPU overhead can exceed transfer savings.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

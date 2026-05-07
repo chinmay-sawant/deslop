@@ -1,0 +1,38 @@
+use std::sync::OnceLock;
+
+struct Model {
+    weights: Vec<f64>,
+    name: String,
+}
+
+fn load_model(name: &str) -> Model {
+    Model {
+        weights: vec![0.0; 1_000_000],
+        name: name.to_string(),
+    }
+}
+
+struct App {
+    sentiment_model: OnceLock<Model>,
+    translation_model: OnceLock<Model>,
+    summarization_model: OnceLock<Model>,
+}
+
+impl App {
+    fn new() -> Self {
+        // GOOD: models loaded on first use
+        Self {
+            sentiment_model: OnceLock::new(),
+            translation_model: OnceLock::new(),
+            summarization_model: OnceLock::new(),
+        }
+    }
+
+    fn get_sentiment_model(&self) -> &Model {
+        self.sentiment_model.get_or_init(|| load_model("sentiment"))
+    }
+
+    fn get_translation_model(&self) -> &Model {
+        self.translation_model.get_or_init(|| load_model("translation"))
+    }
+}

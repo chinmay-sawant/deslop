@@ -1,0 +1,21 @@
+import httpx
+from fastapi import FastAPI, Query
+
+app = FastAPI()
+
+ALLOWED_HOSTS = ["api.example.com", "cdn.example.com"]
+
+
+@app.get("/fetch")
+async def fetch_resource(url: str = Query(...)):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        return response.json()
+
+
+@app.get("/proxy")
+async def proxy_request(host: str = Query(...), path: str = Query(...)):
+    target_url = f"https://{host}/{path}"
+    async with httpx.AsyncClient() as client:
+        response = await client.get(target_url)
+        return response.text

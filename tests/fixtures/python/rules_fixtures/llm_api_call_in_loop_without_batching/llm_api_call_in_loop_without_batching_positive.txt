@@ -1,0 +1,40 @@
+import openai
+
+
+def summarize_documents(docs: list[str]) -> list[str]:
+    client = openai.OpenAI()
+    summaries = []
+    for doc in docs:
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": f"Summarize: {doc}"}],
+        )
+        summaries.append(response.choices[0].message.content)
+    return summaries
+
+
+def classify_reviews(reviews: list[str]) -> list[str]:
+    client = openai.OpenAI()
+    labels = []
+    for review in reviews:
+        resp = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": f"Classify: {review}"}],
+        )
+        labels.append(resp.choices[0].message.content)
+    return labels
+
+
+def translate_batch(texts: list[str], target_lang: str) -> list[str]:
+    client = openai.OpenAI()
+    results = []
+    for text in texts:
+        completion = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": f"Translate to {target_lang}"},
+                {"role": "user", "content": text},
+            ],
+        )
+        results.append(completion.choices[0].message.content)
+    return results

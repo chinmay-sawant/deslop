@@ -1,0 +1,25 @@
+use futures::future::FutureExt;
+use tokio::pin;
+use tokio::select;
+
+async fn run_loop(rx: &mut tokio::sync::mpsc::Receiver<Msg>, interval: &mut tokio::time::Interval) {
+    loop {
+        let recv_fut = rx.recv().fuse();
+        let tick_fut = interval.tick().fuse();
+        pin!(recv_fut);
+        pin!(tick_fut);
+        select! {
+            Some(m) = recv_fut => {
+                handle_message(m).await;
+            }
+            _ = tick_fut => {
+                heartbeat().await;
+            }
+            else => break,
+        }
+    }
+}
+
+async fn handle_message(_msg: Msg) { todo!() }
+async fn heartbeat() { todo!() }
+enum Msg { Ping, Shutdown }

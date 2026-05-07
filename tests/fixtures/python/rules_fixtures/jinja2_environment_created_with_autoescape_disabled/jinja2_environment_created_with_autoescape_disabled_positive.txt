@@ -1,0 +1,18 @@
+from jinja2 import Environment, FileSystemLoader
+
+
+def create_template_env(template_dir: str) -> Environment:
+    loader = FileSystemLoader(template_dir)
+    return Environment(loader=loader, autoescape=False)
+
+
+def render_user_profile(user: dict) -> str:
+    env = Environment(autoescape=False)
+    template = env.from_string("<h1>{{ user.name }}</h1><p>{{ user.bio }}</p>")
+    return template.render(user=user)
+
+
+def build_email_body(context: dict) -> str:
+    env = Environment(loader=FileSystemLoader("templates"))
+    template = env.get_template("email.html")
+    return template.render(**context)

@@ -1,6 +1,0 @@
-
-def recover_config():
-    try:
-        return read_config()
-    except ValueError:
-        return default_config()

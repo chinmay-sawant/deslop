@@ -1,0 +1,24 @@
+#[derive(Clone)]
+struct LargePayload {
+    buffer: Vec<u8>,
+    metadata: Vec<String>,
+    tags: Vec<String>,
+}
+
+#[derive(Debug)]
+enum AppError {
+    ValidationFailed { context: String, payload: LargePayload },
+    IoError(std::io::Error),
+}
+
+fn validate_payload(payload: &LargePayload) -> Result<(), AppError> {
+    if payload.buffer.is_empty() {
+        // BAD: clones large payload just for error context string
+        let cloned = payload.clone();
+        return Err(AppError::ValidationFailed {
+            context: format!("empty buffer, metadata={:?}", cloned.metadata),
+            payload: cloned,
+        });
+    }
+    Ok(())
+}

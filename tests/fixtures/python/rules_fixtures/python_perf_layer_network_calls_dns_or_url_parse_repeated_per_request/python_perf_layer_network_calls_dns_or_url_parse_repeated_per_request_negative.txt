@@ -1,0 +1,19 @@
+import requests
+from urllib.parse import urlparse
+
+class WebhookClient:
+    def __init__(self, base_url):
+        parsed = urlparse(base_url)
+        self.base_url = base_url
+        self.netloc = parsed.netloc
+        self.scheme = parsed.scheme
+        self.headers = {"Host": parsed.netloc, "Content-Type": "application/json"}
+
+    def send(self, payload):
+        response = requests.post(self.base_url, json=payload, headers=self.headers)
+        return response.status_code
+
+    def check_health(self):
+        health_url = f"{self.scheme}://{self.netloc}/health"
+        response = requests.get(health_url)
+        return response.status_code == 200

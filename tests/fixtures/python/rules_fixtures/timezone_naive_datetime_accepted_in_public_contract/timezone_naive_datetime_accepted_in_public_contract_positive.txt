@@ -1,0 +1,32 @@
+from datetime import datetime
+
+class EventScheduler:
+    def schedule(self, name: str, start: datetime, end: datetime) -> dict:
+        if end <= start:
+            raise ValueError("end must be after start")
+        return {"name": name, "start": start, "end": end}
+
+    def find_events(self, after: datetime, before: datetime) -> list[dict]:
+        return [e for e in self._events if after <= e["start"] <= before]
+
+class ReportService:
+    def generate(self, from_date: datetime, to_date: datetime) -> dict:
+        return {"from": from_date.isoformat(), "to": to_date.isoformat()}
+
+    def daily_summary(self, date: datetime) -> dict:
+        return {"date": date.strftime("%Y-%m-%d"), "count": 0}
+
+class BookingAPI:
+    def create_booking(
+        self,
+        user_id: str,
+        start_time: datetime,
+        end_time: datetime,
+        room_id: str,
+    ) -> dict:
+        return {
+            "user": user_id,
+            "start": start_time,
+            "end": end_time,
+            "room": room_id,
+        }

@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"log"
+)
+
+// scenario for log_printf_for_production: `log.Printf` (stdlib) usage in web service handler code
+// fixture polarity: positive; family: library; severity: info.
+func scenario416Positive(values []string) {
+	for _, value := range values {
+		log.Print(fmt.Sprintf("value=%s", value))
+	}
+}

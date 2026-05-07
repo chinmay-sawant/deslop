@@ -1,0 +1,18 @@
+from typing import TypeAlias
+
+StringList: TypeAlias = list[str]
+StringIntMap: TypeAlias = dict[str, int]
+Numeric: TypeAlias = str | int
+StringSet: TypeAlias = set[str]
+IntTuple: TypeAlias = tuple[int, ...]
+Number: TypeAlias = int | float
+TextOrBytes: TypeAlias = str | bytes
+FloatOrInt: TypeAlias = float | int
+BoolLike: TypeAlias = bool | int
+ByteLike: TypeAlias = bytes | bytearray
+
+def process_items(items: StringList) -> StringIntMap:
+    result: StringIntMap = {}
+    for item in items:
+        result[item] = len(item)
+    return result

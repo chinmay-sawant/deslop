@@ -1,0 +1,14 @@
+{
+  "id": "generic_process_execute_handle_service_name_without_domain_noun",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Generic service names and methods that hide business intent instead of naming the actual use case.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

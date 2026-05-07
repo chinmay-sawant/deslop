@@ -1,0 +1,14 @@
+{
+  "id": "monolithic_init_module",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "__init__.py files that carry enough imports and behavior to look like monolithic modules.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

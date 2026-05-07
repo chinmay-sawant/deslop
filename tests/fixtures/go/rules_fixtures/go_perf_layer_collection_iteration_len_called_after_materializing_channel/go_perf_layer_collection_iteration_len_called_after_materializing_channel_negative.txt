@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_collection_iteration_len_called_after_materializing_channel: Layer: Collection iteration. Flag channel streams collected into slices only to measure length or emptiness.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule515NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario515Negative(records []Rule515NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

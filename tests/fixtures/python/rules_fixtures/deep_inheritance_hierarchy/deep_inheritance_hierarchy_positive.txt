@@ -1,0 +1,56 @@
+class BaseEntity:
+    def __init__(self, id):
+        self.id = id
+
+    def validate(self):
+        return self.id is not None
+
+
+class TimestampedEntity(BaseEntity):
+    def __init__(self, id, created_at):
+        super().__init__(id)
+        self.created_at = created_at
+
+    def is_recent(self):
+        return True
+
+
+class SoftDeletableEntity(TimestampedEntity):
+    def __init__(self, id, created_at):
+        super().__init__(id, created_at)
+        self.deleted_at = None
+
+    def soft_delete(self):
+        from datetime import datetime
+        self.deleted_at = datetime.utcnow()
+
+
+class VersionedEntity(SoftDeletableEntity):
+    def __init__(self, id, created_at):
+        super().__init__(id, created_at)
+        self.version = 1
+
+    def bump_version(self):
+        self.version += 1
+
+
+class AuditableEntity(VersionedEntity):
+    def __init__(self, id, created_at):
+        super().__init__(id, created_at)
+        self.audit_log = []
+
+    def record_change(self, user, field, old_val, new_val):
+        self.audit_log.append({"user": user, "field": field, "old": old_val, "new": new_val})
+
+
+class PublishableEntity(AuditableEntity):
+    def __init__(self, id, created_at):
+        super().__init__(id, created_at)
+        self.published = False
+        self.published_at = None
+
+    def publish(self):
+        from datetime import datetime
+        self.published = True
+        self.published_at = datetime.utcnow()
+        self.record_change("system", "published", False, True)

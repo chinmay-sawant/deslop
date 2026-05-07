@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for shared_integration_test_setup_not_centralized_under_test_support: Repeated app, DB, or router bootstrapping that is not moved into shared test support.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule186NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule186NegativeService interface {
+	Run(context.Context, Rule186NegativeRecord) error
+}
+
+func scenario186Negative(ctx context.Context, service Rule186NegativeService, input Rule186NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

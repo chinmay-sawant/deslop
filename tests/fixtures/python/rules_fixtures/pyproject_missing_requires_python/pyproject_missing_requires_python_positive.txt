@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my-package"
+version = "1.0.0"
+description = "A sample package"
+dependencies = [
+    "requests>=2.28",
+    "pydantic>=2.0",
+]
+
+[project.scripts]
+mycli = "my_package.cli:main"

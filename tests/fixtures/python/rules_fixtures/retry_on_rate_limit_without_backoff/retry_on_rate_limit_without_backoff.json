@@ -1,0 +1,14 @@
+{
+  "id": "retry_on_rate_limit_without_backoff",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Rate-limit retries appear without visible backoff or Retry-After handling.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

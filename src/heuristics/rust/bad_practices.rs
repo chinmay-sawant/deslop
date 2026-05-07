@@ -1,5 +1,8 @@
 #![allow(clippy::too_many_lines, clippy::uninlined_format_args)]
 
+#[path = "bad_practices/manifest_support.rs"]
+mod manifest_support;
+
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
@@ -5324,11 +5327,8 @@ pub(crate) fn bad_practices_indexed_repo_findings(
     files: &[&ParsedFile],
     index: &RepositoryIndex,
 ) -> Vec<Finding> {
-    let root_manifest = index.root().join("Cargo.toml");
-    let Ok(root_source) = read_to_string_limited(&root_manifest, DEFAULT_MAX_BYTES) else {
-        return Vec::new();
-    };
-    let Ok(root_toml) = root_source.parse::<Value>() else {
+    let Some((root_manifest, root_toml)) = manifest_support::read_root_manifest(index.root())
+    else {
         return Vec::new();
     };
 

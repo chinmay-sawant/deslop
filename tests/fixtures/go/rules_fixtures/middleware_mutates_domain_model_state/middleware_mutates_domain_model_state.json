@@ -1,0 +1,14 @@
+{
+  "id": "middleware_mutates_domain_model_state",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Middleware that writes business entities or persistence models as a side effect of request plumbing.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

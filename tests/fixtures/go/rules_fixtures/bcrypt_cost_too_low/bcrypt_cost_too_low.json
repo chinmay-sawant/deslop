@@ -1,0 +1,14 @@
+{
+  "id": "bcrypt_cost_too_low",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bcrypt.GenerateFromPassword(pw, cost)` where `cost` is literally `< 10` or `bcrypt.MinCost`",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

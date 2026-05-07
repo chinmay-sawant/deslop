@@ -1,0 +1,14 @@
+{
+  "id": "mixed_receiver_kinds",
+  "language": "go",
+  "family": "consistency",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Methods on the same receiver type mix pointer and value receivers.",
+  "binding_location": "src/heuristics/go/consistency.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "monolithic_module_owns_parsing_validation_execution_and_rendering",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag modules that contain the whole pipeline and become hard to reason about.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

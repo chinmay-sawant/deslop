@@ -149,9 +149,9 @@ fn config_label(config: &RuleConfigurability) -> &'static str {
         RuleConfigurability::SeverityOverride => "severity_overrides",
         RuleConfigurability::DetailsOnly => "--details",
         RuleConfigurability::GoSemanticExperimental => {
-            "go_semantic_experimental / --enable-semantic"
+            "go_semantic_experimental / --enable-semantic / --experimental"
         }
-        RuleConfigurability::RustAsyncExperimental => "rust_async_experimental",
+        RuleConfigurability::RustAsyncExperimental => "rust_async_experimental / --experimental",
     }
 }
 

@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_collection_iteration_enumerate_list_materialized",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag list(enumerate(...)) materialization before immediate iteration.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

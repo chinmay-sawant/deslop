@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report: Layer: Profiling and benchmarking. Flag benchmarks for allocation-sensitive code that omit b.ReportAllocs.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule575PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario575Positive(records []Rule575PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

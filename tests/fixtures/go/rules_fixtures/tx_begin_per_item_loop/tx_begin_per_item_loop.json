@@ -1,0 +1,14 @@
+{
+  "id": "tx_begin_per_item_loop",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Transactions started inside loops instead of once around the wider batch.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

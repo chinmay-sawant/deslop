@@ -1,0 +1,28 @@
+import json
+from copy import deepcopy
+
+
+DEFAULT_TEMPLATE = {
+    "config": {"retries": 3, "timeout": 30, "headers": {"Accept": "application/json"}},
+    "metadata": {"version": "1.0", "tags": ["default"]},
+}
+
+_TEMPLATE_SNAPSHOT = json.dumps(DEFAULT_TEMPLATE)
+
+
+def build_request_variants(payloads):
+    requests = []
+    for payload in payloads:
+        req = json.loads(_TEMPLATE_SNAPSHOT)
+        req["body"] = payload
+        requests.append(req)
+    return requests
+
+
+def generate_test_cases(base_params):
+    cases = []
+    for variant in base_params:
+        case = json.loads(_TEMPLATE_SNAPSHOT)
+        case["params"] = variant
+        cases.append(case)
+    return cases

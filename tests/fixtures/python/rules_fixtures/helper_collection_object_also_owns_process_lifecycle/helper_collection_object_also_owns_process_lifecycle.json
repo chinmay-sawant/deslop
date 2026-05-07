@@ -1,0 +1,14 @@
+{
+  "id": "helper_collection_object_also_owns_process_lifecycle",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag collection-like helper objects that also start, stop, or supervise process lifecycle work.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

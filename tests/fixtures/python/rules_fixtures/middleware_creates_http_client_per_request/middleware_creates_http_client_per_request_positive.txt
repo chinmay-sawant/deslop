@@ -1,0 +1,30 @@
+import httpx
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+
+class AuthMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        client = httpx.AsyncClient(base_url="https://auth.internal")
+        token = request.headers.get("Authorization", "")
+        resp = await client.get("/verify", headers={"Authorization": token})
+        await client.aclose()
+
+        if resp.status_code != 200:
+            from starlette.responses import JSONResponse
+            return JSONResponse({"error": "Unauthorized"}, status_code=401)
+
+        response = await call_next(request)
+        return response
+
+
+class TelemetryMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                "https://telemetry.internal/events",
+                json={"path": request.url.path, "method": request.method},
+            )
+
+        response = await call_next(request)
+        return response

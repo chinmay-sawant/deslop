@@ -1,0 +1,24 @@
+def generate_api_endpoints(base_url: str, resources: list[str]) -> list[str]:
+    endpoints = []
+    for resource in resources:
+        endpoint = f"{base_url}/api/v1/{resource}"
+        endpoints.append(endpoint)
+    return endpoints
+
+
+def build_insert_statements(table_name: str, records: list[dict]) -> list[str]:
+    statements = []
+    for record in records:
+        cols = ", ".join(record.keys())
+        vals = ", ".join(f"'{v}'" for v in record.values())
+        stmt = f"INSERT INTO {table_name} ({cols}) VALUES ({vals});"
+        statements.append(stmt)
+    return statements
+
+
+def create_log_messages(prefix: str, events: list[dict]) -> list[str]:
+    messages = []
+    for event in events:
+        msg = f"[{prefix}] [{event['level']}] {event['message']} at {event['timestamp']}"
+        messages.append(msg)
+    return messages

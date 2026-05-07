@@ -1,0 +1,14 @@
+{
+  "id": "repeated_json_dumps_same_object",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "json.dumps(...) is repeated for the same object instead of caching the serialized value.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

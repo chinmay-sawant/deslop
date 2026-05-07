@@ -1,0 +1,14 @@
+{
+  "id": "tests_assert_raw_json_strings_without_response_dto",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Brittle raw-JSON string assertions when typed response DTOs exist.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

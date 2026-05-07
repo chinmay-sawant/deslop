@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for map_of_slices_prealloc: `m[k] = append(m[k], v)` in loops without pre-allocating inner slices
+// fixture polarity: positive; family: performance; severity: info.
+type Rule617PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario617Positive(records []Rule617PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

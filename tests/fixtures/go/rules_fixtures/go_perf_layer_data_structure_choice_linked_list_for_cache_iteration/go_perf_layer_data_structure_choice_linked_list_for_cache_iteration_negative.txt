@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_data_structure_choice_linked_list_for_cache_iteration: Layer: Data structure choice. Flag container/list use in cache iteration paths where slices or maps would improve locality.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule520NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario520Negative(records []Rule520NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

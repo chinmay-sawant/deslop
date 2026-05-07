@@ -1,0 +1,33 @@
+use clap::Parser;
+use std::path::PathBuf;
+
+const MAX_SCAN_PATHS: usize = 16;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long, num_args = 1..=MAX_SCAN_PATHS)]
+    paths: Vec<PathBuf>,
+
+    #[arg(long)]
+    max_depth: Option<usize>,
+}
+
+fn run(cli: Cli) -> Result<(), String> {
+    let mut seen = std::collections::HashSet::new();
+    for path in &cli.paths {
+        let canonical = path
+            .canonicalize()
+            .map_err(|e| format!("invalid path {}: {e}", path.display()))?;
+        if !seen.insert(canonical.clone()) {
+            return Err(format!("duplicate path: {}", canonical.display()));
+        }
+    }
+    for path in &cli.paths {
+        let depth = cli.max_depth.unwrap_or(32);
+        for entry in walkdir::WalkDir::new(path).max_depth(depth) {
+            let entry = entry.map_err(|e| format!("walk error: {e}"))?;
+            let _ = std::fs::read_to_string(entry.path());
+        }
+    }
+    Ok(())
+}

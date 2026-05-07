@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for go_perf_layer_network_calls_dns_lookup_per_request_path: Layer: Network calls. Flag net.Lookup* calls in request paths without caching or resolver ownership.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario569Positive(urls []string) int {
+	total := 0
+	for _, url := range urls {
+		client := &http.Client{}
+		resp, err := client.Get(url)
+		if err == nil { total += resp.StatusCode }
+	}
+	return total
+}

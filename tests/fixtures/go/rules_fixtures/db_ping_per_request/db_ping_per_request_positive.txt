@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for db_ping_per_request: database Ping(...) or PingContext(...) called on request paths instead of startup or explicit health checks.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule254PositiveRecord struct { ID int }
+
+func scenario254Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule254PositiveRecord{}).Error
+}

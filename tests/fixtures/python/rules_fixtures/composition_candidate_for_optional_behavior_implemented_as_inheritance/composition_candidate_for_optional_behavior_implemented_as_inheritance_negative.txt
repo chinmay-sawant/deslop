@@ -1,0 +1,48 @@
+from abc import ABC, abstractmethod
+from typing import Protocol
+
+
+class Notifier(Protocol):
+    def send(self, recipient: str, message: str) -> None: ...
+
+
+class EmailNotifier:
+    def send(self, recipient, message):
+        print(f"Email to {recipient}: {message}")
+
+
+class SlackNotifier:
+    def send(self, recipient, message):
+        print(f"Slack to {recipient}: {message}")
+
+
+class AttachmentSender:
+    def __init__(self, notifier: Notifier):
+        self._notifier = notifier
+
+    def send(self, recipient, message):
+        self._notifier.send(recipient, message)
+        print(f"Attachment sent to {recipient}")
+
+
+class RetrySender:
+    def __init__(self, notifier: Notifier, max_retries: int = 3):
+        self._notifier = notifier
+        self._max_retries = max_retries
+
+    def send(self, recipient, message):
+        for attempt in range(self._max_retries):
+            try:
+                self._notifier.send(recipient, message)
+                return
+            except Exception:
+                continue
+
+
+class ThreadSender:
+    def __init__(self, notifier: Notifier):
+        self._notifier = notifier
+
+    def send(self, recipient, message):
+        self._notifier.send(recipient, message)
+        print(f"Thread created for {recipient}")

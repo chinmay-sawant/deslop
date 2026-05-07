@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for go_perf_layer_string_handling_byte_string_roundtrip_for_contains: Layer: String handling. Flag string/[]byte roundtrips around Contains/Index checks that have native package variants.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario594Positive(haystack string, needle string, left string, right string) bool {
+	return strings.Index(haystack, needle) != -1
+}

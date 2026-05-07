@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+)
+
+// scenario for panic_stack_trace_to_client: `recover()` in HTTP middleware that sends the panic message/stack to the response writer
+// fixture polarity: positive; family: security; severity: warning.
+func scenario727Positive(w http.ResponseWriter) {
+	defer func() { if recovered := recover(); recovered != nil { fmt.Fprintf(w, "panic: %v", recovered) } }()
+	panic("boom")
+}

@@ -1,0 +1,14 @@
+{
+  "id": "fastapi_sync_def_with_blocking_io",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "FastAPI sync route handlers perform blocking I/O instead of using async routes or executor offload.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

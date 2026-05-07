@@ -1,0 +1,14 @@
+{
+  "id": "rust_mutex_lock_unwrap_panics_on_poison",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `lock().unwrap ()` or `write().unwrap ()` in production code where poison recovery or contextual error reporting would be safer.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

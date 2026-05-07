@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_serialization_gzip_encoder_per_tiny_payload",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag compression writers created for tiny payloads where CPU overhead dominates.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

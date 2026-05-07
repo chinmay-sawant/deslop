@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag recursive graph walks that do not track visited nodes for cyclic or shared inputs.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

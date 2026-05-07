@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for model_to_dto_mapping_in_handler: Handlers that manually shape every response from persistence structs rather than using dedicated mapping helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule099PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario099Positive(w http.ResponseWriter, r *http.Request, repo Rule099PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

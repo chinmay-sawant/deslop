@@ -1,0 +1,25 @@
+use tempfile::NamedTempFile;
+
+#[test]
+fn test_persist_output() {
+    let tmpfile = NamedTempFile::new().unwrap();
+    std::fs::write(tmpfile.path(), "test data").unwrap();
+    tmpfile.persist("/tmp/output.txt").unwrap();
+}
+
+#[test]
+fn test_keep_temp_file() {
+    let tmpfile = NamedTempFile::new().unwrap();
+    std::fs::write(tmpfile.path(), "important data").unwrap();
+    let path = tmpfile.into_temp_path().keep().unwrap();
+    assert!(path.exists());
+}
+
+#[test]
+fn test_persist_and_continue() {
+    let tmpfile = NamedTempFile::new_in("/tmp").unwrap();
+    std::fs::write(tmpfile.path(), "config data").unwrap();
+    let final_path = tmpfile.persist("/tmp/final_config.toml").unwrap();
+    let content = std::fs::read_to_string(final_path).unwrap();
+    assert_eq!(content, "config data");
+}

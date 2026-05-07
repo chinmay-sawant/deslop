@@ -1,0 +1,31 @@
+from fastapi import FastAPI
+from langchain.prompts import PromptTemplate
+from langchain.llms import OpenAI
+
+app = FastAPI()
+
+llm = OpenAI(temperature=0)
+
+summarize_prompt = PromptTemplate(
+    input_variables=["text"],
+    template="Summarize the following:\n{text}",
+)
+summarize_chain = summarize_prompt | llm
+
+translate_prompt = PromptTemplate(
+    input_variables=["text", "lang"],
+    template="Translate to {lang}:\n{text}",
+)
+translate_chain = translate_prompt | llm
+
+
+@app.post("/summarize")
+async def summarize(text: str):
+    result = summarize_chain.invoke({"text": text})
+    return {"summary": result}
+
+
+@app.post("/translate")
+async def translate(text: str, target_lang: str):
+    result = translate_chain.invoke({"text": text, "lang": target_lang})
+    return {"translation": result}

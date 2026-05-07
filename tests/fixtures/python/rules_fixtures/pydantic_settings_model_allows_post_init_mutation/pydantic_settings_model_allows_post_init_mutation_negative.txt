@@ -1,0 +1,13 @@
+from pydantic_settings import BaseSettings
+
+
+class AppSettings(BaseSettings):
+    database_url: str
+    redis_url: str
+    debug: bool = False
+    log_level: str = "INFO"
+
+    model_config = {"env_prefix": "APP_", "frozen": True}
+
+
+settings = AppSettings()

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_hassuffix_manual_slice_after_len: Manual `len` and slice suffix checks instead of `bytes.HasSuffix(...)`.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario452Negative(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.HasSuffix(haystack, needle)
+}

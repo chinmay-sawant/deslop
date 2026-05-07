@@ -1,0 +1,14 @@
+{
+  "id": "deserialization_from_external_or_user_controlled_source_with_pickle",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "pickle.loads or pickle.load called on data from an external or user-controlled source.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

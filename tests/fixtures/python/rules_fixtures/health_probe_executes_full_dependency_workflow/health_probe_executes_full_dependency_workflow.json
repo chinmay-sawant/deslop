@@ -1,0 +1,14 @@
+{
+  "id": "health_probe_executes_full_dependency_workflow",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag health checks that run the full production path instead of a cheap signal.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

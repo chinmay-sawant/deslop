@@ -1,0 +1,23 @@
+import logging
+from prometheus_client import Counter
+from opentelemetry import trace
+
+logger = logging.getLogger(__name__)
+tracer = trace.get_tracer(__name__)
+
+PAYMENT_COUNTER = Counter("payment.processed", "Payments processed")
+REFUND_COUNTER = Counter("refunds.total", "Total refunds")
+
+def process_payment(order_id: int, amount: float) -> dict:
+    with tracer.start_as_current_span("charge_card") as span:
+        span.set_attribute("order_id", order_id)
+        logger.info(f"Charging card for order {order_id}")
+        PAYMENT_COUNTER.inc()
+        return {"status": "charged"}
+
+def refund_payment(order_id: int, amount: float) -> dict:
+    with tracer.start_as_current_span("issue_refund") as span:
+        span.set_attribute("order_id", order_id)
+        logger.info(f"Issuing refund for order {order_id}")
+        REFUND_COUNTER.inc()
+        return {"status": "refunded"}

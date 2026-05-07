@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for read_then_decode_duplicate_materialization: io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule359PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario359Positive(records []Rule359PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

@@ -1,0 +1,26 @@
+from typing import cast, Union, List
+
+
+def process_user_data(data: Union[dict, list]) -> dict:
+    result = cast(dict, data)
+    return result
+
+
+def get_first_item(items: Union[List[str], str]) -> str:
+    first = cast(List[str], items)[0]
+    return first
+
+
+class UserService:
+    def get_profile(self, user_id: Union[int, str]) -> dict:
+        raw = self._fetch(user_id)
+        profile = cast(dict, raw)
+        return profile
+
+    def _fetch(self, user_id):
+        return {"id": user_id, "name": "Alice"}
+
+
+def parse_response(response: Union[str, bytes, None]) -> str:
+    text = cast(str, response)
+    return text.upper()

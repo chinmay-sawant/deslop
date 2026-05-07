@@ -1,0 +1,14 @@
+{
+  "id": "rust_domain_raw_primitive",
+  "language": "rust",
+  "family": "domain_modeling",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Business-facing data is stored as a raw primitive instead of a stronger domain type.",
+  "binding_location": "src/heuristics/rust/domain_modeling.rs"
+}

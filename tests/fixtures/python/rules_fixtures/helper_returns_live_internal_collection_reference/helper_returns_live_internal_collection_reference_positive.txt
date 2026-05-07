@@ -1,0 +1,30 @@
+class UserRegistry:
+    def __init__(self):
+        self._users: dict[str, dict] = {}
+
+    def register(self, username: str, data: dict):
+        self._users[username] = data
+
+    def get_all_users(self) -> dict[str, dict]:
+        return self._users
+
+    def get_active_users(self) -> list[dict]:
+        return [u for u in self._users.values() if u.get("active")]
+
+
+class CacheManager:
+    def __init__(self):
+        self._cache: dict[str, object] = {}
+
+    def put(self, key: str, value: object):
+        self._cache[key] = value
+
+    def entries(self) -> dict[str, object]:
+        return self._cache
+
+
+registry = UserRegistry()
+registry.register("alice", {"active": True, "role": "admin"})
+all_users = registry.get_all_users()
+all_users["bob"] = {"active": False, "role": "user"}
+assert "bob" in registry._users

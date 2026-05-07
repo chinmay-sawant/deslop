@@ -1,0 +1,14 @@
+{
+  "id": "http_server_without_timeouts",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Explicit http.Server{} values that omit common timeout fields.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

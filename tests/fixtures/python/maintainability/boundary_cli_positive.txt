@@ -1,6 +1,0 @@
-import json
-import sys
-
-def run_cli():
-    payload = json.loads(sys.argv[1])
-    return payload["user"]

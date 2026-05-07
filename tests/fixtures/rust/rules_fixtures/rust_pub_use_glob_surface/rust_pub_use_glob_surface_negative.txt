@@ -1,0 +1,26 @@
+// GOOD: explicit re-exports with clear public surface
+pub use crate::handlers::{handle_request, handle_response};
+pub use crate::models::{User, Order};
+pub use crate::config::Config;
+
+mod handlers {
+    pub fn handle_request() {}
+    pub fn handle_response() {}
+    pub(crate) fn internal_handler() {}
+}
+
+mod models {
+    pub struct User {}
+    pub struct Order {}
+    pub(crate) struct InternalModel {}
+}
+
+mod utils {
+    pub(crate) fn format_date() {}
+    pub(crate) fn parse_json() {}
+}
+
+mod config {
+    pub struct Config {}
+    pub fn load() {}
+}

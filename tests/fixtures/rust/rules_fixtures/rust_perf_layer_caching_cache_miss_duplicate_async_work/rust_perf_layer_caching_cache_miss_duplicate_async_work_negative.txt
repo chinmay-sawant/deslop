@@ -1,0 +1,44 @@
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+use tokio::sync::broadcast;
+use tokio::time::{sleep, Duration};
+
+enum CacheEntry {
+    Ready(String),
+    InFlight(broadcast::Receiver<String>),
+}
+
+struct Cache {
+    store: Mutex<HashMap<String, CacheEntry>>,
+}
+
+async fn expensive_compute(key: &str) -> String {
+    sleep(Duration::from_millis(100)).await;
+    format!("computed_{}", key)
+}
+
+async fn get_or_compute(cache: Arc<Cache>, key: String) -> String {
+    {
+        let mut guard = cache.store.lock().unwrap();
+        match guard.get(&key) {
+            Some(CacheEntry::Ready(val)) => return val.clone(),
+            Some(CacheEntry::InFlight(rx)) => {
+                let mut rx = rx.resubscribe();
+                drop(guard);
+                // GOOD: wait on in-flight result instead of recomputing
+                return rx.recv().await.unwrap();
+            }
+            None => {}
+        }
+        let (tx, _rx) = broadcast::channel(1);
+        guard.insert(key.clone(), CacheEntry::InFlight(tx.subscribe()));
+        drop(guard);
+
+        // only this task computes
+        let val = expensive_compute(&key).await;
+        let mut guard = cache.store.lock().unwrap();
+        guard.insert(key, CacheEntry::Ready(val.clone()));
+        let _ = tx.send(val.clone());
+        val
+    }
+}

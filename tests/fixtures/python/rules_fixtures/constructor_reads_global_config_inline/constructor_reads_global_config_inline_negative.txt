@@ -1,0 +1,49 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class DatabaseConfig:
+    host: str
+    port: int
+    name: str
+    user: str
+    password: str
+
+
+@dataclass
+class RedisConfig:
+    url: str
+    max_connections: int
+    timeout: int
+
+
+@dataclass
+class MailConfig:
+    smtp_host: str
+    smtp_port: int
+    from_addr: str
+    api_key: str
+
+
+class DatabaseService:
+    def __init__(self, config: DatabaseConfig):
+        self.host = config.host
+        self.port = config.port
+        self.name = config.name
+        self.user = config.user
+        self.password = config.password
+
+
+class RedisCache:
+    def __init__(self, config: RedisConfig):
+        self.url = config.url
+        self.max_connections = config.max_connections
+        self.timeout = config.timeout
+
+
+class MailService:
+    def __init__(self, config: MailConfig):
+        self.smtp_host = config.smtp_host
+        self.smtp_port = config.smtp_port
+        self.from_addr = config.from_addr
+        self.api_key = config.api_key

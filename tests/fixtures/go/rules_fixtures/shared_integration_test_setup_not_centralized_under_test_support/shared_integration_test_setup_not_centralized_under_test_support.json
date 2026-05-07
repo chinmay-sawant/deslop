@@ -1,0 +1,14 @@
+{
+  "id": "shared_integration_test_setup_not_centralized_under_test_support",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated app, DB, or router bootstrapping that is not moved into shared test support.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

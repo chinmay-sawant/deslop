@@ -1,0 +1,14 @@
+{
+  "id": "env_or_config_lookup_per_request",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Environment variable reads observed on request paths instead of cached configuration.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

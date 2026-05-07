@@ -1,0 +1,14 @@
+{
+  "id": "regex_pattern_with_catastrophic_backtracking_applied_to_unbounded_input",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Regular expression containing nested quantifiers applied to user-supplied unbounded input.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

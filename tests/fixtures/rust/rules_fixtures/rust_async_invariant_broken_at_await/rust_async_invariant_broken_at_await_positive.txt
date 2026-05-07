@@ -1,0 +1,26 @@
+use std::sync::{Arc, Mutex};
+
+async fn transfer_funds(
+    accounts: Arc<Mutex<AccountStore>>,
+    from: u64,
+    to: u64,
+    amount: i64,
+) {
+    let mut store = accounts.lock().unwrap();
+    let from_balance = store.get_balance(from);
+    store.set_balance(from, from_balance - amount);
+    save_to_database(from, from_balance - amount).await;
+    let to_balance = store.get_balance(to);
+    store.set_balance(to, to_balance + amount);
+    drop(store);
+    notify_transfer(from, to, amount).await;
+}
+
+async fn save_to_database(_id: u64, _balance: i64) { todo!() }
+async fn notify_transfer(_from: u64, _to: u64, _amount: i64) { todo!() }
+
+struct AccountStore;
+impl AccountStore {
+    fn get_balance(&self, _id: u64) -> i64 { todo!() }
+    fn set_balance(&mut self, _id: u64, _balance: i64) { todo!() }
+}

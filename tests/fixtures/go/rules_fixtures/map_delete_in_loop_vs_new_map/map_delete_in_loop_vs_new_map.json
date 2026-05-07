@@ -1,0 +1,14 @@
+{
+  "id": "map_delete_in_loop_vs_new_map",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`for k := range m { delete(m, k) }` patterns",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

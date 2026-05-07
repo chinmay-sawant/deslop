@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for generic_base_repository_with_reflection_dispatch: Catch-all repositories that depend on reflection-heavy generic CRUD instead of bounded repository APIs.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule035NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule035NegativeService interface {
+	Run(context.Context, Rule035NegativeRecord) error
+}
+
+func scenario035Negative(ctx context.Context, service Rule035NegativeService, input Rule035NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

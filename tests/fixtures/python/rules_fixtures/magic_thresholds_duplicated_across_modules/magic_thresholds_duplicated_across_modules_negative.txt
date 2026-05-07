@@ -1,0 +1,32 @@
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class ServiceConfig:
+    max_retries: int = 3
+    timeout_seconds: int = 30
+    batch_size: int = 100
+    rate_limit: int = 1000
+
+
+DEFAULT_CONFIG = ServiceConfig()
+
+
+def process_batch(items: list, config: ServiceConfig = DEFAULT_CONFIG) -> list:
+    for i in range(0, len(items), config.batch_size):
+        batch = items[i : i + config.batch_size]
+        for attempt in range(config.max_retries):
+            try:
+                return send_batch(batch, timeout=config.timeout_seconds)
+            except TimeoutError:
+                if attempt < config.max_retries - 1:
+                    continue
+                raise
+
+
+def send_batch(batch: list, timeout: int) -> list:
+    pass
+
+
+def check_rate_limit(count: int, config: ServiceConfig = DEFAULT_CONFIG) -> bool:
+    return count < config.rate_limit

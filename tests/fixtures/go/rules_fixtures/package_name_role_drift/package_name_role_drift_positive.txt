@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for package_name_role_drift: Packages whose names advertise one role, such as `service` or `model`, but whose exported symbols primarily belong to another role.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule108PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario108Positive(w http.ResponseWriter, r *http.Request, repo Rule108PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

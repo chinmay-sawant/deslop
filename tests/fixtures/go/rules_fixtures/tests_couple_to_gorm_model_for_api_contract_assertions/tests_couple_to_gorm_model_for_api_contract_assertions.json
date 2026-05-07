@@ -1,0 +1,14 @@
+{
+  "id": "tests_couple_to_gorm_model_for_api_contract_assertions",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "API tests that assert persistence model shapes instead of response contracts.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

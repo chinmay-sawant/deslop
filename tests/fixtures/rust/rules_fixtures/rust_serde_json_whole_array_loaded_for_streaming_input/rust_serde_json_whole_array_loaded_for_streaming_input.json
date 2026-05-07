@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_json_whole_array_loaded_for_streaming_input",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag deserializing large JSON arrays into `Vec<T>` in reader-like code where streaming deserialization could reduce peak memory.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_narrowing_numeric_cast",
+  "language": "rust",
+  "family": "boundary",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Numeric narrowing casts that may silently truncate or change precision.",
+  "binding_location": "src/heuristics/rust/boundary.rs"
+}

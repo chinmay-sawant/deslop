@@ -1,0 +1,14 @@
+{
+  "id": "dropped_error",
+  "language": "go",
+  "family": "errors",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Blank identifier assignments that discard an err-like value.",
+  "binding_location": "src/heuristics/go/errors.rs"
+}

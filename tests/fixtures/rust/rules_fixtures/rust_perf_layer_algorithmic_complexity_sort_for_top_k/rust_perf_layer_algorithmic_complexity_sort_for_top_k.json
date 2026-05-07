@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_algorithmic_complexity_sort_for_top_k",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag full Vec sorts used only to keep top-k elements where BinaryHeap or select_nth_unstable would bound work.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

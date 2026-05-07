@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_global_pool_built_by_library_code",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `ThreadPoolBuilder::build_global()` outside a binary entry point, test harness, or explicit process bootstrap.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

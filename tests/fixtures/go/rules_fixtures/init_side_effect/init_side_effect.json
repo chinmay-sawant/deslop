@@ -1,0 +1,14 @@
+{
+  "id": "init_side_effect",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "init() functions that perform network, file-system, or subprocess side effects.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

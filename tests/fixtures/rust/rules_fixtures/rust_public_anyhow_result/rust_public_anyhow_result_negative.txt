@@ -1,0 +1,44 @@
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum ConfigError {
+    #[error("failed to read config file: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("invalid config format: {0}")]
+    Parse(#[from] serde_json::Error),
+    #[error("missing required field: {0}")]
+    MissingField(String),
+}
+
+#[derive(Error, Debug)]
+pub enum ConnectionError {
+    #[error("connection failed: {0}")]
+    ConnectionFailed(String),
+    #[error("timeout after {0}ms")]
+    Timeout(u64),
+}
+
+#[derive(Error, Debug)]
+pub enum QueryError {
+    #[error("query failed: {0}")]
+    QueryFailed(String),
+    #[error("connection lost")]
+    ConnectionLost,
+}
+
+// GOOD: public library API with domain-specific error types
+pub fn parse_config(path: &str) -> Result<Config, ConfigError> {
+    let content = std::fs::read_to_string(path)?;
+    let config: Config = serde_json::from_str(&content)?;
+    Ok(config)
+}
+
+pub fn connect(url: &str) -> Result<Connection, ConnectionError> {
+    let conn = establish_connection(url)?;
+    Ok(conn)
+}
+
+pub fn execute_query(conn: &Connection, sql: &str) -> Result<Vec<Row>, QueryError> {
+    let rows = conn.query(sql)?;
+    Ok(rows)
+}

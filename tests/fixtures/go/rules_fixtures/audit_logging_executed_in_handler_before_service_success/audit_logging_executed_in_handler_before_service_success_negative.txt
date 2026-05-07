@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for audit_logging_executed_in_handler_before_service_success: Audit writes that happen before the service has confirmed success.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule004NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule004NegativeService interface {
+	Run(context.Context, Rule004NegativeRecord) error
+}
+
+func scenario004Negative(ctx context.Context, service Rule004NegativeService, input Rule004NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

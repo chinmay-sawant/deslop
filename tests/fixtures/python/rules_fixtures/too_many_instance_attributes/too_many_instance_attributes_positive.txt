@@ -1,0 +1,40 @@
+class UserProfile:
+    def __init__(self, user_id: int):
+        self.user_id = user_id
+        self.first_name = ""
+        self.last_name = ""
+        self.email = ""
+        self.phone = ""
+        self.address_line1 = ""
+        self.address_line2 = ""
+        self.city = ""
+        self.state = ""
+        self.zip_code = ""
+        self.country = ""
+        self.avatar_url = ""
+        self.bio = ""
+        self.timezone = ""
+        self.language = ""
+        self.theme = "light"
+        self.notifications_enabled = True
+        self.two_factor_enabled = False
+        self.created_at = None
+        self.updated_at = None
+        self.last_login = None
+        self.login_count = 0
+        self.is_active = True
+        self.role = "user"
+        self.preferences = {}
+        self.metadata = {}
+
+    def update_profile(self, data: dict):
+        self.first_name = data.get("first_name", self.first_name)
+        self.last_name = data.get("last_name", self.last_name)
+        self.email = data.get("email", self.email)
+        self.phone = data.get("phone", self.phone)
+        self.address_line1 = data.get("address_line1", self.address_line1)
+        self.city = data.get("city", self.city)
+        self.state = data.get("state", self.state)
+        self.zip_code = data.get("zip_code", self.zip_code)
+        self.country = data.get("country", self.country)
+        self.updated_at = data.get("updated_at", self.updated_at)

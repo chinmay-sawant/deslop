@@ -1,0 +1,14 @@
+{
+  "id": "eval_exec_usage",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Direct eval() or exec() usage in non-test Python code.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

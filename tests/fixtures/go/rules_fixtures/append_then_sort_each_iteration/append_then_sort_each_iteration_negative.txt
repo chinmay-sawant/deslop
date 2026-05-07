@@ -1,0 +1,12 @@
+package rulefixtures
+
+// scenario for append_then_sort_each_iteration: Slice sorting observed inside loops - often cheaper to sort once after the loop.
+// fixture polarity: negative; family: hot_path; severity: info.
+func scenario341Negative(values []string) string {
+	if len(values) == 0 { return "" }
+	best := values[0]
+	for _, value := range values[1:] {
+		if value < best { best = value }
+	}
+	return best
+}

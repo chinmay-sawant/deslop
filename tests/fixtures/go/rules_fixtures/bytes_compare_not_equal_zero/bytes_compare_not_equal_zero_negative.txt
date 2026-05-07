@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_compare_not_equal_zero: `bytes.Compare(...) != 0` instead of `!bytes.Equal(...)`.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario449Negative(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.EqualFold(left, right)
+}

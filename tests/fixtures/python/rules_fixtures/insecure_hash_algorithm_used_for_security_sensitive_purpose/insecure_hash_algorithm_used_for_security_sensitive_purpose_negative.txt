@@ -1,0 +1,23 @@
+import hashlib
+import hmac
+import secrets
+
+
+def hash_password(password: str) -> str:
+    salt = secrets.token_hex(16)
+    key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 300000)
+    return f"{salt}:{key.hex()}"
+
+
+def generate_api_token(user_id: int, secret: str) -> str:
+    payload = f"{user_id}:{secret}"
+    return hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()
+
+
+def verify_integrity(data: bytes, expected_hash: str) -> bool:
+    computed = hashlib.sha256(data).hexdigest()
+    return hmac.compare_digest(computed, expected_hash)
+
+
+def create_session_id(user_id: int) -> str:
+    return secrets.token_urlsafe(32)

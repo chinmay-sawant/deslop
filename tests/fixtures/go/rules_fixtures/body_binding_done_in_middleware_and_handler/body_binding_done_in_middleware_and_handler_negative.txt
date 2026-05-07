@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for body_binding_done_in_middleware_and_handler: Endpoints where middleware parses the body and the handler also owns body binding.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule009NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule009NegativeService interface {
+	Run(context.Context, Rule009NegativeRecord) error
+}
+
+func scenario009Negative(ctx context.Context, service Rule009NegativeService, input Rule009NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

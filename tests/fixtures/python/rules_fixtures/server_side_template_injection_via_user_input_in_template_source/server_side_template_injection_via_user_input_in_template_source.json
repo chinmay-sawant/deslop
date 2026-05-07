@@ -1,0 +1,14 @@
+{
+  "id": "server_side_template_injection_via_user_input_in_template_source",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "User-supplied data used as the template source string for Jinja2 or Mako, enabling SSTI.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

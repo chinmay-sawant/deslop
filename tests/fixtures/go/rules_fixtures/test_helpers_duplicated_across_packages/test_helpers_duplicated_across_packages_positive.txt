@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for test_helpers_duplicated_across_packages: Near-identical helper builders or setup code duplicated across test packages.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule201PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario201Positive(w http.ResponseWriter, r *http.Request, repo Rule201PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

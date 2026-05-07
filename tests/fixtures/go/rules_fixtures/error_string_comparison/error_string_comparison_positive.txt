@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for error_string_comparison: `if err.Error() == "some error"` string comparison for error checking
+// fixture polarity: positive; family: performance; severity: warning.
+type Rule479PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario479Positive(records []Rule479PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

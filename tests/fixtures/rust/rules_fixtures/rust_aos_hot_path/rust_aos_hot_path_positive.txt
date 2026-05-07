@@ -1,0 +1,41 @@
+struct Particle {
+    x: f32,
+    y: f32,
+    z: f32,
+    vx: f32,
+    vy: f32,
+    vz: f32,
+    mass: f32,
+    charge: f32,
+    lifetime: f32,
+    active: bool,
+}
+
+fn update_particles(particles: &mut [Particle], dt: f32) {
+    for p in particles.iter_mut() {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.z += p.vz * dt;
+        let ax = p.charge * 0.1 / p.mass;
+        let ay = p.charge * 0.1 / p.mass;
+        let az = -9.8 / p.mass;
+        p.vx += ax * dt;
+        p.vy += ay * dt;
+        p.vz += az * dt;
+        p.lifetime -= dt;
+        if p.lifetime <= 0.0 {
+            p.active = false;
+        }
+    }
+}
+
+fn compute_energy(particles: &[Particle]) -> f32 {
+    let mut total = 0.0f32;
+    for p in particles.iter() {
+        let speed_sq = p.vx * p.vx + p.vy * p.vy + p.vz * p.vz;
+        total += 0.5 * p.mass * speed_sq;
+        total += p.charge * p.x;
+        total += p.charge * p.y;
+    }
+    total
+}

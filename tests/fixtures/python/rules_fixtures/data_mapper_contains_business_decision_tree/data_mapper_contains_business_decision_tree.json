@@ -1,0 +1,14 @@
+{
+  "id": "data_mapper_contains_business_decision_tree",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag mappers or adapters that choose policy outcomes while converting data.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

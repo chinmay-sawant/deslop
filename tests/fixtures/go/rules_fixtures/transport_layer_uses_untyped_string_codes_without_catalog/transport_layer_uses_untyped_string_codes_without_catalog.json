@@ -1,0 +1,14 @@
+{
+  "id": "transport_layer_uses_untyped_string_codes_without_catalog",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Response code strings that have no shared type or catalog package.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

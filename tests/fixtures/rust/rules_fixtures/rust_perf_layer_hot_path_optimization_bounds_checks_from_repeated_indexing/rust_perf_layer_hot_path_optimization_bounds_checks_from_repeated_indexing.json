@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_hot_path_optimization_bounds_checks_from_repeated_indexing",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Hot path optimization. Flag repeated indexed access patterns where iterators, windows, or chunks can reduce bounds-check pressure.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

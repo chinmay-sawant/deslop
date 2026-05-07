@@ -1,0 +1,9 @@
+package rulefixtures
+
+// scenario for fmt_print_of_sensitive_struct: `fmt.Sprintf("%+v", user)` or `fmt.Printf("%v", config)` on structs that contain password/secret/token fields
+// fixture polarity: negative; family: security; severity: warning.
+type Rule711NegativeRecord struct { UserID string; TokenID string }
+
+func scenario711Negative(user Rule711NegativeRecord) string {
+	return user.UserID + ":" + user.TokenID
+}

@@ -1,0 +1,19 @@
+def process_items(data_source):
+    items = (transform(x) for x in data_source.fetch())
+    first_pass = list(items)
+    total = sum(first_pass)
+    second_pass = list(items)
+    average = sum(second_pass) / len(second_pass)
+    return total, average
+
+def find_matches(records):
+    candidates = (r for r in records if r["score"] > 50)
+    count = sum(1 for _ in candidates)
+    top = list(candidates)[:10]
+    return count, top
+
+def aggregate_metrics(logs):
+    entries = (parse_line(line) for line in logs)
+    valid = [e for e in entries if e is not None]
+    total_count = sum(1 for _ in entries)
+    return valid, total_count

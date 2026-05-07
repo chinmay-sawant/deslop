@@ -1,0 +1,14 @@
+{
+  "id": "full_dataset_load",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Calls that load an entire payload into memory instead of streaming.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

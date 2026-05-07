@@ -1,0 +1,14 @@
+{
+  "id": "cgo_string_lifetime",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`C.CString(goString)` without a corresponding `C.free` in the same function, or deferred `C.free`",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

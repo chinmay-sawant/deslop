@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"database/sql"
+)
+
+// scenario for sql_string_concat: Query execution calls where SQL is constructed dynamically with concatenation or fmt.Sprintf.
+// fixture polarity: negative; family: security; severity: warning.
+func scenario734Negative(db *sql.DB, userInput string) (*sql.Rows, error) {
+	return db.Query("select * from users where name = ?", userInput)
+}

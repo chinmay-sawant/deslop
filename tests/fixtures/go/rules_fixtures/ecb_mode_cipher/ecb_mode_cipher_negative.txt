@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"crypto/aes"
+	"crypto/cipher"
+)
+
+// scenario for ecb_mode_cipher: direct use of `cipher.Block.Encrypt` / `cipher.Block.Decrypt` without a block mode wrapper (CBC, CTR, GCM)
+// fixture polarity: negative; family: security; severity: warning.
+func scenario707Negative(key []byte) (cipher.AEAD, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil { return nil, err }
+	return cipher.NewGCM(block)
+}

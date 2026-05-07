@@ -1,0 +1,14 @@
+{
+  "id": "rust_tempfile_builder_prefix_from_test_name_only",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag temporary directories/files that use only a fixed prefix and shared parent for parallel tests without unique isolation.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

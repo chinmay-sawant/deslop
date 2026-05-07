@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"hash/crc32"
+)
+
+// scenario for crc32_checksum_in_loop: `crc32.Checksum...` inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario473Positive(chunks [][]byte) uint32 {
+	var total uint32
+	for _, payload := range chunks {
+		total += crc32.ChecksumIEEE(payload)
+	}
+	return total
+}

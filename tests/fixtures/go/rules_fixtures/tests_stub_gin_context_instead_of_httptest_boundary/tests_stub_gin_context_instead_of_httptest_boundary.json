@@ -1,0 +1,14 @@
+{
+  "id": "tests_stub_gin_context_instead_of_httptest_boundary",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handler tests that mock Gin internals directly instead of using `httptest` when boundary behavior matters.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

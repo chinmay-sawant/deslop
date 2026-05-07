@@ -1,0 +1,24 @@
+from flask import Flask, jsonify, send_file
+
+app = Flask(__name__)
+
+_config_cache = None
+
+def _load_config():
+    global _config_cache
+    if _config_cache is None:
+        with open("/etc/app/config.json", "r") as f:
+            _config_cache = f.read()
+    return _config_cache
+
+@app.route("/config")
+def get_config():
+    return _load_config()
+
+@app.route("/terms")
+def get_terms():
+    return send_file("/app/static/terms_of_service.txt")
+
+@app.route("/report")
+def get_report():
+    return send_file("/data/daily_report.csv", mimetype="text/csv")

@@ -1,0 +1,14 @@
+{
+  "id": "hardcoded_tls_min_version_too_low",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`tls.Config{MinVersion: tls.VersionTLS10}` or `tls.VersionTLS11` or `tls.VersionSSL30`",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

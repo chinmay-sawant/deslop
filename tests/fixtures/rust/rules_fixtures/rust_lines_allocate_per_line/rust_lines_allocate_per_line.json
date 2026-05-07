@@ -1,0 +1,14 @@
+{
+  "id": "rust_lines_allocate_per_line",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": ".lines() iteration used in a loop where per-item allocation may matter.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

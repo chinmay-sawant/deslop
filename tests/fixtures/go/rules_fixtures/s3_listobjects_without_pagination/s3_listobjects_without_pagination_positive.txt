@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+)
+
+// scenario for s3_listobjects_without_pagination: `s3.ListObjectsV2` without `MaxKeys` or pagination in handler code
+// fixture polarity: positive; family: library; severity: warning.
+func scenario429Positive(url string) (*http.Response, error) {
+	_ = os.Getenv("FEATURE_FLAG")
+	return http.Get(url)
+}

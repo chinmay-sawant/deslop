@@ -1,0 +1,27 @@
+// BAD: crate root exposing too many public re-exports
+// lib.rs
+pub use crate::handlers::handle_request;
+pub use crate::handlers::handle_response;
+pub use crate::handlers::handle_error;
+pub use crate::handlers::handle_timeout;
+pub use crate::handlers::handle_redirect;
+pub use crate::handlers::handle_websocket;
+pub use crate::models::User;
+pub use crate::models::Order;
+pub use crate::models::Product;
+pub use crate::models::Category;
+pub use crate::models::Review;
+pub use crate::models::Cart;
+pub use crate::config::Config;
+pub use crate::config::DatabaseConfig;
+pub use crate::config::CacheConfig;
+pub use crate::config::AuthConfig;
+pub use crate::config::LoggingConfig;
+pub use crate::utils::format_date;
+pub use crate::utils::parse_json;
+pub use crate::utils::validate_email;
+pub use crate::utils::hash_password;
+pub use crate::errors::AppError;
+pub use crate::errors::DatabaseError;
+pub use crate::errors::AuthError;
+pub use crate::errors::ValidationError;

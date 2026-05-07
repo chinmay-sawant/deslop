@@ -1,0 +1,14 @@
+{
+  "id": "data_pipeline_no_error_handling",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Pipeline-style functions with no visible error handling or recovery path.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

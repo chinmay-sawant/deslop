@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	jwt "github.com/golang-jwt/jwt/v5"
+)
+
+// scenario for jwt_none_algorithm_risk: JWT verification code that accepts `"none"` or `alg: ""` as valid signing methods, or uses `jwt.Parse` without `WithValidMethods`
+// fixture polarity: positive; family: security; severity: error.
+func scenario722Positive(token string) (*jwt.Token, error) {
+	return jwt.Parse(token, func(t *jwt.Token) (interface{}, error) { return []byte("secret"), nil })
+}

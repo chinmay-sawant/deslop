@@ -1,0 +1,14 @@
+{
+  "id": "likely_unindexed_query",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

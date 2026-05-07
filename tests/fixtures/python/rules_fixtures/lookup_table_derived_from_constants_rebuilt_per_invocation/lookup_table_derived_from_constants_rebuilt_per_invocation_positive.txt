@@ -1,0 +1,33 @@
+STATUS_CODES = {
+    "pending": 0,
+    "active": 1,
+    "suspended": 2,
+    "deleted": 3,
+}
+
+ROLE_HIERARCHY = {
+    "viewer": 1,
+    "editor": 2,
+    "admin": 3,
+    "superadmin": 4,
+}
+
+
+def get_status_label(code: int) -> str:
+    lookup = {v: k for k, v in STATUS_CODES.items()}
+    return lookup.get(code, "unknown")
+
+
+def get_role_level(role_name: str) -> int:
+    hierarchy = {k: v for k, v in ROLE_HIERARCHY.items()}
+    return hierarchy.get(role_name, 0)
+
+
+def is_valid_status(code: int) -> bool:
+    valid_codes = [v for v in STATUS_CODES.values()]
+    return code in valid_codes
+
+
+def can_access(user_role: str, required_role: str) -> bool:
+    levels = dict(ROLE_HIERARCHY)
+    return levels.get(user_role, 0) >= levels.get(required_role, 0)

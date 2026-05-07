@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for business_validation_mixed_with_persistence_calls_in_handler: Handlers that start querying or writing before finishing request validation.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule011PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario011Positive(w http.ResponseWriter, r *http.Request, repo Rule011PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

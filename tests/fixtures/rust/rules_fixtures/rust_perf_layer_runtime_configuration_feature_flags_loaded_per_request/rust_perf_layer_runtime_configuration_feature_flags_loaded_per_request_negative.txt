@@ -1,0 +1,38 @@
+use std::collections::HashMap;
+use std::sync::Arc;
+
+struct FeatureFlags {
+    enable_new_search: bool,
+    enable_caching: bool,
+}
+
+impl FeatureFlags {
+    // GOOD: flags loaded once at startup
+    fn load(path: &str) -> Self {
+        let raw = std::fs::read_to_string(path).unwrap();
+        let map: HashMap<String, bool> = serde_json::from_str(&raw).unwrap();
+        Self {
+            enable_new_search: map.get("enable_new_search").copied().unwrap_or(false),
+            enable_caching: map.get("enable_caching").copied().unwrap_or(false),
+        }
+    }
+}
+
+struct AppState {
+    flags: FeatureFlags,
+}
+
+fn handle_request(request: &Request, state: &AppState) -> Response {
+    if state.flags.enable_new_search {
+        return new_search_handler(request);
+    }
+
+    if state.flags.enable_caching {
+        let cached = check_cache(&request.key);
+        if let Some(resp) = cached {
+            return resp;
+        }
+    }
+
+    legacy_handler(request)
+}

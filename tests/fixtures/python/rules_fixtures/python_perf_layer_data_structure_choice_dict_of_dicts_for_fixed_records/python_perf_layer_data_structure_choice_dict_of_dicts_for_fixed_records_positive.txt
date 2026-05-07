@@ -1,0 +1,31 @@
+def build_user_index(users: list[dict]) -> dict:
+    index = {}
+    for user in users:
+        index[user["id"]] = {
+            "name": user["name"],
+            "email": user["email"],
+            "age": user["age"],
+            "role": user["role"],
+        }
+    return index
+
+
+def lookup_users(user_ids: list[str], user_index: dict) -> list:
+    results = []
+    for uid in user_ids:
+        if uid in user_index:
+            record = user_index[uid]
+            results.append({"name": record["name"], "email": record["email"]})
+    return results
+
+
+def merge_user_data(users_a: dict, users_b: dict) -> dict:
+    merged = {}
+    for uid in set(users_a) | set(users_b):
+        a = users_a.get(uid, {})
+        b = users_b.get(uid, {})
+        merged[uid] = {
+            "name": a.get("name", b.get("name")),
+            "email": a.get("email", b.get("email")),
+        }
+    return merged

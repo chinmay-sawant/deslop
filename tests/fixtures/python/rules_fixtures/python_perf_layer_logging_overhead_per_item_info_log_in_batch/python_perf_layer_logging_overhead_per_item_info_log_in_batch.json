@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_logging_overhead_per_item_info_log_in_batch",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Logging overhead. Flag info/debug logging per record in large batch processing loops.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

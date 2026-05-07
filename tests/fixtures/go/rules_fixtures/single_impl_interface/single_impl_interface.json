@@ -1,0 +1,14 @@
+{
+  "id": "single_impl_interface",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repository-local interfaces with one obvious implementation and a very small consumer surface.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

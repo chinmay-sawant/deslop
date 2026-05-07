@@ -1,0 +1,25 @@
+struct Order {
+    id: u64,
+    amount: f64,
+    timestamp: u64,
+}
+
+fn get_highest_order(orders: &mut Vec<Order>) -> Option<&Order> {
+    orders.sort_by(|a, b| b.amount.partial_cmp(&a.amount).unwrap());
+    orders.first()
+}
+
+fn get_latest_order(orders: &mut Vec<Order>) -> Option<&Order> {
+    orders.sort_by_key(|o| o.timestamp);
+    orders.last()
+}
+
+fn get_smallest_amount(orders: &mut Vec<Order>) -> Option<f64> {
+    orders.sort_by(|a, b| a.amount.partial_cmp(&b.amount).unwrap());
+    orders.first().map(|o| o.amount)
+}
+
+fn get_earliest_order(orders: &mut Vec<Order>) -> Option<&Order> {
+    orders.sort_by_key(|o| o.timestamp);
+    orders.first()
+}

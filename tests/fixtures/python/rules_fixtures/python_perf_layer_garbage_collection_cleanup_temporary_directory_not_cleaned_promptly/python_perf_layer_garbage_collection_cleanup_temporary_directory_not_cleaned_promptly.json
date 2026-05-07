@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_garbage_collection_cleanup_temporary_directory_not_cleaned_promptly",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag TemporaryDirectory or temp files held across long workflows after their last use.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

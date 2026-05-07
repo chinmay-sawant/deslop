@@ -1,0 +1,37 @@
+from typing import List, Dict
+
+def find_matching_users(users: List[dict], permissions: List[dict]) -> List[dict]:
+    results = []
+    for user in users:
+        for perm in permissions:
+            if perm["user_id"] == user["id"]:
+                results.append(user)
+                break
+    return results
+
+def get_product_categories(products: List[dict], categories: List[dict]) -> List[str]:
+    found = []
+    for product in products:
+        for cat in categories:
+            if cat["id"] == product["category_id"]:
+                found.append(cat["name"])
+                break
+    return found
+
+def match_orders_to_customers(orders: List[dict], customers: List[dict]) -> List[dict]:
+    matched = []
+    for order in orders:
+        for customer in customers:
+            if customer["id"] == order["customer_id"]:
+                matched.append({**order, "customer_name": customer["name"]})
+                break
+    return matched
+
+def find_employees_in_departments(employees: List[dict], departments: List[dict]) -> List[dict]:
+    result = []
+    for emp in employees:
+        for dept in departments:
+            if dept["id"] == emp["department_id"]:
+                result.append({**emp, "department_name": dept["name"]})
+                break
+    return result

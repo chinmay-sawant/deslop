@@ -1,0 +1,33 @@
+import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
+ALLOWED_ORIGINS = os.environ.get("CORS_ORIGINS", "").split(",")
+
+if ENVIRONMENT == "production":
+    cors_origins = ALLOWED_ORIGINS
+else:
+    cors_origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+from flask import Flask
+from flask_cors import CORS
+
+flask_app = Flask(__name__)
+env = os.environ.get("FLASK_ENV", "development")
+
+if env == "production":
+    CORS(flask_app, origins=ALLOWED_ORIGINS)
+else:
+    CORS(flask_app, resources={r"/*": {"origins": "*"}})

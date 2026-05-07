@@ -1,0 +1,17 @@
+import heapq
+
+
+def get_top_scorers(players, n=5):
+    return heapq.nlargest(n, players, key=lambda p: p.score)
+
+
+def find_cheapest_products(products, count=3):
+    return heapq.nsmallest(count, products, key=lambda p: p.price)
+
+
+def get_recent_orders(orders, limit=10):
+    return heapq.nlargest(limit, orders, key=lambda o: o.created_at)
+
+
+def smallest_values(data, k=5):
+    return heapq.nsmallest(k, data)

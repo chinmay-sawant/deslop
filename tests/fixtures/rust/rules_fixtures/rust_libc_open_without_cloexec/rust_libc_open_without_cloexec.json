@@ -1,0 +1,14 @@
+{
+  "id": "rust_libc_open_without_cloexec",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag direct `libc::open` or equivalent without `O_CLOEXEC` in programs that may spawn child processes.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

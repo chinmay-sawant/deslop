@@ -1,0 +1,14 @@
+{
+  "id": "main_or_cmd_mixes_cli_parsing_server_bootstrap_and_business_config",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Entrypoints that do too much without startup composition helpers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

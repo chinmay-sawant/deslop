@@ -1,0 +1,24 @@
+import pickle
+
+
+def serialize_events(events):
+    results = []
+    for event in events:
+        data = pickle.dumps(event)
+        results.append(data)
+    return results
+
+
+def save_records(records):
+    blobs = []
+    for record in records:
+        blob = pickle.dumps({"id": record["id"], "value": record["value"]})
+        blobs.append(blob)
+    return blobs
+
+
+def cache_items(items):
+    cached = []
+    for item in items:
+        cached.append(pickle.dumps(item))
+    return cached

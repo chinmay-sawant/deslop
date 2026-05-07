@@ -1,0 +1,14 @@
+{
+  "id": "jinja2_environment_created_with_autoescape_disabled",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Jinja2 Environment created without autoescape=True or with autoescape=False, enabling XSS.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

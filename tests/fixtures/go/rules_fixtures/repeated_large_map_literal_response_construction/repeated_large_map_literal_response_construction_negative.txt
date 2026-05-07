@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for repeated_large_map_literal_response_construction: Large map-literal response assembly on hot routes where a stable typed response would be cheaper.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule335NegativeRecord struct {
+	Name string
+}
+
+type Rule335NegativeService interface {
+	Handle(context.Context, Rule335NegativeRecord) (Rule335NegativeRecord, error)
+}
+
+func scenario335Negative(ctx context.Context, service Rule335NegativeService, input Rule335NegativeRecord) (Rule335NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule335NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

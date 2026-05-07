@@ -1,0 +1,14 @@
+{
+  "id": "request_context_value_extraction_duplicated_across_handlers",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated current-user, tenant, locale, or auth extraction logic.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

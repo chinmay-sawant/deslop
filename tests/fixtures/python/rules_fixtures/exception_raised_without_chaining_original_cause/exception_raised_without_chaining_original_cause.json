@@ -1,0 +1,14 @@
+{
+  "id": "exception_raised_without_chaining_original_cause",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "New exception raised inside except block without `from e`, discarding the original cause.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

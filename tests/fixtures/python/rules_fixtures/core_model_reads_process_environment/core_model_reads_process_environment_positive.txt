@@ -1,0 +1,32 @@
+import os
+from datetime import datetime
+
+
+class User:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+        self.timezone = os.environ.get("USER_TIMEZONE", "UTC")
+        self.locale = os.environ.get("USER_LOCALE", "en_US")
+
+
+class Order:
+    def __init__(self, user, items):
+        self.user = user
+        self.items = items
+        self.currency = os.environ.get("DEFAULT_CURRENCY", "USD")
+        self.tax_rate = float(os.environ.get("TAX_RATE", "0.08"))
+
+
+class Product:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+        self.max_quantity = int(os.environ.get("MAX_ORDER_QTY", "100"))
+
+
+class Invoice:
+    def __init__(self, order):
+        self.order = order
+        self.prefix = os.environ.get("INVOICE_PREFIX", "INV")
+        self.format = os.environ.get("INVOICE_FORMAT", "pdf")

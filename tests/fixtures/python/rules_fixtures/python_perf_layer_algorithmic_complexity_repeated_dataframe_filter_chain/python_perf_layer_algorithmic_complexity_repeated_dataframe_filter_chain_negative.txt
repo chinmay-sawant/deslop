@@ -1,0 +1,31 @@
+import pandas as pd
+
+
+def analyze_sales(df: pd.DataFrame) -> pd.DataFrame:
+    mask = (
+        (df["region"] == "US")
+        & (df["amount"] > 100)
+        & (df["status"] == "completed")
+        & (df["year"] == 2024)
+    )
+    return df[mask]
+
+
+def get_active_users(df: pd.DataFrame) -> pd.DataFrame:
+    mask = (
+        (df["active"] == True)
+        & (df["age"] >= 18)
+        & (df["country"].isin(["US", "UK"]))
+        & (df["subscription"] != "free")
+    )
+    return df[mask]
+
+
+def filter_orders(df: pd.DataFrame) -> pd.DataFrame:
+    mask = (
+        (df["order_date"] >= "2024-01-01")
+        & (df["total"] > 50)
+        & (df["cancelled"] == False)
+        & (df["items_count"] > 0)
+    )
+    return df[mask]

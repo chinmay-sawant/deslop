@@ -1,0 +1,15 @@
+fn build_string(n: usize) -> String {
+    let mut result = String::new();
+    for i in 0..n {
+        result = format!("{}{}", result, i);
+    }
+    result
+}
+
+fn collect_growing(n: usize) -> Vec<u64> {
+    let mut result = Vec::new();
+    for i in 0..n {
+        result = result.into_iter().chain(std::iter::once(i as u64)).collect();
+    }
+    result
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_depends_on_transport_request_type: Service signatures that accept request DTOs declared in handler or transport packages.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule165NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule165NegativeService interface {
+	Run(context.Context, Rule165NegativeRecord) error
+}
+
+func scenario165Negative(ctx context.Context, service Rule165NegativeService, input Rule165NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

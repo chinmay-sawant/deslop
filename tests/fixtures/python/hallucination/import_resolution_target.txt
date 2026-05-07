@@ -1,5 +1,0 @@
-def existing_function():
-    pass
-
-class RealImportedClass:
-    pass

@@ -1,0 +1,32 @@
+from celery import shared_task
+from flask import request
+
+
+@shared_task
+def process_order_background(order_data: dict):
+    user_id = order_data["user_id"]
+    request_id = order_data.get("request_id")
+
+    if request_id:
+        request_context = get_request_context(request_id)
+        user_timezone = request_context.get("timezone", "UTC")
+        user_locale = request_context.get("locale", "en")
+    else:
+        user_timezone = "UTC"
+        user_locale = "en"
+
+    order = create_order(order_data, timezone=user_timezone, locale=user_locale)
+    send_confirmation_email(order)
+    return order.id
+
+
+@shared_task
+def generate_report_for_user(request_data: dict):
+    current_user = request_data.get("current_user")
+    if current_user:
+        permissions = current_user.get("permissions", [])
+    else:
+        permissions = []
+
+    report = build_report(request_data["filters"], permissions)
+    return report.id

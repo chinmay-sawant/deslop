@@ -1,0 +1,14 @@
+{
+  "id": "bytes_newbufferstring_on_string_conversion",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.NewBufferString(string(b))` instead of using the byte slice directly.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

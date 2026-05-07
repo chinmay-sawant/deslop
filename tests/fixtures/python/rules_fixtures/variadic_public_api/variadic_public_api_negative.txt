@@ -1,0 +1,30 @@
+from dataclasses import dataclass, field
+from typing import Any
+
+@dataclass
+class QueryFilter:
+    field: str
+    operator: str
+    value: Any
+
+def build_query(filters: list[QueryFilter], order_by: str | None = None) -> str:
+    clauses = [f"{f.field} {f.operator} {f.value}" for f in filters]
+    query = " AND ".join(clauses)
+    if order_by:
+        query += f" ORDER BY {order_by}"
+    return query
+
+def log_event(event_type: str, metadata: dict[str, Any] | None = None):
+    parts = [event_type]
+    if metadata:
+        parts.extend(f"{k}={v}" for k, v in metadata.items())
+    print(" | ".join(parts))
+
+@dataclass
+class Config:
+    name: str
+    options: dict[str, Any] = field(default_factory=dict)
+    extra_positional: list[Any] = field(default_factory=list)
+
+def create_config(name: str, options: dict[str, Any] | None = None) -> Config:
+    return Config(name=name, options=options or {})

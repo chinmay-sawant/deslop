@@ -1,0 +1,19 @@
+def load_and_process(config_path):
+    with open(config_path, "r") as f:
+        version = f.readline().strip()
+
+    with open(config_path, "r") as f:
+        content = f.read()
+
+    with open(config_path, "r") as f:
+        line_count = len(f.readlines())
+
+    with open(config_path, "r") as f:
+        sections = [line for line in f if line.startswith("[")]
+
+    return {
+        "version": version,
+        "content": content,
+        "line_count": line_count,
+        "sections": sections,
+    }

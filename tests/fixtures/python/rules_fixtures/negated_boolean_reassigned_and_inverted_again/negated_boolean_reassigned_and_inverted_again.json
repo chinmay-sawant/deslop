@@ -1,0 +1,14 @@
+{
+  "id": "negated_boolean_reassigned_and_inverted_again",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag control flow that repeatedly flips boolean state instead of naming the intended condition directly.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

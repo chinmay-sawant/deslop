@@ -1,0 +1,14 @@
+{
+  "id": "updates_with_struct_used_for_patch_without_field_intent_helper",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "PATCH-style repository writes that rely on struct zero-value semantics without explicit field intent.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

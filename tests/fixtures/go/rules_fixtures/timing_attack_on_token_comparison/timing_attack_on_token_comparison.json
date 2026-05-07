@@ -1,0 +1,14 @@
+{
+  "id": "timing_attack_on_token_comparison",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

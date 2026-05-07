@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for order_by_clause_literals_scattered_across_layers: Raw sort expressions duplicated in handlers and services instead of query helpers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule106NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule106NegativeService interface {
+	Run(context.Context, Rule106NegativeRecord) error
+}
+
+func scenario106Negative(ctx context.Context, service Rule106NegativeService, input Rule106NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

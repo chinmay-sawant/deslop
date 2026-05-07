@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_hot_path_optimization_attribute_lookup_in_deep_inner_loop",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Hot path optimization. Flag repeated dynamic getattr or attribute lookup in deep loops where local binding helps.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

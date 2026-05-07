@@ -1,0 +1,14 @@
+{
+  "id": "n_plus_one_query",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

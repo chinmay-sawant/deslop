@@ -1,4 +1,0 @@
-def parse_user(cursor, payload):
-    cursor.execute("INSERT INTO users VALUES (?)", payload)
-    cursor.commit()
-    return payload

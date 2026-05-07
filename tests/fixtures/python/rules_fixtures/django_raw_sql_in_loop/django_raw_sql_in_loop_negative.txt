@@ -1,0 +1,22 @@
+from django.db import connection
+from django.http import JsonResponse
+from django.views import View
+
+
+class UserActivityView(View):
+    def get(self, request):
+        user_ids = request.GET.getlist("user_ids")
+        with connection.cursor() as cursor:
+            placeholders = ",".join(["%s"] * len(user_ids))
+            cursor.execute(
+                f"SELECT user_id, action, created_at FROM activity_log "
+                f"WHERE user_id IN ({placeholders}) "
+                f"ORDER BY user_id, created_at DESC",
+                user_ids,
+            )
+            rows = cursor.fetchall()
+        by_user = {}
+        for uid, action, created_at in rows:
+            by_user.setdefault(uid, []).append({"action": action, "created_at": str(created_at)})
+        activities = [{"user_id": uid, "actions": acts} for uid, acts in by_user.items()]
+        return JsonResponse({"activities": activities})

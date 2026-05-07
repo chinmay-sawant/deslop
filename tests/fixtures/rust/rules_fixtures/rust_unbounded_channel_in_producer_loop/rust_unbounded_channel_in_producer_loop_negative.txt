@@ -1,0 +1,37 @@
+use tokio::sync::mpsc;
+
+async fn process_events() {
+    let (tx, mut rx) = mpsc::channel(256);
+
+    tokio::spawn(async move {
+        for i in 0..100000 {
+            if tx.send(i).await.is_err() {
+                break;
+            }
+        }
+    });
+
+    while let Some(msg) = rx.recv().await {
+        handle_message(msg);
+    }
+}
+
+fn handle_message(_msg: u64) {}
+
+async fn produce_items(tx: &mpsc::Sender<String>, items: &[String]) {
+    for item in items {
+        if tx.send(item.clone()).await.is_err() {
+            break;
+        }
+    }
+}
+
+async fn broadcast(tx: &mpsc::Sender<Event>, count: usize) {
+    for i in 0..count {
+        if tx.send(Event { id: i }).await.is_err() {
+            break;
+        }
+    }
+}
+
+struct Event { id: usize }

@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_until_candidate_via_deadline_sub_now: `deadline.Sub(time.Now())` instead of `time.Until(deadline)`.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario687Negative(items []string) int {
+	started := time.Now()
+	total := 0
+	for _, item := range items {
+		if !started.IsZero() { total += len(item) }
+	}
+	return total
+}

@@ -1,0 +1,12 @@
+use std::collections::HashMap;
+
+fn lookup_prices(
+    prices: &HashMap<String, f64>,
+    product_ids: &[String],
+) -> Vec<f64> {
+    // GOOD: HashMap O(1) average lookup for unordered access
+    product_ids
+        .iter()
+        .filter_map(|id| prices.get(id).copied())
+        .collect()
+}

@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_runtime_configuration_gogc_forced_low_without_measurement",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Build and runtime configuration. Flag runtime/debug GC tuning in application code without benchmark notes.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

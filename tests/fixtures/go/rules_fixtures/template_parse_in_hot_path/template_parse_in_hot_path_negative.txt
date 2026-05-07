@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for template_parse_in_hot_path: html/template or text/template parse calls observed on request-style paths instead of startup-time caching.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule370NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario370Negative(records []Rule370NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag []byte(string) conversions used only to write strings to writers.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

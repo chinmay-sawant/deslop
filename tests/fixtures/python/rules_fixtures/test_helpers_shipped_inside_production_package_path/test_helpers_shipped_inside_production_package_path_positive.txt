@@ -1,0 +1,8 @@
+myapp/
+    __init__.py
+    models.py
+    service.py
+    _test_helpers.py
+    _factories.py
+    tests/
+        test_service.py

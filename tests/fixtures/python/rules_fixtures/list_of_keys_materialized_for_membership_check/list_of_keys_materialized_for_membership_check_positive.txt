@@ -1,0 +1,24 @@
+def lookup_user(config: dict, username: str) -> dict | None:
+    all_keys = list(config.keys())
+    if username in all_keys:
+        return config[username]
+    return None
+
+
+def find_matching_config(settings: dict, target_key: str) -> str | None:
+    keys_list = list(settings.keys())
+    if target_key in keys_list:
+        return settings[target_key]
+    return None
+
+
+def validate_permissions(user_roles: dict, required_role: str) -> bool:
+    available_roles = list(user_roles.keys())
+    return required_role in available_roles
+
+
+def check_feature_flags(flags: dict, feature_name: str) -> bool:
+    flag_keys = list(flags.keys())
+    if feature_name in flag_keys:
+        return flags[feature_name]
+    return False

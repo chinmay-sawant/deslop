@@ -1,0 +1,14 @@
+{
+  "id": "rust_mpsc_receiver_iter_without_shutdown_signal",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag blocking receiver iteration without timeout, close path, cancellation, or sentinel.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

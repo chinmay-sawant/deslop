@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for table_driven_tests_mix_multiple_domains_in_one_cases_slice: Oversized case tables that mix unrelated behaviors into one monolithic test.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule196PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario196Positive(w http.ResponseWriter, r *http.Request, repo Rule196PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_set_language_repeated_inside_hot_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated `parser.set_language(...)` calls inside loops that parse the same language repeatedly.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

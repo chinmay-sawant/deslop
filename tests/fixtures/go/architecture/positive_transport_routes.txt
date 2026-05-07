@@ -1,7 +1,0 @@
-package transport
-
-import "github.com/gin-gonic/gin"
-
-func RegisterTransportRoutes(engine *gin.Engine) {
-    engine.GET("/transport/users", func(c *gin.Context) {})
-}

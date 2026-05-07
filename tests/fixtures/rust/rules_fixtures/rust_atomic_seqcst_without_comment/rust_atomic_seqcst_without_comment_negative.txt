@@ -1,0 +1,33 @@
+use std::sync::atomic::{AtomicU64, AtomicBool, Ordering};
+
+static COUNTER: AtomicU64 = AtomicU64::new(0);
+static READY: AtomicBool = AtomicBool::new(false);
+
+/// Sets the ready flag and increments the counter.
+///
+/// Relies on SeqCst to ensure the flag is visible to all threads
+/// before the counter increment, establishing a happens-before
+/// relationship with `check_ready`.
+fn mark_ready() {
+    READY.store(true, Ordering::SeqCst);
+    COUNTER.fetch_add(1, Ordering::SeqCst);
+}
+
+/// Checks whether the system has been marked ready.
+///
+/// Uses SeqCst to synchronize with `mark_ready` and guarantee
+/// we observe the flag update on any thread that previously
+/// called `mark_ready`.
+fn check_ready() -> bool {
+    READY.load(Ordering::SeqCst)
+}
+
+/// Returns the current counter value with acquire ordering.
+fn get_count() -> u64 {
+    COUNTER.load(Ordering::Acquire)
+}
+
+fn reset() {
+    COUNTER.store(0, Ordering::SeqCst);
+    READY.store(false, Ordering::SeqCst);
+}

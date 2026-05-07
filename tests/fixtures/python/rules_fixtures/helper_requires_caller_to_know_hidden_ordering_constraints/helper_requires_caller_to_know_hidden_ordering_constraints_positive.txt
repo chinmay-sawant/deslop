@@ -1,0 +1,55 @@
+class ConnectionSetup:
+    def __init__(self):
+        self._connected = False
+        self._socket = None
+
+    def configure(self, host, port):
+        self._host = host
+        self._port = port
+
+    def connect(self):
+        self._socket = socket.create_connection((self._host, self._port))
+        self._connected = True
+
+    def authenticate(self, username, password):
+        if not self._connected:
+            raise RuntimeError("Must call connect() before authenticate()")
+        self._socket.send(f"AUTH {username} {password}\n".encode())
+
+    def send(self, data):
+        if not self._connected:
+            raise RuntimeError("Must call connect() before send()")
+        self._socket.send(data.encode())
+
+    def close(self):
+        if self._socket:
+            self._socket.close()
+            self._connected = False
+
+class PipelineBuilder:
+    def __init__(self):
+        self._steps = []
+
+    def add_source(self, source):
+        self._steps.append(("source", source))
+
+    def add_transform(self, fn):
+        if not self._steps:
+            raise RuntimeError("Must add source before transform")
+        self._steps.append(("transform", fn))
+
+    def add_sink(self, sink):
+        if not self._steps:
+            raise RuntimeError("Must add source before sink")
+        self._steps.append(("sink", sink))
+
+    def execute(self):
+        data = None
+        for step_type, step_fn in self._steps:
+            if step_type == "source":
+                data = step_fn()
+            elif step_type == "transform":
+                data = step_fn(data)
+            elif step_type == "sink":
+                step_fn(data)
+        return data

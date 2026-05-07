@@ -1,0 +1,19 @@
+def migrate_user_data(source_path, target_path):
+    with open(source_path, "r") as f:
+        users = f.readlines()
+
+    with open(source_path, "r") as f:
+        header = f.readline().strip()
+
+    with open(source_path, "r") as f:
+        metadata = f.read().count(",")
+
+    with open(target_path, "w") as f:
+        f.write(f"Header: {header}\n")
+        for user in users:
+            f.write(user.strip() + "\n")
+
+    with open(target_path, "r") as f:
+        result = f.read()
+
+    return result

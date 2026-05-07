@@ -2,7 +2,7 @@ use super::common::FormattedErrorCall;
 
 // ── Owned evidence storage ────────────────────────────────────────────────────
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub(crate) struct GoFunctionEvidence {
     pub has_context_parameter: bool,
     pub context_factory_calls: Vec<ContextFactoryCall>,

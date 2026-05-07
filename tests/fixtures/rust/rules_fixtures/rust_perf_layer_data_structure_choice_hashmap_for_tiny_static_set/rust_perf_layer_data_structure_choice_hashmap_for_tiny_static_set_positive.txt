@@ -1,0 +1,10 @@
+use std::collections::HashMap;
+
+fn is_valid_status(status: &str) -> bool {
+    // BAD: HashMap for tiny static set, hashing overhead dominates
+    let mut valid = HashMap::new();
+    valid.insert("active", ());
+    valid.insert("pending", ());
+    valid.insert("suspended", ());
+    valid.contains_key(status)
+}

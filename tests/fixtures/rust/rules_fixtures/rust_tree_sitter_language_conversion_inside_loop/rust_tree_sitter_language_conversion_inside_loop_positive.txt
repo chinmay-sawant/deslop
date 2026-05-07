@@ -1,0 +1,24 @@
+use tree_sitter::Parser;
+
+fn parse_files(files: &[&str]) {
+    for file_path in files {
+        let source = std::fs::read_to_string(file_path).unwrap();
+        let mut parser = Parser::new();
+        let language = get_language_for_file(file_path);
+        parser.set_language(&language.into()).unwrap();
+        let tree = parser.parse(&source, None).unwrap();
+        process_tree(tree.root_node(), &source);
+    }
+}
+
+fn get_language_for_file(path: &str) -> tree_sitter::Language {
+    if path.ends_with(".rs") {
+        tree_sitter_rust::LANGUAGE.into()
+    } else if path.ends_with(".py") {
+        tree_sitter_python::LANGUAGE.into()
+    } else {
+        tree_sitter_rust::LANGUAGE.into()
+    }
+}
+
+fn process_tree(_node: tree_sitter::Node, _source: &str) {}

@@ -1,0 +1,14 @@
+{
+  "id": "env_var_in_error_message",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`fmt.Errorf(\"... %s\", os.Getenv(\"SECRET_KEY\"))` or similar patterns that embed environment variable values in errors",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

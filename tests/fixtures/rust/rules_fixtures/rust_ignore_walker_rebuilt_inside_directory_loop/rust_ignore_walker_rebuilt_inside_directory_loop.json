@@ -1,0 +1,14 @@
+{
+  "id": "rust_ignore_walker_rebuilt_inside_directory_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `WalkBuilder::new(...)` construction inside recursive or per-directory loops.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

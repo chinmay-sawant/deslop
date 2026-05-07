@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_profiling_benchmarking_alloc_sensitive_benchmark_without_alloc_counts",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag allocation-sensitive benchmarks that omit allocation counting or heap profiling.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

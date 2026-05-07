@@ -1,0 +1,41 @@
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.post("/users/batch")
+async def create_users(users: list[dict]):
+    results = []
+    errors = []
+    for user_data in users:
+        try:
+            user = create_user(user_data)
+            results.append({"id": user.id, "status": "created"})
+        except Exception as e:
+            errors.append({"email": user_data.get("email"), "error": str(e)})
+    return {"created": results, "errors": errors}
+
+
+@app.put("/products/batch")
+async def update_products(products: list[dict]):
+    results = []
+    for product_data in products:
+        try:
+            product = update_product(product_data)
+            results.append({"id": product.id, "status": "updated"})
+        except Exception as e:
+            results.append({"id": product_data.get("id"), "status": "failed", "error": str(e)})
+    return {"results": results}
+
+
+@app.delete("/items/batch")
+async def delete_items(item_ids: list[int]):
+    deleted = 0
+    failed = []
+    for item_id in item_ids:
+        try:
+            delete_item(item_id)
+            deleted += 1
+        except Exception:
+            failed.append(item_id)
+    return {"deleted": deleted, "failed": failed}

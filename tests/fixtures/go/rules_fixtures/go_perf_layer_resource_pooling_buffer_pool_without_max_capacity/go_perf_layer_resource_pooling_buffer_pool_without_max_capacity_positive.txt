@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_resource_pooling_buffer_pool_without_max_capacity: Layer: Resource pooling. Flag buffer pools that return arbitrarily large buffers and retain memory after spikes.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule579PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario579Positive(records []Rule579PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

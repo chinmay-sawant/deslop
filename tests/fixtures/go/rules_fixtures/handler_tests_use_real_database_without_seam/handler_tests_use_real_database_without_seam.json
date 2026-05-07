@@ -1,0 +1,14 @@
+{
+  "id": "handler_tests_use_real_database_without_seam",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handler tests that hit real DB setup even though repository or service seams exist.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

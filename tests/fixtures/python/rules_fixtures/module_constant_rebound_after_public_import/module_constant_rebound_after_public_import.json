@@ -1,0 +1,14 @@
+{
+  "id": "module_constant_rebound_after_public_import",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag modules that expose apparent constants and later rebind them during normal runtime flow.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

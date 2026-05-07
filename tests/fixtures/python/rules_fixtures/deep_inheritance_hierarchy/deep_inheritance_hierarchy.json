@@ -1,0 +1,14 @@
+{
+  "id": "deep_inheritance_hierarchy",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repository-local Python class chains with unusually deep inheritance depth.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

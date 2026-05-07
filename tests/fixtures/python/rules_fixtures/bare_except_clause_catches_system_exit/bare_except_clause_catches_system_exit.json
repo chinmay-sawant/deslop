@@ -1,0 +1,14 @@
+{
+  "id": "bare_except_clause_catches_system_exit",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Bare `except:` or `except BaseException` catches SystemExit and KeyboardInterrupt unintentionally.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

@@ -1,0 +1,30 @@
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+
+app = FastAPI()
+
+
+@app.get("/export/csv")
+async def export_csv():
+    data = generate_csv_data()
+    return StreamingResponse(
+        iter([data]),
+        media_type="text/csv",
+    )
+
+
+@app.get("/download/report")
+async def download_report():
+    pdf_bytes = generate_pdf_report()
+    return StreamingResponse(
+        iter([pdf_bytes]),
+    )
+
+
+@app.get("/image/avatar/{user_id}")
+async def get_avatar(user_id: int):
+    image_data = load_avatar(user_id)
+    return StreamingResponse(
+        iter([image_data]),
+        media_type="application/octet-stream",
+    )

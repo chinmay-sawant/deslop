@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for request_context_value_extraction_duplicated_across_handlers: Repeated current-user, tenant, locale, or auth extraction logic.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule139PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario139Positive(w http.ResponseWriter, r *http.Request, repo Rule139PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

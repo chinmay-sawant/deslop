@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_async_concurrency_busy_poll_future_loop",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag async loops that poll with try_recv or zero sleeps instead of awaiting notifications.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

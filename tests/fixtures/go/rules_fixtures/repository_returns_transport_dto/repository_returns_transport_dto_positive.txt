@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for repository_returns_transport_dto: Repositories that know about response contracts instead of returning persistence or domain results.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule135PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario135Positive(w http.ResponseWriter, r *http.Request, repo Rule135PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

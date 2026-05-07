@@ -1,0 +1,16 @@
+from pathlib import Path
+
+
+def collect_output_files(base_dir, filenames):
+    output_dir = Path(base_dir) / "output"
+    return [str(output_dir / name) for name in filenames]
+
+
+def build_asset_paths(project_root, assets):
+    asset_dir = Path(project_root) / "static" / "assets"
+    return [asset_dir / asset for asset in assets]
+
+
+def generate_report_paths(base, report_names):
+    report_dir = Path(base) / "reports" / "2024"
+    return [report_dir / f"{name}.pdf" for name in report_names]

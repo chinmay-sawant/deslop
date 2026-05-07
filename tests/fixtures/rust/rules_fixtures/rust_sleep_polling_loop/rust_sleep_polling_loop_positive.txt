@@ -1,0 +1,43 @@
+use std::thread;
+use std::time::Duration;
+
+fn wait_for_ready() -> bool {
+    std::path::Path::new("/tmp/ready").exists()
+}
+
+fn poll_until_ready() {
+    loop {
+        if wait_for_ready() {
+            break;
+        }
+        thread::sleep(Duration::from_millis(100));
+    }
+}
+
+fn poll_with_fixed_sleep() {
+    loop {
+        match check_service_health() {
+            Ok(()) => break,
+            Err(_) => {
+                thread::sleep(Duration::from_secs(1));
+            }
+        }
+    }
+}
+
+async fn async_poll_loop() {
+    loop {
+        let status = fetch_status().await;
+        if status == "ready" {
+            break;
+        }
+        tokio::time::sleep(Duration::from_millis(500)).await;
+    }
+}
+
+fn check_service_health() -> Result<(), ()> { Err(()) }
+async fn fetch_status() -> String { "pending".into() }
+
+fn main() {
+    poll_until_ready();
+}

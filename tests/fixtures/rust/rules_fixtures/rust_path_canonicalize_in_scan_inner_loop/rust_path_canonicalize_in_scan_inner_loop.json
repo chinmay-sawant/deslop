@@ -1,0 +1,14 @@
+{
+  "id": "rust_path_canonicalize_in_scan_inner_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated canonicalization for every path in a hot repository traversal when relative normalized paths would be enough.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

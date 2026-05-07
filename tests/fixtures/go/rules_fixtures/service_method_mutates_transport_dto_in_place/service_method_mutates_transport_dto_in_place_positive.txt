@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for service_method_mutates_transport_dto_in_place: Services that rewrite handler DTOs instead of mapping to service-layer inputs.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule174PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario174Positive(w http.ResponseWriter, r *http.Request, repo Rule174PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

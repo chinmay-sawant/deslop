@@ -1,0 +1,28 @@
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum ApiError {
+    #[error("request failed with status {status}")]
+    RequestFailed { status: u16 },
+
+    #[error("response missing required field: {field}")]
+    MissingField { field: String },
+
+    #[error("response exceeded size limit of {max_bytes} bytes")]
+    ResponseTooLarge { max_bytes: usize },
+
+    #[error("connection timed out after {timeout_ms}ms")]
+    Timeout { timeout_ms: u64 },
+
+    #[error("rate limited, retry after {retry_after_secs}s")]
+    RateLimited { retry_after_secs: u64 },
+}
+
+#[derive(Error, Debug)]
+pub enum ConfigError {
+    #[error("file not found at {path}")]
+    FileNotFound { path: String },
+
+    #[error("invalid TOML at line {line}")]
+    InvalidFormat { line: usize },
+}

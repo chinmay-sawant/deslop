@@ -1,0 +1,14 @@
+{
+  "id": "unscoped_query_without_explicit_danger_naming",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`Unscoped()` usage in generic repository methods without a clearly dangerous or admin-only name.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

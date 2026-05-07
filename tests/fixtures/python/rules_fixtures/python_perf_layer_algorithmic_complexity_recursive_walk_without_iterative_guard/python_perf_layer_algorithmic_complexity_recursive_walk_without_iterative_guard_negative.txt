@@ -1,0 +1,42 @@
+from collections import deque
+
+
+def flatten_tree(node, max_depth=100):
+    results = []
+    queue = deque([(node, 0)])
+    while queue:
+        current, depth = queue.popleft()
+        if depth > max_depth:
+            raise RecursionError("Maximum tree depth exceeded")
+        results.append(current.value)
+        for child in current.children:
+            queue.append((child, depth + 1))
+    return results
+
+
+def find_all_descendants(root, max_depth=50):
+    descendants = []
+    stack = [(root, 0)]
+    while stack:
+        node, depth = stack.pop()
+        if depth > max_depth:
+            continue
+        for child in node.children:
+            descendants.append(child)
+            stack.append((child, depth + 1))
+    return descendants
+
+
+def count_nested_items(structure, max_depth=20):
+    total = 0
+    stack = [(structure, 0)]
+    while stack:
+        items, depth = stack.pop()
+        if depth > max_depth:
+            raise ValueError("Nested structure too deep")
+        for item in items:
+            if isinstance(item, list):
+                stack.append((item, depth + 1))
+            else:
+                total += 1
+    return total

@@ -1,0 +1,29 @@
+import bisect
+
+
+def find_cheapest_product(products: list[dict]) -> dict:
+    return min(products, key=lambda p: p["price"])
+
+
+def get_top_scorer(students: list[dict]) -> dict:
+    return max(students, key=lambda s: s["score"])
+
+
+def is_sorted_ascending(numbers: list[int]) -> bool:
+    for i in range(len(numbers) - 1):
+        if numbers[i] > numbers[i + 1]:
+            return False
+    return True
+
+
+def has_duplicate(items: list[str]) -> bool:
+    seen: set[str] = set()
+    for item in items:
+        if item in seen:
+            return True
+        seen.add(item)
+    return False
+
+
+def get_oldest_record(records: list[dict]) -> dict:
+    return min(records, key=lambda r: r["created_at"])

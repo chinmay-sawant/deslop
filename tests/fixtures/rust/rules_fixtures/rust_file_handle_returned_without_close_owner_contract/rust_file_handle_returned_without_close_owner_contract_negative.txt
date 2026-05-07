@@ -1,0 +1,18 @@
+use std::fs::File;
+use std::io;
+use std::path::Path;
+
+struct ConfigHandle {
+    file: File,
+}
+
+impl Drop for ConfigHandle {
+    fn drop(&mut self) {
+        let _ = self.file.sync_all();
+    }
+}
+
+fn open_config(path: &Path) -> io::Result<ConfigHandle> {
+    let file = File::open(path)?;
+    Ok(ConfigHandle { file })
+}

@@ -1,0 +1,30 @@
+import re
+from typing import Dict, List
+
+def extract_data(text: str) -> Dict[str, str]:
+    email_match = re.search(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text)
+    phone_match = re.search(r'\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}', text)
+    date_match = re.search(r'\d{4}-\d{2}-\d{2}', text)
+    url_match = re.search(r'https?://[^\s]+', text)
+    ip_match = re.search(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', text)
+
+    result: Dict[str, str] = {}
+    if email_match:
+        result["email"] = email_match.group()
+    if phone_match:
+        result["phone"] = phone_match.group()
+    if date_match:
+        result["date"] = date_match.group()
+    if url_match:
+        result["url"] = url_match.group()
+    if ip_match:
+        result["ip"] = ip_match.group()
+
+    cleaned = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '[EMAIL]', text)
+    cleaned = re.sub(r'\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}', '[PHONE]', cleaned)
+    cleaned = re.sub(r'\d{4}-\d{2}-\d{2}', '[DATE]', cleaned)
+    cleaned = re.sub(r'https?://[^\s]+', '[URL]', cleaned)
+    cleaned = re.sub(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', '[IP]', cleaned)
+    result["sanitized"] = cleaned
+
+    return result

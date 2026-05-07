@@ -1,0 +1,14 @@
+{
+  "id": "nested_append_without_outer_capacity",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Append calls inside nested loops without visible preallocation on the outer slice.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

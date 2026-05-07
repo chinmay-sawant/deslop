@@ -1,0 +1,14 @@
+{
+  "id": "serialization_then_deserialization_between_adjacent_helpers",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag neighboring helpers that bounce data through serialized text or bytes without need.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

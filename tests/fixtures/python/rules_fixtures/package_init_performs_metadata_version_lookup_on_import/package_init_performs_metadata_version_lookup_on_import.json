@@ -1,0 +1,14 @@
+{
+  "id": "package_init_performs_metadata_version_lookup_on_import",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag package __init__ files that do runtime metadata lookups just to expose a version.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

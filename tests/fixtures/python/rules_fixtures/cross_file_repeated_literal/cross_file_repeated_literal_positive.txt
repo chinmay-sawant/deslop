@@ -1,0 +1,19 @@
+def connect_to_api():
+    url = "https://api.production.internal/v2/data-service/authenticate"
+    return requests.get(url)
+
+
+def fetch_records():
+    url = "https://api.production.internal/v2/data-service/authenticate"
+    response = requests.get(url)
+    return response.json()
+
+
+def send_report():
+    url = "https://api.production.internal/v2/data-service/authenticate"
+    requests.post(url, json={"report": "data"})
+
+
+def validate_token():
+    endpoint = "https://api.production.internal/v2/data-service/authenticate"
+    return check_token(endpoint)

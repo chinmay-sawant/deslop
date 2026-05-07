@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for builder_write_rune_ascii_literal: `strings.Builder.WriteRune('x')` for ASCII literals instead of `WriteByte`.
+// fixture polarity: negative; family: performance; severity: info.
+type Rule444NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario444Negative(records []Rule444NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

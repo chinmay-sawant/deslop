@@ -1,0 +1,11 @@
+fn find_common(left: &[u64], right: &[u64]) -> Vec<u64> {
+    let mut result = Vec::new();
+    for &l in left {
+        for &r in right {
+            if l == r {
+                result.push(l);
+            }
+        }
+    }
+    result
+}

@@ -1,0 +1,14 @@
+{
+  "id": "full_response_or_export_buffered_before_incremental_consumer_use",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag producers that fully buffer large outputs before handing them to a consumer.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

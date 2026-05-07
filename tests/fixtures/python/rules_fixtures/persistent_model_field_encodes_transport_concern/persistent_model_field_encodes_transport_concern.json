@@ -1,0 +1,14 @@
+{
+  "id": "persistent_model_field_encodes_transport_concern",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "SQLAlchemy or Django ORM model carries a field that encodes HTTP or transport metadata such as status codes.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

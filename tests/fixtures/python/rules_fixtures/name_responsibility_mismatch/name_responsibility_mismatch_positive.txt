@@ -1,0 +1,31 @@
+from typing import List, Dict, Any
+
+def get_user_data(user_id: int) -> dict:
+    import requests
+    response = requests.get(f"https://api.example.com/users/{user_id}", timeout=30)
+    data = response.json()
+    _send_analytics("user_fetch", user_id)
+    _update_cache(f"user:{user_id}", data)
+    return data
+
+def _send_analytics(event: str, user_id: int) -> None:
+    requests.post("https://analytics.example.com/events", json={
+        "event": event,
+        "user_id": user_id,
+    }, timeout=10)
+
+def _update_cache(key: str, value: Any) -> None:
+    import redis
+    client = redis.Redis()
+    client.set(key, value, ex=3600)
+
+def calculate_shipping(weight: float, destination: str) -> float:
+    rate = _get_shipping_rate(destination)
+    tax = _calculate_tax(destination)
+    return weight * rate * (1 + tax)
+
+def _get_shipping_rate(destination: str) -> float:
+    return 5.99
+
+def _calculate_tax(destination: str) -> float:
+    return 0.08

@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_custom_deserialize_panics",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag custom `Deserialize` impls or visitors that call `unwrap`, `expect`, `panic`, or unchecked indexing.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

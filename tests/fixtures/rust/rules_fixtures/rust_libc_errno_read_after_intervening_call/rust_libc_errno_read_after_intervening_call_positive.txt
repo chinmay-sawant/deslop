@@ -1,0 +1,10 @@
+fn read_with_errno(fd: libc::c_int, buf: &mut [u8]) -> isize {
+    let result = unsafe { libc::read(fd, buf.as_mut_ptr() as *mut libc::c_void, buf.len()) };
+    if result == -1 {
+        let _log = format!("read failed, errno: {}", unsafe { *libc::__errno_location() });
+        let _ = unsafe { libc::close(fd) };
+        let errno_after_close = unsafe { *libc::__errno_location() };
+        return -(errno_after_close as isize);
+    }
+    result
+}

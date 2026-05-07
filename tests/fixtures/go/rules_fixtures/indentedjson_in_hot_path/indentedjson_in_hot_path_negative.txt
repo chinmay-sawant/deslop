@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for indentedjson_in_hot_path: IndentedJSON(...) used on a request path instead of compact JSON rendering.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule319NegativeRecord struct {
+	Name string
+}
+
+type Rule319NegativeService interface {
+	Handle(context.Context, Rule319NegativeRecord) (Rule319NegativeRecord, error)
+}
+
+func scenario319Negative(ctx context.Context, service Rule319NegativeService, input Rule319NegativeRecord) (Rule319NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule319NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

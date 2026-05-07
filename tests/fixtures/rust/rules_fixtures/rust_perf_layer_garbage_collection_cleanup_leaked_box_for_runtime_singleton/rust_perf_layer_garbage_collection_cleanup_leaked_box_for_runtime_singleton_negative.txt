@@ -1,0 +1,17 @@
+use std::sync::OnceLock;
+
+struct RuntimeConfig {
+    db_url: String,
+    pool_size: u32,
+}
+
+// GOOD: OnceLock expresses ownership and initialization semantics clearly
+static CONFIG: OnceLock<RuntimeConfig> = OnceLock::new();
+
+fn init_runtime(config: RuntimeConfig) {
+    CONFIG.set(config).expect("config already initialized");
+}
+
+fn get_config() -> &'static RuntimeConfig {
+    CONFIG.get().expect("config not initialized")
+}

@@ -1,0 +1,14 @@
+{
+  "id": "manual_dict_increment_instead_of_counter_or_defaultdict",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Frequency counter maintained with manual if-key-in-dict increment; use collections.Counter.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

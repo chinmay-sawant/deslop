@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_method_returns_transport_writer_or_gin_h: Services that return `gin.H`, `http.ResponseWriter`, or response-writing helpers.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule178NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule178NegativeService interface {
+	Run(context.Context, Rule178NegativeRecord) error
+}
+
+func scenario178Negative(ctx context.Context, service Rule178NegativeService, input Rule178NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

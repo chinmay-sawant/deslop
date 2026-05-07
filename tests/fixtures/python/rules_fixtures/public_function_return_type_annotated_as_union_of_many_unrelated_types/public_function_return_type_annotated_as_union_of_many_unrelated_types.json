@@ -1,0 +1,14 @@
+{
+  "id": "public_function_return_type_annotated_as_union_of_many_unrelated_types",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public function return annotation is Union of four or more unrelated types, indicating mixed concerns.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

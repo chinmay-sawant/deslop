@@ -1,0 +1,15 @@
+import pandas as pd
+
+
+def load_large_dataset(path):
+    df = pd.read_csv(path)
+    return df
+
+
+def process_big_file(filepath):
+    data = pd.read_parquet(filepath)
+    return data.groupby("category").agg({"value": "sum"})
+
+
+def read_all_records(path):
+    return pd.read_csv(path, sep="|")

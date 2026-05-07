@@ -1,0 +1,28 @@
+import json
+
+
+def process_webhook(raw_body: str) -> dict:
+    data = json.loads(raw_body)
+    event_type = data["event_type"]
+
+    parsed = json.loads(raw_body)
+    user_id = parsed["user_id"]
+
+    payload = json.loads(raw_body)
+    timestamp = payload["timestamp"]
+
+    return {"event": event_type, "user": user_id, "time": timestamp}
+
+
+def validate_and_transform(raw: str) -> dict:
+    obj = json.loads(raw)
+    if not obj.get("schema_version"):
+        raise ValueError("Missing schema")
+
+    parsed = json.loads(raw)
+    fields = parsed.get("fields", {})
+
+    loaded = json.loads(raw)
+    metadata = loaded.get("metadata", {})
+
+    return {"fields": fields, "metadata": metadata}

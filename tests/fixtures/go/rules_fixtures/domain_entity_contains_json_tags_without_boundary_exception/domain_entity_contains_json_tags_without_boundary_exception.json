@@ -1,0 +1,14 @@
+{
+  "id": "domain_entity_contains_json_tags_without_boundary_exception",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Core domain entities that are directly annotated for API serialization without a deliberate boundary exception.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

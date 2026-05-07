@@ -1,0 +1,14 @@
+{
+  "id": "repository_tests_depend_on_http_transport_types",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repository tests that assert HTTP DTOs or handler-layer types.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

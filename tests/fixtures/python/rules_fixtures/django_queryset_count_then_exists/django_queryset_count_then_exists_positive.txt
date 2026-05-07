@@ -1,0 +1,13 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Subscription
+
+
+class CheckSubscriptionView(View):
+    def get(self, request):
+        user_id = request.GET.get("user_id")
+        count = Subscription.objects.filter(user_id=user_id, active=True).count()
+        if count > 0:
+            return JsonResponse({"subscribed": True})
+        return JsonResponse({"subscribed": False})

@@ -1,0 +1,14 @@
+{
+  "id": "rust_public_bool_parameter_api",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public APIs that expose a raw boolean mode switch.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

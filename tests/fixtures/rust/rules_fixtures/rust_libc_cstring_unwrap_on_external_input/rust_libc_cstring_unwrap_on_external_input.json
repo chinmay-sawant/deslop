@@ -1,0 +1,14 @@
+{
+  "id": "rust_libc_cstring_unwrap_on_external_input",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `CString::new(user_input).unwrap ()` or `expect (...)` where embedded NUL bytes should become a recoverable error.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,23 @@
+use rayon::prelude::*;
+
+// BAD: sequential collect then immediate par_iter
+fn process_entries(dir: &Path) -> Vec<Output> {
+    let entries: Vec<DirEntry> = std::fs::read_dir(dir)
+        .unwrap()
+        .filter_map(|e| e.ok())
+        .collect();
+
+    entries.par_iter()
+        .map(|entry| process_entry(entry))
+        .collect()
+}
+
+fn transform_data(records: &[Record]) -> Vec<Output> {
+    let filtered: Vec<&Record> = records.iter()
+        .filter(|r| r.is_valid())
+        .collect();
+
+    filtered.par_iter()
+        .map(|r| transform(r))
+        .collect()
+}

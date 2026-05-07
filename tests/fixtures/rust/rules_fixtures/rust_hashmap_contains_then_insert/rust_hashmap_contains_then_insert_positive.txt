@@ -1,0 +1,15 @@
+use std::collections::HashMap;
+
+fn upsert_value(map: &mut HashMap<String, Vec<String>>, key: String, val: String) {
+    if map.contains_key(&key) {
+        map.get_mut(&key).unwrap().push(val);
+    } else {
+        map.insert(key, vec![val]);
+    }
+}
+
+fn check_then_insert(map: &mut HashMap<u64, u64>, k: u64, v: u64) {
+    if !map.contains_key(&k) {
+        map.insert(k, v);
+    }
+}

@@ -1,0 +1,39 @@
+import asyncio
+from typing import Set
+
+_background_tasks: Set[asyncio.Task] = set()
+
+async def process_items(items: list):
+    tasks = []
+    for item in items:
+        task = asyncio.create_task(transform(item))
+        tasks.append(task)
+        _background_tasks.add(task)
+        task.add_done_callback(_background_tasks.discard)
+    await asyncio.gather(*tasks, return_exceptions=True)
+
+async def handle_request(data: dict):
+    tasks = [
+        asyncio.create_task(validate(data)),
+        asyncio.create_task(audit_log(data)),
+    ]
+    _background_tasks.update(tasks)
+    for t in tasks:
+        t.add_done_callback(_background_tasks.discard)
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    for result in results:
+        if isinstance(result, Exception):
+            raise result
+    return {"status": "ok"}
+
+async def background_sync():
+    while True:
+        tasks = [
+            asyncio.create_task(pull_remote_changes()),
+            asyncio.create_task(push_local_changes()),
+        ]
+        _background_tasks.update(tasks)
+        for t in tasks:
+            t.add_done_callback(_background_tasks.discard)
+        await asyncio.gather(*tasks)
+        await asyncio.sleep(30)

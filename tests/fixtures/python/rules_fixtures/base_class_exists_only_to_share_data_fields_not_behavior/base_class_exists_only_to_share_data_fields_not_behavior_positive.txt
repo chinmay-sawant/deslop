@@ -1,0 +1,35 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class BaseEntity:
+    id: int
+    created_at: str
+    updated_at: str
+    is_active: bool
+
+
+@dataclass
+class User(BaseEntity):
+    name: str
+    email: str
+
+
+@dataclass
+class Order(BaseEntity):
+    total: float
+    status: str
+
+
+@dataclass
+class Product(BaseEntity):
+    name: str
+    price: float
+    stock: int
+
+
+@dataclass
+class Payment(BaseEntity):
+    amount: float
+    currency: str
+    transaction_id: str

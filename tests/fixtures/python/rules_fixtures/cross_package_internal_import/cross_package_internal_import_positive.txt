@@ -1,0 +1,22 @@
+from myapp.billing._internal import compute_tax, apply_discount
+from myapp.users._helpers import hash_password, validate_email
+from myapp.notifications._templates import render_email, build_sms
+
+
+def process_payment(order):
+    tax = compute_tax(order.amount, order.country)
+    discounted = apply_discount(order.amount, order.coupon)
+    return discounted + tax
+
+
+def register_user(data):
+    hashed = hash_password(data["password"])
+    validate_email(data["email"])
+    return create_user(data["email"], hashed)
+
+
+def notify_user(user, message):
+    email_body = render_email(user.name, message)
+    sms_text = build_sms(user.phone, message)
+    send_email(user.email, email_body)
+    send_sms(user.phone, sms_text)

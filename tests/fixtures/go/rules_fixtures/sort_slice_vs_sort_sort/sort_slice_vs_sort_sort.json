@@ -1,0 +1,14 @@
+{
+  "id": "sort_slice_vs_sort_sort",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

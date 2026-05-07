@@ -1,0 +1,24 @@
+import pandas as pd
+import numpy as np
+
+
+def compute_discount(df):
+    df["discount"] = df["price"] * 0.1
+    return df
+
+
+def classify_age(df):
+    df["age_group"] = np.where(df["age"] >= 18, "adult", "minor")
+    return df
+
+
+def compute_full_name(df):
+    df["full_name"] = df["first"] + " " + df["last"]
+    return df
+
+
+def normalize_scores(df):
+    mean = df["score"].mean()
+    std = df["score"].std()
+    df["normalized"] = (df["score"] - mean) / std
+    return df

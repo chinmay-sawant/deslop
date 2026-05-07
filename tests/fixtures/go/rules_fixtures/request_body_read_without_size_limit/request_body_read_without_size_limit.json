@@ -1,0 +1,14 @@
+{
+  "id": "request_body_read_without_size_limit",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "HTTP request bodies read or decoded without an observed size limit such as io.LimitReader or http.MaxBytesReader.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

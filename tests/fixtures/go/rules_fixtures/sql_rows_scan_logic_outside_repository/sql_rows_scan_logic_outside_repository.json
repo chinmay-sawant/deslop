@@ -1,0 +1,14 @@
+{
+  "id": "sql_rows_scan_logic_outside_repository",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Code outside repositories that manually scans rows into structs.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,27 @@
+def check_permission(role):
+    if role == "admin" or role == "moderator" or role == "editor" or role == "superuser":
+        return True
+    return False
+
+
+def is_valid_status(status):
+    if status == "active" or status == "pending" or status == "suspended" or status == "trial":
+        return True
+    return False
+
+
+def get_priority_level(priority):
+    if priority == "critical" or priority == "high" or priority == "urgent":
+        return "escalate"
+    elif priority == "medium" or priority == "normal" or priority == "standard":
+        return "queue"
+    else:
+        return "defer"
+
+
+def classify_response(code):
+    if code == 200 or code == 201 or code == 202 or code == 204:
+        return "success"
+    if code == 400 or code == 401 or code == 403 or code == 404:
+        return "client_error"
+    return "server_error"

@@ -1,0 +1,14 @@
+{
+  "id": "duplicate_transformation_pipeline",
+  "language": "python",
+  "family": "duplication",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repository repeats the same data transformation pipeline stages across multiple functions.",
+  "binding_location": "src/heuristics/python/duplication.rs"
+}

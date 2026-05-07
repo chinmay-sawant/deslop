@@ -1,0 +1,29 @@
+import asyncio
+import time
+import requests
+
+
+async def fetch_user_data(user_id: int):
+    response = requests.get(f"https://api.example.com/users/{user_id}")
+    return response.json()
+
+
+async def process_batch(items: list):
+    time.sleep(1)
+    results = []
+    for item in items:
+        data = requests.post("https://api.example.com/process", json=item)
+        results.append(data.json())
+    return results
+
+
+async def upload_file(file_path: str):
+    with open(file_path, "rb") as f:
+        data = f.read()
+    response = requests.put("https://api.example.com/upload", data=data)
+    return response.status_code
+
+
+async def wait_for_completion():
+    time.sleep(5)
+    return check_status()

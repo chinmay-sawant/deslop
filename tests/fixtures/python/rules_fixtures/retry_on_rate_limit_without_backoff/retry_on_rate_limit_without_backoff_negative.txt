@@ -1,0 +1,23 @@
+import time
+
+
+def fetch_data(api_url, max_retries=5):
+    for attempt in range(max_retries):
+        response = http_get(api_url)
+        if response.status_code == 429:
+            retry_after = int(response.headers.get("Retry-After", 2 ** attempt))
+            time.sleep(retry_after)
+            continue
+        return response
+    raise RuntimeError("Rate limited")
+
+
+def upload_file(file_path, upload_url, retries=3):
+    for i in range(retries):
+        resp = http_post(upload_url, file=open(file_path, "rb"))
+        if resp.status_code == 429:
+            delay = 2 ** i
+            time.sleep(delay)
+            continue
+        return resp
+    raise RuntimeError("Upload rate limited")

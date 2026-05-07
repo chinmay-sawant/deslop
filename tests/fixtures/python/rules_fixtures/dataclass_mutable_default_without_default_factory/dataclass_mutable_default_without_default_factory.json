@@ -1,0 +1,14 @@
+{
+  "id": "dataclass_mutable_default_without_default_factory",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag dataclass fields that use mutable defaults without default_factory.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

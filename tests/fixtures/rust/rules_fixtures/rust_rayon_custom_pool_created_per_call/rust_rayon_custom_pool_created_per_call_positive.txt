@@ -1,0 +1,30 @@
+use rayon::ThreadPoolBuilder;
+
+// BAD: custom pool created per call
+fn process_batch(items: &[Item]) -> Vec<Output> {
+    let pool = ThreadPoolBuilder::new()
+        .num_threads(4)
+        .build()
+        .unwrap();
+
+    pool.install(|| {
+        items.par_iter()
+            .map(|item| transform(item))
+            .collect()
+    })
+}
+
+fn analyze_dataset(data: &[f64]) -> Stats {
+    let pool = ThreadPoolBuilder::new()
+        .num_threads(8)
+        .build()
+        .unwrap();
+
+    pool.install(|| {
+        let mean = data.par_iter().sum::<f64>() / data.len() as f64;
+        let variance = data.par_iter()
+            .map(|x| (x - mean).powi(2))
+            .sum::<f64>() / data.len() as f64;
+        Stats { mean, variance }
+    })
+}

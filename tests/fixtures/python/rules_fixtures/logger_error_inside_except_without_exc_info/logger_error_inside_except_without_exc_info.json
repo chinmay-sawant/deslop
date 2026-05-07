@@ -1,0 +1,14 @@
+{
+  "id": "logger_error_inside_except_without_exc_info",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "logger.error or logger.critical called inside an except block without exc_info=True, discarding the stack trace.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

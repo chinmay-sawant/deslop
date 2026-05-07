@@ -1,0 +1,45 @@
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct AppConfig {
+    server: ServerConfig,
+    database: DatabaseConfig,
+    logging: LoggingConfig,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ServerConfig {
+    port: u16,
+    host: String,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct DatabaseConfig {
+    url: String,
+    pool_size: u32,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct LoggingConfig {
+    level: String,
+}
+
+impl AppConfig {
+    fn load(path: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        let data = std::fs::read_to_string(path)?;
+        let config: AppConfig = toml::from_str(&data)?;
+        Ok(config)
+    }
+}
+
+fn load_and_query(path: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let config = AppConfig::load(path)?;
+    let port = config.server.port;
+    let db_url = &config.database.url;
+    println!("port: {}, db: {}", port, db_url);
+    Ok(())
+}

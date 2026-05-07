@@ -1,0 +1,16 @@
+use walkdir::WalkDir;
+
+fn walk_with_policy(root: &str, include_hidden: bool, include_gitignored: bool) -> Vec<String> {
+    let mut builder = WalkDir::new(root);
+    if include_hidden {
+        builder = builder.hidden(false);
+    }
+    if include_gitignored {
+        builder = builder.git_ignore(false).git_exclude(false);
+    }
+    builder
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .map(|e| e.path().to_string_lossy().to_string())
+        .collect()
+}

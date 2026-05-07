@@ -1,0 +1,14 @@
+{
+  "id": "importlib_import_module_called_inside_request_handler",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "importlib.import_module called inside a request handler instead of at application startup.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

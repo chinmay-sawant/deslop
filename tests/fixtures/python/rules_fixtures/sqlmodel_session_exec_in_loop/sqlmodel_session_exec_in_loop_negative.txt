@@ -1,0 +1,46 @@
+from sqlmodel import Session, SQLModel, Field, create_engine, select
+from typing import Optional
+
+
+class Product(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    category: str
+
+
+class Order(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    product_id: int
+    quantity: int
+
+
+engine = create_engine("postgresql://user:pass@localhost/mydb")
+
+
+def enrich_orders(order_ids: list[int]) -> list[dict]:
+    with Session(engine) as session:
+        orders = session.exec(select(Order).where(Order.id.in_(order_ids))).all()
+        product_ids = [o.product_id for o in orders]
+        products = session.exec(select(Product).where(Product.id.in_(product_ids))).all()
+        product_map = {p.id: p for p in products}
+        return [
+            {
+                "order_id": o.id,
+                "product_name": product_map[o.product_id].name,
+                "quantity": o.quantity,
+            }
+            for o in orders
+        ]
+
+
+def find_related_products(product_ids: list[int]) -> dict[int, list[str]]:
+    with Session(engine) as session:
+        products = session.exec(select(Product).where(Product.id.in_(product_ids))).all()
+        categories = {p.category for p in products}
+        related_products = session.exec(
+            select(Product).where(Product.category.in_(categories))
+        ).all()
+        related_map: dict[str, list[str]] = {}
+        for p in related_products:
+            related_map.setdefault(p.category, []).append(p.name)
+        return {p.id: related_map.get(p.category, []) for p in products}

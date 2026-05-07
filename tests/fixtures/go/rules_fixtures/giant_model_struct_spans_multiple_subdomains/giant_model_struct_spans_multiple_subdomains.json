@@ -1,0 +1,14 @@
+{
+  "id": "giant_model_struct_spans_multiple_subdomains",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Oversized model structs that appear to merge multiple bounded contexts into one persistence shape.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

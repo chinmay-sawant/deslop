@@ -1,0 +1,19 @@
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+
+
+def process_data(data: dict) -> dict:
+    logger.debug(f"Input: {data}")
+    result = transform(data)
+    logger.debug(f"Output: {result}")
+    return result
+
+
+def transform(data: dict) -> dict:
+    return {k: v.upper() if isinstance(v, str) else v for k, v in data.items()}

@@ -1450,17 +1450,21 @@ pub(super) fn project_agnostic_boundaries_findings(
         if let Some(attr) = returned_attr
             && file_has_mutation_evidence_for_attr(file, function, &attr)
         {
-            let line = find_line(body, &format!("return self.{attr}"), function.fingerprint.start_line)
-                .or_else(|| find_line(body, "return self.", function.fingerprint.start_line))
-                .unwrap_or(function.fingerprint.start_line);
-        findings.push(make_finding(
-            "helper_returns_live_internal_collection_reference",
-            Severity::Info,
-            file,
-            function,
-            line,
-            "returns a live internal mutable collection reference",
-        ));
+            let line = find_line(
+                body,
+                &format!("return self.{attr}"),
+                function.fingerprint.start_line,
+            )
+            .or_else(|| find_line(body, "return self.", function.fingerprint.start_line))
+            .unwrap_or(function.fingerprint.start_line);
+            findings.push(make_finding(
+                "helper_returns_live_internal_collection_reference",
+                Severity::Info,
+                file,
+                function,
+                line,
+                "returns a live internal mutable collection reference",
+            ));
         }
     }
 
@@ -1635,10 +1639,22 @@ pub(super) fn project_agnostic_boundaries_findings(
         && !contains_any(
             body,
             &[
-                "\"wb\"", "\"rb\"", "\"ab\"", "'wb'", "'rb'", "'ab'",
-                "\"w+b\"", "\"r+b\"", "'w+b'", "'r+b'",
-                "iter_content", "wave.", "audio", "pcm",
-                "StreamingResponse", "BytesIO",
+                "\"wb\"",
+                "\"rb\"",
+                "\"ab\"",
+                "'wb'",
+                "'rb'",
+                "'ab'",
+                "\"w+b\"",
+                "\"r+b\"",
+                "'w+b'",
+                "'r+b'",
+                "iter_content",
+                "wave.",
+                "audio",
+                "pcm",
+                "StreamingResponse",
+                "BytesIO",
             ],
         )
     {

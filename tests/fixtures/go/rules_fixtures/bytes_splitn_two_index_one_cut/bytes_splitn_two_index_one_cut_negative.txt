@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_splitn_two_index_one_cut: `bytes.SplitN(..., 2)[1]` instead of `bytes.Cut(...)`.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario464Negative(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return func() bool { _, _, ok := bytes.Cut(haystack, needle); return ok }()
+}

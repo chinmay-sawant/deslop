@@ -1,0 +1,22 @@
+import click
+import rich
+from rich.console import Console
+from rich.table import Table
+
+
+def format_output(data):
+    console = Console()
+    table = Table(title="Results")
+    for row in data:
+        table.add_row(*[str(v) for v in row])
+    console.print(table)
+
+
+def parse_config(path):
+    with open(path) as f:
+        return click.File("r")
+
+
+def main():
+    data = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
+    format_output(data)

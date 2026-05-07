@@ -1,0 +1,9 @@
+fn sum_positive(values: &[i64]) -> i64 {
+    // GOOD: iterator avoids repeated bounds checks
+    values.iter().filter(|&&v| v > 0).sum()
+}
+
+fn find_max(values: &[f64]) -> Option<f64> {
+    // GOOD: built-in iterator method
+    values.iter().copied().reduce(f64::max)
+}

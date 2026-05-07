@@ -1,0 +1,14 @@
+{
+  "id": "sort_order_depends_on_non_explicit_mapping_iteration_semantics",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag ordering logic that depends on implicit mapping iteration instead of explicit keys.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

@@ -1,0 +1,21 @@
+fn compute_running_sums(data: &[f64]) -> Vec<f64> {
+    let mut sums = Vec::with_capacity(data.len());
+    let mut total = 0.0;
+    // GOOD: iterator avoids repeated bounds checks
+    for &val in data {
+        total += val;
+        sums.push(total);
+    }
+    sums
+}
+
+fn find_local_maxima(data: &[i32]) -> Vec<usize> {
+    let mut result = Vec::new();
+    // GOOD: windows() avoids repeated indexing
+    for (i, window) in data.windows(3).enumerate() {
+        if window[1] > window[0] && window[1] > window[2] {
+            result.push(i + 1);
+        }
+    }
+    result
+}

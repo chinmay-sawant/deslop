@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for transaction_error_translation_done_in_repository_and_handler: Both repository and handler layers translating the same transaction errors.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule207NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule207NegativeService interface {
+	Run(context.Context, Rule207NegativeRecord) error
+}
+
+func scenario207Negative(ctx context.Context, service Rule207NegativeService, input Rule207NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

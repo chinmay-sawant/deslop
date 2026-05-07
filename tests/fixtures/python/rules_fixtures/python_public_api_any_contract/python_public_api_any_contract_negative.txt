@@ -1,0 +1,21 @@
+from typing import TypeVar, Union
+
+T = TypeVar("T")
+
+
+def process_data(payload: dict[str, Union[str, int, float]]) -> dict[str, Union[str, int, float]]:
+    return transform(payload)
+
+
+def transform(item: dict[str, Union[str, int, float]]) -> dict[str, Union[str, int, float]]:
+    return {k: str(v).upper() if isinstance(v, str) else v for k, v in item.items()}
+
+
+def fetch_record(record_id: str) -> dict[str, str]:
+    return {"id": record_id, "data": "placeholder"}
+
+
+def merge_configs(base: dict[str, str], override: dict[str, str]) -> dict[str, str]:
+    result = dict(base)
+    result.update(override)
+    return result

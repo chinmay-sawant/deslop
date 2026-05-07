@@ -1,0 +1,14 @@
+{
+  "id": "closure_captures_loop_variable_without_binding",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag closures created in loops that capture the loop variable without binding the current value.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

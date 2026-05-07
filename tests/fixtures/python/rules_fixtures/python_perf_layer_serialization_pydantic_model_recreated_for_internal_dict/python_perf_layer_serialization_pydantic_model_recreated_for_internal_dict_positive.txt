@@ -1,0 +1,23 @@
+from pydantic import BaseModel
+
+
+class UserRecord(BaseModel):
+    name: str
+    email: str
+    age: int
+
+
+def process_users(raw_users: list[dict]) -> list[dict]:
+    results = []
+    for user_dict in raw_users:
+        model = UserRecord(**user_dict)
+        results.append({"name": model.name, "email": model.email, "age": model.age})
+    return results
+
+
+def transform_batch(records: list[dict]) -> list[dict]:
+    output = []
+    for record in records:
+        validated = UserRecord(**record)
+        output.append(validated.model_dump())
+    return output

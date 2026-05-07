@@ -1,0 +1,14 @@
+{
+  "id": "temporary_collection_in_loop",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Loop-local list, dict, or set construction that likely adds avoidable allocation churn.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

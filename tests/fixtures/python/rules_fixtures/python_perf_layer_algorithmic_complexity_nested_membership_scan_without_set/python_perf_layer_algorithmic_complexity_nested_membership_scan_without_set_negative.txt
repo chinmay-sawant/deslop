@@ -1,0 +1,25 @@
+def find_common_users(active_users, banned_users):
+    banned_set = set(banned_users)
+    common = []
+    for user in active_users:
+        if user in banned_set:
+            common.append(user)
+    return common
+
+
+def filter_allowed_items(items, allowed_ids):
+    allowed_set = set(allowed_ids)
+    result = []
+    for item in items:
+        if item.id in allowed_set:
+            result.append(item)
+    return result
+
+
+def check_duplicates(entries, existing_entries):
+    existing_set = set(existing_entries)
+    duplicates = []
+    for entry in entries:
+        if entry in existing_set:
+            duplicates.append(entry)
+    return duplicates

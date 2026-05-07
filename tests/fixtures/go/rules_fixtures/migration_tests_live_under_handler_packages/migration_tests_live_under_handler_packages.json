@@ -1,0 +1,14 @@
+{
+  "id": "migration_tests_live_under_handler_packages",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Migration-specific tests located in transport packages.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

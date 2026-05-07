@@ -1,0 +1,38 @@
+use std::rc::Rc;
+use std::cell::RefCell;
+
+// BAD: domain model built around Rc<RefCell<T>>
+struct User {
+    name: String,
+    orders: Vec<Rc<RefCell<Order>>>,
+}
+
+struct Order {
+    id: u64,
+    items: Vec<Rc<RefCell<OrderItem>>>,
+    user: Rc<RefCell<User>>, // back-reference
+}
+
+struct OrderItem {
+    product: Rc<RefCell<Product>>,
+    quantity: u32,
+}
+
+struct Product {
+    name: String,
+    price: f64,
+}
+
+fn create_order(user: &Rc<RefCell<User>>, product: &Rc<RefCell<Product>>) -> Rc<RefCell<Order>> {
+    let item = Rc::new(RefCell::new(OrderItem {
+        product: Rc::clone(product),
+        quantity: 1,
+    }));
+    let order = Rc::new(RefCell::new(Order {
+        id: 1,
+        items: vec![item],
+        user: Rc::clone(user),
+    }));
+    user.borrow_mut().orders.push(Rc::clone(&order));
+    order
+}

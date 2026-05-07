@@ -1,0 +1,28 @@
+PROMPT_TEMPLATE = "Context: {context}\nQuestion: {question}\nAnswer in {max_tokens} tokens."
+BATCH_TEMPLATE = "Given the following context:\n{context}\n\nPlease answer: {question}\nBe concise."
+MESSAGE_TEMPLATE = "User: {user}\nSystem: {system}\nTask: {task}"
+
+
+def build_prompts(items):
+    return [
+        PROMPT_TEMPLATE.format(
+            context=item["context"],
+            question=item["question"],
+            max_tokens=item["max_tokens"],
+        )
+        for item in items
+    ]
+
+
+def generate_batch(questions, context):
+    return [
+        BATCH_TEMPLATE.format(context=context, question=q)
+        for q in questions
+    ]
+
+
+def format_messages(data):
+    return [
+        MESSAGE_TEMPLATE.format(user=e["user"], system=e["system"], task=e["task"])
+        for e in data
+    ]

@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_database_access_count_before_page_fetch_each_request",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Database access. Flag count queries paired with every paginated fetch without caching or product need.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

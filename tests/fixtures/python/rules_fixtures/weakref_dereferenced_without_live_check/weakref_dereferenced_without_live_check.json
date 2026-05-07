@@ -1,0 +1,14 @@
+{
+  "id": "weakref_dereferenced_without_live_check",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "weakref.ref() called and result used without checking for None, potential AttributeError.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

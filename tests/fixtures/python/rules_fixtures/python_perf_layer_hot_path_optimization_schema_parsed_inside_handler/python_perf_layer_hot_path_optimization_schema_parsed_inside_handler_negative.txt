@@ -1,0 +1,19 @@
+from marshmallow import Schema, fields, validate
+
+class OrderSchema(Schema):
+    product_id = fields.Int(required=True)
+    quantity = fields.Int(validate=validate.Range(min=1))
+    price = fields.Float(validate=validate.Range(min=0))
+
+order_schema = OrderSchema()
+
+def handle_order(request):
+    data = order_schema.load(request.json)
+    return {"status": "ok", "order": data}
+
+def handle_bulk_update(request):
+    results = []
+    for item in request.json:
+        validated = order_schema.load(item)
+        results.append(validated)
+    return results

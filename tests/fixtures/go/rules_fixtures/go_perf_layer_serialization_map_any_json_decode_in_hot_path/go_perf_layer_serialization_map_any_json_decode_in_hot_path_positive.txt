@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+)
+
+// scenario for go_perf_layer_serialization_map_any_json_decode_in_hot_path: Layer: Serialization and deserialization. Flag JSON decoding into map[string]any in hot paths where typed structs avoid reflection churn.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule593PositiveRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario593Positive(values []Rule593PositiveRecord) (int, error) {
+	total := 0
+	for _, value := range values {
+		data, err := json.Marshal(value)
+		if err != nil { return 0, err }
+		total += len(data)
+	}
+	return total, nil
+}

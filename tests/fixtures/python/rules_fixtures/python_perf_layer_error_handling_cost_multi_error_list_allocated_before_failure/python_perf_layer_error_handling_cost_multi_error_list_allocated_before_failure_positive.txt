@@ -1,0 +1,21 @@
+def validate_batch(items):
+    errors = []
+    for item in items:
+        if not item.get("name"):
+            errors.append(f"Missing name for item {item.get('id')}")
+        if item.get("quantity", 0) < 0:
+            errors.append(f"Negative quantity for item {item['id']}")
+        if item.get("price", 0) < 0:
+            errors.append(f"Negative price for item {item['id']}")
+    if errors:
+        raise ValueError("; ".join(errors))
+    return items
+
+def process_orders(orders):
+    all_errors = []
+    for order in orders:
+        try:
+            validate_single_order(order)
+        except Exception as e:
+            all_errors.append(str(e))
+    return all_errors

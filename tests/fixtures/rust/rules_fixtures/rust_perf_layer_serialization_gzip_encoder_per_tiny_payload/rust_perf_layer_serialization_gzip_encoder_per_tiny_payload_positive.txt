@@ -1,0 +1,17 @@
+use flate2::write::GzEncoder;
+use flate2::Compression;
+use std::io::Write;
+
+// BAD: gzip encoder created for each tiny payload
+fn compress_response(body: &[u8]) -> Vec<u8> {
+    let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
+    encoder.write_all(body).unwrap();
+    encoder.finish().unwrap()
+}
+
+fn handle_request(request: &Request) -> Response {
+    let body = format!("{{\"status\": \"ok\", \"id\": {}}}", request.id);
+    // 30-byte payload compressed with gzip overhead
+    let compressed = compress_response(body.as_bytes());
+    Response::with_body(compressed)
+}

@@ -1,0 +1,14 @@
+import pandas as pd
+
+def process_records(records):
+    df = pd.DataFrame(records)
+    df["total"] = df["price"] * df["quantity"]
+    df["tax"] = df["total"] * 0.08
+    return df
+
+def enrich_data(items):
+    df = pd.DataFrame(items)
+    mean = df["score"].mean()
+    std = df["score"].std()
+    df["normalized"] = (df["score"] - mean) / std
+    return df["normalized"].tolist()

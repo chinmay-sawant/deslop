@@ -1,0 +1,23 @@
+def get_first_error(logs: list[dict]) -> dict | None:
+    for log in logs:
+        if log["level"] == "ERROR":
+            return log
+    return None
+
+
+def get_primary_email(user: dict) -> str:
+    for email in user["emails"]:
+        if email["primary"]:
+            return email["address"]
+    return ""
+
+
+def find_active_admin(users: list[dict]) -> dict | None:
+    for user in users:
+        if user["role"] == "admin" and user["active"]:
+            return user
+    return None
+
+
+def get_latest_event(events: list[dict]) -> dict:
+    return max(events, key=lambda e: e["timestamp"])

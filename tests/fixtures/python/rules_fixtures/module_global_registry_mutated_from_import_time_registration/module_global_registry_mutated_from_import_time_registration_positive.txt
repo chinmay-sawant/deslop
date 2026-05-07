@@ -1,0 +1,31 @@
+from typing import Callable
+
+_registry: dict[str, Callable] = {}
+
+
+def register(name: str):
+    def decorator(func: Callable) -> Callable:
+        _registry[name] = func
+        return func
+    return decorator
+
+
+@register("user_created")
+def handle_user_created(event: dict) -> None:
+    print(f"User created: {event['user_id']}")
+
+
+@register("order_placed")
+def handle_order_placed(event: dict) -> None:
+    print(f"Order placed: {event['order_id']}")
+
+
+@register("payment_received")
+def handle_payment(event: dict) -> None:
+    print(f"Payment received: {event['amount']}")
+
+
+def process_event(event: dict) -> None:
+    handler = _registry.get(event["type"])
+    if handler:
+        handler(event)

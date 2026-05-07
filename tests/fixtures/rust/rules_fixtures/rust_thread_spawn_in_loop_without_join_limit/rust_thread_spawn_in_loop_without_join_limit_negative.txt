@@ -1,0 +1,42 @@
+use std::sync::mpsc;
+use std::thread;
+
+fn process_items_bounded(items: Vec<String>, max_threads: usize) {
+    let (tx, rx) = mpsc::channel();
+    let rx = std::sync::Arc::new(std::sync::Mutex::new(rx));
+
+    let mut handles = Vec::new();
+    for _ in 0..max_threads {
+        let rx = rx.clone();
+        handles.push(thread::spawn(move || {
+            while let Ok(item) = rx.lock().unwrap().recv() {
+                process_one(&item);
+            }
+        }));
+    }
+
+    for item in items {
+        tx.send(item).unwrap();
+    }
+    drop(tx);
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+}
+
+fn parallel_map_chunked(items: Vec<u64>) -> Vec<u64> {
+    let chunk_size = items.len() / num_cpus::get().max(1);
+    let mut handles = Vec::new();
+
+    for chunk in items.chunks(chunk_size) {
+        let chunk = chunk.to_vec();
+        handles.push(thread::spawn(move || -> Vec<u64> {
+            chunk.iter().map(|x| x * 2).collect()
+        }));
+    }
+
+    handles.into_iter().flat_map(|h| h.join().unwrap()).collect()
+}
+
+fn process_one(_item: &str) {}

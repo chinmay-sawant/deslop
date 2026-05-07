@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for cache_invalidation_before_transaction_commit: Cache mutation or eviction that happens before a write transaction commits.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule012PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario012Positive(w http.ResponseWriter, r *http.Request, repo Rule012PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

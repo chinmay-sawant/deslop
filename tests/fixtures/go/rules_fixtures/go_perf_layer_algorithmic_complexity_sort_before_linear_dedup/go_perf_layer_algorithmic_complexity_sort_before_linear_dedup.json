@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_algorithmic_complexity_sort_before_linear_dedup",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag full sorts used only to remove duplicates where map-backed membership would scale better.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

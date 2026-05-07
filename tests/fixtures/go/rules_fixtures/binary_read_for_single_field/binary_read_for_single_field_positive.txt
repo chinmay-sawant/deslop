@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for binary_read_for_single_field: `binary.Read(r, order, &singleField)` for reading a single integer
+// fixture polarity: positive; family: performance; severity: info.
+type Rule440PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario440Positive(records []Rule440PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

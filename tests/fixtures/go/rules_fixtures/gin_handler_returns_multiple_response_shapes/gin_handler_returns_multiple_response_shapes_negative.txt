@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_returns_multiple_response_shapes: Handlers that manually build several unrelated success payload shapes instead of delegating to clearer endpoints or render helpers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule047NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule047NegativeService interface {
+	Run(context.Context, Rule047NegativeRecord) error
+}
+
+func scenario047Negative(ctx context.Context, service Rule047NegativeService, input Rule047NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

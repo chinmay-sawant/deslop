@@ -1,0 +1,32 @@
+use toml::Value;
+
+fn get_server_port(config: &Value) -> u16 {
+    config["server"]["port"].as_integer().unwrap_or(8080) as u16
+}
+
+fn get_database_url(config: &Value) -> String {
+    config["database"]["url"]
+        .as_str()
+        .unwrap_or("localhost:5432")
+        .to_string()
+}
+
+fn is_debug_mode(config: &Value) -> bool {
+    config["debug"].as_bool().unwrap_or(false)
+}
+
+fn get_log_level(config: &Value) -> String {
+    config["logging"]["level"]
+        .as_str()
+        .unwrap_or("info")
+        .to_string()
+}
+
+fn load_and_query(path: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let data = std::fs::read_to_string(path)?;
+    let config: Value = toml::from_str(&data)?;
+    let port = get_server_port(&config);
+    let db_url = get_database_url(&config);
+    println!("port: {}, db: {}", port, db_url);
+    Ok(())
+}

@@ -1,0 +1,40 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List
+
+app = FastAPI()
+
+
+class BulkResult(BaseModel):
+    succeeded: List[dict]
+    failed: List[dict]
+    partial: bool
+
+
+@app.post("/users/batch", response_model=BulkResult)
+async def create_users(users: list[dict]):
+    succeeded = []
+    failed = []
+    for user_data in users:
+        try:
+            user = create_user(user_data)
+            succeeded.append({"id": user.id, "email": user_data["email"]})
+        except Exception as e:
+            failed.append({"email": user_data.get("email"), "error": str(e)})
+
+    return BulkResult(
+        succeeded=succeeded,
+        failed=failed,
+        partial=len(failed) > 0 and len(succeeded) > 0,
+    )
+
+
+@app.post("/orders/batch/all-or-nothing")
+async def create_orders_batch(orders: list[dict]):
+    try:
+        for order_data in orders:
+            validate_order(order_data)
+        results = bulk_create_orders(orders)
+        return {"status": "completed", "orders": results}
+    except Exception as e:
+        return {"status": "rolled_back", "error": str(e)}

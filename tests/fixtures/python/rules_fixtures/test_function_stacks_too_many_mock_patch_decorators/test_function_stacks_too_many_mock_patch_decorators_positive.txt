@@ -1,0 +1,41 @@
+import pytest
+from unittest.mock import patch, MagicMock
+from myapp.service import OrderProcessor
+
+@patch("myapp.service.send_email")
+@patch("myapp.service.charge_payment")
+@patch("myapp.service.reserve_inventory")
+@patch("myapp.service.validate_address")
+@patch("myapp.service.lookup_customer")
+@patch("myapp.service.get_tax_rate")
+def test_process_order_full(mock_tax, mock_customer, mock_address,
+                            mock_inventory, mock_payment, mock_email):
+    mock_tax.return_value = 0.08
+    mock_customer.return_value = {"id": "C1", "name": "Alice"}
+    mock_address.return_value = {"valid": True, "zip": "90210"}
+    mock_inventory.return_value = True
+    mock_payment.return_value = {"txn_id": "TXN-1", "status": "ok"}
+    mock_email.return_value = True
+
+    processor = OrderProcessor()
+    result = processor.process({"item": "widget", "qty": 1})
+    assert result["status"] == "completed"
+
+@patch("myapp.service.cache_get")
+@patch("myapp.service.cache_set")
+@patch("myapp.service.db_query")
+@patch("myapp.service.db_execute")
+@patch("myapp.service.log_metric")
+@patch("myapp.service.notify_admin")
+def test_sync_inventory(mock_notify, mock_metric, mock_exec,
+                        mock_query, mock_set, mock_get):
+    mock_get.return_value = None
+    mock_query.return_value = [{"sku": "A1", "qty": 10}]
+    mock_exec.return_value = True
+    mock_set.return_value = True
+    mock_notify.return_value = True
+    mock_metric.return_value = None
+
+    processor = OrderProcessor()
+    result = processor.sync_inventory()
+    assert result["synced"] == 1

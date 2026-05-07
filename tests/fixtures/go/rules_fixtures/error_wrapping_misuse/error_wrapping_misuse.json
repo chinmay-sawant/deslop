@@ -1,0 +1,14 @@
+{
+  "id": "error_wrapping_misuse",
+  "language": "go",
+  "family": "errors",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "fmt.Errorf calls that reference err without %w.",
+  "binding_location": "src/heuristics/go/errors.rs"
+}

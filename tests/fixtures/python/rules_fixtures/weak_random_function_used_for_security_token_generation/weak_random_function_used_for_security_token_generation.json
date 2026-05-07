@@ -1,0 +1,14 @@
+{
+  "id": "weak_random_function_used_for_security_token_generation",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "random.random or random.choice used to generate a security token, CSRF value, or password reset token.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

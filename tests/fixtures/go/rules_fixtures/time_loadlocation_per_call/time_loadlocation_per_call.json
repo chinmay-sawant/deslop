@@ -1,0 +1,14 @@
+{
+  "id": "time_loadlocation_per_call",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`time.LoadLocation(...)` inside request or loop paths instead of reusing the location.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

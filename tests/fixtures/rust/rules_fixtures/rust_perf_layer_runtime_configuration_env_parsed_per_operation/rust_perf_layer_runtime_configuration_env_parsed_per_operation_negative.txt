@@ -1,0 +1,38 @@
+struct Config {
+    max_retries: u32,
+    timeout_ms: u64,
+    batch_size: usize,
+}
+
+impl Config {
+    // GOOD: env parsed once at startup
+    fn from_env() -> Self {
+        let max_retries = std::env::var("MAX_RETRIES")
+            .unwrap_or_else(|_| "3".into())
+            .parse()
+            .unwrap_or(3);
+
+        let timeout_ms = std::env::var("TIMEOUT_MS")
+            .unwrap_or_else(|_| "5000".into())
+            .parse()
+            .unwrap_or(5000);
+
+        let batch_size = std::env::var("BATCH_SIZE")
+            .unwrap_or_else(|_| "100".into())
+            .parse()
+            .unwrap_or(100);
+
+        Self { max_retries, timeout_ms, batch_size }
+    }
+}
+
+fn process_request(request: &Request, config: &Config) -> Response {
+    for batch in request.items.chunks(config.batch_size) {
+        for _ in 0..config.max_retries {
+            if process_batch(batch, config.timeout_ms).is_ok() {
+                break;
+            }
+        }
+    }
+    Response::ok()
+}

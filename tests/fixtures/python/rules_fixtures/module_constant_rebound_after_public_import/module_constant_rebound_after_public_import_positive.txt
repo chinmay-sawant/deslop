@@ -1,0 +1,36 @@
+import os
+
+API_BASE_URL = "https://api.example.com"
+MAX_RETRIES = 3
+TIMEOUT = 30
+
+
+def configure(base_url: str | None = None, retries: int | None = None):
+    global API_BASE_URL, MAX_RETRIES
+    if base_url:
+        API_BASE_URL = base_url
+    if retries:
+        MAX_RETRIES = retries
+
+
+def make_request(path: str) -> dict:
+    import requests
+
+    url = f"{API_BASE_URL}{path}"
+    for attempt in range(MAX_RETRIES):
+        try:
+            resp = requests.get(url, timeout=TIMEOUT)
+            return resp.json()
+        except Exception:
+            if attempt == MAX_RETRIES - 1:
+                raise
+
+
+def health_check() -> bool:
+    import requests
+
+    try:
+        requests.get(f"{API_BASE_URL}/health", timeout=5)
+        return True
+    except Exception:
+        return False

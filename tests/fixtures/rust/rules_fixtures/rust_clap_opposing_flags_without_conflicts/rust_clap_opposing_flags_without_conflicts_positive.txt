@@ -1,0 +1,24 @@
+use clap::Parser;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long)]
+    json: bool,
+
+    #[arg(long)]
+    text: bool,
+
+    #[arg(long)]
+    include: Vec<String>,
+
+    #[arg(long)]
+    exclude: Vec<String>,
+}
+
+fn run(cli: Cli) {
+    if cli.json && cli.text {
+        eprintln!("warning: both --json and --text specified, using --json");
+    }
+    let filters: Vec<&str> = cli.include.iter().chain(cli.exclude.iter()).map(|s| s.as_str()).collect();
+    println!("filters: {filters:?}");
+}

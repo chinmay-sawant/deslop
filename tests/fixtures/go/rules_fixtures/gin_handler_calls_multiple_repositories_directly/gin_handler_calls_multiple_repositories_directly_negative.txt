@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_calls_multiple_repositories_directly: Handlers that coordinate several repositories directly, which usually signals missing service orchestration.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule042NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule042NegativeService interface {
+	Run(context.Context, Rule042NegativeRecord) error
+}
+
+func scenario042Negative(ctx context.Context, service Rule042NegativeService, input Rule042NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

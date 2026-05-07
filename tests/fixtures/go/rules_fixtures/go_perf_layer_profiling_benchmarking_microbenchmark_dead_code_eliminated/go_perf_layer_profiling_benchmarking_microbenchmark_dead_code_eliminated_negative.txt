@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_profiling_benchmarking_microbenchmark_dead_code_eliminated: Layer: Profiling and benchmarking. Flag benchmarks that do not consume results and may let the compiler remove work.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule576NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario576Negative(records []Rule576NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

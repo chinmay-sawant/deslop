@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for append_then_trim_each_iteration: Slice append followed by reslice each iteration instead of batching.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule342PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario342Positive(records []Rule342PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

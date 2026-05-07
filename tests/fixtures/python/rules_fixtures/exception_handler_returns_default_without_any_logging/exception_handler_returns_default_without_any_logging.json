@@ -1,0 +1,14 @@
+{
+  "id": "exception_handler_returns_default_without_any_logging",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Broad except block returns a default value without logging the caught exception.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

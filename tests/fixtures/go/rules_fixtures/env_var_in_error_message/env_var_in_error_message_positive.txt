@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"log"
+	"os"
+)
+
+// scenario for env_var_in_error_message: `fmt.Errorf("... %s", os.Getenv("SECRET_KEY"))` or similar patterns that embed environment variable values in errors
+// fixture polarity: positive; family: security; severity: warning.
+type Rule708PositiveRecord struct { Password string; Token string }
+
+func scenario708Positive(config Rule708PositiveRecord) error {
+	log.Printf("password=%s token=%s", config.Password, config.Token)
+	return fmt.Errorf("secret was %s", os.Getenv("SECRET_KEY"))
+}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for where_clause_templates_duplicated_across_repositories: Repeated filter templates that should be shared through scopes or query builders.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule220PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario220Positive(w http.ResponseWriter, r *http.Request, repo Rule220PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

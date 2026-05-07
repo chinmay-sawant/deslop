@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"log"
+)
+
+// scenario for error_logged_and_returned: `log.Error(err); return err` or `logger.Error("failed", zap.Error(err)); return fmt.Errorf("failed: %w", err)` - logging the error then returning it
+// fixture polarity: positive; family: library; severity: info.
+func scenario409Positive(values []string) {
+	for _, value := range values {
+		log.Print(fmt.Sprintf("value=%s", value))
+	}
+}

@@ -1,0 +1,14 @@
+{
+  "id": "gin_route_paths_repeated_as_raw_strings",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated route path literals that should be centralized or grouped more intentionally.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

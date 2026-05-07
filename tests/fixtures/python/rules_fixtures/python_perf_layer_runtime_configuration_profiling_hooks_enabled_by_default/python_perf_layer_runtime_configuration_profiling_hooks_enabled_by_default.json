@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_runtime_configuration_profiling_hooks_enabled_by_default",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Build and runtime configuration. Flag cProfile, tracing, or coverage hooks enabled in default runtime paths.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

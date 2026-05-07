@@ -1,0 +1,14 @@
+{
+  "id": "module_cache_exposed_without_invalidation_boundary",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag modules that expose cache internals directly with no clear invalidation or ownership boundary.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"strconv"
+)
+
+// scenario for fmt_fprintln_to_strings_builder: `fmt.Fprintln(&builder, ...)` instead of direct builder writes.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario489Negative(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, strconv.Itoa(value))
+	}
+	return out
+}
