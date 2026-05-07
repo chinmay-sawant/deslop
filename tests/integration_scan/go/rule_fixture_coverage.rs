@@ -134,6 +134,7 @@ fn assert_go_rule_fixture_batch(start: usize, end: usize) {
 
     let workspace = FixtureWorkspace::new();
     let mut expected_files = 0;
+    let mut expectations = Vec::<(&'static str, std::path::PathBuf, bool)>::new();
     for (index, metadata) in go_rules[start..end].iter().enumerate() {
         for polarity in ["positive", "negative"] {
             let path = go_rule_fixture_path(metadata, polarity);
@@ -156,15 +157,18 @@ fn assert_go_rule_fixture_batch(start: usize, end: usize) {
                 path.display()
             );
 
-            workspace.write_file(
-                &format!(
-                    "internal/rule_coverage/batch_{start:03}/{:03}_{}_{}.go",
-                    start + index,
-                    metadata.id,
-                    polarity
-                ),
-                &fixture,
+            let relative_path = format!(
+                "internal/rule_coverage/batch_{start:03}/{:03}_{}_{}.go",
+                start + index,
+                metadata.id,
+                polarity
             );
+            workspace.write_file(&relative_path, &fixture);
+            expectations.push((
+                metadata.id,
+                std::path::PathBuf::from(relative_path),
+                polarity == "positive",
+            ));
             expected_files += 1;
         }
     }
@@ -189,6 +193,35 @@ fn assert_go_rule_fixture_batch(start: usize, end: usize) {
     assert_eq!(
         report.files_analyzed, expected_files,
         "Go rule fixture batch {start}..{end} should scan every generated .go fixture"
+    );
+
+    let polarity_mismatches = expectations
+        .iter()
+        .filter_map(|(rule_id, relative_path, should_flag)| {
+            let found = report.findings.iter().any(|finding| {
+                finding.rule_id == *rule_id && finding.path.ends_with(relative_path)
+            });
+            if found == *should_flag {
+                None
+            } else {
+                Some(format!(
+                    "{} expected {} for {} but observed {}",
+                    rule_id,
+                    if *should_flag {
+                        "a finding"
+                    } else {
+                        "no finding"
+                    },
+                    relative_path.display(),
+                    if found { "a finding" } else { "no finding" }
+                ))
+            }
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        polarity_mismatches.is_empty(),
+        "Go rule fixture batch {start}..{end} had polarity mismatches: {:?}",
+        polarity_mismatches
     );
 }
 
