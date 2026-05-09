@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"net/http"
 )
 
 // scenario for db_query_argument_erased_to_any: Concrete DB arguments erased to `any` or `interface{}` immediately before query execution.
@@ -13,14 +12,25 @@ type Rule023PositiveRecord struct {
 	db *sql.DB
 }
 
-func scenario023Positive(w http.ResponseWriter, r *http.Request, repo Rule023PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func scenario023Positive(ctx context.Context, repo Rule023PositiveRecord, accountID int, status string) ([]string, error) {
+	args := []any{accountID, status}
+
+	rows, err := repo.db.QueryContext(ctx,
+		"SELECT id FROM accounts WHERE account_id = ? AND status = ?",
+		args...,
+	)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+		return nil, fmt.Errorf("query failed: %w", err)
 	}
 	defer rows.Close()
-	return rows.Err()
+
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, fmt.Errorf("scan failed: %w", err)
+		}
+		ids = append(ids, id)
+	}
+	return ids, rows.Err()
 }

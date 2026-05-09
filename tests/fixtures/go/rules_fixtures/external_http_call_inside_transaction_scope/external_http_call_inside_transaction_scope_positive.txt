@@ -3,7 +3,6 @@ package rulefixtures
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"net/http"
 )
 
@@ -13,14 +12,22 @@ type Rule032PositiveRecord struct {
 	db *sql.DB
 }
 
-func scenario032Positive(w http.ResponseWriter, r *http.Request, repo Rule032PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func scenario032Positive(ctx context.Context, repo Rule032PositiveRecord, paymentID int) error {
+	tx, err := repo.db.Begin()
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
 		return err
 	}
-	defer rows.Close()
-	return rows.Err()
+	defer tx.Rollback()
+
+	resp, err := http.Get("https://api.payment-gateway.com/verify?id=" + http.StatusText(paymentID))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil
+	}
+
+	return tx.Commit()
 }

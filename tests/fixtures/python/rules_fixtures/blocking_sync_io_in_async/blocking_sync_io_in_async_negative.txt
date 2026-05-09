@@ -1,5 +1,6 @@
 import asyncio
 import aiohttp
+import aiofiles
 
 
 async def fetch_user_data(user_id: int):
@@ -20,8 +21,8 @@ async def process_batch(items: list):
 
 async def upload_file(file_path: str):
     async with aiohttp.ClientSession() as session:
-        with open(file_path, "rb") as f:
-            data = f.read()
+        async with aiofiles.open(file_path, "rb") as f:
+            data = await f.read()
         async with session.put("https://api.example.com/upload", data=data) as response:
             return response.status
 

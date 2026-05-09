@@ -1,19 +1,33 @@
 package rulefixtures
 
+import (
+	"context"
+	"database/sql"
+)
+
 // scenario for n_plus_one_query: Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear.
 // fixture polarity: positive; family: performance; severity: contextual.
 type Rule620PositiveRecord struct {
-	ID int
+	ID   int
 	Name string
-	Values []string
 }
 
-func scenario620Positive(records []Rule620PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario620Positive(ctx context.Context, db *sql.DB, parentIDs []int) ([]Rule620PositiveRecord, error) {
+	var results []Rule620PositiveRecord
+	for _, parentID := range parentIDs {
+		rows, err := db.QueryContext(ctx, "SELECT id, name FROM children WHERE parent_id = ?", parentID)
+		if err != nil {
+			return nil, err
 		}
+		for rows.Next() {
+			var rec Rule620PositiveRecord
+			if err := rows.Scan(&rec.ID, &rec.Name); err != nil {
+				rows.Close()
+				return nil, err
+			}
+			results = append(results, rec)
+		}
+		rows.Close()
 	}
-	return total
+	return results, nil
 }

@@ -1,13 +1,12 @@
 fn process_items(items: &[Item]) -> f64 {
-    // GOOD: chain iterator directly without intermediate collection
-    let filtered: Vec<f64> = items
+    // GOOD: chain iterator with fold, no intermediate Vec allocation
+    let (total, count) = items
         .iter()
         .filter(|i| i.in_stock)
         .map(|i| i.price)
-        .collect();
+        .fold((0.0_f64, 0_usize), |(sum, cnt), price| (sum + price, cnt + 1));
 
-    let total: f64 = filtered.iter().sum();
-    total / filtered.len() as f64
+    total / count as f64
 }
 
 struct Item {

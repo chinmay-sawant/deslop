@@ -1,9 +1,7 @@
 package rulefixtures
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
 	"net/http"
 )
 
@@ -14,13 +12,22 @@ type Rule050PositiveRecord struct {
 }
 
 func scenario050Positive(w http.ResponseWriter, r *http.Request, repo Rule050PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+	tx, err := repo.db.Begin()
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		http.Error(w, "failed to begin transaction", http.StatusInternalServerError)
 		return err
 	}
-	defer rows.Close()
-	return rows.Err()
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(r.Context(), "UPDATE accounts SET balance = balance - 10 WHERE id = ?", 1)
+	if err != nil {
+		http.Error(w, "update failed", http.StatusInternalServerError)
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		http.Error(w, "commit failed", http.StatusInternalServerError)
+		return err
+	}
+	return nil
 }

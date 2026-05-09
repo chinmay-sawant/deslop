@@ -7,6 +7,7 @@ import (
 // scenario for cors_allow_all_origins: `Access-Control-Allow-Origin: *` combined with `Access-Control-Allow-Credentials: true`, or CORS middleware configured with `AllowAllOrigins: true` in Gin/Echo/Chi
 // fixture polarity: positive; family: security; severity: warning.
 func scenario704Positive(w http.ResponseWriter, r *http.Request) {
-	value := r.FormValue("input")
-	w.Header().Set("X-Scenario", value)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.WriteHeader(http.StatusOK)
 }
