@@ -245,8 +245,9 @@ fn assert_python_rule_fixture_batch(start: usize, end: usize) {
 
     let workspace = FixtureWorkspace::new();
     let mut expected_files = 0;
-    let mut expectations = Vec::<(&'static str, std::path::PathBuf, bool)>::new();
-    for (index, metadata) in python_rules[start..end].iter().enumerate() {
+    let mut expectations =
+        Vec::<(&'static str, std::path::PathBuf, std::path::PathBuf, bool)>::new();
+    for metadata in &python_rules[start..end] {
         for polarity in ["positive", "negative"] {
             let path = python_rule_fixture_path(metadata, polarity);
             let fixture = read_fixture(&path);
@@ -268,15 +269,14 @@ fn assert_python_rule_fixture_batch(start: usize, end: usize) {
             );
 
             let relative_path = format!(
-                "internal/rule_coverage/batch_{start:03}/{:03}_{}_{}.py",
-                start + index,
-                metadata.id,
-                polarity
+                "internal/rule_coverage/{}_{}.py",
+                metadata.id, polarity
             );
             workspace.write_file(&relative_path, &fixture);
             expectations.push((
                 metadata.id,
                 std::path::PathBuf::from(relative_path),
+                path.clone(),
                 polarity == "positive",
             ));
             expected_files += 1;
@@ -307,7 +307,7 @@ fn assert_python_rule_fixture_batch(start: usize, end: usize) {
 
     let polarity_mismatches = expectations
         .iter()
-        .filter_map(|(rule_id, relative_path, should_flag)| {
+        .filter_map(|(rule_id, relative_path, source_fixture_path, should_flag)| {
             let found = report.findings.iter().any(|finding| {
                 finding.rule_id == *rule_id && finding.path.ends_with(relative_path)
             });
@@ -315,13 +315,14 @@ fn assert_python_rule_fixture_batch(start: usize, end: usize) {
                 None
             } else {
                 Some(format!(
-                    "{} expected {} for {} but observed {}",
+                    "{} expected {} for source fixture {} (generated {}) but observed {}",
                     rule_id,
                     if *should_flag {
                         "a finding"
                     } else {
                         "no finding"
                     },
+                    source_fixture_path.display(),
                     relative_path.display(),
                     if found { "a finding" } else { "no finding" }
                 ))
