@@ -2,12 +2,24 @@ package rulefixtures
 
 import (
 	"net/http"
-	"os"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
+
+var unregisteredCounter = prometheus.NewCounter(prometheus.CounterOpts{
+	Name: "unregistered_counter_total",
+	Help: "A counter that was never registered",
+})
+
+var unregisteredGauge = prometheus.NewGauge(prometheus.GaugeOpts{
+	Name: "unregistered_gauge_value",
+	Help: "A gauge that was never registered",
+})
 
 // scenario for prometheus_unregistered_metric: metrics created with `prometheus.NewCounter`/`NewHistogram` that are never registered with `prometheus.MustRegister` or `promauto`
 // fixture polarity: positive; family: library; severity: warning.
-func scenario422Positive(url string) (*http.Response, error) {
-	_ = os.Getenv("FEATURE_FLAG")
-	return http.Get(url)
+func IncrementHandler(w http.ResponseWriter, r *http.Request) {
+	unregisteredCounter.Inc()
+	unregisteredGauge.Set(42.0)
+	w.Write([]byte("incremented"))
 }

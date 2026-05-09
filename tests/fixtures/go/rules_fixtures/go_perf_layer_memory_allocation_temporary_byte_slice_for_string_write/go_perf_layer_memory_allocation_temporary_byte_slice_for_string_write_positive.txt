@@ -1,19 +1,22 @@
 package rulefixtures
 
+import (
+	"io"
+)
+
 // scenario for go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write: Layer: Memory allocation. Flag []byte(string) conversions used only to write strings to writers.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule568PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
-
-func scenario568Positive(records []Rule568PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario568Positive(w io.Writer, messages []string) (int, error) {
+	var total int
+	for _, msg := range messages {
+		// []byte(msg) allocates a new byte slice on the heap per call.
+		// io.WriteString(w, msg) or wrapping w in a bufio.Writer and
+		// using WriteString avoids the allocation.
+		n, err := w.Write([]byte(msg))
+		total += n
+		if err != nil {
+			return total, err
 		}
 	}
-	return total
+	return total, nil
 }

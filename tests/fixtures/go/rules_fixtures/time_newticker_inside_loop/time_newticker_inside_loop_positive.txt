@@ -9,9 +9,12 @@ import (
 func scenario682Positive(items []string) int {
 	total := 0
 	for _, item := range items {
-		_ = time.Now()
-		_ = time.After(time.Millisecond)
-		total += len(item)
+		ticker := time.NewTicker(100 * time.Millisecond)
+		select {
+		case <-ticker.C:
+			total += len(item)
+		default:
+		}
 	}
 	return total
 }

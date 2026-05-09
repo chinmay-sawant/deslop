@@ -1,26 +1,37 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for request_dto_outside_transport_package: Request binding structs that live in repositories or service packages instead of transport-facing packages.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule141PositiveRecord struct {
-	db *sql.DB
+
+type UserService struct {
+	repo *UserRepository
 }
 
-func scenario141Positive(w http.ResponseWriter, r *http.Request, repo Rule141PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type UserRepository struct{}
+
+type SignupInput struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	Role     string `json:"role"`
+}
+
+func (s *UserService) CreateUserFromInput(input SignupInput) error {
+	return s.repo.Insert(input.Username, input.Password, input.Email)
+}
+
+func SignupHandler(w http.ResponseWriter, r *http.Request) {
+	var input SignupInput
+	json.NewDecoder(r.Body).Decode(&input)
+
+	svc := &UserService{}
+	svc.CreateUserFromInput(input)
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{"result": "ok"})
 }

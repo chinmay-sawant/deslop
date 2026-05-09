@@ -1,16 +1,21 @@
 package rulefixtures
 
 import (
-	"os"
+	"database/sql"
 )
 
 // scenario for stmt_without_close: Prepared statements or similar DB handles without an observed Close() call.
 // fixture polarity: positive; family: idioms; severity: info.
-func scenario398Positive(paths []string) error {
-	for _, path := range paths {
-		file, err := os.Open(path)
-		if err != nil { return err }
-		defer file.Close()
+func scenario398Positive(db *sql.DB, id int) (string, error) {
+	stmt, err := db.Prepare("SELECT name FROM users WHERE id = ?")
+	if err != nil {
+		return "", err
 	}
-	return nil
+
+	var name string
+	err = stmt.QueryRow(id).Scan(&name)
+	if err != nil {
+		return "", err
+	}
+	return name, nil
 }

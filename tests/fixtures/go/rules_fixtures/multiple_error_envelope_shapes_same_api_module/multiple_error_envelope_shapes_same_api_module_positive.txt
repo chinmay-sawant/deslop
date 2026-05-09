@@ -1,26 +1,39 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for multiple_error_envelope_shapes_same_api_module: Endpoints in the same API surface that serialize unrelated error payload structures.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule101PositiveRecord struct {
-	db *sql.DB
+
+type ErrorV1 struct {
+	Message string `json:"message"`
+	Code    int    `json:"code"`
 }
 
-func scenario101Positive(w http.ResponseWriter, r *http.Request, repo Rule101PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type ErrorV2 struct {
+	Error      string `json:"error"`
+	StatusCode int    `json:"status_code"`
+	Details    string `json:"details"`
+}
+
+func GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNotFound)
+	json.NewEncoder(w).Encode(ErrorV1{
+		Message: "user not found",
+		Code:    404,
+	})
+}
+
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusBadRequest)
+	json.NewEncoder(w).Encode(ErrorV2{
+		Error:      "validation failed",
+		StatusCode: 400,
+		Details:    "username is required",
+	})
 }

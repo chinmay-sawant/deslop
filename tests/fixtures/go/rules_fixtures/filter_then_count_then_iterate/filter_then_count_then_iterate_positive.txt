@@ -2,18 +2,18 @@ package rulefixtures
 
 // scenario for filter_then_count_then_iterate: Same collection traversed multiple times for filter, count, and process steps.
 // fixture polarity: positive; family: hot_path; severity: info.
-type Rule350PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
 
-func scenario350Positive(records []Rule350PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario350Positive(items []int) (int, int) {
+	var filtered []int
+	for _, item := range items {
+		if item > 0 {
+			filtered = append(filtered, item)
 		}
 	}
-	return total
+	count := len(filtered)
+	sum := 0
+	for _, item := range filtered {
+		sum += item
+	}
+	return count, sum
 }

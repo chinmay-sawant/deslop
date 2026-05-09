@@ -2,18 +2,26 @@ package rulefixtures
 
 import (
 	gorm "gorm.io/gorm"
+
+	"gorm.io/driver/sqlite"
 )
 
 // scenario for gorm_open_per_request: gorm.Open(...) called on request paths instead of process-level setup.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule268PositiveRecord struct { ID int }
+type Rule268PositiveRecord struct {
+	ID       int
+	TenantID int
+	Name     string
+}
 
-func scenario268Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func scenario268Positive(dsn string, tenantID int) ([]Rule268PositiveRecord, error) {
+	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
 	}
-	return db.Order("created_at desc").Find(&[]Rule268PositiveRecord{}).Error
+	var items []Rule268PositiveRecord
+	if err := db.Where("tenant_id = ?", tenantID).Find(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
 }

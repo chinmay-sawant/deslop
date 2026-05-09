@@ -2,25 +2,42 @@ package rulefixtures
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"log"
+
+	"gorm.io/gorm"
 )
 
 // scenario for background_goroutine_started_inside_transaction_scope: Goroutines launched while relying on open transaction state.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule006PositiveRecord struct {
-	db *sql.DB
-}
 
-func scenario006Positive(w http.ResponseWriter, r *http.Request, repo Rule006PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+type NotificationService struct{}
+func (n *NotificationService) Send(ctx context.Context, userID int, msg string) {}
+
+func placeOrder(db *gorm.DB, userID int, notifier *NotificationService) error {
+	tx := db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	order := OrderRecord{UserID: userID, Status: "pending", Total: 99.95}
+	if err := tx.Create(&order).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
-	defer rows.Close()
-	return rows.Err()
+
+	go func() {
+		notifier.Send(context.Background(), userID, "order placed")
+		if err := tx.Model(&order).Update("status", "notified").Error; err != nil {
+			log.Printf("update failed: %v", err)
+		}
+	}()
+
+	return tx.Commit().Error
+}
+
+type OrderRecord struct {
+	ID     int `gorm:"primaryKey"`
+	UserID int
+	Status string
+	Total  float64
 }

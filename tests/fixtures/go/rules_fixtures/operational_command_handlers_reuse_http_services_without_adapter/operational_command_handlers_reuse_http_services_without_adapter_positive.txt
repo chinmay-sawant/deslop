@@ -1,26 +1,33 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// scenario for operational_command_handlers_reuse_http_services_without_adapter: CLI or cron entrypoints that import Gin-only service contracts instead of neutral application services.
+// scenario for operational_command_handlers_reuse_http_services_without_adapter: CLI or cron entrypoints that import Gin-only service contracts.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule104PositiveRecord struct {
-	db *sql.DB
+
+type GinUserService struct {
+	ctx *gin.Context
 }
 
-func scenario104Positive(w http.ResponseWriter, r *http.Request, repo Rule104PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func (s *GinUserService) GetActiveUsers() ([]string, error) {
+	tenantID := s.ctx.Query("tenant_id")
+	if tenantID == "" {
+		return nil, fmt.Errorf("missing tenant_id")
 	}
-	defer rows.Close()
-	return rows.Err()
+	return []string{"alice", "bob"}, nil
+}
+
+func CronSyncUsers(svc *GinUserService) {
+	users, err := svc.GetActiveUsers()
+	if err != nil {
+		fmt.Printf("sync error: %v\n", err)
+		return
+	}
+	for _, user := range users {
+		fmt.Printf("syncing user: %s\n", user)
+	}
 }

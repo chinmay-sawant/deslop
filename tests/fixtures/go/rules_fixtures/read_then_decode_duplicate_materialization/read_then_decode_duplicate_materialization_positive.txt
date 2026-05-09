@@ -1,19 +1,29 @@
 package rulefixtures
 
+import (
+	"encoding/json"
+	"io"
+	"net/http"
+)
+
 // scenario for read_then_decode_duplicate_materialization: io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path.
 // fixture polarity: positive; family: hot_path; severity: info.
 type Rule359PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+	ID     int      `json:"id"`
+	Name   string   `json:"name"`
+	Values []string `json:"values"`
 }
 
-func scenario359Positive(records []Rule359PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func scenario359Positive(w http.ResponseWriter, r *http.Request) {
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "read failed", http.StatusInternalServerError)
+		return
 	}
-	return total
+	var record Rule359PositiveRecord
+	if err := json.Unmarshal(data, &record); err != nil {
+		http.Error(w, "invalid json", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

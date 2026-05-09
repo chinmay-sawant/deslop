@@ -1,26 +1,35 @@
-package rulefixtures
+package service
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
+	"errors"
 	"net/http"
 )
 
 // scenario for service_method_handles_request_binding_or_header_extraction: Services that extract headers, cookies, forms, or route params directly.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule172PositiveRecord struct {
-	db *sql.DB
+type AuditService struct {
+	repo AuditRepository
 }
 
-func scenario172Positive(w http.ResponseWriter, r *http.Request, repo Rule172PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func (s *AuditService) LogEvent(r *http.Request) error {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		return errors.New("missing tenant id header")
 	}
-	defer rows.Close()
-	return rows.Err()
+	userAgent := r.Header.Get("User-Agent")
+	correlationID := r.Header.Get("X-Correlation-ID")
+
+	var body map[string]interface{}
+	if r.Body != nil {
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			return err
+		}
+	}
+	return s.repo.Insert(context.Background(), tenantID, userAgent, correlationID, body)
+}
+
+type AuditRepository interface {
+	Insert(ctx context.Context, tenantID, userAgent, correlationID string, body map[string]interface{}) error
 }

@@ -1,26 +1,37 @@
-package rulefixtures
+package models
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+
+	"gorm.io/gorm"
 )
 
 // scenario for package_name_role_drift: Packages whose names advertise one role, such as `service` or `model`, but whose exported symbols primarily belong to another role.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule108PositiveRecord struct {
-	db *sql.DB
+type User struct {
+	ID    int    `gorm:"primaryKey"`
+	Name  string `gorm:"column:name"`
+	Email string `gorm:"column:email"`
 }
 
-func scenario108Positive(w http.ResponseWriter, r *http.Request, repo Rule108PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type UserService struct {
+	db *gorm.DB
+}
+
+func (s *UserService) GetUser(ctx context.Context, id int) (*User, error) {
+	var user User
+	err := s.db.WithContext(ctx).First(&user, id).Error
+	return &user, err
+}
+
+func (s *UserService) DeleteUser(ctx context.Context, id int) error {
+	return s.db.WithContext(ctx).Delete(&User{}, id).Error
+}
+
+func RegisterUserRoutes(mux *http.ServeMux, svc *UserService) {
+	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		user, _ := svc.GetUser(r.Context(), 1)
+		w.Write([]byte(user.Name))
+	})
 }

@@ -6,6 +6,6 @@ import (
 
 // scenario for bytes_replace_neg_one_replaceall: `bytes.Replace(..., -1)` instead of `bytes.ReplaceAll(...)`.
 // fixture polarity: positive; family: performance; severity: info.
-func scenario457Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
-	return bytes.Index(haystack, needle) != -1
+func scenario457Positive(data, old, new []byte) []byte {
+	return bytes.Replace(data, old, new, -1)
 }

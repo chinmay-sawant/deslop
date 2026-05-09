@@ -1,19 +1,28 @@
 package rulefixtures
 
+import (
+	"html/template"
+	"net/http"
+)
+
 // scenario for go_perf_layer_hot_path_optimization_invariant_parse_inside_handler: Layer: Hot path optimization. Flag handlers that parse invariant templates, schemas, or expressions per request.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule546PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+
+func GreetHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.New("greet").Parse("<h1>Hello, {{.Name}}!</h1>")
+	if err != nil {
+		http.Error(w, "template error", 500)
+		return
+	}
+	name := r.URL.Query().Get("name")
+	tmpl.Execute(w, map[string]string{"Name": name})
 }
 
-func scenario546Positive(records []Rule546PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func ProfileHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.New("profile").Parse("<p>User: {{.User}} | Role: {{.Role}}</p>")
+	if err != nil {
+		http.Error(w, "template error", 500)
+		return
 	}
-	return total
+	tmpl.Execute(w, map[string]string{"User": "alice", "Role": "admin"})
 }

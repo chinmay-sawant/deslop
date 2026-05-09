@@ -1,26 +1,39 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for response_dto_uses_omitempty_on_required_contract_fields: Response shapes that silently drop fields that should be stable parts of the API contract.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule146PositiveRecord struct {
-	db *sql.DB
+
+type CustomerResponse struct {
+	ID        int    `json:"id,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Email     string `json:"email,omitempty"`
+	Status    string `json:"status,omitempty"`
+	CreatedAt string `json:"created_at,omitempty"`
 }
 
-func scenario146Positive(w http.ResponseWriter, r *http.Request, repo Rule146PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func GetCustomerHandler(w http.ResponseWriter, r *http.Request) {
+	customer := CustomerResponse{
+		ID:        0,
+		Name:      "",
+		Email:     "alice@example.com",
+		Status:    "active",
+		CreatedAt: "2025-03-01",
 	}
-	defer rows.Close()
-	return rows.Err()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(customer)
+}
+
+func ListCustomersHandler(w http.ResponseWriter, r *http.Request) {
+	customers := []CustomerResponse{
+		{ID: 1, Name: "Alice", Email: "", Status: "active", CreatedAt: "2025-03-01"},
+		{ID: 0, Name: "", Email: "bob@example.com", Status: "inactive", CreatedAt: ""},
+	}
+
+	json.NewEncoder(w).Encode(customers)
 }

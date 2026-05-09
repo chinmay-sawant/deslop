@@ -6,14 +6,21 @@ import (
 
 // scenario for scan_into_map_string_any_hot_path: Rows scanned into map[string]any instead of typed structs on hot paths.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule296PositiveRecord struct { ID int }
 
-func scenario296Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func scenario296Positive(db *gorm.DB) ([]map[string]any, error) {
+	rows, err := db.Raw("SELECT id, name, email, status FROM users WHERE active = ?", true).Rows()
+	if err != nil {
+		return nil, err
 	}
-	return db.Order("created_at desc").Find(&[]Rule296PositiveRecord{}).Error
+	defer rows.Close()
+
+	var results []map[string]any
+	for rows.Next() {
+		var row map[string]any
+		if err := db.ScanRows(rows, &row).Error; err != nil {
+			return nil, err
+		}
+		results = append(results, row)
+	}
+	return results, nil
 }

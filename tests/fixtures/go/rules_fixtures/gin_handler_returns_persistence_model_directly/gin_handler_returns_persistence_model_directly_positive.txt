@@ -1,26 +1,31 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // scenario for gin_handler_returns_persistence_model_directly: Handlers that serialize database models directly to the client instead of mapping to response DTOs.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule048PositiveRecord struct {
-	db *sql.DB
+
+type Product struct {
+	gorm.Model
+	SKU       string  `json:"sku" gorm:"column:sku"`
+	Name      string  `json:"name" gorm:"column:name"`
+	Price     float64 `json:"price" gorm:"column:price"`
+	CostPrice float64 `json:"cost_price" gorm:"column:cost_price"`
+	StockQty  int     `json:"stock_qty" gorm:"column:stock_qty"`
 }
 
-func scenario048Positive(w http.ResponseWriter, r *http.Request, repo Rule048PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func GetProductHandler(c *gin.Context) {
+	product := Product{
+		SKU:       "ABC-123",
+		Name:      "Widget",
+		Price:     29.99,
+		CostPrice: 15.00,
+		StockQty:  100,
 	}
-	defer rows.Close()
-	return rows.Err()
+	c.JSON(http.StatusOK, product)
 }

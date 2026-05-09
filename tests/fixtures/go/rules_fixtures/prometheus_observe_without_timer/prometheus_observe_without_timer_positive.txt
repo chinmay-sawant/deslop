@@ -2,12 +2,33 @@ package rulefixtures
 
 import (
 	"net/http"
-	"os"
+	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
+
+var hist = prometheus.NewHistogram(prometheus.HistogramOpts{
+	Name:    "operation_duration_seconds",
+	Help:    "Duration of operations",
+	Buckets: prometheus.DefBuckets,
+})
 
 // scenario for prometheus_observe_without_timer: manual `time.Since(start).Seconds()` + `histogram.Observe(duration)` patterns when `prometheus.NewTimer` would be safer
 // fixture polarity: positive; family: library; severity: info.
-func scenario421Positive(url string) (*http.Response, error) {
-	_ = os.Getenv("FEATURE_FLAG")
-	return http.Get(url)
+func HandleRequest(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	time.Sleep(100 * time.Millisecond)
+	duration := time.Since(start).Seconds()
+	hist.Observe(duration)
+	w.Write([]byte("done"))
+}
+
+func ProcessData() {
+	start := time.Now()
+	sum := 0
+	for i := 0; i < 1000000; i++ {
+		sum += i
+	}
+	hist.Observe(time.Since(start).Seconds())
+	_ = sum
 }

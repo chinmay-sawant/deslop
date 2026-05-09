@@ -1,26 +1,34 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+
+	gorm "gorm.io/gorm"
+	"gorm.io/driver/sqlite"
 )
 
 // scenario for router_setup_runs_migrations: Gin router or handler setup code that also performs migrations.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule155PositiveRecord struct {
-	db *sql.DB
+
+type Product struct {
+	ID    int    `gorm:"primaryKey"`
+	Name  string
+	Price float64
 }
 
-func scenario155Positive(w http.ResponseWriter, r *http.Request, repo Rule155PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type Inventory struct {
+	ID        int `gorm:"primaryKey"`
+	ProductID int
+	Quantity  int
+}
+
+func SetupRouter() http.Handler {
+	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	db.AutoMigrate(&Product{}, &Inventory{})
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/products", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	return mux
 }

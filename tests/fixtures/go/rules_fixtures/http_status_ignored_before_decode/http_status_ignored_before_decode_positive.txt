@@ -1,12 +1,39 @@
 package rulefixtures
 
 import (
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for http_status_ignored_before_decode: Response decoding or body consumption that happens without an observed StatusCode check.
 // fixture polarity: positive; family: idioms; severity: info.
-func scenario385Positive(url string) (*http.Response, error) {
-	client := &http.Client{}
-	return client.Get(url)
+type User struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+func fetchUser(url string) (*User, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var user User
+	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func fetchUsers(url string) ([]User, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var users []User
+	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
+		return nil, err
+	}
+	return users, nil
 }

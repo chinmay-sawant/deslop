@@ -1,19 +1,23 @@
 package rulefixtures
 
+import (
+	"bufio"
+	"os"
+)
+
 // scenario for go_perf_layer_io_operations_scanner_used_for_large_token_stream: Layer: I/O operations. Flag bufio.Scanner on potentially large tokens without Buffer sizing or Reader alternatives.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule550PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
+func scenario550Positive(path string) ([]string, error) {
+	f, _ := os.Open(path)
+	defer f.Close()
 
-func scenario550Positive(records []Rule550PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+	// Scanner has a default max token size of 64 KB. Lines or tokens
+	// larger than this will cause bufio.ErrTooLong. Buffer is never
+	// increased with scanner.Buffer().
+	scanner := bufio.NewScanner(f)
+	var lines []string
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
 	}
-	return total
+	return lines, scanner.Err()
 }

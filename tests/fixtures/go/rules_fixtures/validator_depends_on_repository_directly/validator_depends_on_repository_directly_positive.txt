@@ -2,25 +2,37 @@ package rulefixtures
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"errors"
 )
 
 // scenario for validator_depends_on_repository_directly: Reusable validator code that reaches into repositories instead of receiving precomputed facts or focused services.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule218PositiveRecord struct {
-	db *sql.DB
+
+type UserRepository struct{}
+
+func (r *UserRepository) ExistsByEmail(ctx context.Context, email string) (bool, error) {
+	if email == "admin@example.com" {
+		return true, nil
+	}
+	return false, nil
 }
 
-func scenario218Positive(w http.ResponseWriter, r *http.Request, repo Rule218PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func ValidateNewUser(ctx context.Context, repo *UserRepository, email string, username string) error {
+	if email == "" {
+		return errors.New("email is required")
+	}
+
+	exists, err := repo.ExistsByEmail(ctx, email)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
 		return err
 	}
-	defer rows.Close()
-	return rows.Err()
+	if exists {
+		return errors.New("email already registered")
+	}
+
+	if username == "" {
+		return errors.New("username is required")
+	}
+
+	return nil
 }

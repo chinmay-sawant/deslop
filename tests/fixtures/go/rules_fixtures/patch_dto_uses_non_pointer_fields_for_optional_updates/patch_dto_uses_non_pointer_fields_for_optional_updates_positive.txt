@@ -1,26 +1,33 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for patch_dto_uses_non_pointer_fields_for_optional_updates: PATCH-like DTOs that cannot distinguish omitted fields from zero values.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule111PositiveRecord struct {
-	db *sql.DB
+
+type PatchUserRequest struct {
+	Name     string `json:"name"`
+	Age      int    `json:"age"`
+	IsActive bool   `json:"is_active"`
+	Bio      string `json:"bio"`
 }
 
-func scenario111Positive(w http.ResponseWriter, r *http.Request, repo Rule111PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func PatchUserHandler(w http.ResponseWriter, r *http.Request) {
+	var req PatchUserRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	updates := map[string]interface{}{}
+	if req.Name != "" {
+		updates["name"] = req.Name
 	}
-	defer rows.Close()
-	return rows.Err()
+	if req.Age != 0 {
+		updates["age"] = req.Age
+	}
+	updates["is_active"] = req.IsActive
+	updates["bio"] = req.Bio
+
+	json.NewEncoder(w).Encode(updates)
 }

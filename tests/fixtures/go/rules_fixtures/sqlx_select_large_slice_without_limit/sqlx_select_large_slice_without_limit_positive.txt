@@ -1,21 +1,36 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
+	"log"
+	"net/http"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 // scenario for sqlx_select_large_slice_without_limit: sqlx.Select used on request paths without a visible LIMIT in the query.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule299PositiveRecord struct { ID int }
 
-func scenario299Positive(ctx context.Context, db *sql.DB, ids []int) error {
-	for _, id := range ids {
-		row := db.QueryRowContext(ctx, "select count(*) from orders where account_id=$1", id)
-		var count int
-		if err := row.Scan(&count); err != nil {
-			return err
-		}
+type User struct {
+	ID    int    `db:"id"`
+	Name  string `db:"name"`
+	Email string `db:"email"`
+}
+
+func scenario299Positive(w http.ResponseWriter, r *http.Request) {
+	db, err := sqlx.Connect("postgres", "host=localhost dbname=app sslmode=disable")
+	if err != nil {
+		http.Error(w, "db connection failed", http.StatusInternalServerError)
+		return
 	}
-	return nil
+	defer db.Close()
+
+	var users []User
+	if err := db.Select(&users, "SELECT * FROM users"); err != nil {
+		log.Printf("query failed: %v", err)
+		http.Error(w, "query failed", http.StatusInternalServerError)
+		return
+	}
+	_ = users
+	w.WriteHeader(http.StatusOK)
 }

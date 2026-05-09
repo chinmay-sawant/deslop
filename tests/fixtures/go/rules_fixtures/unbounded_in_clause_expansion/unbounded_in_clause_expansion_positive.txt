@@ -1,19 +1,28 @@
 package rulefixtures
 
 import (
+	"fmt"
 	gorm "gorm.io/gorm"
+	"strings"
 )
 
 // scenario for unbounded_in_clause_expansion: IN clauses built from request-driven collections without bound limits.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule301PositiveRecord struct { ID int }
 
-func scenario301Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+type Asset struct {
+	ID   int
+	Name string
+}
+
+func FindAssetsByIDs(db *gorm.DB, ids []int) ([]Asset, error) {
+	placeholders := make([]string, len(ids))
+	args := make([]interface{}, len(ids))
+	for i, id := range ids {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = id
 	}
-	return db.Order("created_at desc").Find(&[]Rule301PositiveRecord{}).Error
+	var assets []Asset
+	err := db.Where("id IN ("+strings.Join(placeholders, ",")+")", args...).
+		Find(&assets).Error
+	return assets, err
 }

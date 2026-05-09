@@ -2,25 +2,45 @@ package rulefixtures
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
-	"net/http"
 )
 
 // scenario for tracing_span_names_duplicated_as_raw_strings: Repeated raw span-name literals across handlers and services.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule206PositiveRecord struct {
-	db *sql.DB
+type Span struct {
+	Name string
 }
 
-func scenario206Positive(w http.ResponseWriter, r *http.Request, repo Rule206PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func StartSpan(ctx context.Context, name string) *Span {
+	return &Span{Name: name}
+}
+
+func (*Span) Finish() {}
+
+func GetUser(ctx context.Context, id int) error {
+	span := StartSpan(ctx, "user.get_by_id")
+	defer span.Finish()
+	_ = id
+	return nil
+}
+
+func UpdateUser(ctx context.Context, id int) error {
+	span := StartSpan(ctx, "user.get_by_id")
+	defer span.Finish()
+	_ = id
+	return nil
+}
+
+func GetOrder(ctx context.Context, id int) error {
+	span := StartSpan(ctx, "user.get_by_id")
+	defer span.Finish()
+	_ = id
+	return nil
+}
+
+func DeleteUser(ctx context.Context, id int) error {
+	span := StartSpan(ctx, "user.get_by_id")
+	defer span.Finish()
+	fmt.Printf("deleting user %d\n", id)
+	return nil
 }

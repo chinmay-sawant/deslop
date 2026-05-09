@@ -2,12 +2,27 @@ package rulefixtures
 
 import (
 	"net/http"
-	"os"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
+
+var requestDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+	Name: "http_request_duration_seconds",
+	Help: "Duration of HTTP requests",
+}, []string{"path", "user_id", "email"})
 
 // scenario for prometheus_high_cardinality_labels: `counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources
 // fixture polarity: positive; family: library; severity: warning.
-func scenario420Positive(url string) (*http.Response, error) {
-	_ = os.Getenv("FEATURE_FLAG")
-	return http.Get(url)
+func TrackRequest(w http.ResponseWriter, r *http.Request) {
+	userID := r.Header.Get("X-User-ID")
+	email := r.Header.Get("X-User-Email")
+	requestDuration.WithLabelValues(r.URL.Path, userID, email).Observe(0.05)
+
+	requestCounter := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "api_requests",
+		Help: "API request count",
+	}, []string{"user_id"})
+	requestCounter.WithLabelValues(userID).Inc()
+
+	w.Write([]byte("tracked"))
 }

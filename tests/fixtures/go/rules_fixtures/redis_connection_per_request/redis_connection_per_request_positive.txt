@@ -2,14 +2,25 @@ package rulefixtures
 
 import (
 	"context"
+	"net/http"
 	redis "github.com/redis/go-redis/v9"
 )
 
 // scenario for redis_connection_per_request: `redis.NewClient(&redis.Options{...})` inside handler/request functions
 // fixture polarity: positive; family: library; severity: warning.
-func scenario423Positive(ctx context.Context, client *redis.Client, key string) error {
-	if err := client.Get(ctx, key).Err(); err != nil {
-		return err
+func scenario423Positive(w http.ResponseWriter, r *http.Request) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+	defer rdb.Close()
+
+	if err := rdb.Ping(r.Context()).Err(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	return client.Set(ctx, key, "value", 0).Err()
+
+	_ = context.Background()
+	w.WriteHeader(http.StatusOK)
 }

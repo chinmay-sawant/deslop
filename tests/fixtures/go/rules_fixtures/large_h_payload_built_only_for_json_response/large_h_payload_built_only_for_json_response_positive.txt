@@ -1,31 +1,37 @@
 package rulefixtures
 
 import (
-	"encoding/json"
-	"io"
-	gin "github.com/gin-gonic/gin"
-	binding "github.com/gin-gonic/gin/binding"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // scenario for large_h_payload_built_only_for_json_response: Large gin.H payloads built as transient dynamic maps right before JSON rendering.
 // fixture polarity: positive; family: gin; severity: contextual.
-type Rule322PositiveRecord struct {
-	Name string `json:"name"`
-}
 
-func scenario322Positive(ctx *gin.Context) error {
-	var first Rule322PositiveRecord
-	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
-		return err
+func scenario322Positive(c *gin.Context) {
+	users := []string{"alice", "bob", "charlie", "dave", "eve", "frank"}
+	orders := []int{1001, 1002, 1003, 1004, 1005}
+	stats := map[string]int{"total": 5000, "active": 420, "pending": 125}
+
+	payload := gin.H{
+		"users":      users,
+		"orders":     orders,
+		"stats":      stats,
+		"page":       1,
+		"page_size":  50,
+		"total":      5000,
+		"filter":     "active",
+		"sort_by":    "created_at",
+		"sort_order": "desc",
+		"metadata": gin.H{
+			"request_id":   "req-abc-123",
+			"elapsed_ms":   42,
+			"cached":       false,
+			"api_version":  "v2",
+			"region":       "us-east-1",
+			"environment":  "production",
+		},
 	}
-	body, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		return err
-	}
-	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
-	if err != nil {
-		return err
-	}
-	ctx.Data(200, "application/json", data)
-	return nil
+	c.JSON(http.StatusOK, payload)
 }

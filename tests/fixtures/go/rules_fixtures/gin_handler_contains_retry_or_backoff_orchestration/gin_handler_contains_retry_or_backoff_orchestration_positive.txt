@@ -1,26 +1,33 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"errors"
 	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // scenario for gin_handler_contains_retry_or_backoff_orchestration: Handlers that implement retry loops or backoff decisions inline instead of delegating to service or client layers.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule043PositiveRecord struct {
-	db *sql.DB
+
+func SendNotificationHandler(c *gin.Context) {
+	var lastErr error
+	for attempt := 0; attempt < 3; attempt++ {
+		err := sendExternalNotification(c.Param("userID"))
+		if err == nil {
+			c.JSON(http.StatusOK, gin.H{"status": "sent", "attempt": attempt + 1})
+			return
+		}
+		lastErr = err
+		time.Sleep(time.Duration(attempt+1) * 500 * time.Millisecond)
+	}
+	c.JSON(http.StatusInternalServerError, gin.H{"error": lastErr.Error()})
 }
 
-func scenario043Positive(w http.ResponseWriter, r *http.Request, repo Rule043PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func sendExternalNotification(userID string) error {
+	if userID == "" {
+		return errors.New("empty userID")
 	}
-	defer rows.Close()
-	return rows.Err()
+	return nil
 }

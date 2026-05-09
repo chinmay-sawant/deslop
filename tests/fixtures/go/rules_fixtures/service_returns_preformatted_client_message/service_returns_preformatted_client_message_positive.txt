@@ -1,26 +1,40 @@
-package rulefixtures
+package service
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"errors"
+	"strings"
 )
 
 // scenario for service_returns_preformatted_client_message: Services that return final client-facing message strings instead of typed domain errors.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule179PositiveRecord struct {
-	db *sql.DB
+type RegistrationService struct {
+	repo UserRepository
 }
 
-func scenario179Positive(w http.ResponseWriter, r *http.Request, repo Rule179PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+var (
+	ErrEmailTaken = errors.New("This email address is already registered. Please use a different email or try logging in.")
+	ErrWeakPass   = errors.New("Password must be at least 8 characters and include a number and a special character.")
+)
+
+func (s *RegistrationService) SignUp(ctx context.Context, email, password string) error {
+	if strings.TrimSpace(email) == "" {
+		return errors.New("Email address is required.")
 	}
-	defer rows.Close()
-	return rows.Err()
+	if len(password) < 8 {
+		return ErrWeakPass
+	}
+	exists, err := s.repo.EmailExists(ctx, email)
+	if err != nil {
+		return errors.New("We encountered a problem creating your account. Please try again later.")
+	}
+	if exists {
+		return ErrEmailTaken
+	}
+	return s.repo.Insert(ctx, email, password)
+}
+
+type UserRepository interface {
+	EmailExists(ctx context.Context, email string) (bool, error)
+	Insert(ctx context.Context, email, password string) error
 }

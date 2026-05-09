@@ -1,19 +1,22 @@
 package rulefixtures
 
+import (
+	"encoding/xml"
+	"io"
+)
+
 // scenario for xml_decoder_without_strict: `xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML
 // fixture polarity: positive; family: performance; severity: info.
-type Rule696PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+type Person struct {
+	Name string `xml:"name"`
+	Age  int    `xml:"age"`
 }
 
-func scenario696Positive(records []Rule696PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func scenario696Positive(r io.Reader) (*Person, error) {
+	var p Person
+	decoder := xml.NewDecoder(r)
+	if err := decoder.Decode(&p); err != nil {
+		return nil, err
 	}
-	return total
+	return &p, nil
 }

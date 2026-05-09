@@ -1,26 +1,30 @@
-package rulefixtures
+package service
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
+
+	"github.com/example/app/internal/handler/helper"
 )
 
 // scenario for service_calls_handler_helper: Service packages that reach upward into handler helpers for parsing, rendering, or Gin-specific utilities.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule161PositiveRecord struct {
-	db *sql.DB
+type UserService struct {
+	repo UserRepository
 }
 
-func scenario161Positive(w http.ResponseWriter, r *http.Request, repo Rule161PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func (s *UserService) GetUser(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	id, err := strconv.Atoi(helper.ExtractPathParam(r, "id"))
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return fmt.Errorf("invalid id: %w", err)
+	}
+	user, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		helper.WriteJSONError(w, http.StatusNotFound, "user not found")
 		return err
 	}
-	defer rows.Close()
-	return rows.Err()
+	helper.WriteJSONResponse(w, http.StatusOK, user)
+	return nil
 }

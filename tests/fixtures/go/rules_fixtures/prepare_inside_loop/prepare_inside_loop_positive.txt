@@ -1,19 +1,24 @@
 package rulefixtures
 
 import (
-	gorm "gorm.io/gorm"
+	"database/sql"
 )
 
 // scenario for prepare_inside_loop: Prepare(...) or PrepareContext(...) observed inside loops.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule284PositiveRecord struct { ID int }
-
-func scenario284Positive(db *gorm.DB, ids []int) error {
+func QueryInLoop(db *sql.DB, ids []int) error {
 	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+		stmt, err := db.Prepare("SELECT name, email FROM users WHERE id = $1")
+		if err != nil {
 			return err
 		}
+		var name, email string
+		if err := stmt.QueryRow(id).Scan(&name, &email); err != nil {
+			stmt.Close()
+			return err
+		}
+		stmt.Close()
+		_, _ = name, email
 	}
-	return db.Order("created_at desc").Find(&[]Rule284PositiveRecord{}).Error
+	return nil
 }

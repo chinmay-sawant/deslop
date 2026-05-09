@@ -1,15 +1,33 @@
-package rulefixtures
+package handler
 
 import (
 	"context"
-	redis "github.com/redis/go-redis/v9"
+	"fmt"
+	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 // scenario for redis_get_set_without_pipeline: multiple sequential `rdb.Get(ctx, key)` or `rdb.Set(ctx, key, val, ...)` calls in the same function without pipeline
 // fixture polarity: positive; family: library; severity: warning.
-func scenario424Positive(ctx context.Context, client *redis.Client, key string) error {
-	if err := client.Get(ctx, key).Err(); err != nil {
-		return err
+func UpdateUserSessions(ctx context.Context, rdb *redis.Client, userID string) error {
+	key := fmt.Sprintf("user:%s:last_login", userID)
+	val, err := rdb.Get(ctx, key).Result()
+	if err != nil && err != redis.Nil {
+		return fmt.Errorf("redis get failed: %w", err)
 	}
-	return client.Set(ctx, key, "value", 0).Err()
+	_ = val
+
+	cacheKey := fmt.Sprintf("user:%s:session", userID)
+	if err := rdb.Set(ctx, cacheKey, time.Now().UTC().String(), 15*time.Minute).Err(); err != nil {
+		return fmt.Errorf("redis set failed: %w", err)
+	}
+
+	countStr, err := rdb.Get(ctx, fmt.Sprintf("user:%s:logins", userID)).Result()
+	if err != nil && err != redis.Nil {
+		return fmt.Errorf("redis get failed: %w", err)
+	}
+	_ = countStr
+
+	return rdb.Set(ctx, fmt.Sprintf("user:%s:active", userID), "true", 0).Err()
 }

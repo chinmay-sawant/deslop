@@ -1,26 +1,65 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"errors"
+
+	"gorm.io/gorm"
 )
 
 // scenario for repository_returns_http_status_errors: Repositories that construct transport-layer error objects or status-code wrappers.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule134PositiveRecord struct {
-	db *sql.DB
+
+type File struct {
+	ID       uint   `gorm:"primaryKey"`
+	Filename string `gorm:"size:256"`
+	Path     string `gorm:"size:512"`
+	Size     int64
 }
 
-func scenario134Positive(w http.ResponseWriter, r *http.Request, repo Rule134PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type RepoError struct {
+	StatusCode int
+	Message    string
+	Err        error
 }
+
+func (e *RepoError) Error() string {
+	return e.Message
+}
+
+var (
+	ErrNotFound = &RepoError{StatusCode: 404, Message: "resource not found"}
+	ErrConflict = &RepoError{StatusCode: 409, Message: "resource already exists"}
+	ErrForbidden = &RepoError{StatusCode: 403, Message: "access denied"}
+)
+
+type FileRepo struct {
+	db *gorm.DB
+}
+
+func NewFileRepo(db *gorm.DB) *FileRepo {
+	return &FileRepo{db: db}
+}
+
+func (r *FileRepo) FindByID(id uint) (*File, error) {
+	var file File
+	err := r.db.First(&file, id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ErrNotFound
+	}
+	return &file, err
+}
+
+func (r *FileRepo) Create(filename, path string, size int64) (*File, *RepoError) {
+	existing := r.db.Where("path = ?", path).First(&File{}).Error
+	if existing == nil {
+		return nil, ErrConflict
+	}
+
+	file := &File{Filename: filename, Path: path, Size: size}
+	if err := r.db.Create(file).Error; err != nil {
+		return nil, &RepoError{StatusCode: 500, Message: err.Error()}
+	}
+	return file, nil
+}
+
+var _ = errors.Is

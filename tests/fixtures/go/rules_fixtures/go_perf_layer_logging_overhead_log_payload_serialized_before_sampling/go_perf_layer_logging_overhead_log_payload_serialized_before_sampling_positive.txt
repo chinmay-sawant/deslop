@@ -1,19 +1,14 @@
 package rulefixtures
 
+import "encoding/json"
+
 // scenario for go_perf_layer_logging_overhead_log_payload_serialized_before_sampling: Layer: Logging overhead. Flag payload serialization for logs before sampling or level filters run.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule561PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
-
-func scenario561Positive(records []Rule561PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
-	}
-	return total
+func scenario561Positive(data interface{}) string {
+	// json.Marshal is called eagerly on a potentially large object.
+	// If the caller uses sampling (e.g. log 1-in-100), then 99% of
+	// this serialization work is wasted. The marshal should happen
+	// only after the sampling decision passes.
+	payload, _ := json.Marshal(data)
+	return string(payload)
 }

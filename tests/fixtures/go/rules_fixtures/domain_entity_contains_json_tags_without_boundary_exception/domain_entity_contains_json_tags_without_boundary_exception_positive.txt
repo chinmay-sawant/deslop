@@ -1,26 +1,20 @@
 package rulefixtures
 
-import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
-)
-
 // scenario for domain_entity_contains_json_tags_without_boundary_exception: Core domain entities that are directly annotated for API serialization without a deliberate boundary exception.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule026PositiveRecord struct {
-	db *sql.DB
+
+type Order struct {
+	ID        string  `json:"id"`
+	UserID    string  `json:"user_id"`
+	Total     float64 `json:"total"`
+	Status    string  `json:"status"`
+	CreatedAt int64   `json:"created_at"`
 }
 
-func scenario026Positive(w http.ResponseWriter, r *http.Request, repo Rule026PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func (o *Order) CalculateTax() float64 {
+	return o.Total * 0.1
+}
+
+func (o *Order) IsShipped() bool {
+	return o.Status == "shipped"
 }

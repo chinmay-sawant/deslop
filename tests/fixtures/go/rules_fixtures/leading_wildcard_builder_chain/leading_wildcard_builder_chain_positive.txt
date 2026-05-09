@@ -6,14 +6,24 @@ import (
 
 // scenario for leading_wildcard_builder_chain: LIKE queries with leading wildcards that prevent index usage.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule272PositiveRecord struct { ID int }
 
-func scenario272Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
-	}
-	return db.Order("created_at desc").Find(&[]Rule272PositiveRecord{}).Error
+type Article struct {
+	ID    int
+	Title string
+	Body  string
+}
+
+func SearchArticles(db *gorm.DB, keyword string) ([]Article, error) {
+	var articles []Article
+	err := db.Where("title LIKE ?", "%"+keyword+"%").
+		Order("id desc").
+		Find(&articles).Error
+	return articles, err
+}
+
+func FindByDescription(db *gorm.DB, term string) ([]Article, error) {
+	var results []Article
+	err := db.Where("body LIKE ?", "%"+term+"%").
+		Limit(20).Find(&results).Error
+	return results, err
 }

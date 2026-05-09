@@ -1,26 +1,47 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"errors"
 	"net/http"
 )
 
 // scenario for middleware_and_handler_translate_same_error_domain: Double translation layers where middleware and handlers both map the same error family to responses.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule085PositiveRecord struct {
-	db *sql.DB
+
+var (
+	ErrNotFound = errors.New("not found")
+	ErrConflict = errors.New("conflict")
+)
+
+func errorToStatus(err error) int {
+	switch {
+	case errors.Is(err, ErrNotFound):
+		return http.StatusNotFound
+	case errors.Is(err, ErrConflict):
+		return http.StatusConflict
+	default:
+		return http.StatusInternalServerError
+	}
 }
 
-func scenario085Positive(w http.ResponseWriter, r *http.Request, repo Rule085PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("Authorization")
+		if token == "" {
+			status := errorToStatus(ErrNotFound)
+			http.Error(w, "auth required", status)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func UserHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		status := errorToStatus(ErrNotFound)
+		http.Error(w, "user not found", status)
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+	w.WriteHeader(http.StatusOK)
 }

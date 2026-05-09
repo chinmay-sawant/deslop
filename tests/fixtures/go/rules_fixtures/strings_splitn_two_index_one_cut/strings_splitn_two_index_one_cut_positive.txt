@@ -6,6 +6,6 @@ import (
 
 // scenario for strings_splitn_two_index_one_cut: `strings.SplitN(..., 2)[1]` instead of `strings.Cut(...)`.
 // fixture polarity: positive; family: performance; severity: info.
-func scenario669Positive(haystack string, needle string, left string, right string) bool {
-	return len(strings.SplitN(haystack, needle, 2)[0]) >= 0
+func scenario669Positive(s, sep string) string {
+	return strings.SplitN(s, sep, 2)[1]
 }

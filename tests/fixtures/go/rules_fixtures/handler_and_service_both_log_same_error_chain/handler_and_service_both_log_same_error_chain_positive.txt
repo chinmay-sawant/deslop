@@ -2,25 +2,35 @@ package rulefixtures
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
+	"log"
 	"net/http"
 )
 
 // scenario for handler_and_service_both_log_same_error_chain: Duplicated logging ownership where both service and handler log the same failure.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule068PositiveRecord struct {
-	db *sql.DB
+type Rule068PositiveService struct{}
+
+func (s *Rule068PositiveService) GetUser(ctx context.Context, id string) (string, error) {
+	result, err := fetchUser(id)
+	if err != nil {
+		log.Printf("service: failed to fetch user %s: %v", id, err)
+		return "", err
+	}
+	return result, nil
 }
 
-func scenario068Positive(w http.ResponseWriter, r *http.Request, repo Rule068PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func scenario068Positive(w http.ResponseWriter, r *http.Request) {
+	svc := &Rule068PositiveService{}
+	id := r.URL.Query().Get("id")
+	name, err := svc.GetUser(r.Context(), id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+		log.Printf("handler: GetUser failed for %s: %v", id, err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+	w.Write([]byte(name))
+}
+
+func fetchUser(id string) (string, error) {
+	return "user_" + id, nil
 }

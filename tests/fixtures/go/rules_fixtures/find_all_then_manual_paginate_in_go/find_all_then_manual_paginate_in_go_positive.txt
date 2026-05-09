@@ -6,14 +6,20 @@ import (
 
 // scenario for find_all_then_manual_paginate_in_go: All rows fetched and then sliced in Go instead of using database-level pagination.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule262PositiveRecord struct { ID int }
+type Rule262PositiveRecord struct {
+	ID       int
+	TenantID int
+	Name     string
+}
 
-func scenario262Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func scenario262Positive(db *gorm.DB, tenantID, offset, limit int) ([]Rule262PositiveRecord, error) {
+	var allItems []Rule262PositiveRecord
+	if err := db.Where("tenant_id = ?", tenantID).Find(&allItems).Error; err != nil {
+		return nil, err
 	}
-	return db.Order("created_at desc").Find(&[]Rule262PositiveRecord{}).Error
+	end := offset + limit
+	if end > len(allItems) {
+		end = len(allItems)
+	}
+	return allItems[offset:end], nil
 }

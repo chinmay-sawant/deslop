@@ -1,19 +1,30 @@
 package rulefixtures
 
+import "database/sql"
+
 // scenario for go_perf_layer_resource_pooling_db_pool_created_per_repository: Layer: Resource pooling. Flag database pools constructed per repository instance instead of shared process ownership.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule580PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+
+type UserRepository struct {
+	db *sql.DB
 }
 
-func scenario580Positive(records []Rule580PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func NewUserRepository(dsn string) (*UserRepository, error) {
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return nil, err
 	}
-	return total
+	return &UserRepository{db: db}, nil
+}
+
+type OrderRepository struct {
+	db *sql.DB
+}
+
+func NewOrderRepository(dsn string) (*OrderRepository, error) {
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return nil, err
+	}
+	return &OrderRepository{db: db}, nil
 }

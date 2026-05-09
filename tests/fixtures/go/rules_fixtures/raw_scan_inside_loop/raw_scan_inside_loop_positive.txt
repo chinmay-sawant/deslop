@@ -1,19 +1,24 @@
 package rulefixtures
 
 import (
-	gorm "gorm.io/gorm"
+	"gorm.io/gorm"
 )
 
 // scenario for raw_scan_inside_loop: GORM Raw(...).Scan(...) chains observed inside loops.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule287PositiveRecord struct { ID int }
+type Rule287PositiveRecord struct {
+	ID   int
+	Name string
+}
 
-func scenario287Positive(db *gorm.DB, ids []int) error {
+func scenario287Positive(db *gorm.DB, ids []int) ([]Rule287PositiveRecord, error) {
+	var results []Rule287PositiveRecord
 	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
+		var item Rule287PositiveRecord
+		if err := db.Raw("SELECT id, name FROM items WHERE id = ?", id).Scan(&item).Error; err != nil {
+			return nil, err
 		}
+		results = append(results, item)
 	}
-	return db.Order("created_at desc").Find(&[]Rule287PositiveRecord{}).Error
+	return results, nil
 }

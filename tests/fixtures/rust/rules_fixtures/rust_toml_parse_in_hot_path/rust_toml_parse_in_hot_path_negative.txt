@@ -17,21 +17,21 @@ struct Options {
 
 static CONFIG_CACHE: OnceLock<HashMap<String, RequestConfig>> = OnceLock::new();
 
-fn get_cached_config(key: &str) -> Option<&'static RequestConfig> {
-    CONFIG_CACHE.get()?.get(key)
-}
-
-fn preparse_configs(raw: &str) -> HashMap<String, RequestConfig> {
-    raw.lines()
+fn init_configs(raw_toml: &str) {
+    let configs: HashMap<String, RequestConfig> = raw_toml
+        .lines()
         .filter_map(|line| {
             let config: RequestConfig = toml::from_str(line).ok()?;
             Some((config.target.clone(), config))
         })
-        .collect()
+        .collect();
+    let _ = CONFIG_CACHE.set(configs);
 }
 
-fn handle_request(raw_config: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let config: RequestConfig = toml::from_str(raw_config)?;
+// GOOD: No TOML parsing in hot path - uses pre-parsed cached config
+fn handle_request(target: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let configs = CONFIG_CACHE.get().ok_or("configs not initialized")?;
+    let config = configs.get(target).ok_or("unknown target")?;
     process_action(&config.action, &config.target);
     Ok(())
 }

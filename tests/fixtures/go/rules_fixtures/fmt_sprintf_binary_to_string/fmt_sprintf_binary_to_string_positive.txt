@@ -9,7 +9,7 @@ import (
 func scenario491Positive(values []int) []string {
 	out := make([]string, 0, len(values))
 	for _, value := range values {
-		out = append(out, fmt.Sprintf("%d", value))
+		out = append(out, fmt.Sprintf("%b", value))
 	}
 	return out
 }

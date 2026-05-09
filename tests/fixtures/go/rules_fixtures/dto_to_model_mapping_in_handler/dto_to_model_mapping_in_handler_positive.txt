@@ -1,26 +1,36 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for dto_to_model_mapping_in_handler: Handlers that own transport-to-model mapping instead of dedicated mappers or services.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule029PositiveRecord struct {
-	db *sql.DB
+
+type CreateUserRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Age      int    `json:"age"`
 }
 
-func scenario029Positive(w http.ResponseWriter, r *http.Request, repo Rule029PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+type User struct {
+	Name  string
+	Email string
+	Age   int
+	Active bool
+}
+
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	var req CreateUserRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	user := User{
+		Name:   req.Username,
+		Email:  req.Email,
+		Age:    req.Age,
+		Active: true,
 	}
-	defer rows.Close()
-	return rows.Err()
+
+	json.NewEncoder(w).Encode(user)
 }

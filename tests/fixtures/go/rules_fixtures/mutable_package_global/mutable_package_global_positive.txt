@@ -1,12 +1,24 @@
 package rulefixtures
 
-import (
-	"net/http"
-)
-
 // scenario for mutable_package_global: Package-level variables that are mutated from function bodies instead of kept immutable.
 // fixture polarity: positive; family: idioms; severity: info.
-func scenario388Positive(url string) (*http.Response, error) {
-	client := &http.Client{}
-	return client.Get(url)
+
+var AppConfig = &Configuration{Port: 8080, Debug: false, MaxRetries: 3}
+
+type Configuration struct {
+	Port       int
+	Debug      bool
+	MaxRetries int
+}
+
+func EnableDebug() {
+	AppConfig.Debug = true
+}
+
+func SetPort(port int) {
+	AppConfig.Port = port
+}
+
+func UpdateRetries(n int) {
+	AppConfig.MaxRetries = n
 }

@@ -1,19 +1,24 @@
 package rulefixtures
 
+import (
+	"net/http"
+	"sync"
+)
+
 // scenario for go_perf_layer_async_concurrency_mutex_held_during_slow_call: Layer: Async and concurrency. Flag mutex-protected regions that include network, disk, or database calls.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule507PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
 
-func scenario507Positive(records []Rule507PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+var cache507 = make(map[string][]byte)
+var mu507 sync.Mutex
+
+func scenario507Positive(url string) ([]byte, error) {
+	mu507.Lock()
+	resp, err := http.Get(url)
+	if err != nil {
+		mu507.Unlock()
+		return nil, err
 	}
-	return total
+	defer resp.Body.Close()
+	mu507.Unlock()
+	return nil, nil
 }

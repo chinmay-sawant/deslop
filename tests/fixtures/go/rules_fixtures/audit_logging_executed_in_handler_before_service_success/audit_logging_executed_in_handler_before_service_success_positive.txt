@@ -1,26 +1,31 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 // scenario for audit_logging_executed_in_handler_before_service_success: Audit writes that happen before the service has confirmed success.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule004PositiveRecord struct {
-	db *sql.DB
-}
+type AuditLogger struct{}
+func (a *AuditLogger) Log(action, resource string, id int, ts time.Time) {}
 
-func scenario004Positive(w http.ResponseWriter, r *http.Request, repo Rule004PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+type TransferService struct{}
+func (s *TransferService) Transfer(from, to int, amount float64) error { return nil }
+
+func transferHandler(w http.ResponseWriter, r *http.Request, logger *AuditLogger, svc *TransferService) {
+	fromID := 1001
+	toID := 2002
+	amount := 150.00
+
+	logger.Log("transfer", "account", fromID, time.Now())
+
+	if err := svc.Transfer(fromID, toID, amount); err != nil {
+		http.Error(w, fmt.Sprintf("transfer failed: %v", err), http.StatusInternalServerError)
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "transfer completed")
 }

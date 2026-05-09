@@ -1,31 +1,29 @@
 package rulefixtures
 
 import (
-	"encoding/json"
-	"io"
-	gin "github.com/gin-gonic/gin"
-	binding "github.com/gin-gonic/gin/binding"
+	"net/http"
+	"os"
 )
 
 // scenario for env_or_config_lookup_per_request: Environment variable reads observed on request paths instead of cached configuration.
 // fixture polarity: positive; family: gin; severity: contextual.
-type Rule311PositiveRecord struct {
-	Name string `json:"name"`
+type Rule311PositiveHandler struct {
+	secret string
 }
 
-func scenario311Positive(ctx *gin.Context) error {
-	var first Rule311PositiveRecord
-	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
-		return err
+func (h *Rule311PositiveHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		http.Error(w, "DB_URL not set", http.StatusInternalServerError)
+		return
 	}
-	body, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		return err
+	apiKey := os.Getenv("API_KEY")
+	if apiKey == "" {
+		http.Error(w, "API_KEY not set", http.StatusInternalServerError)
+		return
 	}
-	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
-	if err != nil {
-		return err
-	}
-	ctx.Data(200, "application/json", data)
-	return nil
+	_ = dbURL
+	_ = apiKey
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(`{"status":"created"}`))
 }

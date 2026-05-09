@@ -1,31 +1,33 @@
 package rulefixtures
 
 import (
-	"encoding/json"
 	"io"
-	gin "github.com/gin-gonic/gin"
-	binding "github.com/gin-gonic/gin/binding"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // scenario for middleware_allocates_http_client_per_request: HTTP client allocated inside Gin handlers or middleware instead of being shared.
 // fixture polarity: positive; family: gin; severity: contextual.
-type Rule325PositiveRecord struct {
-	Name string `json:"name"`
+
+func HTTPClientMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		client := &http.Client{
+			Timeout: 10 * time.Second,
+		}
+
+		resp, err := client.Get("https://api.example.com/health")
+		if err != nil {
+			c.AbortWithStatusJSON(502, gin.H{"error": "upstream unreachable"})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+		c.Set("health_response", string(body))
+		c.Next()
+	}
 }
 
-func scenario325Positive(ctx *gin.Context) error {
-	var first Rule325PositiveRecord
-	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
-		return err
-	}
-	body, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		return err
-	}
-	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
-	if err != nil {
-		return err
-	}
-	ctx.Data(200, "application/json", data)
-	return nil
-}
+var _ = io.Discard

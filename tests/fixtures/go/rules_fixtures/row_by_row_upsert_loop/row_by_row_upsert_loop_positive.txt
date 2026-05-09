@@ -1,19 +1,24 @@
 package rulefixtures
 
 import (
-	gorm "gorm.io/gorm"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // scenario for row_by_row_upsert_loop: Upsert-style writes executed row by row inside loops instead of batched.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule292PositiveRecord struct { ID int }
+type Rule292PositiveRecord struct {
+	ID   int    `gorm:"primaryKey"`
+	Name string
+}
 
-func scenario292Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+func scenario292Positive(db *gorm.DB, items []Rule292PositiveRecord) error {
+	for _, item := range items {
+		if err := db.Clauses(clause.OnConflict{
+			UpdateAll: true,
+		}).Create(&item).Error; err != nil {
 			return err
 		}
 	}
-	return db.Order("created_at desc").Find(&[]Rule292PositiveRecord{}).Error
+	return nil
 }

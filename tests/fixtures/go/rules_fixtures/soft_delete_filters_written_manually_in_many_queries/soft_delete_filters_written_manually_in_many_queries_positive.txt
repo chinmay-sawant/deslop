@@ -1,26 +1,35 @@
 package rulefixtures
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
-	"net/http"
 )
 
 // scenario for soft_delete_filters_written_manually_in_many_queries: Repeated `deleted_at IS NULL` style filters rather than a shared repository or scope policy.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule188PositiveRecord struct {
-	db *sql.DB
+
+type CustomerRepo struct {
+	DB *sql.DB
 }
 
-func scenario188Positive(w http.ResponseWriter, r *http.Request, repo Rule188PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func (r *CustomerRepo) FindAll() (*sql.Rows, error) {
+	return r.DB.Query("SELECT id, name FROM customers WHERE deleted_at IS NULL")
+}
+
+func (r *CustomerRepo) FindByEmail(email string) (*sql.Row, error) {
+	row := r.DB.QueryRow(
+		"SELECT id, name FROM customers WHERE email = $1 AND deleted_at IS NULL", email,
+	)
+	return row, nil
+}
+
+func (r *CustomerRepo) FindActiveSince(since string) (*sql.Rows, error) {
+	return r.DB.Query(
+		"SELECT id, name FROM customers WHERE active_since > $1 AND deleted_at IS NULL", since,
+	)
+}
+
+func (r *CustomerRepo) CountAll() (int, error) {
+	var count int
+	err := r.DB.QueryRow("SELECT COUNT(*) FROM customers WHERE deleted_at IS NULL").Scan(&count)
+	return count, err
 }

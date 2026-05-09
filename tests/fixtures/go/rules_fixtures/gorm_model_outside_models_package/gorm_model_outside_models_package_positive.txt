@@ -1,26 +1,37 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	gorm "gorm.io/gorm"
 )
 
 // scenario for gorm_model_outside_models_package: GORM-backed structs with `gorm` tags declared outside `model` or `models` packages unless an explicit `entity` or `schema` package already exists.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule065PositiveRecord struct {
-	db *sql.DB
-}
 
-func scenario065Positive(w http.ResponseWriter, r *http.Request, repo Rule065PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func scenario065Positive(db *gorm.DB, tenantID int) ([]struct {
+	ID       int    `gorm:"primaryKey"`
+	TenantID int    `gorm:"index"`
+	Name     string `gorm:"size:255"`
+}, error) {
+	type localRecord struct {
+		ID       int    `gorm:"primaryKey"`
+		TenantID int    `gorm:"index"`
+		Name     string `gorm:"size:255"`
 	}
-	defer rows.Close()
-	return rows.Err()
+	var items []localRecord
+	if err := db.Where("tenant_id = ?", tenantID).Find(&items).Error; err != nil {
+		return nil, err
+	}
+	result := make([]struct {
+		ID       int    `gorm:"primaryKey"`
+		TenantID int    `gorm:"index"`
+		Name     string `gorm:"size:255"`
+	}, len(items))
+	for i, v := range items {
+		result[i] = struct {
+			ID       int    `gorm:"primaryKey"`
+			TenantID int    `gorm:"index"`
+			Name     string `gorm:"size:255"`
+		}(v)
+	}
+	return result, nil
 }

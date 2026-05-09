@@ -1,26 +1,44 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"gorm.io/gorm"
+
+	_ "github.com/swaggo/swag"
+	_ "github.com/swaggo/gin-swagger"
+	_ "github.com/swaggo/files"
 )
 
 // scenario for repository_or_service_packages_import_docs_or_generator_annotations: Core business packages that depend on documentation-only tooling or generator-specific concerns.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule131PositiveRecord struct {
-	db *sql.DB
+
+type Setting struct {
+	ID    uint   `gorm:"primaryKey"`
+	Key   string `gorm:"size:128;uniqueIndex"`
+	Value string `gorm:"type:text"`
 }
 
-func scenario131Positive(w http.ResponseWriter, r *http.Request, repo Rule131PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+// @title Settings API
+// @version 1.0
+// @description Manage application configuration settings
+
+type SettingsRepo struct {
+	db *gorm.DB
 }
+
+func NewSettingsRepo(db *gorm.DB) *SettingsRepo {
+	return &SettingsRepo{db: db}
+}
+
+// GetByKey retrieves a setting by its key name.
+// @Summary Get a setting
+// @Tags settings
+// @Param key path string true "Setting key"
+// @Success 200 {object} Setting
+// @Router /settings/{key} [get]
+func (r *SettingsRepo) GetByKey(key string) (*Setting, error) {
+	var setting Setting
+	err := r.db.Where("key = ?", key).First(&setting).Error
+	return &setting, err
+}
+
+var _ = gorm.ErrRecordNotFound

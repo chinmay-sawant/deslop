@@ -6,14 +6,21 @@ import (
 
 // scenario for count_then_find_same_filter: Request-path GORM flows that run Count(...) and then a broad Find(...) with the same filter shape.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule251PositiveRecord struct { ID int }
+type Rule251PositiveRecord struct {
+	ID       int
+	TenantID int
+	Name     string
+}
 
-func scenario251Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func scenario251Positive(db *gorm.DB, tenantID int) (int64, []Rule251PositiveRecord, error) {
+	var total int64
+	filter := db.Where("tenant_id = ?", tenantID)
+	if err := filter.Model(&Rule251PositiveRecord{}).Count(&total).Error; err != nil {
+		return 0, nil, err
 	}
-	return db.Order("created_at desc").Find(&[]Rule251PositiveRecord{}).Error
+	var items []Rule251PositiveRecord
+	if err := filter.Find(&items).Error; err != nil {
+		return 0, nil, err
+	}
+	return total, items, nil
 }

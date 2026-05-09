@@ -1,26 +1,30 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // scenario for route_setup_scattered_without_router_package: Route registration split across unrelated files without a clear `router`, `routes`, or `transport` home.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule153PositiveRecord struct {
-	db *sql.DB
+func RegisterUserRoutes(r *gin.Engine) {
+	r.GET("/users", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"users": []string{"alice", "bob"}})
+	})
+	r.POST("/users", func(c *gin.Context) {
+		c.JSON(http.StatusCreated, gin.H{"id": 1})
+	})
+	r.DELETE("/users/:id", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"deleted": c.Param("id")})
+	})
 }
 
-func scenario153Positive(w http.ResponseWriter, r *http.Request, repo Rule153PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func RegisterOrderRoutes(r *gin.Engine) {
+	r.GET("/orders", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"orders": []int{100, 101}})
+	})
+	r.POST("/orders", func(c *gin.Context) {
+		c.JSON(http.StatusCreated, gin.H{"id": 200})
+	})
 }

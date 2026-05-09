@@ -1,26 +1,42 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for transport_layer_uses_untyped_string_codes_without_catalog: Response code strings that have no shared type or catalog package.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule210PositiveRecord struct {
-	db *sql.DB
+type APIError struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
 }
 
-func scenario210Positive(w http.ResponseWriter, r *http.Request, repo Rule210PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		writeJSON(w, http.StatusBadRequest, APIError{
+			Code:    "USER_001",
+			Message: "missing user id",
+		})
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+	writeJSON(w, http.StatusOK, map[string]string{"id": id})
+}
+
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		writeJSON(w, http.StatusBadRequest, APIError{
+			Code:    "USER_001",
+			Message: "request body required",
+		})
+		return
+	}
+	writeJSON(w, http.StatusCreated, map[string]string{"status": "created"})
+}
+
+func writeJSON(w http.ResponseWriter, code int, v interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	_ = json.NewEncoder(w).Encode(v)
 }

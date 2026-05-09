@@ -1,31 +1,29 @@
 package rulefixtures
 
 import (
-	"encoding/json"
-	"io"
+	"net/http"
+
 	gin "github.com/gin-gonic/gin"
-	binding "github.com/gin-gonic/gin/binding"
 )
 
 // scenario for get_raw_data_then_should_bindjson_duplicate_body: Gin handlers that read GetRawData() and later bind JSON from the same request body.
 // fixture polarity: positive; family: gin; severity: contextual.
-type Rule315PositiveRecord struct {
+type Rule315PositiveInput struct {
 	Name string `json:"name"`
 }
 
-func scenario315Positive(ctx *gin.Context) error {
-	var first Rule315PositiveRecord
-	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
-		return err
-	}
-	body, err := io.ReadAll(ctx.Request.Body)
+func scenario315Positive(c *gin.Context) {
+	raw, err := c.GetRawData()
 	if err != nil {
-		return err
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
-	if err != nil {
-		return err
+	_ = raw
+
+	var input Rule315PositiveInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	ctx.Data(200, "application/json", data)
-	return nil
+	c.JSON(http.StatusOK, input)
 }

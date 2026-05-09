@@ -1,14 +1,23 @@
 package rulefixtures
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 )
 
 // scenario for log_printf_for_production: `log.Printf` (stdlib) usage in web service handler code
 // fixture polarity: positive; family: library; severity: info.
-func scenario416Positive(values []string) {
-	for _, value := range values {
-		log.Print(fmt.Sprintf("value=%s", value))
+
+func scenario416Positive(w http.ResponseWriter, r *http.Request) {
+	log.Printf("incoming request method=%s path=%s remote=%s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	if r.Method != http.MethodGet {
+		log.Printf("rejecting unsupported method: %s", r.Method)
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
+
+	log.Printf("request processed successfully for %s", r.URL.Path)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"status":"ok"}`))
 }

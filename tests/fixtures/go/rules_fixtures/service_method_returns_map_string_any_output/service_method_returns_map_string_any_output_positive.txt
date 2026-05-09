@@ -1,26 +1,32 @@
-package rulefixtures
+package service
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"time"
 )
 
 // scenario for service_method_returns_map_string_any_output: Services that return dynamic maps instead of typed result contracts.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule177PositiveRecord struct {
-	db *sql.DB
+type AnalyticsService struct {
+	repo AnalyticsRepository
 }
 
-func scenario177Positive(w http.ResponseWriter, r *http.Request, repo Rule177PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func (s *AnalyticsService) GetData(ctx context.Context, metric string) map[string]any {
+	results := s.repo.Query(ctx, metric)
+	output := map[string]any{
+		"metric":    metric,
+		"timestamp": time.Now().UTC(),
+		"values":    results,
 	}
-	defer rows.Close()
-	return rows.Err()
+	if len(results) == 0 {
+		output["status"] = "empty"
+	} else {
+		output["status"] = "ok"
+		output["count"] = len(results)
+	}
+	return output
+}
+
+type AnalyticsRepository interface {
+	Query(ctx context.Context, metric string) []float64
 }

@@ -1,26 +1,30 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+	"net/http/pprof"
+
+	"github.com/gin-gonic/gin"
 )
 
 // scenario for admin_or_debug_endpoint_registration_mixed_into_public_router_setup: Operational endpoints registered alongside public routes with no clear boundary.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule000PositiveRecord struct {
-	db *sql.DB
-}
+func setupRouter() *gin.Engine {
+	r := gin.Default()
 
-func scenario000Positive(w http.ResponseWriter, r *http.Request, repo Rule000PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+	r.GET("/api/v1/users", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"users": []string{}}) })
+	r.POST("/api/v1/orders", func(c *gin.Context) { c.JSON(http.StatusCreated, gin.H{}) })
+
+	r.GET("/debug/pprof/", gin.WrapF(pprof.Index))
+	r.GET("/debug/pprof/cmdline", gin.WrapF(pprof.Cmdline))
+	r.GET("/debug/pprof/profile", gin.WrapF(pprof.Profile))
+	r.GET("/debug/pprof/symbol", gin.WrapF(pprof.Symbol))
+	r.GET("/debug/pprof/trace", gin.WrapF(pprof.Trace))
+
+	r.GET("/admin/dashboard", func(c *gin.Context) { c.String(http.StatusOK, "admin") })
+	r.POST("/admin/reindex", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"status": "ok"}) })
+
+	r.GET("/api/v1/products", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"products": []string{}}) })
+
+	return r
 }

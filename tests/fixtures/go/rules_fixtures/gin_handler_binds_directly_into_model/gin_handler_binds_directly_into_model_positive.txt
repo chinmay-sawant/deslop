@@ -1,26 +1,28 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // scenario for gin_handler_binds_directly_into_model: Handlers that bind request bodies directly into GORM or persistence structs.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule041PositiveRecord struct {
-	db *sql.DB
+
+type User struct {
+	gorm.Model
+	Name  string `json:"name" gorm:"column:name"`
+	Email string `json:"email" gorm:"column:email"`
+	Role  string `json:"role" gorm:"column:role"`
+	IsAdmin bool  `json:"is_admin" gorm:"column:is_admin"`
 }
 
-func scenario041Positive(w http.ResponseWriter, r *http.Request, repo Rule041PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func CreateUserHandler(c *gin.Context) {
+	var user User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+	c.JSON(http.StatusCreated, user)
 }

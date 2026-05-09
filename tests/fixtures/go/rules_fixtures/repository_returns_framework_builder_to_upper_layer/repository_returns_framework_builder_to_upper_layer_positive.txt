@@ -1,26 +1,37 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"gorm.io/gorm"
 )
 
 // scenario for repository_returns_framework_builder_to_upper_layer: Repositories that leak `*gorm.DB`, `sqlx.NamedStmt`, query builders, or raw rows to higher layers instead of returning results or domain abstractions.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule132PositiveRecord struct {
-	db *sql.DB
+
+type Article struct {
+	ID        uint   `gorm:"primaryKey"`
+	Title     string `gorm:"size:256"`
+	Content   string `gorm:"type:text"`
+	Published bool   `gorm:"default:false"`
 }
 
-func scenario132Positive(w http.ResponseWriter, r *http.Request, repo Rule132PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type ArticleRepo struct {
+	db *gorm.DB
 }
+
+func NewArticleRepo(db *gorm.DB) *ArticleRepo {
+	return &ArticleRepo{db: db}
+}
+
+func (r *ArticleRepo) All() *gorm.DB {
+	return r.db.Model(&Article{})
+}
+
+func (r *ArticleRepo) ByCategory(category string) *gorm.DB {
+	return r.db.Model(&Article{}).Joins("JOIN categories ON categories.id = articles.category_id").Where("categories.name = ?", category)
+}
+
+func (r *ArticleRepo) FilterPublished() *gorm.DB {
+	return r.db.Model(&Article{}).Where("published = ?", true)
+}
+
+var _ = gorm.ErrRecordNotFound

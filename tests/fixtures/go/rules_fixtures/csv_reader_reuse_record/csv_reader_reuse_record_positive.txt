@@ -1,19 +1,24 @@
 package rulefixtures
 
+import (
+	"encoding/csv"
+	"io"
+)
+
 // scenario for csv_reader_reuse_record: `csv.NewReader(r)` without `ReuseRecord = true` when records are processed one at a time and not stored
 // fixture polarity: positive; family: performance; severity: info.
-type Rule475PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
 
-func scenario475Positive(records []Rule475PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario475Positive(r io.Reader) error {
+	cr := csv.NewReader(r)
+	for {
+		record, err := cr.Read()
+		if err == io.EOF {
+			break
 		}
+		if err != nil {
+			return err
+		}
+		_ = record[0]
 	}
-	return total
+	return nil
 }

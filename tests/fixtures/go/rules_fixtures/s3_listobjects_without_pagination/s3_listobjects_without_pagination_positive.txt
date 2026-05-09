@@ -1,13 +1,31 @@
-package rulefixtures
+package handler
 
 import (
+	"context"
 	"net/http"
-	"os"
+
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 // scenario for s3_listobjects_without_pagination: `s3.ListObjectsV2` without `MaxKeys` or pagination in handler code
 // fixture polarity: positive; family: library; severity: warning.
-func scenario429Positive(url string) (*http.Response, error) {
-	_ = os.Getenv("FEATURE_FLAG")
-	return http.Get(url)
+func ListFilesHandler(s3Client *s3.Client, bucket string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		prefix := r.URL.Query().Get("prefix")
+
+		input := &s3.ListObjectsV2Input{
+			Bucket: &bucket,
+			Prefix: &prefix,
+		}
+		output, err := s3Client.ListObjectsV2(context.Background(), input)
+		if err != nil {
+			http.Error(w, "failed to list objects", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		for _, obj := range output.Contents {
+			w.Write([]byte(*obj.Key + "\n"))
+		}
+	}
 }

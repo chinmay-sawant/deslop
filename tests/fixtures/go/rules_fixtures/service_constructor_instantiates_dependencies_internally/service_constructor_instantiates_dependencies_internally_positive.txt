@@ -1,26 +1,33 @@
-package rulefixtures
+package service
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
-	"net/http"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 // scenario for service_constructor_instantiates_dependencies_internally: Constructors that create repositories, clients, or loggers internally instead of accepting them explicitly.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule163PositiveRecord struct {
-	db *sql.DB
+type OrderService struct {
+	db  *gorm.DB
+	cfg Config
 }
 
-func scenario163Positive(w http.ResponseWriter, r *http.Request, repo Rule163PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func NewOrderService(cfg Config) (*OrderService, error) {
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s",
+		cfg.DBHost, cfg.DBUser, cfg.DBPass, cfg.DBName, cfg.DBPort)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
-	defer rows.Close()
-	return rows.Err()
+	return &OrderService{db: db, cfg: cfg}, nil
+}
+
+type Config struct {
+	DBHost string
+	DBUser string
+	DBPass string
+	DBName string
+	DBPort string
 }

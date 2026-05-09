@@ -4,23 +4,23 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"net/http"
 )
 
 // scenario for cross_repository_write_flow_without_shared_uow_boundary: Service methods coordinating several repositories with no explicit shared transaction or consistency boundary.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule020PositiveRecord struct {
-	db *sql.DB
-}
 
-func scenario020Positive(w http.ResponseWriter, r *http.Request, repo Rule020PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+type OrderRepository struct{ db *sql.DB }
+type LedgerRepository struct{ db *sql.DB }
+
+func (or *OrderRepository) Create(ctx context.Context, amount float64) error { return nil }
+func (lr *LedgerRepository) RecordDebit(ctx context.Context, amount float64) error { return nil }
+
+func ProcessOrder(ctx context.Context, amount float64, orderRepo *OrderRepository, ledgerRepo *LedgerRepository) error {
+	if err := orderRepo.Create(ctx, amount); err != nil {
+		return fmt.Errorf("cross_repository_write_flow_without_shared_uow_boundary: %w", err)
 	}
-	defer rows.Close()
-	return rows.Err()
+	if err := ledgerRepo.RecordDebit(ctx, amount); err != nil {
+		return fmt.Errorf("cross_repository_write_flow_without_shared_uow_boundary: %w", err)
+	}
+	return nil
 }

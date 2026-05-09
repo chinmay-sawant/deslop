@@ -1,17 +1,24 @@
 package rulefixtures
 
 import (
-	"time"
+	"sync"
+	"testing"
 )
 
 // scenario for go_perf_layer_runtime_configuration_race_detector_assumed_in_benchmark_numbers: Layer: Build and runtime configuration. Flag benchmark guidance or scripts that compare race-enabled and normal builds directly.
 // fixture polarity: positive; family: performance; severity: contextual.
-func scenario587Positive(items []string) int {
-	total := 0
-	for _, item := range items {
-		_ = time.Now()
-		_ = time.After(time.Millisecond)
-		total += len(item)
-	}
-	return total
+// Run with: go test -bench=. -race . (reported as ~2500 ns/op, but race detector adds overhead)
+
+func scenario587BenchmarkFetch(b *testing.B) {
+	cache := make(map[string]int, 256)
+	var mu sync.Mutex
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			mu.Lock()
+			cache["key"]++
+			_ = cache["key"]
+			mu.Unlock()
+		}
+	})
 }

@@ -1,6 +1,7 @@
 package rulefixtures
 
 import (
+	"context"
 	"time"
 )
 
@@ -9,9 +10,15 @@ import (
 func scenario505Positive(items []string) int {
 	total := 0
 	for _, item := range items {
-		_ = time.Now()
-		_ = time.After(time.Millisecond)
-		total += len(item)
+		for retry := 0; retry < 3; retry++ {
+			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			select {
+			case <-ctx.Done():
+			default:
+				total += len(item)
+			}
+			cancel()
+		}
 	}
 	return total
 }

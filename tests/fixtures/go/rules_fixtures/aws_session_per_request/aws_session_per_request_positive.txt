@@ -2,12 +2,29 @@ package rulefixtures
 
 import (
 	"net/http"
-	"os"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 // scenario for aws_session_per_request: `session.NewSession()` or `config.LoadDefaultConfig(ctx)` inside handler functions
 // fixture polarity: positive; family: library; severity: warning.
-func scenario404Positive(url string) (*http.Response, error) {
-	_ = os.Getenv("FEATURE_FLAG")
-	return http.Get(url)
+func scenario404Positive(w http.ResponseWriter, r *http.Request) {
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("us-east-1"),
+	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	svc := s3.New(sess)
+	result, err := svc.ListBuckets(&s3.ListBucketsInput{})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	for _, b := range result.Buckets {
+		w.Write([]byte(*b.Name + "\n"))
+	}
 }

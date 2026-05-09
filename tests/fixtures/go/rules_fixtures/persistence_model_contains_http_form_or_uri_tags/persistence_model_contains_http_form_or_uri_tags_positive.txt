@@ -1,26 +1,20 @@
 package rulefixtures
 
-import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
-)
-
 // scenario for persistence_model_contains_http_form_or_uri_tags: Persistence models that are tied to form or URI binding tags.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule113PositiveRecord struct {
-	db *sql.DB
+type Product struct {
+	ID    int    `gorm:"primaryKey" json:"id"`
+	Name  string `gorm:"column:name" json:"name" form:"name" uri:"name"`
+	Price int64  `gorm:"column:price" json:"price" form:"price"`
+	SKU   string `gorm:"column:sku" json:"sku" uri:"sku"`
 }
 
-func scenario113Positive(w http.ResponseWriter, r *http.Request, repo Rule113PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type Order struct {
+	ID        int    `gorm:"primaryKey" json:"id"`
+	UserID    int    `gorm:"column:user_id" json:"user_id" uri:"user-id" form:"user_id"`
+	ProductID int    `gorm:"column:product_id" json:"product_id" form:"product_id"`
+	Status    string `gorm:"column:status" json:"status" form:"status"`
 }
+
+func (Product) TableName() string  { return "products" }
+func (Order) TableName() string    { return "orders" }

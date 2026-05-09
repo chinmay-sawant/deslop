@@ -1,26 +1,24 @@
 package rulefixtures
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
-	"net/http"
+	"os"
 )
 
 // scenario for constructor_reads_env_directly: Constructors that call `os.Getenv` instead of receiving normalized config.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule017PositiveRecord struct {
-	db *sql.DB
-}
 
-func scenario017Positive(w http.ResponseWriter, r *http.Request, repo Rule017PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func NewDBConnection() (*sql.DB, error) {
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PASS")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/mydb", user, pass, host, port)
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+		return nil, fmt.Errorf("constructor_reads_env_directly: %w", err)
 	}
-	defer rows.Close()
-	return rows.Err()
+	return db, nil
 }

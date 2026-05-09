@@ -1,26 +1,34 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
 // scenario for tests_couple_to_gorm_model_for_api_contract_assertions: API tests that assert persistence model shapes instead of response contracts.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule203PositiveRecord struct {
-	db *sql.DB
+type GormUser struct {
+	ID        int    `gorm:"primaryKey" json:"id"`
+	Name      string `gorm:"size:256" json:"name"`
+	Password  string `gorm:"-" json:"-"`
+	DeletedAt *int64 `gorm:"index" json:"-"`
 }
 
-func scenario203Positive(w http.ResponseWriter, r *http.Request, repo Rule203PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func TestGetUserByID(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = json.NewEncoder(w).Encode(GormUser{ID: 1, Name: "Alice"})
+	}))
+	defer srv.Close()
+
+	resp, _ := http.Get(srv.URL + "/users/1")
+	defer resp.Body.Close()
+
+	var got GormUser
+	_ = json.NewDecoder(resp.Body).Decode(&got)
+
+	if got.ID != 1 || got.Name != "Alice" {
+		t.Errorf("unexpected user: %+v", got)
 	}
-	defer rows.Close()
-	return rows.Err()
 }

@@ -1,18 +1,22 @@
-use axum::{extract::State, Json};
-use std::sync::Arc;
+use axum::{extract::Extension, Json, Router, routing::get};
 
-struct AppState {
-    db_pool: sqlx::PgPool,
-    cache: dashmap::DashMap<String, Vec<u8>>,
-    config: AppConfig,
+#[derive(Clone)]
+struct HeavyState {
+    large_data: Vec<u8>,
+    cache: std::collections::HashMap<String, String>,
 }
 
-struct AppConfig {
-    feature_flags: Vec<String>,
-    limits: Vec<(String, u64)>,
+// BAD: Extension clones HeavyState per request - large_data Vec is fully cloned each time
+async fn handler(Extension(state): Extension<HeavyState>) -> Json<serde_json::Value> {
+    Json(serde_json::json!({ "len": state.large_data.len() }))
 }
 
-// BAD: Axum State extraction clones heavy AppState per request
-async fn handler(State(state): State<AppState>) -> Json<serde_json::Value> {
-    Json(serde_json::json!({ "ok": true }))
+fn app() -> Router {
+    let state = HeavyState {
+        large_data: vec![0u8; 10_000_000],
+        cache: Default::default(),
+    };
+    Router::new()
+        .route("/", get(handler))
+        .layer(Extension(state))
 }

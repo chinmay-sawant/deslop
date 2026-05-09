@@ -1,19 +1,21 @@
 package rulefixtures
 
+import (
+	"encoding/json"
+	"log/slog"
+	"os"
+)
+
 // scenario for go_perf_layer_logging_overhead_log_fields_built_before_level_check: Layer: Logging overhead. Flag expensive log field construction before checking whether the level is enabled.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule560PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+func scenario560Positive(req map[string]interface{}) {
+	// Expensive JSON serialization of a large request payload is
+	// performed eagerly — even when the log level is INFO and the
+	// debug log will never be emitted.
+	payload, _ := json.Marshal(req)
+	slog.Debug("request received", slog.String("body", string(payload)))
 }
 
-func scenario560Positive(records []Rule560PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
-	}
-	return total
+func init() {
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelInfo})))
 }

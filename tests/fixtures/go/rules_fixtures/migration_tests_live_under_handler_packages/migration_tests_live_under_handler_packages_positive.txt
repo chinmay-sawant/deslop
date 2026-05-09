@@ -1,26 +1,28 @@
-package rulefixtures
+package handlers
 
-import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
-)
+import "testing"
 
 // scenario for migration_tests_live_under_handler_packages: Migration-specific tests located in transport packages.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule096PositiveRecord struct {
-	db *sql.DB
+
+func TestMigrationUp(t *testing.T) {
+	dsn := "postgres://test:test@localhost:5432/testdb"
+	if err := runSchemaMigration(dsn); err != nil {
+		t.Fatalf("migration up failed: %v", err)
+	}
 }
 
-func scenario096Positive(w http.ResponseWriter, r *http.Request, repo Rule096PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func TestMigrationDown(t *testing.T) {
+	dsn := "postgres://test:test@localhost:5432/testdb"
+	if err := rollbackSchemaMigration(dsn); err != nil {
+		t.Fatalf("migration down failed: %v", err)
 	}
-	defer rows.Close()
-	return rows.Err()
+}
+
+func runSchemaMigration(dsn string) error {
+	return nil
+}
+
+func rollbackSchemaMigration(dsn string) error {
+	return nil
 }

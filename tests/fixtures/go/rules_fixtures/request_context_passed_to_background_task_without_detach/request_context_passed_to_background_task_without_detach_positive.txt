@@ -2,15 +2,25 @@ package rulefixtures
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
 // scenario for request_context_passed_to_background_task_without_detach: Background goroutines that still appear to inherit request-scoped context instead of detaching with context.WithoutCancel or equivalent.
 // fixture polarity: positive; family: context; severity: warning.
-func scenario243Positive(url string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
+
+func processJob(ctx context.Context, jobID string) {
+	select {
+	case <-ctx.Done():
+		fmt.Println("context cancelled, aborting job", jobID)
+		return
+	default:
 	}
-	return http.DefaultClient.Do(req)
+	fmt.Println("processing job", jobID)
+}
+
+func scenario243Positive(w http.ResponseWriter, r *http.Request) {
+	jobID := r.URL.Query().Get("job_id")
+	go processJob(r.Context(), jobID)
+	w.WriteHeader(http.StatusAccepted)
 }

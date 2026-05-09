@@ -1,26 +1,38 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"gorm.io/gorm"
 )
 
 // scenario for repository_returns_gorm_query_builder: Repositories that return partially built `*gorm.DB` chains for callers to finish.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule133PositiveRecord struct {
-	db *sql.DB
+
+type Comment struct {
+	ID      uint   `gorm:"primaryKey"`
+	PostID  uint   `gorm:"index"`
+	Author  string `gorm:"size:128"`
+	Body    string `gorm:"type:text"`
+	Flagged bool   `gorm:"default:false"`
 }
 
-func scenario133Positive(w http.ResponseWriter, r *http.Request, repo Rule133PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type CommentRepo struct {
+	db *gorm.DB
 }
+
+func NewCommentRepo(db *gorm.DB) *CommentRepo {
+	return &CommentRepo{db: db}
+}
+
+func (r *CommentRepo) QueryForPost(postID uint) *gorm.DB {
+	return r.db.Model(&Comment{}).Where("post_id = ?", postID).Where("flagged = ?", false)
+}
+
+func (r *CommentRepo) QueryByAuthor(author string) *gorm.DB {
+	return r.db.Model(&Comment{}).Where("author = ?", author).Order("id DESC")
+}
+
+func (r *CommentRepo) QueryRecent() *gorm.DB {
+	return r.db.Model(&Comment{}).Order("id DESC").Limit(50)
+}
+
+var _ = gorm.ErrRecordNotFound

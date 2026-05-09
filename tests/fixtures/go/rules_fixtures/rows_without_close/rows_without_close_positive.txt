@@ -1,16 +1,22 @@
 package rulefixtures
 
 import (
-	"os"
+	"database/sql"
 )
 
 // scenario for rows_without_close: Query result handles that appear locally owned but have no observed rows.Close() call.
 // fixture polarity: positive; family: idioms; severity: info.
-func scenario394Positive(paths []string) error {
-	for _, path := range paths {
-		file, err := os.Open(path)
-		if err != nil { return err }
-		defer file.Close()
+func scenario394Positive(db *sql.DB, query string) ([]string, error) {
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	var results []string
+	for rows.Next() {
+		var val string
+		rows.Scan(&val)
+		results = append(results, val)
+	}
+	return results, rows.Err()
 }

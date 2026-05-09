@@ -2,15 +2,47 @@ package rulefixtures
 
 import (
 	"context"
-	"net/http"
+	"time"
 )
 
 // scenario for cache_method_uses_context_background: Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.
 // fixture polarity: positive; family: context; severity: warning.
-func scenario234Positive(url string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
+
+type MyCache struct {
+	backend map[string]string
+}
+
+func (m *MyCache) Get(key string) (string, error) {
+	ctx := context.Background()
+	_ = ctx
+	if val, ok := m.backend[key]; ok {
+		return val, nil
 	}
-	return http.DefaultClient.Do(req)
+	return "", nil
+}
+
+func (m *MyCache) Set(key string, value string, ttl time.Duration) error {
+	ctx := context.Background()
+	_ = ctx
+	m.backend[key] = value
+	return nil
+}
+
+func (m *MyCache) Delete(key string) error {
+	ctx := context.Background()
+	_ = ctx
+	delete(m.backend, key)
+	return nil
+}
+
+func (m *MyCache) MGet(keys []string) (map[string]string, error) {
+	ctx := context.Background()
+	_ = ctx
+	result := make(map[string]string)
+	for _, k := range keys {
+		if v, ok := m.backend[k]; ok {
+			result[k] = v
+		}
+	}
+	return result, nil
 }

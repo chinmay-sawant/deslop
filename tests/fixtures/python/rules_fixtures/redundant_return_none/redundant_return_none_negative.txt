@@ -4,17 +4,27 @@ def check_permissions(user: dict) -> bool:
     return user.get("role") == "admin"
 
 
-def find_item(items: list[dict], target_id: str) -> dict | None:
+def maybe_find_item(items: list[dict], target_id: str) -> dict | None:
     for item in items:
         if item["id"] == target_id:
             return item
-    return None
+    return
 
 
-def process_if_valid(data: dict) -> int | None:
+def log_and_continue(msg: str) -> None:
+    print(f"[INFO] {msg}")
+
+
+def set_flag(flags: dict, key: str, value: bool) -> None:
+    flags[key] = value
+    if not value:
+        return
+
+
+def process_if_valid(data: dict):
     if "key" not in data:
-        return None
+        return
     value = data["key"]
     if value < 0:
-        return None
-    return value * 2
+        return
+    print(f"Processing {value}")

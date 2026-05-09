@@ -1,26 +1,39 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for error_code_literals_duplicated_across_handlers: Repeated string error codes without a centralized catalog.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule030PositiveRecord struct {
-	db *sql.DB
+func handlerLogin(w http.ResponseWriter, r *http.Request) {
+	email := r.FormValue("email")
+	if email == "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"code": "ERR_001", "msg": "email required"})
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"token":"abc123"}`))
 }
 
-func scenario030Positive(w http.ResponseWriter, r *http.Request, repo Rule030PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func handlerSignup(w http.ResponseWriter, r *http.Request) {
+	email := r.FormValue("email")
+	if email == "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"code": "ERR_001", "msg": "email required"})
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+	pass := r.FormValue("password")
+	if len(pass) < 8 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"code": "ERR_002", "msg": "password too short"})
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(`{"status":"created"}`))
 }

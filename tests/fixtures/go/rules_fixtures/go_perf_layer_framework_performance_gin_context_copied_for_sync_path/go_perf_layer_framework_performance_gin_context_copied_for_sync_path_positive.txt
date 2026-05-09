@@ -1,19 +1,21 @@
 package rulefixtures
 
+import "github.com/gin-gonic/gin"
+
 // scenario for go_perf_layer_framework_performance_gin_context_copied_for_sync_path: Layer: Framework-specific performance. Flag Gin context Copy calls where work remains synchronous and request-scoped.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule534PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+
+func GetUserHandler(c *gin.Context) {
+	ctx := c.Copy()
+	userID := ctx.Param("id")
+	name, err := fetchUserName(userID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"id": userID, "name": name})
 }
 
-func scenario534Positive(records []Rule534PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
-	}
-	return total
+func fetchUserName(id string) (string, error) {
+	return "Alice", nil
 }

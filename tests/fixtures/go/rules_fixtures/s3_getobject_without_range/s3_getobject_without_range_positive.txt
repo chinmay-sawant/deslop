@@ -1,13 +1,31 @@
-package rulefixtures
+package handler
 
 import (
+	"context"
+	"io"
+	"log"
 	"net/http"
-	"os"
+
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 // scenario for s3_getobject_without_range: `s3.GetObject` downloading full objects when only partial data is needed (inferred from subsequent `io.LimitReader` or partial reads)
 // fixture polarity: positive; family: library; severity: warning.
-func scenario428Positive(url string) (*http.Response, error) {
-	_ = os.Getenv("FEATURE_FLAG")
-	return http.Get(url)
+func DownloadHandler(s3Client *s3.Client, bucket, key string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		input := &s3.GetObjectInput{
+			Bucket: &bucket,
+			Key:    &key,
+		}
+		output, err := s3Client.GetObject(context.Background(), input)
+		if err != nil {
+			http.Error(w, "failed to get object", http.StatusInternalServerError)
+			return
+		}
+		defer output.Body.Close()
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.Header().Set("Content-Disposition", "attachment")
+		io.Copy(w, output.Body)
+		log.Println("downloaded full object")
+	}
 }

@@ -1,19 +1,34 @@
 package rulefixtures
 
 import (
+	"fmt"
+
 	gorm "gorm.io/gorm"
 )
 
 // scenario for repeated_same_query_template_same_function: The same query template executed multiple times in one function.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule291PositiveRecord struct { ID int }
+type Rule291PositiveRecord struct {
+	ID   int
+	Name string
+}
 
-func scenario291Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func scenario291Positive(db *gorm.DB, tenantID string) error {
+	var active []Rule291PositiveRecord
+	if err := db.Where("tenant_id = ? AND status = ?", tenantID, "active").Order("created_at desc").Find(&active).Error; err != nil {
+		return fmt.Errorf("active query: %w", err)
 	}
-	return db.Order("created_at desc").Find(&[]Rule291PositiveRecord{}).Error
+
+	var pending []Rule291PositiveRecord
+	if err := db.Where("tenant_id = ? AND status = ?", tenantID, "pending").Order("created_at desc").Find(&pending).Error; err != nil {
+		return fmt.Errorf("pending query: %w", err)
+	}
+
+	var archived []Rule291PositiveRecord
+	if err := db.Where("tenant_id = ? AND status = ?", tenantID, "archived").Order("created_at desc").Find(&archived).Error; err != nil {
+		return fmt.Errorf("archived query: %w", err)
+	}
+
+	_, _ = active, pending
+	return nil
 }

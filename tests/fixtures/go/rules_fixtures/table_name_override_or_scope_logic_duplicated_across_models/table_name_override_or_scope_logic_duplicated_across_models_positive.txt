@@ -1,26 +1,46 @@
 package rulefixtures
 
-import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
-)
+import "gorm.io/gorm"
 
 // scenario for table_name_override_or_scope_logic_duplicated_across_models: Repeated table-name or model-scope customization across many model files without a shared convention.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule198PositiveRecord struct {
-	db *sql.DB
+type User struct {
+	ID   int    `gorm:"primaryKey"`
+	Name string `gorm:"size:256"`
 }
 
-func scenario198Positive(w http.ResponseWriter, r *http.Request, repo Rule198PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func (User) TableName() string {
+	return "app_users"
+}
+
+func activeScope(db *gorm.DB) *gorm.DB {
+	return db.Where("deleted_at IS NULL")
+}
+
+type Order struct {
+	ID     int `gorm:"primaryKey"`
+	UserID int
+	Total  float64
+}
+
+func (Order) TableName() string {
+	return "app_orders"
+}
+
+func activeScopeDuplicate(db *gorm.DB) *gorm.DB {
+	return db.Where("deleted_at IS NULL")
+}
+
+type Payment struct {
+	ID      int `gorm:"primaryKey"`
+	OrderID int
+	Amount  float64
+}
+
+func (Payment) TableName() string {
+	return "app_payments"
+}
+
+func activeScopeDupAgain(db *gorm.DB) *gorm.DB {
+	return db.Where("deleted_at IS NULL")
 }

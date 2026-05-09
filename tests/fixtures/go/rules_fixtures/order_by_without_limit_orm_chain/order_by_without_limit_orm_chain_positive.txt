@@ -6,14 +6,18 @@ import (
 
 // scenario for order_by_without_limit_orm_chain: ORM chains that order results without a Limit on request paths.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule278PositiveRecord struct { ID int }
 
-func scenario278Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
-	}
-	return db.Order("created_at desc").Find(&[]Rule278PositiveRecord{}).Error
+type Comment struct {
+	ID        int
+	PostID    int
+	Body      string
+	CreatedAt string
+}
+
+func ListComments(db *gorm.DB, postID int) ([]Comment, error) {
+	var comments []Comment
+	err := db.Where("post_id = ?", postID).
+		Order("created_at desc").
+		Find(&comments).Error
+	return comments, err
 }

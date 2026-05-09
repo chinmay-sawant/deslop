@@ -1,26 +1,42 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"log"
+	"os"
+
+	"gorm.io/gorm"
 )
 
 // scenario for repository_logs_with_http_status_or_route_labels: Repositories that log transport metadata instead of persistence-domain details.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule128PositiveRecord struct {
-	db *sql.DB
+
+type Session struct {
+	ID     uint   `gorm:"primaryKey"`
+	UserID uint   `gorm:"index"`
+	Token  string `gorm:"size:512"`
 }
 
-func scenario128Positive(w http.ResponseWriter, r *http.Request, repo Rule128PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type SessionRepo struct {
+	db     *gorm.DB
+	logger *log.Logger
 }
+
+func NewSessionRepo(db *gorm.DB) *SessionRepo {
+	return &SessionRepo{
+		db:     db,
+		logger: log.New(os.Stderr, "[repo] ", log.LstdFlags),
+	}
+}
+
+func (r *SessionRepo) FindByToken(token string) (*Session, error) {
+	var session Session
+	err := r.db.Where("token = ?", token).First(&session).Error
+	if err != nil {
+		r.logger.Printf("GET /sessions 404: token not found (len=%d)", len(token))
+		return nil, err
+	}
+	r.logger.Printf("GET /sessions 200: session_id=%d user_id=%d", session.ID, session.UserID)
+	return &session, nil
+}
+
+var _ = os.DevNull

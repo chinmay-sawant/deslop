@@ -1,19 +1,47 @@
 package rulefixtures
 
 import (
+	"fmt"
+	"net/http"
+
 	gorm "gorm.io/gorm"
 )
 
 // scenario for automigrate_or_schema_probe_in_request_path: AutoMigrate or schema probes running on request paths instead of startup.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule246PositiveRecord struct { ID int }
 
-func scenario246Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
+type User struct {
+	ID    int    `gorm:"primaryKey"`
+	Name  string
+	Email string
+}
+
+type Product struct {
+	ID    int `gorm:"primaryKey"`
+	Title string
+	Price float64
+}
+
+func migrateHandler(w http.ResponseWriter, r *http.Request, db *gorm.DB) {
+	target := r.URL.Query().Get("model")
+
+	switch target {
+	case "users":
+		if err := db.AutoMigrate(&User{}); err != nil {
+			http.Error(w, fmt.Sprintf("migrate users failed: %v", err), http.StatusInternalServerError)
+			return
+		}
+	case "products":
+		if err := db.AutoMigrate(&Product{}); err != nil {
+			http.Error(w, fmt.Sprintf("migrate products failed: %v", err), http.StatusInternalServerError)
+			return
+		}
+	default:
+		if err := db.AutoMigrate(&User{}, &Product{}); err != nil {
+			http.Error(w, fmt.Sprintf("migrate all failed: %v", err), http.StatusInternalServerError)
+			return
 		}
 	}
-	return db.Order("created_at desc").Find(&[]Rule246PositiveRecord{}).Error
+
+	fmt.Fprintf(w, "migration for %s completed", target)
 }

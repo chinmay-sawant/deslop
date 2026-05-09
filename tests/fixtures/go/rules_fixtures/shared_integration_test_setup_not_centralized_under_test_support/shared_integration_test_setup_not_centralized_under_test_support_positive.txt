@@ -1,26 +1,34 @@
 package rulefixtures
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
-	"net/http"
+	"testing"
+
+	_ "github.com/lib/pq"
 )
 
 // scenario for shared_integration_test_setup_not_centralized_under_test_support: Repeated app, DB, or router bootstrapping that is not moved into shared test support.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule186PositiveRecord struct {
-	db *sql.DB
-}
 
-func scenario186Positive(w http.ResponseWriter, r *http.Request, repo Rule186PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func TestGetUserIntegration(t *testing.T) {
+	db, err := sql.Open("postgres", "host=localhost dbname=test sslmode=disable")
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+		t.Fatalf("failed to open db: %v", err)
 	}
-	defer rows.Close()
-	return rows.Err()
+	defer db.Close()
+
+	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT)`); err != nil {
+		t.Fatalf("failed to migrate: %v", err)
+	}
+	if _, err := db.Exec(`INSERT INTO users (name) VALUES ($1)`, "alice"); err != nil {
+		t.Fatalf("failed to seed: %v", err)
+	}
+
+	var name string
+	if err := db.QueryRow(`SELECT name FROM users WHERE id = $1`, 1).Scan(&name); err != nil {
+		t.Fatalf("failed to query: %v", err)
+	}
+	if name != "alice" {
+		t.Fatalf("expected alice, got %s", name)
+	}
 }

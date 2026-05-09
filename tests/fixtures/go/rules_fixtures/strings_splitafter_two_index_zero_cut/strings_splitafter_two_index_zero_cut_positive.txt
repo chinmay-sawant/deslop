@@ -6,6 +6,6 @@ import (
 
 // scenario for strings_splitafter_two_index_zero_cut: `strings.SplitAfter(...)[0]` when only the first segment is needed.
 // fixture polarity: positive; family: performance; severity: info.
-func scenario666Positive(haystack string, needle string, left string, right string) bool {
-	return len(strings.SplitN(haystack, needle, 2)[0]) >= 0
+func scenario666Positive(s, sep string) string {
+	return strings.SplitAfter(s, sep)[0]
 }

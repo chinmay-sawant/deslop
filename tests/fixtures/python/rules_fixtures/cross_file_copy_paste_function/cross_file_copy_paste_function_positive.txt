@@ -1,24 +1,28 @@
-def parse_csv_line(line, delimiter=","):
-    fields = []
-    current = ""
-    in_quotes = False
-    for char in line:
-        if char == '"':
-            in_quotes = not in_quotes
-        elif char == delimiter and not in_quotes:
-            fields.append(current.strip())
-            current = ""
-        else:
-            current += char
-    fields.append(current.strip())
+def validate_order_fields(fields, required):
+    missing = []
+    for field in required:
+        if field not in fields or not fields[field]:
+            missing.append(field)
+    if missing:
+        raise ValueError(f"Missing required fields: {missing}")
     return fields
 
 
-def format_csv_line(fields, delimiter=","):
-    escaped = []
-    for field in fields:
-        if delimiter in str(field) or '"' in str(field):
-            escaped.append(f'"{str(field).replace(chr(34), chr(34)+chr(34))}"')
-        else:
-            escaped.append(str(field))
-    return delimiter.join(escaped)
+def validate_user_fields(fields, required):
+    missing = []
+    for field in required:
+        if field not in fields or not fields[field]:
+            missing.append(field)
+    if missing:
+        raise ValueError(f"Missing required fields: {missing}")
+    return fields
+
+
+def validate_product_fields(fields, required):
+    missing = []
+    for field in required:
+        if field not in fields or not fields[field]:
+            missing.append(field)
+    if missing:
+        raise ValueError(f"Missing required fields: {missing}")
+    return fields

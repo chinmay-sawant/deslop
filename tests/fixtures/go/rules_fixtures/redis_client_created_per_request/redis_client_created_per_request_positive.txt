@@ -2,16 +2,22 @@ package rulefixtures
 
 import (
 	"context"
+	"net/http"
 	redis "github.com/redis/go-redis/v9"
 )
 
 // scenario for redis_client_created_per_request: Redis clients created per request instead of reused as shared process infrastructure.
 // fixture polarity: positive; family: data_access; severity: warning.
-func scenario288Positive(ctx context.Context, client *redis.Client, keys []string) error {
-	for _, key := range keys {
-		if err := client.Get(ctx, key).Err(); err != nil {
-			return err
-		}
+func scenario288Positive(w http.ResponseWriter, r *http.Request) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+	defer rdb.Close()
+
+	val, err := rdb.Get(r.Context(), r.URL.Query().Get("key")).Result()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	return client.Ping(ctx).Err()
+	w.Write([]byte(val))
 }

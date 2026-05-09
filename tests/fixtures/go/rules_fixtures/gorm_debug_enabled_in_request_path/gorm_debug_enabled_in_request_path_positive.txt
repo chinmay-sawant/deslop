@@ -6,14 +6,16 @@ import (
 
 // scenario for gorm_debug_enabled_in_request_path: GORM debug logging enabled on request paths.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule265PositiveRecord struct { ID int }
+type Rule265PositiveRecord struct {
+	ID       int
+	TenantID int
+	Name     string
+}
 
-func scenario265Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func scenario265Positive(db *gorm.DB, tenantID int) ([]Rule265PositiveRecord, error) {
+	var items []Rule265PositiveRecord
+	if err := db.Debug().Where("tenant_id = ?", tenantID).Find(&items).Error; err != nil {
+		return nil, err
 	}
-	return db.Order("created_at desc").Find(&[]Rule265PositiveRecord{}).Error
+	return items, nil
 }

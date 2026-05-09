@@ -1,19 +1,19 @@
 package rulefixtures
 
+import "os"
+
 // scenario for go_perf_layer_io_operations_small_writes_without_bufio_writer: Layer: I/O operations. Flag many Write calls to files or network connections without bufio buffering.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule551PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
+func scenario551Positive(path string, records []string) error {
+	f, _ := os.Create(path)
+	defer f.Close()
 
-func scenario551Positive(records []Rule551PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+	// Each small Write call triggers a syscall. No bufio.Writer is
+	// used to batch writes, causing high per-write overhead.
+	for _, rec := range records {
+		if _, err := f.Write([]byte(rec + "\n")); err != nil {
+			return err
 		}
 	}
-	return total
+	return nil
 }

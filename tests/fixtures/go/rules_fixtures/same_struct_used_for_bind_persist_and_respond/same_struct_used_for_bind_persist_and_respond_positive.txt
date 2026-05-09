@@ -1,26 +1,33 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for same_struct_used_for_bind_persist_and_respond: A single struct type reused for request binding, database persistence, and API response serialization.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule159PositiveRecord struct {
-	db *sql.DB
+
+type Product struct {
+	ID     int     `json:"id" gorm:"primaryKey"`
+	Name   string  `json:"name" gorm:"column:name"`
+	Price  float64 `json:"price" gorm:"column:price"`
+	Stock  int     `json:"stock" gorm:"column:stock_qty"`
+	Active bool    `json:"active" gorm:"column:is_active"`
 }
 
-func scenario159Positive(w http.ResponseWriter, r *http.Request, repo Rule159PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
+	var product Product
+	json.NewDecoder(r.Body).Decode(&product)
+
+	product.Active = true
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(product)
+}
+
+func GetProductHandler(w http.ResponseWriter, r *http.Request) {
+	product := Product{ID: 1, Name: "Widget", Price: 9.99, Stock: 100, Active: true}
+
+	json.NewEncoder(w).Encode(product)
 }

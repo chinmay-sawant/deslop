@@ -1,19 +1,18 @@
 package rulefixtures
 
+import (
+	"sync"
+)
+
 // scenario for mutex_value_receiver: `func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field
 // fixture polarity: positive; family: performance; severity: warning.
-type Rule619PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+type Counter struct {
+	mu    sync.Mutex
+	value int
 }
 
-func scenario619Positive(records []Rule619PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
-	}
-	return total
+func (c Counter) Value() int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.value
 }

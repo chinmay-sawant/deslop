@@ -6,14 +6,21 @@ import (
 
 // scenario for save_in_loop_full_model: GORM Save(...) writes full models inside loops.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule295PositiveRecord struct { ID int }
+type Rule295PositiveRecord struct {
+	ID      int
+	Name    string
+	Version int
+	Hash    string
+	Payload []byte
+}
 
-func scenario295Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+func scenario295Positive(db *gorm.DB, items []Rule295PositiveRecord) error {
+	for i := range items {
+		items[i].Version++
+		items[i].Hash = "recalculated"
+		if err := db.Save(&items[i]).Error; err != nil {
 			return err
 		}
 	}
-	return db.Order("created_at desc").Find(&[]Rule295PositiveRecord{}).Error
+	return nil
 }

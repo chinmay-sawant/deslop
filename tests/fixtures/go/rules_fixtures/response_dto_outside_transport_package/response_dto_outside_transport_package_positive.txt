@@ -1,26 +1,39 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for response_dto_outside_transport_package: Response envelope structs that live in persistence or repository packages instead of transport or API contract packages.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule145PositiveRecord struct {
-	db *sql.DB
+
+type UserRepository struct{}
+
+type UserResult struct {
+	ID        int    `json:"id"`
+	Username  string `json:"username"`
+	CreatedAt string `json:"created_at"`
+	IsAdmin   bool   `json:"is_admin"`
 }
 
-func scenario145Positive(w http.ResponseWriter, r *http.Request, repo Rule145PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func (r *UserRepository) FindByID(id int) (*UserResult, error) {
+	return &UserResult{
+		ID:        id,
+		Username:  "jdoe",
+		CreatedAt: "2025-01-10",
+		IsAdmin:   false,
+	}, nil
+}
+
+func GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	repo := &UserRepository{}
+	user, err := repo.FindByID(42)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }

@@ -1,26 +1,30 @@
-package rulefixtures
+package service
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
-	"net/http"
 )
 
 // scenario for service_method_returns_gorm_db_or_sql_rows: Services that leak ORM or driver primitives upward instead of returning business results.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule175PositiveRecord struct {
+type ReportService struct {
 	db *sql.DB
 }
 
-func scenario175Positive(w http.ResponseWriter, r *http.Request, repo Rule175PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func NewReportService(db *sql.DB) *ReportService {
+	return &ReportService{db: db}
+}
+
+func (s *ReportService) Query() (*sql.Rows, error) {
+	rows, err := s.db.Query("SELECT id, name, revenue FROM accounts WHERE active = true")
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+		return nil, err
 	}
-	defer rows.Close()
-	return rows.Err()
+	return rows, nil
+}
+
+func (s *ReportService) FetchRaw(dbName string) *sql.DB {
+	if dbName == "readonly" {
+		return s.db
+	}
+	return s.db
 }

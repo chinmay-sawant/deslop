@@ -1,26 +1,33 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"encoding/json"
+	"io"
 	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
 // scenario for tests_assert_raw_json_strings_without_response_dto: Brittle raw-JSON string assertions when typed response DTOs exist.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule202PositiveRecord struct {
-	db *sql.DB
+type UserResponse struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
-func scenario202Positive(w http.ResponseWriter, r *http.Request, repo Rule202PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func TestGetUser(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = json.NewEncoder(w).Encode(UserResponse{ID: 1, Name: "John", Email: "john@example.com"})
+	}))
+	defer srv.Close()
+
+	resp, _ := http.Get(srv.URL)
+	body, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	want := `{"id":1,"name":"John","email":"john@example.com"}`
+	if string(body) != want {
+		t.Errorf("body = %s, want %s", string(body), want)
 	}
-	defer rows.Close()
-	return rows.Err()
 }

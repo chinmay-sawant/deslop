@@ -2,18 +2,23 @@ package rulefixtures
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 // scenario for json_valid_then_unmarshal: Code that validates JSON and then unmarshals the same payload again.
 // fixture polarity: positive; family: performance; severity: info.
-type Rule610PositiveRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+type Person struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
 
-func scenario610Positive(values []Rule610PositiveRecord) (int, error) {
-	total := 0
-	for _, value := range values {
-		data, err := json.Marshal(value)
-		if err != nil { return 0, err }
-		total += len(data)
+func parsePerson(data []byte) (*Person, error) {
+	if !json.Valid(data) {
+		return nil, fmt.Errorf("invalid JSON")
 	}
-	return total, nil
+	var p Person
+	if err := json.Unmarshal(data, &p); err != nil {
+		return nil, err
+	}
+	return &p, nil
 }

@@ -3,29 +3,23 @@ package rulefixtures
 import (
 	"encoding/json"
 	"io"
-	gin "github.com/gin-gonic/gin"
-	binding "github.com/gin-gonic/gin/binding"
+	"net/http"
+	"strings"
 )
 
 // scenario for upstream_json_decode_same_response_multiple_times: One upstream HTTP response body decoded into multiple targets in the same handler.
 // fixture polarity: positive; family: gin; severity: contextual.
-type Rule340PositiveRecord struct {
-	Name string `json:"name"`
-}
-
-func scenario340Positive(ctx *gin.Context) error {
-	var first Rule340PositiveRecord
-	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
-		return err
-	}
-	body, err := io.ReadAll(ctx.Request.Body)
+func scenario340Positive() error {
+	resp, err := http.Get("https://api.example.com/data")
 	if err != nil {
 		return err
 	}
-	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
-	if err != nil {
-		return err
-	}
-	ctx.Data(200, "application/json", data)
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+	var users []string
+	json.Unmarshal(body, &users)
+	var config map[string]any
+	json.Unmarshal(body, &config)
+	_ = strings.Join(users, ",")
 	return nil
 }

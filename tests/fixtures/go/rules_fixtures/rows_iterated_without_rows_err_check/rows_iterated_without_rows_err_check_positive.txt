@@ -1,12 +1,28 @@
 package rulefixtures
 
 import (
-	"net/http"
+	"database/sql"
 )
 
 // scenario for rows_iterated_without_rows_err_check: Rows iterated with Next() but without a visible final Rows.Err() check.
 // fixture polarity: positive; family: idioms; severity: info.
-func scenario393Positive(url string) (*http.Response, error) {
-	client := &http.Client{}
-	return client.Get(url)
+type Rule393PositiveRecord struct {
+	ID   int
+	Name string
+}
+
+func scenario393Positive(db *sql.DB) ([]Rule393PositiveRecord, error) {
+	rows, err := db.Query("SELECT id, name FROM users")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []Rule393PositiveRecord
+	for rows.Next() {
+		var rec Rule393PositiveRecord
+		rows.Scan(&rec.ID, &rec.Name)
+		results = append(results, rec)
+	}
+	return results, nil
 }

@@ -6,6 +6,11 @@ import (
 
 // scenario for bytes_buffer_string_len: `len(buf.String())` instead of `buf.Len()`.
 // fixture polarity: positive; family: performance; severity: info.
-func scenario446Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
-	return bytes.Index(haystack, needle) != -1
+func scenario446Positive(data []byte) int {
+	var buf bytes.Buffer
+	for _, b := range data {
+		buf.WriteByte(b)
+		_ = len(buf.String())
+	}
+	return buf.Len()
 }

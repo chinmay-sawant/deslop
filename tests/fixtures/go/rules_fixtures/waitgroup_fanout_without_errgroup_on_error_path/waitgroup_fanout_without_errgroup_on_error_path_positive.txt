@@ -1,18 +1,36 @@
 package rulefixtures
 
 import (
-	"time"
+	"errors"
+	"sync"
 )
 
 // scenario for waitgroup_fanout_without_errgroup_on_error_path: WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup.
 // fixture polarity: positive; family: concurrency; severity: info.
-func scenario228Positive(items []string) chan int {
-	results := make(chan int)
-	for _, item := range items {
-		go func() {
-			time.Sleep(time.Millisecond)
-			results <- len(item)
-		}()
+func scenario228Positive(urls []string) ([]string, error) {
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	var errs []error
+	results := make([]string, 0, len(urls))
+
+	for _, u := range urls {
+		wg.Add(1)
+		go func(url string) {
+			defer wg.Done()
+			if url == "" {
+				mu.Lock()
+				errs = append(errs, errors.New("empty url"))
+				mu.Unlock()
+				return
+			}
+			mu.Lock()
+			results = append(results, url+"_processed")
+			mu.Unlock()
+		}(u)
 	}
-	return results
+	wg.Wait()
+	if len(errs) > 0 {
+		return nil, errs[0]
+	}
+	return results, nil
 }

@@ -1,26 +1,40 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // scenario for gin_handler_calls_multiple_repositories_directly: Handlers that coordinate several repositories directly, which usually signals missing service orchestration.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule042PositiveRecord struct {
-	db *sql.DB
-}
 
-func scenario042Positive(w http.ResponseWriter, r *http.Request, repo Rule042PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+type OrderRepository struct{}
+func (r *OrderRepository) Create(orderID string) error { return nil }
+
+type UserRepository struct{}
+func (r *UserRepository) FindByID(userID string) error { return nil }
+
+type AuditRepository struct{}
+func (r *AuditRepository) Log(event string) error { return nil }
+
+func PlaceOrderHandler(c *gin.Context) {
+	orderRepo := &OrderRepository{}
+	userRepo := &UserRepository{}
+	auditRepo := &AuditRepository{}
+
+	userID := c.Param("userID")
+	if err := userRepo.FindByID(userID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+
+	orderID := c.Param("orderID")
+	if err := orderRepo.Create(orderID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	auditRepo.Log("order placed: " + orderID)
+	c.JSON(http.StatusOK, gin.H{"orderID": orderID})
 }

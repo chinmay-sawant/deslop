@@ -1,26 +1,41 @@
-package rulefixtures
+package handler
 
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for service_type_outside_service_package: Concrete use-case services declared outside `service` or `services` packages in layered web-service repos.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule183PositiveRecord struct {
-	db *sql.DB
+type NotificationService struct {
+	db    *sql.DB
+	email EmailSender
 }
 
-func scenario183Positive(w http.ResponseWriter, r *http.Request, repo Rule183PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func NewNotificationService(db *sql.DB, email EmailSender) *NotificationService {
+	return &NotificationService{db: db, email: email}
+}
+
+func (s *NotificationService) SendWelcome(ctx context.Context, userID string) error {
+	var email string
+	err := s.db.QueryRowContext(ctx, "SELECT email FROM users WHERE id = $1", userID).Scan(&email)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
 		return err
 	}
-	defer rows.Close()
-	return rows.Err()
+	return s.email.Send(email, "Welcome!", "Thanks for signing up.")
+}
+
+func HandleSendWelcome(svc *NotificationService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var body struct{ UserID string }
+		json.NewDecoder(r.Body).Decode(&body)
+		svc.SendWelcome(r.Context(), body.UserID)
+		w.WriteHeader(http.StatusAccepted)
+	}
+}
+
+type EmailSender interface {
+	Send(to, subject, body string) error
 }

@@ -1,26 +1,33 @@
 package rulefixtures
 
-import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
-)
+import "net/http"
 
 // scenario for api_error_type_outside_transport_package: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule001PositiveRecord struct {
-	db *sql.DB
+
+type UserRepository struct{}
+
+type APIError struct {
+	HTTPStatus int    `json:"-"`
+	Code       string `json:"code"`
+	Message    string `json:"message"`
+	Details    any    `json:"details,omitempty"`
 }
 
-func scenario001Positive(w http.ResponseWriter, r *http.Request, repo Rule001PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+var (
+	ErrUserNotFound   = &APIError{HTTPStatus: http.StatusNotFound, Code: "USER_NOT_FOUND", Message: "user not found"}
+	ErrInvalidEmail   = &APIError{HTTPStatus: http.StatusBadRequest, Code: "INVALID_EMAIL", Message: "email format is invalid"}
+	ErrDuplicateEntry = &APIError{HTTPStatus: http.StatusConflict, Code: "DUPLICATE_ENTRY", Message: "resource already exists"}
+)
+
+func (r *UserRepository) FindByEmail(email string) (*User, *APIError) {
+	if email == "" {
+		return nil, ErrInvalidEmail
 	}
-	defer rows.Close()
-	return rows.Err()
+	return nil, ErrUserNotFound
+}
+
+type User struct {
+	ID    int
+	Email string
 }

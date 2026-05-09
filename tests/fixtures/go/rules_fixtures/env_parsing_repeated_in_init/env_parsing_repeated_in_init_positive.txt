@@ -1,13 +1,24 @@
 package rulefixtures
 
 import (
-	"net/http"
 	"os"
+	"strconv"
 )
 
 // scenario for env_parsing_repeated_in_init: multiple `os.Getenv` + `strconv.Atoi` / `strconv.ParseBool` chains that could be replaced with a config struct + `envconfig` or `env` library
 // fixture polarity: positive; family: library; severity: info.
-func scenario408Positive(url string) (*http.Response, error) {
-	_ = os.Getenv("FEATURE_FLAG")
-	return http.Get(url)
+var (
+	dbHost string
+	dbPort int
+	debug  bool
+)
+
+func init() {
+	dbHost = os.Getenv("DB_HOST")
+	portStr := os.Getenv("DB_PORT")
+	if portStr != "" {
+		dbPort, _ = strconv.Atoi(portStr)
+	}
+	debugStr := os.Getenv("DEBUG")
+	debug, _ = strconv.ParseBool(debugStr)
 }

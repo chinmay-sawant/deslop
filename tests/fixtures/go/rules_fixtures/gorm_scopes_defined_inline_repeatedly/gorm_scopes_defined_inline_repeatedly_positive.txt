@@ -1,26 +1,27 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	gorm "gorm.io/gorm"
 )
 
 // scenario for gorm_scopes_defined_inline_repeatedly: Repeated ad hoc scope functions instead of shared named scopes.
 // fixture polarity: positive; family: architecture; severity: info.
 type Rule066PositiveRecord struct {
-	db *sql.DB
+	ID       int
+	TenantID int
+	Name     string
+	Active   bool
 }
 
-func scenario066Positive(w http.ResponseWriter, r *http.Request, repo Rule066PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func scenario066Positive(db *gorm.DB, tenantID int) ([]Rule066PositiveRecord, error) {
+	var items []Rule066PositiveRecord
+	activeScope := func(db *gorm.DB) *gorm.DB {
+		return db.Where("active = ?", true)
 	}
-	defer rows.Close()
-	return rows.Err()
+	if err := db.Scopes(activeScope, func(db *gorm.DB) *gorm.DB {
+		return db.Where("tenant_id = ?", tenantID).Order("name ASC")
+	}).Find(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
 }

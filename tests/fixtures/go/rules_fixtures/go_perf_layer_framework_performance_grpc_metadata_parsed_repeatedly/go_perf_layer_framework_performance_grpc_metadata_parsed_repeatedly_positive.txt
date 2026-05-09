@@ -1,19 +1,34 @@
 package rulefixtures
 
+import (
+	"context"
+
+	"google.golang.org/grpc/metadata"
+)
+
 // scenario for go_perf_layer_framework_performance_grpc_metadata_parsed_repeatedly: Layer: Framework-specific performance. Flag repeated metadata extraction/parsing in gRPC interceptors and handlers.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule536PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+
+func AuthInterceptor(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", nil
+	}
+	tokens := md.Get("authorization")
+	if len(tokens) == 0 {
+		return "", nil
+	}
+	return tokens[0], nil
 }
 
-func scenario536Positive(records []Rule536PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func RateLimitInterceptor(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", nil
 	}
-	return total
+	keys := md.Get("x-api-key")
+	if len(keys) == 0 {
+		return "", nil
+	}
+	return keys[0], nil
 }

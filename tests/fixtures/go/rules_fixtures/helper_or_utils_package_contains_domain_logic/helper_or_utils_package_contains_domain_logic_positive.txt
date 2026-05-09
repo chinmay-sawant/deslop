@@ -1,26 +1,25 @@
-package rulefixtures
+package utils
 
-import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
-)
+import "fmt"
 
 // scenario for helper_or_utils_package_contains_domain_logic: Generic `helper`, `common`, or `utils` packages that host concrete domain decisions.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule076PositiveRecord struct {
-	db *sql.DB
+
+func CalculateInvoiceTotal(subtotal float64, taxRate float64, shipping float64) float64 {
+	discount := 0.0
+	if subtotal > 1000 {
+		discount = subtotal * 0.10
+	}
+	return subtotal - discount + (subtotal * taxRate) + shipping
 }
 
-func scenario076Positive(w http.ResponseWriter, r *http.Request, repo Rule076PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func ValidateShippingAddress(address string) error {
+	if len(address) < 10 {
+		return fmt.Errorf("address too short")
 	}
-	defer rows.Close()
-	return rows.Err()
+	return nil
+}
+
+func SendOrderConfirmation(orderID int, email string) error {
+	return fmt.Errorf("smtp not configured")
 }

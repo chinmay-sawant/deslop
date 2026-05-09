@@ -1,31 +1,29 @@
 package rulefixtures
 
 import (
-	"encoding/json"
-	"io"
+	"net/http"
+
 	gin "github.com/gin-gonic/gin"
 	binding "github.com/gin-gonic/gin/binding"
 )
 
 // scenario for shouldbindbodywith_when_single_bind_is_enough: Gin handlers that use ShouldBindBodyWith(...) even though only one body bind is observed.
 // fixture polarity: positive; family: gin; severity: contextual.
-type Rule337PositiveRecord struct {
-	Name string `json:"name"`
+
+type CreateUserRequest struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
-func scenario337Positive(ctx *gin.Context) error {
-	var first Rule337PositiveRecord
-	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
-		return err
+func scenario337Positive(c *gin.Context) {
+	var req CreateUserRequest
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	body, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		return err
+	if req.Name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "name is required"})
+		return
 	}
-	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
-	if err != nil {
-		return err
-	}
-	ctx.Data(200, "application/json", data)
-	return nil
+	c.JSON(http.StatusCreated, gin.H{"user": req})
 }

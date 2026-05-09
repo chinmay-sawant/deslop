@@ -1,15 +1,16 @@
 package rulefixtures
 
 import (
+	"bytes"
 	"fmt"
 )
 
 // scenario for fmt_fprintf_single_string_to_bytes_buffer: `fmt.Fprintf(&buf, "%s", s)` instead of `WriteString(s)`.
 // fixture polarity: positive; family: performance; severity: info.
-func scenario486Positive(values []int) []string {
-	out := make([]string, 0, len(values))
-	for _, value := range values {
-		out = append(out, fmt.Sprintf("%d", value))
+func scenario486Positive(values []string) []byte {
+	var buf bytes.Buffer
+	for _, s := range values {
+		fmt.Fprintf(&buf, "%s", s)
 	}
-	return out
+	return buf.Bytes()
 }

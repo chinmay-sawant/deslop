@@ -1,31 +1,30 @@
 package rulefixtures
 
 import (
-	"encoding/json"
 	"io"
+	"net/http"
+
 	gin "github.com/gin-gonic/gin"
-	binding "github.com/gin-gonic/gin/binding"
 )
 
 // scenario for formfile_open_readall_whole_upload: Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...).
 // fixture polarity: positive; family: gin; severity: contextual.
-type Rule314PositiveRecord struct {
-	Name string `json:"name"`
-}
-
-func scenario314Positive(ctx *gin.Context) error {
-	var first Rule314PositiveRecord
-	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
-		return err
-	}
-	body, err := io.ReadAll(ctx.Request.Body)
+func scenario314Positive(c *gin.Context) {
+	file, err := c.FormFile("upload")
 	if err != nil {
-		return err
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
+	f, err := file.Open()
 	if err != nil {
-		return err
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
-	ctx.Data(200, "application/json", data)
-	return nil
+	defer f.Close()
+	data, err := io.ReadAll(f)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.Data(http.StatusOK, "application/octet-stream", data)
 }

@@ -6,10 +6,10 @@ import (
 
 // scenario for fmt_sprintf_float_to_string: `fmt.Sprintf("%f", ...)` instead of `strconv.FormatFloat(...)` when only a float string is needed.
 // fixture polarity: positive; family: performance; severity: info.
-func scenario493Positive(values []int) []string {
+func scenario493Positive(values []float64) []string {
 	out := make([]string, 0, len(values))
 	for _, value := range values {
-		out = append(out, fmt.Sprintf("%d", value))
+		out = append(out, fmt.Sprintf("%f", value))
 	}
 	return out
 }

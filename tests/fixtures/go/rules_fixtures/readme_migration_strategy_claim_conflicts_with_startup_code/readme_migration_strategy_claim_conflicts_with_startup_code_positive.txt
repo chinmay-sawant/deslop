@@ -1,26 +1,24 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
-	"net/http"
+	gorm "gorm.io/gorm"
 )
 
+// README.md claims:
+//   Database migrations MUST be applied via CLI: go run cmd/migrate/main.go up
+//
 // scenario for readme_migration_strategy_claim_conflicts_with_startup_code: README migration guidance that claims explicit migration tooling while startup code still uses `AutoMigrate` without a matching migration path.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule121PositiveRecord struct {
-	db *sql.DB
+
+type User struct {
+	ID   int    `gorm:"primaryKey"`
+	Name string
 }
 
-func scenario121Positive(w http.ResponseWriter, r *http.Request, repo Rule121PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func SetupDatabase(db *gorm.DB) error {
+	if err := db.AutoMigrate(&User{}); err != nil {
+		return fmt.Errorf("auto-migrate failed: %w", err)
 	}
-	defer rows.Close()
-	return rows.Err()
+	return nil
 }

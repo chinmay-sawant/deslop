@@ -15,4 +15,4 @@ def format_user_list(users: list[dict]) -> str:
 
 
 def join_paths(base: str, segments: list[str]) -> str:
-    return "/".join([base] + [s.strip("/") for s in segments])
+    return "/".join(f"{base}/{s.strip('/')}" for s in segments)

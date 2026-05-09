@@ -6,14 +6,21 @@ import (
 
 // scenario for lower_or_func_wrapped_indexed_column: LOWER() or other functions wrapping indexed columns in WHERE clauses, preventing index usage.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule273PositiveRecord struct { ID int }
 
-func scenario273Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
-	}
-	return db.Order("created_at desc").Find(&[]Rule273PositiveRecord{}).Error
+type User struct {
+	ID    int
+	Email string
+	Name  string
+}
+
+func FindByEmail(db *gorm.DB, email string) (*User, error) {
+	var user User
+	err := db.Where("LOWER(email) = ?", email).First(&user).Error
+	return &user, err
+}
+
+func SearchByName(db *gorm.DB, name string) ([]User, error) {
+	var users []User
+	err := db.Where("UPPER(name) LIKE ?", "%"+name+"%").Find(&users).Error
+	return users, err
 }

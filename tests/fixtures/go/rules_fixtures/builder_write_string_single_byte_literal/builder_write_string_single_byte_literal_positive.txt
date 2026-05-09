@@ -1,19 +1,17 @@
 package rulefixtures
 
+import "strings"
+
 // scenario for builder_write_string_single_byte_literal: `strings.Builder.WriteString("x")` for single-byte literals instead of `WriteByte`.
 // fixture polarity: positive; family: performance; severity: info.
-type Rule445PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
 
-func scenario445Positive(records []Rule445PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario445Positive(items []string) string {
+	var b strings.Builder
+	for i, item := range items {
+		if i > 0 {
+			b.WriteString(",")
 		}
+		b.WriteString(item)
 	}
-	return total
+	return b.String()
 }

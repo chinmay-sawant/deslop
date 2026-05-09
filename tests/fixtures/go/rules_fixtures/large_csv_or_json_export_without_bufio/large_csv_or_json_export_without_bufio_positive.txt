@@ -2,30 +2,33 @@ package rulefixtures
 
 import (
 	"encoding/json"
-	"io"
-	gin "github.com/gin-gonic/gin"
-	binding "github.com/gin-gonic/gin/binding"
+	"net/http"
 )
 
 // scenario for large_csv_or_json_export_without_bufio: Export data written in loops without visible buffering in handlers.
 // fixture polarity: positive; family: gin; severity: contextual.
-type Rule321PositiveRecord struct {
+
+func scenario321Positive(w http.ResponseWriter, r *http.Request) {
+	db := queryDatabase()
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte("["))
+	first := true
+	for _, row := range db {
+		chunk, _ := json.Marshal(row)
+		if !first {
+			w.Write([]byte(","))
+		}
+		first = false
+		w.Write(chunk)
+	}
+	w.Write([]byte("]"))
+}
+
+type exportRow struct {
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-func scenario321Positive(ctx *gin.Context) error {
-	var first Rule321PositiveRecord
-	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
-		return err
-	}
-	body, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		return err
-	}
-	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
-	if err != nil {
-		return err
-	}
-	ctx.Data(200, "application/json", data)
-	return nil
+func queryDatabase() []exportRow {
+	return []exportRow{{1, "alpha"}, {2, "beta"}, {3, "gamma"}}
 }

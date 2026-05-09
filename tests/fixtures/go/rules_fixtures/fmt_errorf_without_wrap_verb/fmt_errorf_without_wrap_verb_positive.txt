@@ -6,10 +6,6 @@ import (
 
 // scenario for fmt_errorf_without_wrap_verb: `fmt.Errorf("context: %v", err)` instead of `%w`
 // fixture polarity: positive; family: performance; severity: warning.
-func scenario483Positive(values []int) []string {
-	out := make([]string, 0, len(values))
-	for _, value := range values {
-		out = append(out, fmt.Sprintf("%d", value))
-	}
-	return out
+func scenario483Positive(err error) error {
+	return fmt.Errorf("operation failed: %v", err)
 }

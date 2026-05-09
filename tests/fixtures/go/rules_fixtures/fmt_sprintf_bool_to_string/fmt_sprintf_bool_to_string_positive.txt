@@ -6,10 +6,10 @@ import (
 
 // scenario for fmt_sprintf_bool_to_string: `fmt.Sprintf("%t", ...)` instead of `strconv.FormatBool(...)`.
 // fixture polarity: positive; family: performance; severity: info.
-func scenario492Positive(values []int) []string {
-	out := make([]string, 0, len(values))
-	for _, value := range values {
-		out = append(out, fmt.Sprintf("%d", value))
+func scenario492Positive(flags []bool) []string {
+	out := make([]string, 0, len(flags))
+	for _, flag := range flags {
+		out = append(out, fmt.Sprintf("%t", flag))
 	}
 	return out
 }

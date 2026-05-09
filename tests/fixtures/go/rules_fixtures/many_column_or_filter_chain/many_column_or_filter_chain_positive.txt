@@ -6,14 +6,22 @@ import (
 
 // scenario for many_column_or_filter_chain: Query chains with many OR filter conditions that often scale poorly.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule274PositiveRecord struct { ID int }
 
-func scenario274Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+type Document struct {
+	ID     int
+	Status string
+	Owner  string
+	Type   string
+	Region string
+	Tag    string
+}
+
+func FindDocuments(db *gorm.DB, filters map[string]string) ([]Document, error) {
+	var docs []Document
+	q := db.Model(&Document{})
+	for k, v := range filters {
+		q = q.Or(k+" = ?", v)
 	}
-	return db.Order("created_at desc").Find(&[]Rule274PositiveRecord{}).Error
+	err := q.Find(&docs).Error
+	return docs, err
 }

@@ -2,30 +2,59 @@ package rulefixtures
 
 import (
 	"encoding/json"
-	"io"
-	gin "github.com/gin-gonic/gin"
-	binding "github.com/gin-gonic/gin/binding"
+	"fmt"
+	"net/http"
 )
 
-// scenario for no_streaming_for_large_export_handler: Large list or export handlers that materialize everything before writing rather than using chunked or streaming output.
+// scenario for no_streaming_for_large_export_handler: Large export handlers that materialize everything before writing.
 // fixture polarity: positive; family: gin; severity: contextual.
-type Rule330PositiveRecord struct {
-	Name string `json:"name"`
+
+type ExportRecord struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Status    string `json:"status"`
+	CreatedAt string `json:"created_at"`
 }
 
-func scenario330Positive(ctx *gin.Context) error {
-	var first Rule330PositiveRecord
-	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
-		return err
+func scenario330Positive(w http.ResponseWriter, r *http.Request) {
+	records := fetchAllRecords()
+
+	payload := make([]ExportRecord, 0, len(records))
+	for _, rec := range records {
+		payload = append(payload, ExportRecord{
+			ID:        rec.ID,
+			Name:      rec.Name,
+			Status:    rec.Status,
+			CreatedAt: rec.CreatedAt,
+		})
 	}
-	body, err := io.ReadAll(ctx.Request.Body)
+
+	body, err := json.Marshal(payload)
 	if err != nil {
-		return err
+		http.Error(w, "encoding failed", http.StatusInternalServerError)
+		return
 	}
-	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
-	if err != nil {
-		return err
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
+}
+
+type dbRecord struct {
+	ID        int
+	Name      string
+	Status    string
+	CreatedAt string
+}
+
+func fetchAllRecords() []dbRecord {
+	result := make([]dbRecord, 0, 1000)
+	for i := 0; i < 1000; i++ {
+		result = append(result, dbRecord{
+			ID:        i,
+			Name:      fmt.Sprintf("item-%d", i),
+			Status:    "active",
+			CreatedAt: "2024-01-01T00:00:00Z",
+		})
 	}
-	ctx.Data(200, "application/json", data)
-	return nil
+	return result
 }

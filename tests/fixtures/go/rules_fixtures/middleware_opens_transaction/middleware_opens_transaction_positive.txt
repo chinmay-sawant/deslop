@@ -1,26 +1,41 @@
 package rulefixtures
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
 	"net/http"
 )
 
 // scenario for middleware_opens_transaction: Middleware that owns transaction lifetime for all downstream business logic.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule089PositiveRecord struct {
-	db *sql.DB
+
+var globalDB *sql.DB
+
+func TransactionMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tx, err := globalDB.Begin()
+		if err != nil {
+			http.Error(w, "transaction start failed", http.StatusInternalServerError)
+			return
+		}
+
+		ctx := r.Context()
+		r = r.WithContext(ctx)
+
+		defer func() {
+			if rec := recover(); rec != nil {
+				tx.Rollback()
+				panic(rec)
+			}
+		}()
+
+		next.ServeHTTP(w, r)
+
+		if err := tx.Commit(); err != nil {
+			tx.Rollback()
+			http.Error(w, "transaction commit failed", http.StatusInternalServerError)
+			return
+		}
+	})
 }
 
-func scenario089Positive(w http.ResponseWriter, r *http.Request, repo Rule089PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
-}
+var _ = sql.LevelDefault

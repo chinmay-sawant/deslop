@@ -6,6 +6,10 @@ import (
 
 // scenario for bytes_buffer_truncate_zero_reset: `buf.Truncate(0)` instead of `buf.Reset()`.
 // fixture polarity: positive; family: performance; severity: info.
-func scenario447Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
-	return bytes.Index(haystack, needle) != -1
+func scenario447Positive(data []byte) *bytes.Buffer {
+	var buf bytes.Buffer
+	buf.Write(data)
+	buf.Truncate(0)
+	buf.Write(data)
+	return &buf
 }

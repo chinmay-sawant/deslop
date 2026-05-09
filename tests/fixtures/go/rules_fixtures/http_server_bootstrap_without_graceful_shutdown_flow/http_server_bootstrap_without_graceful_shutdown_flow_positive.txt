@@ -6,7 +6,15 @@ import (
 
 // scenario for http_server_bootstrap_without_graceful_shutdown_flow: HTTP server startup paths that lack visible signal handling and Shutdown ownership for graceful shutdown.
 // fixture polarity: positive; family: idioms; severity: warning.
-func scenario383Positive(url string) (*http.Response, error) {
-	client := &http.Client{}
-	return client.Get(url)
+func StartServer() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+	mux.HandleFunc("/api/data", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"status":"ok"}`))
+	})
+	http.ListenAndServe(":8080", mux)
 }

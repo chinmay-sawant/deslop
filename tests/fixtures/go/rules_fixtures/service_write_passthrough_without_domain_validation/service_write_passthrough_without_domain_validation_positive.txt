@@ -1,26 +1,33 @@
-package rulefixtures
+package service
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
 )
 
 // scenario for service_write_passthrough_without_domain_validation: Write-style service methods that mostly forward to repositories without visible domain guard checks.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule184PositiveRecord struct {
-	db *sql.DB
+type CommentService struct {
+	repo CommentRepository
 }
 
-func scenario184Positive(w http.ResponseWriter, r *http.Request, repo Rule184PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func NewCommentService(repo CommentRepository) *CommentService {
+	return &CommentService{repo: repo}
+}
+
+func (s *CommentService) PostComment(ctx context.Context, userID, postID, body string) error {
+	return s.repo.Insert(ctx, userID, postID, body)
+}
+
+func (s *CommentService) DeleteComment(ctx context.Context, commentID string) error {
+	return s.repo.SoftDelete(ctx, commentID)
+}
+
+func (s *CommentService) EditComment(ctx context.Context, commentID, newBody string) error {
+	return s.repo.UpdateBody(ctx, commentID, newBody)
+}
+
+type CommentRepository interface {
+	Insert(ctx context.Context, userID, postID, body string) error
+	SoftDelete(ctx context.Context, commentID string) error
+	UpdateBody(ctx context.Context, commentID, body string) error
 }

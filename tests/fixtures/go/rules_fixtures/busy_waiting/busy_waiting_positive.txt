@@ -1,16 +1,34 @@
 package rulefixtures
 
 import (
-	"context"
-	"net/http"
+	"fmt"
+	"time"
 )
 
 // scenario for busy_waiting: select { default: ... } inside loops, which often spins instead of blocking.
 // fixture polarity: positive; family: context; severity: contextual.
-func scenario232Positive(url string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
+
+func waitForReady(done <-chan struct{}) bool {
+	deadline := time.Now().Add(3 * time.Second)
+	for time.Now().Before(deadline) {
+		select {
+		case <-done:
+			return true
+		default:
+			time.Sleep(time.Millisecond)
+		}
 	}
-	return http.DefaultClient.Do(req)
+	return false
+}
+
+func pollChannel(ch <-chan int) int {
+	for {
+		select {
+		case v := <-ch:
+			return v
+		default:
+			fmt.Println("still waiting...")
+			time.Sleep(10 * time.Millisecond)
+		}
+	}
 }

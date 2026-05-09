@@ -2,18 +2,16 @@ package rulefixtures
 
 // scenario for go_perf_layer_async_concurrency_select_default_busy_poll: Layer: Async and concurrency. Flag select loops with default branches that spin instead of blocking or using timers.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule508PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
 
-func scenario508Positive(records []Rule508PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario508Positive(ch <-chan int, limit int) []int {
+	var results []int
+	for len(results) < limit {
+		select {
+		case v := <-ch:
+			results = append(results, v)
+		default:
+			continue
 		}
 	}
-	return total
+	return results
 }

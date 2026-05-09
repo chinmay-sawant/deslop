@@ -3,24 +3,42 @@ package rulefixtures
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"net/http"
+	"reflect"
 )
 
 // scenario for generic_base_repository_with_reflection_dispatch: Catch-all repositories that depend on reflection-heavy generic CRUD instead of bounded repository APIs.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule035PositiveRecord struct {
+type GenericRepo struct {
 	db *sql.DB
 }
 
-func scenario035Positive(w http.ResponseWriter, r *http.Request, repo Rule035PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func (r *GenericRepo) FindByID(ctx context.Context, model interface{}, id int) error {
+	table := reflect.ValueOf(model).Elem().Type().Name()
+	row := r.db.QueryRowContext(ctx, "SELECT * FROM "+table+" WHERE id = $1", id)
+	v := reflect.ValueOf(model).Elem()
+	fields := make([]interface{}, v.NumField())
+	for i := 0; i < v.NumField(); i++ {
+		fields[i] = v.Field(i).Addr().Interface()
 	}
-	defer rows.Close()
-	return rows.Err()
+	return row.Scan(fields...)
+}
+
+func (r *GenericRepo) Save(ctx context.Context, model interface{}) error {
+	v := reflect.ValueOf(model).Elem()
+	t := v.Type()
+	table := t.Name()
+	cols := ""
+	vals := ""
+	args := make([]interface{}, 0, v.NumField())
+	for i := 0; i < v.NumField(); i++ {
+		if i > 0 {
+			cols += ", "
+			vals += ", "
+		}
+		cols += t.Field(i).Name
+		vals += "?"
+		args = append(args, v.Field(i).Interface())
+	}
+	_, err := r.db.ExecContext(ctx, "INSERT INTO "+table+" ("+cols+") VALUES ("+vals+")", args...)
+	return err
 }

@@ -1,26 +1,35 @@
-package rulefixtures
+package service
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // scenario for service_imports_gin_directly: Service packages that depend on `github.com/gin-gonic/gin` instead of transport-neutral inputs.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule166PositiveRecord struct {
-	db *sql.DB
+type ProfileService struct {
+	repo ProfileRepository
 }
 
-func scenario166Positive(w http.ResponseWriter, r *http.Request, repo Rule166PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func NewProfileService(repo ProfileRepository) *ProfileService {
+	return &ProfileService{repo: repo}
+}
+
+func (s *ProfileService) GetProfile(c *gin.Context) (Profile, error) {
+	id := c.Param("id")
+	if id == "" {
+		return Profile{}, fmt.Errorf("missing profile id")
 	}
-	defer rows.Close()
-	return rows.Err()
+	return s.repo.FindByID(context.Background(), id)
+}
+
+type Profile struct {
+	ID   string
+	Name string
+}
+
+type ProfileRepository interface {
+	FindByID(ctx context.Context, id string) (Profile, error)
 }

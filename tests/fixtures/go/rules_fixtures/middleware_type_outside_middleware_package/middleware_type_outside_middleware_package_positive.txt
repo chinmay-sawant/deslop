@@ -1,26 +1,40 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"log"
 	"net/http"
+	"time"
 )
 
 // scenario for middleware_type_outside_middleware_package: Shared middleware types and constructors declared in handlers or services instead of a middleware-focused package.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule091PositiveRecord struct {
-	db *sql.DB
+
+type LoggingMiddleware struct {
+	logger *log.Logger
+	prefix string
 }
 
-func scenario091Positive(w http.ResponseWriter, r *http.Request, repo Rule091PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func NewLoggingMiddleware(logger *log.Logger, prefix string) *LoggingMiddleware {
+	return &LoggingMiddleware{logger: logger, prefix: prefix}
 }
+
+func (lm *LoggingMiddleware) Wrap(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		lm.logger.Printf("%s %s %s", lm.prefix, r.Method, r.URL.Path)
+
+		next.ServeHTTP(w, r)
+
+		lm.logger.Printf("%s %s completed in %v", lm.prefix, r.URL.Path, time.Since(start))
+	})
+}
+
+func OrderServiceHandler(w http.ResponseWriter, r *http.Request) {
+	lm := NewLoggingMiddleware(log.Default(), "[order-service]")
+	dummy := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	lm.Wrap(dummy).ServeHTTP(w, r)
+}
+
+var _ = time.Now

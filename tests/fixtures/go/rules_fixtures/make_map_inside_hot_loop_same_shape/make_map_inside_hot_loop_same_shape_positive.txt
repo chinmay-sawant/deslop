@@ -1,19 +1,18 @@
 package rulefixtures
 
+import "strings"
+
 // scenario for make_map_inside_hot_loop_same_shape: make(map[K]V, ...) scratch maps recreated inside loops instead of being reused or prebuilt.
 // fixture polarity: positive; family: hot_path; severity: info.
-type Rule354PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
 
-func scenario354Positive(records []Rule354PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario354Positive(docs []string) []map[string]int {
+	var counts []map[string]int
+	for _, doc := range docs {
+		m := make(map[string]int)
+		for _, word := range strings.Fields(doc) {
+			m[word]++
 		}
+		counts = append(counts, m)
 	}
-	return total
+	return counts
 }

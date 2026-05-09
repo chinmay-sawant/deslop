@@ -1,26 +1,40 @@
-package rulefixtures
+package service
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
 )
 
 // scenario for service_method_returns_http_status: Services that return raw HTTP status codes or transport response metadata.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule176PositiveRecord struct {
-	db *sql.DB
+type InventoryService struct {
+	repo InventoryRepository
 }
 
-func scenario176Positive(w http.ResponseWriter, r *http.Request, repo Rule176PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func (s *InventoryService) Create(ctx context.Context, name string, quantity int) (int, error) {
+	if name == "" {
+		return http.StatusBadRequest, nil
 	}
-	defer rows.Close()
-	return rows.Err()
+	if quantity < 0 {
+		return http.StatusUnprocessableEntity, nil
+	}
+	if err := s.repo.Insert(ctx, name, quantity); err != nil {
+		return http.StatusInternalServerError, err
+	}
+	return http.StatusCreated, nil
+}
+
+func (s *InventoryService) Update(ctx context.Context, id string, quantity int) (int, error) {
+	if id == "" {
+		return http.StatusBadRequest, nil
+	}
+	if err := s.repo.UpdateQuantity(ctx, id, quantity); err != nil {
+		return http.StatusInternalServerError, err
+	}
+	return http.StatusOK, nil
+}
+
+type InventoryRepository interface {
+	Insert(ctx context.Context, name string, quantity int) error
+	UpdateQuantity(ctx context.Context, id string, quantity int) error
 }

@@ -1,19 +1,20 @@
 package rulefixtures
 
+import (
+	"os"
+)
+
 // scenario for bufio_writer_missing_in_bulk_export: File or socket writes inside loops without visible bufio buffering.
 // fixture polarity: positive; family: hot_path; severity: info.
-type Rule344PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
 
-func scenario344Positive(records []Rule344PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario344Positive(f *os.File, items []string) error {
+	for _, item := range items {
+		if _, err := f.WriteString(item); err != nil {
+			return err
+		}
+		if _, err := f.WriteString("\n"); err != nil {
+			return err
 		}
 	}
-	return total
+	return nil
 }

@@ -1,26 +1,28 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	gorm "gorm.io/gorm"
 )
 
 // scenario for gorm_hook_mutates_unrelated_tables: Hooks that reach beyond the owning aggregate and write unrelated records.
 // fixture polarity: positive; family: architecture; severity: info.
 type Rule059PositiveRecord struct {
-	db *sql.DB
+	ID       int
+	TenantID int
+	Name     string
+}
+type Rule059AuditLog struct {
+	ID      int
+	Action  string
+	Table   string
+	RecordID int
 }
 
-func scenario059Positive(w http.ResponseWriter, r *http.Request, repo Rule059PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func (u *Rule059PositiveRecord) AfterCreate(tx *gorm.DB) error {
+	log := Rule059AuditLog{
+		Action:   "create",
+		Table:    "rule_059_positive_records",
+		RecordID: u.ID,
 	}
-	defer rows.Close()
-	return rows.Err()
+	return tx.Create(&log).Error
 }

@@ -1,19 +1,22 @@
 package rulefixtures
 
+import (
+	"net/http"
+	"regexp"
+)
+
 // scenario for regexp_compile_in_hot_path: regexp.Compile or regexp.MustCompile observed inside obvious iterative paths.
 // fixture polarity: positive; family: hot_path; severity: info.
-type Rule360PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
+var patterns = []string{`^\d+$`, `^[a-z]+$`, `^\w+@\w+\.\w+$`}
 
-func scenario360Positive(records []Rule360PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario360Positive(w http.ResponseWriter, r *http.Request) {
+	input := r.URL.Query().Get("value")
+	for _, pattern := range patterns {
+		re := regexp.MustCompile(pattern)
+		if re.MatchString(input) {
+			w.Write([]byte("matched " + pattern))
+			return
 		}
 	}
-	return total
+	w.WriteHeader(http.StatusBadRequest)
 }

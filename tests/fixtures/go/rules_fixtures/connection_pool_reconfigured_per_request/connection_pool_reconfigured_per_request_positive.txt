@@ -1,19 +1,28 @@
 package rulefixtures
 
 import (
-	gorm "gorm.io/gorm"
+	"database/sql"
+	"net/http"
+	"time"
 )
 
 // scenario for connection_pool_reconfigured_per_request: DB pool sizing or lifetime settings changed on request paths.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule249PositiveRecord struct { ID int }
+type Rule249PositiveHandler struct {
+	db *sql.DB
+}
 
-func scenario249Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func (h *Rule249PositiveHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h.db.SetMaxOpenConns(50)
+	h.db.SetMaxIdleConns(10)
+	h.db.SetConnMaxLifetime(30 * time.Second)
+
+	rows, err := h.db.QueryContext(r.Context(), "SELECT id, name FROM users WHERE active = 1")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	return db.Order("created_at desc").Find(&[]Rule249PositiveRecord{}).Error
+	defer rows.Close()
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"status":"ok"}`))
 }

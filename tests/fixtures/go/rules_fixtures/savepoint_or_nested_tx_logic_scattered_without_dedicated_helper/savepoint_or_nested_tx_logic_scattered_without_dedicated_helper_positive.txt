@@ -1,26 +1,30 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
-	"net/http"
+
+	gorm "gorm.io/gorm"
 )
 
 // scenario for savepoint_or_nested_tx_logic_scattered_without_dedicated_helper: Nested transaction or savepoint control scattered across services and repositories.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule160PositiveRecord struct {
-	db *sql.DB
-}
 
-func scenario160Positive(w http.ResponseWriter, r *http.Request, repo Rule160PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func TransferFunds(db *gorm.DB, fromID, toID int, amount float64) error {
+	return db.Transaction(func(tx *gorm.DB) error {
+		tx.SavePoint("before_debit")
+
+		if err := tx.Exec("UPDATE accounts SET balance = balance - ? WHERE id = ?", amount, fromID).Error; err != nil {
+			tx.RollbackTo("before_debit")
+			return fmt.Errorf("debit failed: %w", err)
+		}
+
+		tx.SavePoint("before_credit")
+		if err := tx.Exec("UPDATE accounts SET balance = balance + ? WHERE id = ?", amount, toID).Error; err != nil {
+			tx.RollbackTo("before_credit")
+			tx.RollbackTo("before_debit")
+			return fmt.Errorf("credit failed: %w", err)
+		}
+
+		return nil
+	})
 }

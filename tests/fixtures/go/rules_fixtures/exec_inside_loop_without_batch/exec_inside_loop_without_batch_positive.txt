@@ -6,14 +6,16 @@ import (
 
 // scenario for exec_inside_loop_without_batch: Exec(...) or ExecContext(...) used for row-by-row SQL writes inside loops.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule260PositiveRecord struct { ID int }
+type Rule260PositiveRecord struct {
+	ID     int
+	Status string
+}
 
 func scenario260Positive(db *gorm.DB, ids []int) error {
 	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+		if err := db.Exec("UPDATE rule260_positive_records SET status = ? WHERE id = ?", "processed", id).Error; err != nil {
 			return err
 		}
 	}
-	return db.Order("created_at desc").Find(&[]Rule260PositiveRecord{}).Error
+	return nil
 }

@@ -1,31 +1,20 @@
 package rulefixtures
 
 import (
-	"encoding/json"
-	"io"
+	"os"
+
 	gin "github.com/gin-gonic/gin"
-	binding "github.com/gin-gonic/gin/binding"
 )
 
 // scenario for servefile_via_readfile_then_c_data: Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming.
 // fixture polarity: positive; family: gin; severity: contextual.
-type Rule336PositiveRecord struct {
-	Name string `json:"name"`
-}
 
-func scenario336Positive(ctx *gin.Context) error {
-	var first Rule336PositiveRecord
-	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
-		return err
-	}
-	body, err := io.ReadAll(ctx.Request.Body)
+func scenario336Positive(c *gin.Context) {
+	filename := c.Param("filepath")
+	data, err := os.ReadFile("/var/static/" + filename)
 	if err != nil {
-		return err
+		c.JSON(404, gin.H{"error": "file not found"})
+		return
 	}
-	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
-	if err != nil {
-		return err
-	}
-	ctx.Data(200, "application/json", data)
-	return nil
+	c.Data(200, "application/octet-stream", data)
 }

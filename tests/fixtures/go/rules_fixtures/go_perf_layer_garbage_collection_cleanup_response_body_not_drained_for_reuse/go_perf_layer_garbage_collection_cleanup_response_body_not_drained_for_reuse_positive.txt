@@ -1,19 +1,24 @@
 package rulefixtures
 
+import "net/http"
+
 // scenario for go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse: Layer: Garbage collection and cleanup. Flag HTTP response handling that closes bodies without draining when connection reuse matters.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule541PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+func scenario541Positive(url string) (int, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+	return resp.StatusCode, nil
 }
 
-func scenario541Positive(records []Rule541PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario541FetchMultiple(urls []string) []int {
+	statuses := make([]int, 0, len(urls))
+	for _, u := range urls {
+		if code, err := scenario541Positive(u); err == nil {
+			statuses = append(statuses, code)
 		}
 	}
-	return total
+	return statuses
 }

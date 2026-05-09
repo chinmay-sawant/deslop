@@ -1,26 +1,27 @@
 package rulefixtures
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
 	"net/http"
+
+	_ "github.com/lib/pq"
 )
 
 // scenario for same_dependency_wired_in_multiple_bootstrap_locations: Duplicated construction of the same service or client in several startup files.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule156PositiveRecord struct {
-	db *sql.DB
+
+func initAPI(db *sql.DB) http.Handler {
+	cache := NewRedisCache("localhost:6379")
+	_ = cache
+	mux := http.NewServeMux()
+	return mux
 }
 
-func scenario156Positive(w http.ResponseWriter, r *http.Request, repo Rule156PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func initWorker(db *sql.DB) {
+	cache := NewRedisCache("localhost:6379")
+	_ = cache
 }
+
+type RedisCache struct{ addr string }
+
+func NewRedisCache(addr string) *RedisCache { return &RedisCache{addr: addr} }

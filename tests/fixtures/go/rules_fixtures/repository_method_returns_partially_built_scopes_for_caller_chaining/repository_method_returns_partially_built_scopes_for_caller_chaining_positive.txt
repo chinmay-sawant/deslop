@@ -1,26 +1,38 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"gorm.io/gorm"
 )
 
 // scenario for repository_method_returns_partially_built_scopes_for_caller_chaining: Repositories that expose scope-building fragments instead of complete query APIs.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule129PositiveRecord struct {
-	db *sql.DB
+
+type Post struct {
+	ID       uint   `gorm:"primaryKey"`
+	Title    string `gorm:"size:256"`
+	Status   string `gorm:"size:32"`
+	AuthorID uint   `gorm:"index"`
+	Deleted  bool   `gorm:"default:false"`
 }
 
-func scenario129Positive(w http.ResponseWriter, r *http.Request, repo Rule129PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type PostRepo struct {
+	db *gorm.DB
 }
+
+func NewPostRepo(db *gorm.DB) *PostRepo {
+	return &PostRepo{db: db}
+}
+
+func (r *PostRepo) PublishedScope() *gorm.DB {
+	return r.db.Where("status = ?", "published").Where("deleted = ?", false)
+}
+
+func (r *PostRepo) ByAuthorScope(authorID uint) *gorm.DB {
+	return r.PublishedScope().Where("author_id = ?", authorID)
+}
+
+func (r *PostRepo) RecentScope(limit int) *gorm.DB {
+	return r.PublishedScope().Order("id DESC").Limit(limit)
+}
+
+var _ = gorm.ErrRecordNotFound

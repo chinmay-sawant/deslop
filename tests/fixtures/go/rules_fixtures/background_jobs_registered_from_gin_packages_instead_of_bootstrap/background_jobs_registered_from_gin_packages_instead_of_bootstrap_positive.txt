@@ -1,26 +1,35 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
+
+	"github.com/robfig/cron/v3"
 )
 
 // scenario for background_jobs_registered_from_gin_packages_instead_of_bootstrap: Scheduler or worker registration hidden inside Gin transport packages.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule007PositiveRecord struct {
-	db *sql.DB
+
+var cronScheduler *cron.Cron
+
+func init() {
+	cronScheduler = cron.New()
+
+	cronScheduler.AddFunc("@every 1h", func() {
+		fmt.Println("running hourly report generation")
+	})
+
+	cronScheduler.AddFunc("@daily", func() {
+		fmt.Println("running daily data cleanup")
+	})
+
+	cronScheduler.Start()
 }
 
-func scenario007Positive(w http.ResponseWriter, r *http.Request, repo Rule007PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func reportHandler(w http.ResponseWriter, r *http.Request) {
+	cronScheduler.AddFunc("@every 30m", func() {
+		fmt.Println("running ad-hoc analytics from handler")
+	})
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "report triggered")
 }

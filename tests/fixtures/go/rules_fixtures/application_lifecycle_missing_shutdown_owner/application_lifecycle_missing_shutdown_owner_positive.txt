@@ -1,26 +1,41 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 )
 
 // scenario for application_lifecycle_missing_shutdown_owner: Shared resources with visible startup paths but no obvious shutdown owner or lifecycle wrapper.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule003PositiveRecord struct {
-	db *sql.DB
+func main() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "healthy")
+	})
+
+	db := openDB("postgres://localhost:5432/mydb")
+	defer db.Close()
+
+	cache := connectRedis("localhost:6379")
+	defer cache.Close()
+
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: mux,
+	}
+
+	log.Printf("starting server on %s", server.Addr)
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("server error: %v", err)
+	}
 }
 
-func scenario003Positive(w http.ResponseWriter, r *http.Request, repo Rule003PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
-}
+func openDB(dsn string) *fakeDB { return &fakeDB{} }
+func connectRedis(addr string) *fakeRedis { return &fakeRedis{} }
+
+type fakeDB struct{}
+func (f *fakeDB) Close() error { return nil }
+
+type fakeRedis struct{}
+func (f *fakeRedis) Close() error { return nil }

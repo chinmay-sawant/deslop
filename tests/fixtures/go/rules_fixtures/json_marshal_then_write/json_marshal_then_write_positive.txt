@@ -2,18 +2,24 @@ package rulefixtures
 
 import (
 	"encoding/json"
+	"net/http"
 )
 
 // scenario for json_marshal_then_write: `data, _ := json.Marshal(v); w.Write(data)` when `json.NewEncoder(w).Encode(v)` would stream directly
 // fixture polarity: positive; family: performance; severity: info.
-type Rule607PositiveRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+type Item struct {
+	Name  string `json:"name"`
+	Price int    `json:"price"`
+}
 
-func scenario607Positive(values []Rule607PositiveRecord) (int, error) {
-	total := 0
-	for _, value := range values {
-		data, err := json.Marshal(value)
-		if err != nil { return 0, err }
-		total += len(data)
+func itemsHandler(w http.ResponseWriter, r *http.Request) {
+	items := []Item{{Name: "widget", Price: 10}, {Name: "gadget", Price: 25}}
+	data, err := json.Marshal(items)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	return total, nil
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }

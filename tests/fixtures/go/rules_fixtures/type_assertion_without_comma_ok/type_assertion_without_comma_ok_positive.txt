@@ -1,19 +1,38 @@
 package rulefixtures
 
+import "fmt"
+
 // scenario for type_assertion_without_comma_ok: `v := i.(T)` without the comma-ok form in non-panic-safe code
 // fixture polarity: positive; family: performance; severity: warning.
-type Rule688PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+func ExtractString(val interface{}) string {
+	s := val.(string)
+	return s
 }
 
-func scenario688Positive(records []Rule688PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func ExtractInt(val interface{}) int {
+	n := val.(int)
+	return n
+}
+
+func ProcessMap(raw interface{}) []string {
+	m := raw.(map[string]interface{})
+	var keys []string
+	for k := range m {
+		keys = append(keys, k)
 	}
-	return total
+	return keys
+}
+
+func DescribeShape(v interface{}) string {
+	switch x := v.(type) {
+	case string:
+		s := v.(string)
+		return fmt.Sprintf("string(%s)", s)
+	case int:
+		i := v.(int)
+		return fmt.Sprintf("int(%d)", i)
+	default:
+		_ = x
+		return "unknown"
+	}
 }

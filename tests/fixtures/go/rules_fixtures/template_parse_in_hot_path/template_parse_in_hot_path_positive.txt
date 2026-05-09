@@ -1,19 +1,38 @@
 package rulefixtures
 
+import (
+	"fmt"
+	"html/template"
+	"strings"
+)
+
 // scenario for template_parse_in_hot_path: html/template or text/template parse calls observed on request-style paths instead of startup-time caching.
 // fixture polarity: positive; family: hot_path; severity: info.
-type Rule370PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+type ReportRow struct {
+	Label string
+	Value float64
 }
 
-func scenario370Positive(records []Rule370PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func RenderRows(rows []ReportRow) []string {
+	var results []string
+	for _, row := range rows {
+		tmpl := template.Must(template.New("row").Parse("<tr><td>{{.Label}}</td><td>{{.Value}}</td></tr>"))
+		var buf strings.Builder
+		if err := tmpl.Execute(&buf, row); err != nil {
+			panic(err)
 		}
+		results = append(results, buf.String())
 	}
-	return total
+	return results
+}
+
+func FormatNotifications(items []string) ([]string, error) {
+	var output []string
+	for _, item := range items {
+		t := template.Must(template.New("msg").Parse(fmt.Sprintf(`<p>Notification: %s</p>`, item)))
+		var buf strings.Builder
+		_ = t.Execute(&buf, nil)
+		output = append(output, buf.String())
+	}
+	return output, nil
 }

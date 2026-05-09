@@ -1,19 +1,17 @@
-package rulefixtures
+package models
 
 // scenario for inconsistent_package_name: Directories that mix base Go package names after ignoring the _test suffix.
 // fixture polarity: positive; family: style; severity: info.
-type Rule751PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+
+type User struct {
+	ID        int
+	FirstName string
+	LastName  string
+	Email     string
 }
 
-func scenario751Positive(records []Rule751PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
-	}
-	return total
+type Product struct {
+	SKU   string
+	Price float64
+	Stock int
 }

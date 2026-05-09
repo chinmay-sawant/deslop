@@ -25,6 +25,13 @@ def handle_request(request):
         user = fetch_user(request.user_id)
         result = process_payment(user["balance"])
         return {"status": "ok", "result": result}
+    except ValueError as e:
+        logger.warning("Invalid request: %s", e)
+        return {"status": "error", "message": str(e)}
+
+
+def handle_background_job(job):
+    try:
+        run_job(job)
     except Exception:
-        logger.exception("Request processing failed")
         raise

@@ -6,14 +6,22 @@ import (
 
 // scenario for date_or_cast_wrapped_indexed_column: DATE/CAST wrapping indexed columns in WHERE clauses, preventing index usage.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule253PositiveRecord struct { ID int }
 
-func scenario253Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
-	}
-	return db.Order("created_at desc").Find(&[]Rule253PositiveRecord{}).Error
+type Order struct {
+	ID        int
+	CreatedAt string
+	Amount    string
+}
+
+func FindOrdersToday(db *gorm.DB) ([]Order, error) {
+	var orders []Order
+	err := db.Where("DATE(created_at) = ?", "2026-05-09").
+		Order("id").Find(&orders).Error
+	return orders, err
+}
+
+func FindOrdersByAmount(db *gorm.DB, threshold int) ([]Order, error) {
+	var orders []Order
+	err := db.Where("CAST(amount AS INT) > ?", threshold).Find(&orders).Error
+	return orders, err
 }

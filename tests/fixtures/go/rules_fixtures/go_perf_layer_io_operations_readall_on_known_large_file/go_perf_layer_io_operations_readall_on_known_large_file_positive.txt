@@ -1,19 +1,18 @@
 package rulefixtures
 
+import (
+	"os"
+)
+
 // scenario for go_perf_layer_io_operations_readall_on_known_large_file: Layer: I/O operations. Flag os.ReadFile or io.ReadAll on files that are processed sequentially.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule549PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
-
-func scenario549Positive(records []Rule549PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func scenario549Positive(path string) ([]byte, error) {
+	// Reads an entire known-large file into memory at once.
+	// For line-by-line or streaming processing this is wasteful
+	// and may cause OOM on multi-GB files.
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
 	}
-	return total
+	return data, nil
 }

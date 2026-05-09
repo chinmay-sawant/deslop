@@ -1,26 +1,38 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+	"time"
 )
 
 // scenario for middleware_mutates_domain_model_state: Middleware that writes business entities or persistence models as a side effect of request plumbing.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule088PositiveRecord struct {
-	db *sql.DB
+
+type Order struct {
+	ID         int
+	Status     string
+	Total      float64
+	ModifiedAt time.Time
 }
 
-func scenario088Positive(w http.ResponseWriter, r *http.Request, repo Rule088PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+var currentOrder = &Order{ID: 42, Status: "pending", Total: 99.99}
+
+func MutatingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		role := r.Header.Get("X-User-Role")
+		if role == "admin" {
+			currentOrder.Status = "approved"
+			currentOrder.ModifiedAt = time.Now()
+		}
+		if r.Header.Get("X-Force") == "true" {
+			currentOrder.Status = "cancelled"
+			currentOrder.Total = 0.0
+			currentOrder.ModifiedAt = time.Now()
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func OrderHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }

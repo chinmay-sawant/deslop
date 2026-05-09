@@ -1,21 +1,40 @@
 package rulefixtures
 
 import (
-	"context"
 	"database/sql"
+	"net/http"
 )
 
 // scenario for prepare_on_every_request_same_sql: The same literal SQL is prepared multiple times on one request path.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule285PositiveRecord struct { ID int }
+var sharedDB *sql.DB
 
-func scenario285Positive(ctx context.Context, db *sql.DB, ids []int) error {
-	for _, id := range ids {
-		row := db.QueryRowContext(ctx, "select count(*) from orders where account_id=$1", id)
-		var count int
-		if err := row.Scan(&count); err != nil {
-			return err
-		}
+func HandleUserQuery(w http.ResponseWriter, r *http.Request) {
+	userID := r.URL.Query().Get("id")
+
+	stmt, err := sharedDB.Prepare("SELECT name, email FROM users WHERE id = $1")
+	if err != nil {
+		http.Error(w, "prepare failed", http.StatusInternalServerError)
+		return
 	}
-	return nil
+	defer stmt.Close()
+
+	var name, email string
+	err = stmt.QueryRow(userID).Scan(&name, &email)
+	if err != nil {
+		http.Error(w, "query failed", http.StatusInternalServerError)
+		return
+	}
+
+	orderStmt, err := sharedDB.Prepare("SELECT id, total FROM orders WHERE user_id = $1")
+	if err != nil {
+		http.Error(w, "prepare failed", http.StatusInternalServerError)
+		return
+	}
+	defer orderStmt.Close()
+
+	var orderID int
+	var total float64
+	_ = orderStmt.QueryRow(userID).Scan(&orderID, &total)
+	w.Write([]byte(name))
 }

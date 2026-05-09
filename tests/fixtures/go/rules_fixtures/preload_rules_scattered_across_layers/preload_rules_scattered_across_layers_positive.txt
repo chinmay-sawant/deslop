@@ -2,25 +2,40 @@ package rulefixtures
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+
+	"gorm.io/gorm"
 )
 
 // scenario for preload_rules_scattered_across_layers: Preload decisions spread across handlers, services, and repositories instead of one query owner.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule115PositiveRecord struct {
-	db *sql.DB
+type Order struct {
+	ID    int     `gorm:"primaryKey"`
+	Items []Item  `gorm:"foreignKey:OrderID"`
+	User  User    `gorm:"foreignKey:UserID"`
 }
 
-func scenario115Positive(w http.ResponseWriter, r *http.Request, repo Rule115PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type Item struct {
+	ID      int `gorm:"primaryKey"`
+	OrderID int
+}
+
+type User struct {
+	ID   int `gorm:"primaryKey"`
+	Name string
+}
+
+type OrderService struct {
+	db *gorm.DB
+}
+
+func (s *OrderService) GetOrderWithItems(ctx context.Context, id int) (*Order, error) {
+	var order Order
+	err := s.db.WithContext(ctx).Preload("Items").Preload("User").First(&order, id).Error
+	return &order, err
+}
+
+func (s *OrderService) ListOrders(ctx context.Context) ([]Order, error) {
+	var orders []Order
+	err := s.db.WithContext(ctx).Preload("Items").Find(&orders).Error
+	return orders, err
 }

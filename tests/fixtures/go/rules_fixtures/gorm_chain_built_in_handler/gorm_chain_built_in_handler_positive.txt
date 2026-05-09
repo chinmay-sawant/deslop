@@ -1,26 +1,21 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	gorm "gorm.io/gorm"
 )
 
 // scenario for gorm_chain_built_in_handler: Handlers that construct `Where`, `Joins`, `Scopes`, or `Order` chains directly.
 // fixture polarity: positive; family: architecture; severity: warning.
 type Rule057PositiveRecord struct {
-	db *sql.DB
+	ID       int
+	TenantID int
+	Name     string
 }
 
-func scenario057Positive(w http.ResponseWriter, r *http.Request, repo Rule057PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func scenario057Positive(db *gorm.DB, tenantID int) ([]Rule057PositiveRecord, error) {
+	var items []Rule057PositiveRecord
+	if err := db.Where("tenant_id = ?", tenantID).Joins("JOIN accounts ON accounts.id = rule_057_positive_records.account_id").Order("name ASC").Find(&items).Error; err != nil {
+		return nil, err
 	}
-	defer rows.Close()
-	return rows.Err()
+	return items, nil
 }

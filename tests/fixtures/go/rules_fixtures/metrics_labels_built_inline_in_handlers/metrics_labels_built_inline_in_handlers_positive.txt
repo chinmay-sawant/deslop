@@ -1,26 +1,46 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-// scenario for metrics_labels_built_inline_in_handlers: Handlers that hand-build metric labels repeatedly instead of using focused observation helpers.
+// scenario for metrics_labels_built_inline_in_handlers: Handlers that hand-build metric labels repeatedly.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule084PositiveRecord struct {
-	db *sql.DB
-}
 
-func scenario084Positive(w http.ResponseWriter, r *http.Request, repo Rule084PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+var (
+	requestTotal = promauto.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "http_requests_total",
+			Help: "Total number of HTTP requests.",
+		},
+		[]string{"method", "path", "status"},
+	)
+	requestDuration = promauto.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name: "http_request_duration_seconds",
+			Help: "Request duration in seconds.",
+		},
+		[]string{"method", "path"},
+	)
+)
+
+func scenario084Positive(w http.ResponseWriter, r *http.Request) {
+	labels := prometheus.Labels{
+		"method": r.Method,
+		"path":   r.URL.Path,
+		"status": "200",
 	}
-	defer rows.Close()
-	return rows.Err()
+	requestTotal.With(labels).Inc()
+
+	durationLabels := prometheus.Labels{
+		"method": r.Method,
+		"path":   r.URL.Path,
+	}
+	requestDuration.With(durationLabels).Observe(0.05)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"status":"ok"}`))
 }

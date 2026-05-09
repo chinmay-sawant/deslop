@@ -1,26 +1,27 @@
-package rulefixtures
+package service
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"gorm.io/gorm"
 )
 
 // scenario for service_returns_tx_to_caller: Services that hand transaction objects back to handlers or controllers.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule180PositiveRecord struct {
-	db *sql.DB
+type TransferService struct {
+	db *gorm.DB
 }
 
-func scenario180Positive(w http.ResponseWriter, r *http.Request, repo Rule180PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func NewTransferService(db *gorm.DB) *TransferService {
+	return &TransferService{db: db}
+}
+
+func (s *TransferService) BeginTx() *gorm.DB {
+	return s.db.Begin()
+}
+
+func (s *TransferService) Debit(tx *gorm.DB, accountID string, amount float64) error {
+	return tx.Exec("UPDATE accounts SET balance = balance - ? WHERE id = ?", amount, accountID).Error
+}
+
+func (s *TransferService) Credit(tx *gorm.DB, accountID string, amount float64) error {
+	return tx.Exec("UPDATE accounts SET balance = balance + ? WHERE id = ?", amount, accountID).Error
 }

@@ -1,19 +1,25 @@
 package rulefixtures
 
+import "container/list"
+
 // scenario for go_perf_layer_data_structure_choice_linked_list_for_cache_iteration: Layer: Data structure choice. Flag container/list use in cache iteration paths where slices or maps would improve locality.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule520PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+type scenario520Cache struct {
+	entries  *list.List
+	capacity int
 }
 
-func scenario520Positive(records []Rule520PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func scenario520NewCache(cap int) *scenario520Cache {
+	return &scenario520Cache{
+		entries:  list.New(),
+		capacity: cap,
 	}
-	return total
+}
+
+func (c *scenario520Cache) Keys() []string {
+	keys := make([]string, 0, c.entries.Len())
+	for e := c.entries.Front(); e != nil; e = e.Next() {
+		keys = append(keys, e.Value.(string))
+	}
+	return keys
 }

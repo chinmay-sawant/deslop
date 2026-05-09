@@ -6,14 +6,17 @@ import (
 
 // scenario for first_or_create_in_loop: GORM FirstOrCreate(...) chains observed inside loops.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule264PositiveRecord struct { ID int }
+type Rule264PositiveRecord struct {
+	ID   int
+	Name string
+}
 
-func scenario264Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+func scenario264Positive(db *gorm.DB, names []string) error {
+	for _, name := range names {
+		var item Rule264PositiveRecord
+		if err := db.Where("name = ?", name).FirstOrCreate(&item).Error; err != nil {
 			return err
 		}
 	}
-	return db.Order("created_at desc").Find(&[]Rule264PositiveRecord{}).Error
+	return nil
 }

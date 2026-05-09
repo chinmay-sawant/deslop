@@ -1,11 +1,27 @@
 package rulefixtures
 
 import (
+	"io"
+	"net/http"
+
 	yaml "gopkg.in/yaml.v2"
 )
 
 // scenario for yaml_unmarshal_untrusted_input: `yaml.Unmarshal(untrustedInput, &target)` using `gopkg.in/yaml.v2` without size limits
 // fixture polarity: positive; family: security; severity: warning.
-func scenario750Positive(untrustedInput []byte, target any) error {
-	return yaml.Unmarshal(untrustedInput, target)
+type Config struct {
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
+}
+
+func scenario750Positive(r *http.Request) (*Config, error) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+	var cfg Config
+	if err := yaml.Unmarshal(body, &cfg); err != nil {
+		return nil, err
+	}
+	return &cfg, nil
 }

@@ -3,24 +3,39 @@ package rulefixtures
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for health_or_readiness_handlers_reach_into_business_repositories_directly: Health endpoints that depend on full business repositories instead of focused probes.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule075PositiveRecord struct {
+
+type UserRepository struct {
 	db *sql.DB
 }
 
-func scenario075Positive(w http.ResponseWriter, r *http.Request, repo Rule075PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func (r *UserRepository) Count(ctx context.Context) (int, error) {
+	var count int
+	err := r.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM users").Scan(&count)
+	return count, err
+}
+
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userRepo := &UserRepository{db: &sql.DB{}}
+
+	if err := userRepo.db.PingContext(ctx); err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		json.NewEncoder(w).Encode(map[string]string{"status": "unhealthy"})
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+
+	_, err := userRepo.Count(ctx)
+	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		json.NewEncoder(w).Encode(map[string]string{"status": "degraded"})
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]string{"status": "healthy"})
 }

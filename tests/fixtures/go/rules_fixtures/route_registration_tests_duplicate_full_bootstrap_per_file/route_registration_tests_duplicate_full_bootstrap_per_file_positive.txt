@@ -1,26 +1,38 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
 // scenario for route_registration_tests_duplicate_full_bootstrap_per_file: Tests that rebuild the full application bootstrap repeatedly instead of using shared test setup.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule152PositiveRecord struct {
-	db *sql.DB
+func SetupServer() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("users list"))
+	})
+	return mux
 }
 
-func scenario152Positive(w http.ResponseWriter, r *http.Request, repo Rule152PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func TestUsersEndpoint(t *testing.T) {
+	mux := SetupServer()
+	req := httptest.NewRequest("GET", "/users", nil)
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+	if rec.Code != 200 {
+		t.Errorf("expected 200, got %d", rec.Code)
 	}
-	defer rows.Close()
-	return rows.Err()
+}
+
+func TestUsersEndpointWithAuth(t *testing.T) {
+	mux := SetupServer()
+	req := httptest.NewRequest("GET", "/users", nil)
+	req.Header.Set("Authorization", "Bearer token")
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+	if rec.Code != 200 {
+		t.Errorf("expected 200, got %d", rec.Code)
+	}
 }

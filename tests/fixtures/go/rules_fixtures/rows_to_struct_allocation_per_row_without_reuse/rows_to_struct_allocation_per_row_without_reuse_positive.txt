@@ -1,19 +1,29 @@
 package rulefixtures
 
 import (
-	gorm "gorm.io/gorm"
+	"database/sql"
 )
 
 // scenario for rows_to_struct_allocation_per_row_without_reuse: New struct allocated for each row scan instead of reusing a scratch variable.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule293PositiveRecord struct { ID int }
+type Rule293PositiveRecord struct {
+	ID    int
+	Name  string
+	Email string
+}
 
-func scenario293Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func scenario293Positive(db *sql.DB) ([]Rule293PositiveRecord, error) {
+	rows, err := db.Query("SELECT id, name, email FROM users")
+	if err != nil {
+		return nil, err
 	}
-	return db.Order("created_at desc").Find(&[]Rule293PositiveRecord{}).Error
+	defer rows.Close()
+
+	var results []Rule293PositiveRecord
+	for rows.Next() {
+		var item Rule293PositiveRecord
+		rows.Scan(&item.ID, &item.Name, &item.Email)
+		results = append(results, item)
+	}
+	return results, rows.Err()
 }

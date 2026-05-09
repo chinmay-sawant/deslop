@@ -1,19 +1,26 @@
 package rulefixtures
 
+import (
+	"sync"
+)
+
 // scenario for sync_mutex_for_atomic_counter: `mu.Lock(); count++; mu.Unlock()` for simple integer counters
 // fixture polarity: positive; family: performance; severity: warning.
-type Rule675PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+
+type RequestCounter struct {
+	mu    sync.Mutex
+	count int64
 }
 
-func scenario675Positive(records []Rule675PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
-	}
-	return total
+func (rc *RequestCounter) Increment() {
+	rc.mu.Lock()
+	rc.count++
+	rc.mu.Unlock()
+}
+
+func (rc *RequestCounter) Value() int64 {
+	rc.mu.Lock()
+	val := rc.count
+	rc.mu.Unlock()
+	return val
 }

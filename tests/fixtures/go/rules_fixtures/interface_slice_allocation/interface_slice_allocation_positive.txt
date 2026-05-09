@@ -1,19 +1,24 @@
 package rulefixtures
 
+import "fmt"
+
 // scenario for interface_slice_allocation: `[]interface{}` or `[]any` used to pass homogeneous typed data
 // fixture polarity: positive; family: performance; severity: info.
-type Rule604PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+func printNames(users []string, ages []int) {
+	args := make([]any, 0, len(users)+len(ages))
+	for _, u := range users {
+		args = append(args, u)
+	}
+	for _, a := range ages {
+		args = append(args, a)
+	}
+	fmt.Printf("%v\n", args...)
 }
 
-func scenario604Positive(records []Rule604PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func collectValues(items []string) []any {
+	result := make([]any, len(items))
+	for i, v := range items {
+		result[i] = v
 	}
-	return total
+	return result
 }

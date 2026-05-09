@@ -1,26 +1,44 @@
-package rulefixtures
+package service
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"net/url"
+	"strconv"
 )
 
 // scenario for service_method_handles_pagination_or_query_parsing: Services that parse page, sort, filter, or URL values that should already be normalized at the transport boundary.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule171PositiveRecord struct {
-	db *sql.DB
+type SearchService struct {
+	repo SearchRepository
 }
 
-func scenario171Positive(w http.ResponseWriter, r *http.Request, repo Rule171PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func (s *SearchService) ListProducts(ctx context.Context, queryString string) ([]Product, int, error) {
+	values, err := url.ParseQuery(queryString)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+		return nil, 0, err
 	}
-	defer rows.Close()
-	return rows.Err()
+	page, err := strconv.Atoi(values.Get("page"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(values.Get("limit"))
+	if err != nil || limit < 1 || limit > 100 {
+		limit = 20
+	}
+	offset := (page - 1) * limit
+	sortBy := values.Get("sort")
+	if sortBy == "" {
+		sortBy = "created_at"
+	}
+	return s.repo.Search(ctx, sortBy, limit, offset)
+}
+
+type Product struct {
+	ID    string
+	Name  string
+	Price float64
+}
+
+type SearchRepository interface {
+	Search(ctx context.Context, sortBy string, limit, offset int) ([]Product, int, error)
 }

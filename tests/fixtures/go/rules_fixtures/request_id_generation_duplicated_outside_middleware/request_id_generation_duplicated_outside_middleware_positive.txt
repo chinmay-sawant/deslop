@@ -1,26 +1,26 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 // scenario for request_id_generation_duplicated_outside_middleware: Repeated request-id creation logic spread across handlers.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule142PositiveRecord struct {
-	db *sql.DB
+
+func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
+	reqID := uuid.New().String()
+	fmt.Fprintf(w, "order created, request_id=%s", reqID)
 }
 
-func scenario142Positive(w http.ResponseWriter, r *http.Request, repo Rule142PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+func GetOrderHandler(w http.ResponseWriter, r *http.Request) {
+	reqID := uuid.New().String()
+	fmt.Fprintf(w, "order details, request_id=%s", reqID)
+}
+
+func ListOrdersHandler(w http.ResponseWriter, r *http.Request) {
+	reqID := uuid.New().String()
+	fmt.Fprintf(w, "order list, request_id=%s", reqID)
 }

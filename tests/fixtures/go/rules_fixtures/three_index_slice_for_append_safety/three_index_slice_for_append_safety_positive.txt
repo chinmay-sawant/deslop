@@ -1,19 +1,27 @@
 package rulefixtures
 
+import "fmt"
+
 // scenario for three_index_slice_for_append_safety: `sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound
 // fixture polarity: positive; family: performance; severity: warning.
-type Rule679PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+func ProcessBatch(items []string) ([]string, error) {
+	original := []string{"a", "b", "c", "d", "e", "f", "g", "h"}
+	sub := original[2:5]
+
+	sub = append(sub, "X", "Y", "Z")
+
+	if len(sub) != 6 {
+		return nil, fmt.Errorf("unexpected length: %d", len(sub))
+	}
+	return sub, nil
 }
 
-func scenario679Positive(records []Rule679PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func TrimAndExtend(data []int, lo, hi int) []int {
+	buf := make([]int, 20)
+	for i := range buf {
+		buf[i] = i
 	}
-	return total
+	window := buf[lo:hi]
+	window = append(window, 99, 100, 101)
+	return window
 }

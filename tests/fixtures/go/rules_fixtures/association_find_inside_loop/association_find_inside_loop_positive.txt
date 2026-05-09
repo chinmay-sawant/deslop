@@ -1,19 +1,34 @@
 package rulefixtures
 
-import (
-	gorm "gorm.io/gorm"
-)
+import gorm "gorm.io/gorm"
 
 // scenario for association_find_inside_loop: GORM Association(...).Find(...) loaders observed inside loops.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule245PositiveRecord struct { ID int }
+func getOrdersWithItems(db *gorm.DB, orderIDs []int) ([]Order, error) {
+	var orders []Order
 
-func scenario245Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+	if err := db.Where("id IN ?", orderIDs).Find(&orders).Error; err != nil {
+		return nil, err
 	}
-	return db.Order("created_at desc").Find(&[]Rule245PositiveRecord{}).Error
+
+	for i := range orders {
+		var items []Item
+		if err := db.Model(&orders[i]).Association("Items").Find(&items); err != nil {
+			return nil, err
+		}
+		orders[i].Items = items
+	}
+
+	return orders, nil
+}
+
+type Order struct {
+	ID    int    `gorm:"primaryKey"`
+	Items []Item `gorm:"foreignKey:OrderID"`
+}
+
+type Item struct {
+	ID      int `gorm:"primaryKey"`
+	OrderID int
+	Name    string
 }

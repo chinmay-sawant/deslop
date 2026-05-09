@@ -1,26 +1,30 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 // scenario for path_param_parsing_duplicated_across_handlers: Repeated `strconv` or UUID path-param parsing logic that should live in helpers.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule112PositiveRecord struct {
-	db *sql.DB
+func GetUserByID(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"user_id": id})
 }
 
-func scenario112Positive(w http.ResponseWriter, r *http.Request, repo Rule112PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
+func DeleteUserByID(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+	c.JSON(http.StatusOK, gin.H{"deleted": id})
 }

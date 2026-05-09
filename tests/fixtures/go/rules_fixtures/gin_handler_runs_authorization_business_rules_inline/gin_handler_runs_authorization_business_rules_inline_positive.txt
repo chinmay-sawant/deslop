@@ -1,26 +1,36 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // scenario for gin_handler_runs_authorization_business_rules_inline: Handlers that contain complex permission matrices instead of delegating to policy or service logic.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule049PositiveRecord struct {
-	db *sql.DB
-}
 
-func scenario049Positive(w http.ResponseWriter, r *http.Request, repo Rule049PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func DeleteResourceHandler(c *gin.Context) {
+	role := c.GetString("user_role")
+	resourceOwner := c.GetString("resource_owner")
+	currentUser := c.GetString("user_id")
+	isAdmin := role == "admin"
+	isOwner := resourceOwner == currentUser
+	isModerator := role == "moderator"
+
+	if isAdmin {
+		c.JSON(http.StatusOK, gin.H{"status": "deleted by admin"})
+		return
 	}
-	defer rows.Close()
-	return rows.Err()
+
+	if isOwner {
+		c.JSON(http.StatusOK, gin.H{"status": "deleted by owner"})
+		return
+	}
+
+	if isModerator && c.Query("scope") == "limited" {
+		c.JSON(http.StatusOK, gin.H{"status": "deleted by moderator"})
+		return
+	}
+
+	c.JSON(http.StatusForbidden, gin.H{"error": "unauthorized"})
 }

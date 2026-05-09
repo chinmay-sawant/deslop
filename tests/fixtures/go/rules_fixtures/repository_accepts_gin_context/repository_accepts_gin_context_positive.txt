@@ -1,26 +1,38 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // scenario for repository_accepts_gin_context: Repositories that accept `*gin.Context` rather than `context.Context`.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule122PositiveRecord struct {
-	db *sql.DB
+
+type Account struct {
+	ID    uint   `gorm:"primaryKey"`
+	Name  string `gorm:"size:128"`
+	Email string `gorm:"size:256"`
 }
 
-func scenario122Positive(w http.ResponseWriter, r *http.Request, repo Rule122PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type AccountRepo struct {
+	db *gorm.DB
 }
+
+func NewAccountRepo(db *gorm.DB) *AccountRepo {
+	return &AccountRepo{db: db}
+}
+
+func (r *AccountRepo) FindByID(c *gin.Context, id uint) (*Account, error) {
+	var account Account
+	err := r.db.WithContext(c.Request.Context()).First(&account, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &account, nil
+}
+
+func (r *AccountRepo) Create(c *gin.Context, account *Account) error {
+	return r.db.WithContext(c.Request.Context()).Create(account).Error
+}
+
+var _ = gorm.ErrRecordNotFound

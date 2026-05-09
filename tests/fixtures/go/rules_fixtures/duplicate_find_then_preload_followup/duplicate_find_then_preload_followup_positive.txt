@@ -6,14 +6,24 @@ import (
 
 // scenario for duplicate_find_then_preload_followup: Initial Find followed by a separate Preload query that could be folded into one.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule258PositiveRecord struct { ID int }
+type Rule258PositiveRecord struct {
+	ID       int
+	Name     string
+	TenantID int
+}
+type Rule258RelatedRecord struct {
+	ID        int
+	ParentID  int
+	Detail    string
+}
 
-func scenario258Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func scenario258Positive(db *gorm.DB, tenantID int) ([]Rule258PositiveRecord, error) {
+	var items []Rule258PositiveRecord
+	if err := db.Where("tenant_id = ?", tenantID).Find(&items).Error; err != nil {
+		return nil, err
 	}
-	return db.Order("created_at desc").Find(&[]Rule258PositiveRecord{}).Error
+	if err := db.Preload("Related").Find(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
 }

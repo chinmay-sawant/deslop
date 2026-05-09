@@ -1,19 +1,27 @@
 package rulefixtures
 
+import "fmt"
+
 // scenario for go_perf_layer_resource_pooling_worker_pool_without_shutdown_backpressure: Layer: Resource pooling. Flag worker pools that accept unlimited jobs without bounded queues or shutdown draining.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule583PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+
+type Task struct {
+	ID   int
+	Data string
 }
 
-func scenario583Positive(records []Rule583PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func StartWorkerPool(workers int) {
+	jobs := make(chan Task)
+	for w := 0; w < workers; w++ {
+		go func() {
+			for task := range jobs {
+				fmt.Println("processing", task.ID)
+			}
+		}()
 	}
-	return total
+	go func() {
+		for i := 0; ; i++ {
+			jobs <- Task{ID: i, Data: "payload"}
+		}
+	}()
 }

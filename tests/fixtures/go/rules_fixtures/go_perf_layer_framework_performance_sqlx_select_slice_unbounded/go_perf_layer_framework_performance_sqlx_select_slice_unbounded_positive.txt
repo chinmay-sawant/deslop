@@ -1,19 +1,23 @@
 package rulefixtures
 
+import "github.com/jmoiron/sqlx"
+
 // scenario for go_perf_layer_framework_performance_sqlx_select_slice_unbounded: Layer: Framework-specific performance. Flag sqlx Select into slices without LIMIT or streaming for large tables.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule537PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+
+type Record struct {
+	ID   int    `db:"id"`
+	Data string `db:"data"`
 }
 
-func scenario537Positive(records []Rule537PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
-	}
-	return total
+func FetchAllRecords(db *sqlx.DB) ([]Record, error) {
+	var items []Record
+	err := db.Select(&items, "SELECT id, data FROM large_table")
+	return items, err
+}
+
+func FetchAllLogs(db *sqlx.DB) ([]Record, error) {
+	var items []Record
+	err := db.Select(&items, "SELECT * FROM audit_logs WHERE created_at > NOW() - INTERVAL '30 days'")
+	return items, err
 }

@@ -2,18 +2,14 @@ package rulefixtures
 
 // scenario for nested_append_without_outer_capacity: Append calls inside nested loops without visible preallocation on the outer slice.
 // fixture polarity: positive; family: hot_path; severity: info.
-type Rule357PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
+type Item struct{ Tags []string }
 
-func scenario357Positive(records []Rule357PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
+func scenario357Positive(items []Item) []string {
+	var allTags []string
+	for _, item := range items {
+		for _, tag := range item.Tags {
+			allTags = append(allTags, tag)
 		}
 	}
-	return total
+	return allTags
 }

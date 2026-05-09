@@ -1,26 +1,35 @@
-package rulefixtures
+package service
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"time"
+
+	"gorm.io/gorm"
 )
 
 // scenario for service_method_accepts_dto_and_persistence_model_together: Signatures that mix transport DTOs and GORM models in the same service API.
 // fixture polarity: positive; family: architecture; severity: warning.
-type Rule167PositiveRecord struct {
-	db *sql.DB
+type CreateUserRequest struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
-func scenario167Positive(w http.ResponseWriter, r *http.Request, repo Rule167PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
-	}
-	defer rows.Close()
-	return rows.Err()
+type User struct {
+	ID        uint           `gorm:"primaryKey"`
+	Name      string         `gorm:"column:name"`
+	Email     string         `gorm:"column:email"`
+	CreatedAt time.Time      `gorm:"column:created_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+type UserService struct {
+	db *gorm.DB
+}
+
+func (s *UserService) ProcessUser(ctx context.Context, req CreateUserRequest, user User) (*User, error) {
+	user.Name = req.Name
+	user.Email = req.Email
+	user.CreatedAt = time.Now()
+	result := s.db.WithContext(ctx).Create(&user)
+	return &user, result.Error
 }

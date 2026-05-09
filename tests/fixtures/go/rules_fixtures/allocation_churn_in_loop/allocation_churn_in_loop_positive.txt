@@ -2,18 +2,13 @@ package rulefixtures
 
 // scenario for allocation_churn_in_loop: Obvious make, new, or buffer-construction calls inside loops.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule437PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
 
-func scenario437Positive(records []Rule437PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func scenario437Positive(items []string) []string {
+	var out []string
+	for _, item := range items {
+		buf := make([]byte, 0, 256)
+		buf = append(buf, item...)
+		out = append(out, string(buf))
 	}
-	return total
+	return out
 }

@@ -1,26 +1,37 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
+	"errors"
 )
 
 // scenario for not_found_semantics_implemented_by_nil_nil_return: Repository or service APIs that encode missing records as `nil, nil` with no explicit result contract.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule102PositiveRecord struct {
-	db *sql.DB
+
+type User struct {
+	ID   int
+	Name string
 }
 
-func scenario102Positive(w http.ResponseWriter, r *http.Request, repo Rule102PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+type UserRepository struct{}
+
+func (r *UserRepository) FindByID(id int) (*User, error) {
+	if id <= 0 {
+		return nil, nil
 	}
-	defer rows.Close()
-	return rows.Err()
+	return &User{ID: id, Name: "Alice"}, nil
+}
+
+type UserService struct {
+	repo *UserRepository
+}
+
+func (s *UserService) GetUser(id int) (*User, error) {
+	user, err := s.repo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil && err == nil {
+		return nil, errors.New("ambiguous: no user and no error")
+	}
+	return user, nil
 }

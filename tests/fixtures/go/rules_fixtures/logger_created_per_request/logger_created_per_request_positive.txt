@@ -1,14 +1,27 @@
 package rulefixtures
 
 import (
-	"fmt"
 	"log"
+	"net/http"
+	"os"
 )
 
-// scenario for logger_created_per_request: `zap.NewProduction()` or `logrus.New()` inside handler functions
+// scenario for logger_created_per_request: logger instances created inside handler functions
 // fixture polarity: positive; family: library; severity: warning.
-func scenario417Positive(values []string) {
-	for _, value := range values {
-		log.Print(fmt.Sprintf("value=%s", value))
+
+func scenario417Positive(w http.ResponseWriter, r *http.Request) {
+	logger := log.New(os.Stderr, "[handler] ", log.LstdFlags|log.Lshortfile)
+	logger.Printf("processing request from %s for %s", r.RemoteAddr, r.URL.Path)
+
+	if r.Header.Get("X-Debug") != "" {
+		logger.Printf("debug header present: %s", r.Header.Get("X-Debug"))
 	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("ok"))
+}
+
+func backgroundWorker(task string) {
+	logger := log.New(os.Stderr, "[worker] ", log.LstdFlags)
+	logger.Printf("starting task: %s", task)
 }

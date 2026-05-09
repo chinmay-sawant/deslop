@@ -1,26 +1,30 @@
 package rulefixtures
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
+	"encoding/json"
 	"net/http"
+	"time"
 )
 
 // scenario for nullable_sql_types_leak_into_api_dto: Response or request DTOs that expose `sql.Null*` types instead of boundary-friendly contract types.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule103PositiveRecord struct {
-	db *sql.DB
+
+type ProfileResponse struct {
+	ID        int            `json:"id"`
+	Bio       sql.NullString `json:"bio"`
+	Age       sql.NullInt64  `json:"age"`
+	LastLogin sql.NullTime   `json:"last_login"`
 }
 
-func scenario103Positive(w http.ResponseWriter, r *http.Request, repo Rule103PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func GetProfileHandler(w http.ResponseWriter, r *http.Request) {
+	resp := ProfileResponse{
+		ID:        1,
+		Bio:       sql.NullString{String: "Hello world", Valid: true},
+		Age:       sql.NullInt64{Int64: 30, Valid: true},
+		LastLogin: sql.NullTime{Time: time.Now(), Valid: false},
 	}
-	defer rows.Close()
-	return rows.Err()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
 }

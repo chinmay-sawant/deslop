@@ -1,19 +1,22 @@
 package rulefixtures
 
+import (
+	"net/http"
+	"reflect"
+)
+
 // scenario for reflection_hot_path: reflect package calls inside loops.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule630PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+type Rule630PositiveHandler struct{}
+
+func (h *Rule630PositiveHandler) GetValue() string {
+	return "ok"
 }
 
-func scenario630Positive(records []Rule630PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
-	}
-	return total
+func scenario630Positive(w http.ResponseWriter, r *http.Request) {
+	handler := &Rule630PositiveHandler{}
+	obj := reflect.ValueOf(handler)
+	method := obj.MethodByName("GetValue")
+	result := method.Call(nil)
+	w.Write([]byte(result[0].String()))
 }

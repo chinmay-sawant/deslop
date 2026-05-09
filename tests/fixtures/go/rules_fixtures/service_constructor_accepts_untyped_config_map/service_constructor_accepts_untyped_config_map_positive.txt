@@ -1,26 +1,30 @@
-package rulefixtures
+package service
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
-	"net/http"
 )
 
 // scenario for service_constructor_accepts_untyped_config_map: Services configured by `map[string]any` or similar untyped blobs.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule162PositiveRecord struct {
-	db *sql.DB
+type PaymentService struct {
+	db     *sql.DB
+	apiKey string
+	region string
 }
 
-func scenario162Positive(w http.ResponseWriter, r *http.Request, repo Rule162PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func NewPaymentService(cfg map[string]interface{}, db *sql.DB) (*PaymentService, error) {
+	apiKey, ok := cfg["api_key"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing api_key in config")
 	}
-	defer rows.Close()
-	return rows.Err()
+	region, ok := cfg["region"].(string)
+	if !ok {
+		region = "us-east-1"
+	}
+	return &PaymentService{
+		db:     db,
+		apiKey: apiKey,
+		region: region,
+	}, nil
 }

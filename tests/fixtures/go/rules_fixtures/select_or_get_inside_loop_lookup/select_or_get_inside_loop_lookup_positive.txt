@@ -6,14 +6,19 @@ import (
 
 // scenario for select_or_get_inside_loop_lookup: ORM lookups (Select, Get, First, etc.) executed inside loops.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule297PositiveRecord struct { ID int }
+type Rule297PositiveRecord struct {
+	ID   int
+	Name string
+}
 
-func scenario297Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
+func scenario297Positive(db *gorm.DB, orderIDs []int) ([]Rule297PositiveRecord, error) {
+	var results []Rule297PositiveRecord
+	for _, id := range orderIDs {
+		var item Rule297PositiveRecord
+		if err := db.Where("id = ?", id).First(&item).Error; err != nil {
+			return nil, err
 		}
+		results = append(results, item)
 	}
-	return db.Order("created_at desc").Find(&[]Rule297PositiveRecord{}).Error
+	return results, nil
 }

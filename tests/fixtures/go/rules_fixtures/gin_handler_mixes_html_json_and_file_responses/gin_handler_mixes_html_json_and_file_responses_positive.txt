@@ -1,26 +1,31 @@
 package rulefixtures
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // scenario for gin_handler_mixes_html_json_and_file_responses: Handlers that serve fundamentally different transport modes from one function.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule045PositiveRecord struct {
-	db *sql.DB
-}
 
-func scenario045Positive(w http.ResponseWriter, r *http.Request, repo Rule045PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+func ReportHandler(c *gin.Context) {
+	format := c.Query("format")
+
+	switch format {
+	case "json":
+		c.JSON(http.StatusOK, gin.H{
+			"report": "summary",
+			"count":  42,
+		})
+	case "html":
+		c.HTML(http.StatusOK, "report.tmpl", gin.H{
+			"title": "Monthly Report",
+			"data":  "summary data",
+		})
+	case "pdf":
+		c.File("./reports/summary.pdf")
+	default:
+		c.File("./reports/summary.pdf")
 	}
-	defer rows.Close()
-	return rows.Err()
 }

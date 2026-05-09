@@ -6,14 +6,19 @@ import (
 
 // scenario for distinct_wide_row_request_path: Distinct on wide rows without Select projection - a key-only subquery is usually cheaper.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule257PositiveRecord struct { ID int }
+type Rule257PositiveRecord struct {
+	ID          int
+	TenantID    int
+	Name        string
+	Description string
+	Payload     []byte
+	Metadata    string
+}
 
-func scenario257Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func scenario257Positive(db *gorm.DB) ([]Rule257PositiveRecord, error) {
+	var items []Rule257PositiveRecord
+	if err := db.Select("*").Find(&items).Error; err != nil {
+		return nil, err
 	}
-	return db.Order("created_at desc").Find(&[]Rule257PositiveRecord{}).Error
+	return items, nil
 }

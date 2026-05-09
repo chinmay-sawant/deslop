@@ -1,19 +1,45 @@
 package rulefixtures
 
 import (
-	gorm "gorm.io/gorm"
+	"fmt"
+
+	"gorm.io/gorm"
 )
 
 // scenario for tx_begin_per_item_loop: Transactions started inside loops instead of once around the wider batch.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule300PositiveRecord struct { ID int }
+type Item struct {
+	ID     int
+	Status string
+}
 
-func scenario300Positive(db *gorm.DB, ids []int) error {
+func ProcessItems(db *gorm.DB, items []Item) error {
+	for _, item := range items {
+		tx := db.Begin()
+		if tx.Error != nil {
+			return fmt.Errorf("begin tx: %w", tx.Error)
+		}
+		if err := tx.Model(&Item{}).Where("id = ?", item.ID).Update("status", item.Status).Error; err != nil {
+			tx.Rollback()
+			return fmt.Errorf("update item %d: %w", item.ID, err)
+		}
+		if err := tx.Commit().Error; err != nil {
+			return fmt.Errorf("commit item %d: %w", item.ID, err)
+		}
+	}
+	return nil
+}
+
+func ArchiveDocuments(db *gorm.DB, ids []int) error {
 	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+		tx := db.Begin()
+		defer tx.Rollback()
+		if err := tx.Exec("UPDATE documents SET archived = true WHERE id = ?", id).Error; err != nil {
+			return err
+		}
+		if err := tx.Commit().Error; err != nil {
 			return err
 		}
 	}
-	return db.Order("created_at desc").Find(&[]Rule300PositiveRecord{}).Error
+	return nil
 }

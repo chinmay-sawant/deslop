@@ -6,14 +6,19 @@ import (
 
 // scenario for count_inside_loop: COUNT(...) or GORM Count(...) observed inside loops.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule250PositiveRecord struct { ID int }
+type Rule250PositiveRecord struct {
+	ID   int
+	Name string
+}
 
-func scenario250Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+func scenario250Positive(db *gorm.DB, tenantIDs []int) error {
+	var results []map[string]any
+	for _, tenantID := range tenantIDs {
+		var count int64
+		if err := db.Model(&Rule250PositiveRecord{}).Where("tenant_id = ?", tenantID).Count(&count).Error; err != nil {
 			return err
 		}
+		results = append(results, map[string]any{"tenant_id": tenantID, "count": count})
 	}
-	return db.Order("created_at desc").Find(&[]Rule250PositiveRecord{}).Error
+	return nil
 }

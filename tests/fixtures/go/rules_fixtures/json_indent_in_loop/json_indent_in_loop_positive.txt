@@ -1,19 +1,29 @@
 package rulefixtures
 
 import (
+	"bytes"
 	"encoding/json"
 )
 
 // scenario for json_indent_in_loop: `json.Indent(...)` inside loops.
 // fixture polarity: positive; family: performance; severity: info.
-type Rule606PositiveRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+type Record struct {
+	Name  string `json:"name"`
+	Count int    `json:"count"`
+}
 
-func scenario606Positive(values []Rule606PositiveRecord) (int, error) {
-	total := 0
-	for _, value := range values {
-		data, err := json.Marshal(value)
-		if err != nil { return 0, err }
-		total += len(data)
+func formatRecords(records []Record) ([]string, error) {
+	var out []string
+	for _, r := range records {
+		data, err := json.Marshal(r)
+		if err != nil {
+			return nil, err
+		}
+		var buf bytes.Buffer
+		if err := json.Indent(&buf, data, "", "  "); err != nil {
+			return nil, err
+		}
+		out = append(out, buf.String())
 	}
-	return total, nil
+	return out, nil
 }

@@ -1,12 +1,24 @@
 package rulefixtures
 
 import (
+	"encoding/json"
 	"net/http"
 )
 
 // scenario for http_writeheader_after_write: Handlers that write the response body before calling WriteHeader(...).
 // fixture polarity: positive; family: idioms; severity: info.
-func scenario386Positive(url string) (*http.Response, error) {
-	client := &http.Client{}
-	return client.Get(url)
+func partialHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte(`{"partial":true`))
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`,"done":true}`))
+}
+
+func streamHandler(w http.ResponseWriter, r *http.Request) {
+	type Item struct {
+		Name string `json:"name"`
+		ID   int    `json:"id"`
+	}
+	data, _ := json.Marshal(Item{Name: "test", ID: 1})
+	w.Write(data)
+	w.WriteHeader(http.StatusCreated)
 }

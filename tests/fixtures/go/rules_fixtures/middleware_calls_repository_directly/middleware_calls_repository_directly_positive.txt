@@ -2,25 +2,41 @@ package rulefixtures
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
 )
 
 // scenario for middleware_calls_repository_directly: Middleware that reaches into repositories instead of delegating through focused services or auth abstractions.
 // fixture polarity: positive; family: architecture; severity: info.
-type Rule086PositiveRecord struct {
-	db *sql.DB
+
+type User struct {
+	ID    int
+	Email string
+	Role  string
 }
 
-func scenario086Positive(w http.ResponseWriter, r *http.Request, repo Rule086PositiveRecord) error {
-	ctx := context.Background()
-	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
-		return err
+type UserRepo struct{}
+
+func (r *UserRepo) FindByID(ctx context.Context, id int) (*User, error) {
+	if id == 1 {
+		return &User{ID: 1, Email: "admin@example.com", Role: "admin"}, nil
 	}
-	defer rows.Close()
-	return rows.Err()
+	return nil, nil
+}
+
+func AuthMiddlewareWithRepo(userRepo *UserRepo) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			user, err := userRepo.FindByID(ctx, 1)
+			if err != nil || user == nil {
+				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }

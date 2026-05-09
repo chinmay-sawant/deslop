@@ -1,34 +1,35 @@
-from typing import List
+from typing import List, Tuple
 
 
-def dedupe_tags(tags: List[str]) -> List[str]:
-    """Deduplicates tags while preserving order. Duplicates are silently dropped."""
+def dedupe_tags(tags: List[str]) -> Tuple[List[str], int]:
     seen = set()
     result = []
+    dropped = 0
     for tag in tags:
-        if tag not in seen:
+        if tag in seen:
+            dropped += 1
+        else:
             seen.add(tag)
             result.append(tag)
-    return result
+    return result, dropped
 
 
-def process_user_emails(emails: List[str], *, warn_on_duplicate: bool = True) -> List[str]:
+def process_user_emails(emails: List[str]) -> List[str]:
     from collections import Counter
     counts = Counter(emails)
-    if warn_on_duplicate:
-        for email, count in counts.items():
-            if count > 1:
-                import warnings
-                warnings.warn(f"Duplicate email dropped: {email} (appeared {count} times)")
+    duplicates = {email for email, count in counts.items() if count > 1}
+    if duplicates:
+        raise ValueError(f"Duplicate emails found: {duplicates}")
     return [e.lower() for e in sorted(counts.keys())]
 
 
-def get_distinct_categories(products, *, signal_dedup: bool = False) -> List[str]:
+def get_distinct_categories(products) -> List[str]:
     categories = sorted({p["category"] for p in products})
-    if signal_dedup and len(categories) < len(products):
+    if len(categories) < len(products):
+        dropped = len(products) - len(categories)
         import logging
-        logging.getLogger(__name__).info(
-            "Deduplicated %d products down to %d categories",
-            len(products), len(categories),
+        logger = logging.getLogger(__name__)
+        logger.warning(
+            "%d duplicate categories were dropped during deduplication", dropped
         )
     return categories

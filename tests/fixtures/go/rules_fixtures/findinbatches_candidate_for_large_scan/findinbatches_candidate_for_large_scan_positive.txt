@@ -6,14 +6,16 @@ import (
 
 // scenario for findinbatches_candidate_for_large_scan: Unbounded result sets that could use FindInBatches or cursor iteration.
 // fixture polarity: positive; family: data_access; severity: contextual.
-type Rule263PositiveRecord struct { ID int }
+type Rule263PositiveRecord struct {
+	ID      int
+	Name    string
+	Payload []byte
+}
 
-func scenario263Positive(db *gorm.DB, ids []int) error {
-	for _, id := range ids {
-		updates := map[string]any{"seen": true, "id": id}
-		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
-			return err
-		}
+func scenario263Positive(db *gorm.DB) ([]Rule263PositiveRecord, error) {
+	var items []Rule263PositiveRecord
+	if err := db.Find(&items).Error; err != nil {
+		return nil, err
 	}
-	return db.Order("created_at desc").Find(&[]Rule263PositiveRecord{}).Error
+	return items, nil
 }

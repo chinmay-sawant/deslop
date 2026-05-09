@@ -2,18 +2,25 @@ package rulefixtures
 
 // scenario for go_perf_layer_data_structure_choice_small_enum_string_switch_map: Layer: Data structure choice. Flag map lookups for tiny static enum-like string sets where switch can avoid allocation and hashing.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule523PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
+type scenario523Operation int
+
+const (
+	scenario523Create scenario523Operation = iota
+	scenario523Read
+	scenario523Update
+	scenario523Delete
+)
+
+var scenario523Handlers = map[scenario523Operation]func() string{
+	scenario523Create: func() string { return "creating" },
+	scenario523Read:   func() string { return "reading" },
+	scenario523Update: func() string { return "updating" },
+	scenario523Delete: func() string { return "deleting" },
 }
 
-func scenario523Positive(records []Rule523PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func scenario523Positive(op scenario523Operation) string {
+	if h, ok := scenario523Handlers[op]; ok {
+		return h()
 	}
-	return total
+	return "unknown"
 }
