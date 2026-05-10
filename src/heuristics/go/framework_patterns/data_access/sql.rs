@@ -21,7 +21,11 @@ pub(super) fn sql_loop_findings(
     function: &ParsedFunction,
     lines: &[BodyLine],
 ) -> Vec<Finding> {
-    if !has_sql_like_import(file) {
+    let has_gorm_import = file
+        .imports
+        .iter()
+        .any(|import| import.path.contains("gorm.io/gorm"));
+    if !has_sql_like_import(file) && !has_gorm_import {
         return Vec::new();
     }
 

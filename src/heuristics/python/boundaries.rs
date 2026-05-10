@@ -2,6 +2,7 @@
 ///                 Section 7 (memory and resource management, 15 rules) +
 ///                 Section 8 (configuration and secrets hygiene, 15 rules)
 use crate::analysis::{ParsedFile, ParsedFunction};
+use crate::io::{DEFAULT_MAX_BYTES, read_to_string_limited};
 use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
@@ -1344,6 +1345,49 @@ pub(super) fn pydantic_settings_no_prefix_findings(
         )];
     }
     Vec::new()
+}
+
+pub(super) fn pydantic_settings_no_prefix_file_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+    let has_base_settings = file.class_summaries().iter().any(|class_summary| {
+        class_summary
+            .base_classes
+            .iter()
+            .any(|base| base.contains("BaseSettings"))
+    });
+    if !has_base_settings {
+        return Vec::new();
+    }
+    let has_env_prefix_literal = file
+        .pkg_strings
+        .iter()
+        .any(|literal| literal.value.contains("env_prefix"))
+        || file
+            .top_level_bindings
+            .iter()
+            .any(|binding| binding.value_text.contains("env_prefix"))
+        || file.pkg_strings.iter().any(|literal| {
+            let value = literal.value.as_str();
+            value.ends_with('_')
+                && value.len() >= 3
+                && value.chars().all(|ch| ch.is_ascii_uppercase() || ch == '_' || ch.is_ascii_digit())
+        });
+    let has_env_prefix_in_source = read_to_string_limited(&file.path, DEFAULT_MAX_BYTES)
+        .ok()
+        .is_some_and(|source| source.contains("env_prefix"));
+    if has_env_prefix_literal || has_env_prefix_in_source {
+        return Vec::new();
+    }
+    vec![boundaries_file_finding(
+        file,
+        "pydantic_settings_model_missing_env_prefix_isolation",
+        1,
+        Severity::Info,
+        "BaseSettings models are declared without env_prefix isolation",
+        "environment variables can collide across settings models without explicit prefixes",
+    )]
 }
 
 fn contains_any(text: &str, needles: &[&str]) -> bool {

@@ -11,10 +11,15 @@ pub(super) fn textbook_docstring_findings(
         return Vec::new();
     }
 
-    let Some(doc_comment) = function.doc_comment.as_deref() else {
+    let doc_comment = function
+        .doc_comment
+        .as_deref()
+        .map(str::to_string)
+        .or_else(|| extract_docstring_from_body(function));
+    let Some(doc_comment) = doc_comment.as_deref() else {
         return Vec::new();
     };
-    if function.fingerprint.line_count > 10
+    if function.fingerprint.line_count > 40
         || function.fingerprint.complexity_score > 1
         || function.fingerprint.call_count > 2
     {
@@ -43,6 +48,20 @@ pub(super) fn textbook_docstring_findings(
             format!("complexity_score={}", function.fingerprint.complexity_score),
         ],
     }]
+}
+
+fn extract_docstring_from_body(function: &ParsedFunction) -> Option<String> {
+    let trimmed = function.body_text.trim_start();
+    for marker in ["\"\"\"", "'''"] {
+        if !trimmed.starts_with(marker) {
+            continue;
+        }
+        let rest = &trimmed[marker.len()..];
+        if let Some(end) = rest.find(marker) {
+            return Some(rest[..end].to_string());
+        }
+    }
+    None
 }
 
 pub(super) fn mixed_naming_convention_findings(file: &ParsedFile) -> Vec<Finding> {

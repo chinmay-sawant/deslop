@@ -666,7 +666,7 @@ pub(super) fn project_agnostic_performance_findings(
     if contains_any(&lower_body, &["dict(", ".copy("])
         && !contains_any(
             &lower_body,
-            &["update(", "pop(", "setdefault(", "[", "del ", "hydrat"],
+            &["update(", "pop(", "setdefault(", "del ", "hydrat"],
         )
         && !contains_any(
             &lower_body,
@@ -686,6 +686,22 @@ pub(super) fn project_agnostic_performance_findings(
             Severity::Info,
             format!(
                 "function {} copies mappings only to read them",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &["locale.setlocale(", "datetime.timezone(", "zoneinfo("],
+    ) && !function.fingerprint.name.contains("init")
+        && !function.fingerprint.name.contains("setup")
+    {
+        findings.push(push(
+            "python_perf_layer_runtime_configuration_locale_timezone_loaded_per_request",
+            Severity::Info,
+            format!(
+                "function {} loads locale/timezone configuration on a request-path function",
                 function.fingerprint.name
             ),
         ));

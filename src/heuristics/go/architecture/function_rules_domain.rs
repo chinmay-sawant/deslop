@@ -679,7 +679,14 @@ fn middleware_and_bootstrap_function_findings(
         ));
     }
 
-    if is_router_file(file)
+    let router_like_body = lines.iter().any(|line| {
+        line.text.contains(".GET(")
+            || line.text.contains(".POST(")
+            || line.text.contains(".PUT(")
+            || line.text.contains(".DELETE(")
+            || line.text.contains(".Group(")
+    });
+    if (is_router_file(file) || router_like_body)
         && (function.fingerprint.name.contains("Route")
             || function.fingerprint.name.contains("Router")
             || function.fingerprint.name.contains("Register"))

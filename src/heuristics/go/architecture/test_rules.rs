@@ -186,11 +186,24 @@ fn test_architecture_findings(file: &ParsedFile) -> Vec<Finding> {
         }
     }
 
-    if file.is_test_file {
+    let looks_like_test_source = file.is_test_file
+        || file
+            .imports
+            .iter()
+            .any(|import| import.path == "testing" || import.path.ends_with("/testing"));
+    if looks_like_test_source {
         let helper_functions = file
             .functions
             .iter()
-            .filter(|function| !function.is_test_function && (function.fingerprint.name.starts_with("build") || function.fingerprint.name.starts_with("new") || function.fingerprint.name.starts_with("make")))
+            .filter(|function| {
+                !function.is_test_function
+                    && (function.fingerprint.name.starts_with("build")
+                        || function.fingerprint.name.starts_with("new")
+                        || function.fingerprint.name.starts_with("make")
+                        || function.fingerprint.name.starts_with("create"))
+                    && (function.body_text.contains("t.Helper(")
+                        || function.signature_text.contains("*testing.T"))
+            })
             .collect::<Vec<_>>();
         if helper_functions.len() >= 2 {
             findings.push(file_finding(
@@ -217,6 +230,35 @@ fn test_architecture_findings(file: &ParsedFile) -> Vec<Finding> {
                 line,
                 "test file declares several bespoke fake repository types",
                 vec!["shared mocks or focused stubs usually reduce repeated mock types across tests".to_string()],
+            ));
+        }
+    }
+
+    if file
+        .imports
+        .iter()
+        .any(|import| import.path == "testing" || import.path.ends_with("/testing"))
+    {
+        let helper_like = file
+            .functions
+            .iter()
+            .filter(|function| {
+                !function.is_test_function
+                    && (function.fingerprint.name.starts_with("build")
+                        || function.fingerprint.name.starts_with("new")
+                        || function.fingerprint.name.starts_with("make")
+                        || function.fingerprint.name.starts_with("create"))
+                    && function.signature_text.contains("*testing.T")
+            })
+            .count();
+        if helper_like >= 2 {
+            findings.push(file_finding(
+                file,
+                "test_helpers_duplicated_across_packages",
+                Severity::Info,
+                import_line,
+                "test file defines several bespoke setup helpers",
+                vec!["shared test helpers usually reduce repeated setup builders across packages".to_string()],
             ));
         }
     }

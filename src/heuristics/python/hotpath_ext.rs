@@ -942,7 +942,7 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
     }
 
     if lower_body.matches("for ").count() >= 2
-        && contains_any(&lower_body, &["index(", "find(", "lookup("])
+        && contains_any(&lower_body, &["index(", "find(", "find_", "lookup("])
     {
         findings.push(push(
             "linear_search_helper_called_from_nested_loops",

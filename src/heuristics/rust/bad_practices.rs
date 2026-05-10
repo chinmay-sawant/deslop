@@ -4667,7 +4667,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         id: "rust_mpsc_receiver_iter_without_shutdown_signal",
         section: "General Concurrency and Synchronization Rules",
         description: "flag blocking receiver iteration without timeout, close path, cancellation, or sentinel.",
-        markers: &["mpsc", "receiver", "iter", "shutdown", "signal"],
+        markers: &["mpsc::Receiver", ".iter()", "for "],
         required_evidence: &[],
         import_gate: &[],
         loop_only: false,
@@ -5057,6 +5057,7 @@ fn rule_has_strict_matcher(rule_id: &str) -> bool {
             | "rust_tree_sitter_collects_all_captures_before_filtering"
             | "rust_collect_then_pop_or_first"
             | "rust_tempfile_predictable_name_in_shared_tmp"
+            | "rust_mpsc_receiver_iter_without_shutdown_signal"
     )
 }
 
@@ -5304,6 +5305,24 @@ fn rule_specific_match_line(
             Some((
                 temp_dir_line,
                 "rule_specific=predictable_shared_temp_dir".to_string(),
+            ))
+        }
+        "rust_mpsc_receiver_iter_without_shutdown_signal" => {
+            let iter_line = lines.iter().find(|line| {
+                let lower = line.text.to_ascii_lowercase();
+                lower.contains("for ") && lower.contains(".iter()")
+            })?;
+            let has_shutdown_path = body_lower.contains("shutdown")
+                || lines.iter().any(|line| {
+                    let lower = line.text.to_ascii_lowercase();
+                    lower.contains("=> break") || lower.contains("break,")
+                });
+            if has_shutdown_path {
+                return None;
+            }
+            Some((
+                iter_line.line,
+                "rule_specific=receiver_iter_without_shutdown".to_string(),
             ))
         }
         _ => None,

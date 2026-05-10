@@ -46,10 +46,30 @@ fn handler_function_findings(
     gorm_structs: &BTreeSet<String>,
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
-    if !is_request_path_function(file, function) {
+    let has_manual_multi_source_bind = function.body_text.contains("Decode(&")
+        && (function.body_text.contains("Vars(") || function.body_text.contains(".URL.Query().Get("));
+    if !is_request_path_function(file, function)
+        && route_param_merge_line(lines).is_none()
+        && !has_manual_multi_source_bind
+    {
         return findings;
     }
     let go = function.go_evidence();
+
+    if route_param_merge_line(lines).is_none()
+        && function.body_text.contains("Decode(&")
+        && (function.body_text.contains("Vars(") || function.body_text.contains(".URL.Query().Get("))
+    {
+        findings.push(function_finding(
+            file,
+            function,
+            "multiple_bind_sources_into_same_struct_without_precedence_contract",
+            Severity::Info,
+            function.fingerprint.start_line,
+            "handler merges several request sources into one DTO inline",
+            vec!["normalizing request precedence before service calls usually reduces ambiguity".to_string()],
+        ));
+    }
 
     if references_repository_directly(lines) && !references_service_directly(lines) {
         findings.push(function_finding(

@@ -643,6 +643,50 @@ fn timeoutless_http_helper_findings(
         }
     }
 
+    let timeoutless_clients = lines
+        .iter()
+        .filter_map(|line| {
+            let text = line.text.replace(' ', "");
+            if !(text.contains(":=&http.Client{}") || text.contains(":=&http.Client{")) {
+                return None;
+            }
+            if text.contains("Timeout:") {
+                return None;
+            }
+            line.text
+                .split(":=")
+                .next()
+                .map(str::trim)
+                .and_then(|name| is_identifier_name(name).then_some(name.to_string()))
+        })
+        .collect::<Vec<_>>();
+    for body_line in lines {
+        let uses_timeoutless_client = timeoutless_clients.iter().any(|name| {
+            body_line.text.contains(&format!("{name}.Get("))
+                || body_line.text.contains(&format!("{name}.Post("))
+                || body_line.text.contains(&format!("{name}.Do("))
+        });
+        if !uses_timeoutless_client {
+            continue;
+        }
+        findings.push(Finding {
+            rule_id: "timeoutless_http_default_client_or_helper_call".to_string(),
+            severity: Severity::Warning,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: body_line.line,
+            end_line: body_line.line,
+            message: format!(
+                "function {} uses an http.Client without explicit timeout",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("observed timeout-less client call at line {}", body_line.line),
+                "http.Client without Timeout can block indefinitely".to_string(),
+            ],
+        });
+    }
+
     findings
 }
 

@@ -1220,6 +1220,7 @@ pub(crate) const BOUNDARIES_FILE_EVALUATORS: &[FileEvaluator] = &[
     boundaries::hardcoded_secret_in_fixture_file_findings,
     boundaries::dotenv_load_dotenv_multi_file_findings,
     boundaries::feature_flag_scattered_findings,
+    boundaries::pydantic_settings_no_prefix_file_findings,
     boundaries::project_agnostic_boundaries_file_findings,
 ];
 

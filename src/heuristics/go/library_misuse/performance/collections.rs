@@ -225,7 +225,7 @@ fn interface_slice_alloc(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for bl in lines {
-        if (bl.text.contains("[]interface{}") || bl.text.contains("[]any{"))
+        if (bl.text.contains("[]interface{}") || bl.text.contains("[]any"))
             && (bl.text.contains("make(") || bl.text.contains(":=") || bl.text.contains("var "))
         {
             findings.push(Finding {
