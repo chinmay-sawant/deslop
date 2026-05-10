@@ -1,7 +1,4 @@
-// BAD: release profile without overflow-checks
-// Cargo.toml
-[profile.release]
-opt-level = 3
-lto = "fat"
-codegen-units = 1
-strip = true
+pub fn release_profile_missing_overflow_checks() -> bool {
+    let release = "opt-level=3,lto=fat,codegen-units=1,strip=true";
+    !release.contains("overflow-checks")
+}

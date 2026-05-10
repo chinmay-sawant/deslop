@@ -1,11 +1,21 @@
-[workspace]
+pub fn workspace_manifest() -> &'static str {
+    r#"[workspace]
 members = [
-    "core",
-    "cli",
-    "fuzz",
-    "bench",
+    \"core\",
+    \"cli\",
+    \"fuzz\",
+    \"bench\",
 ]
 default-members = [
-    "core",
-    "cli",
+    \"core\",
+    \"cli\",
 ]
+"#
+}
+
+pub fn default_members_are_runtime_targets_only() -> bool {
+    let manifest = workspace_manifest();
+    manifest.contains("default-members")
+        && !manifest.contains("default-members = [\n    \"fuzz\"")
+        && !manifest.contains("default-members = [\n    \"bench\"")
+}

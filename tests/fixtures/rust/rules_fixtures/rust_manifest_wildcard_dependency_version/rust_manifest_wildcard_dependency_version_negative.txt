@@ -1,7 +1,15 @@
-[package]
-name = "my-app"
-version = "0.1.0"
+pub fn manifest_with_pinned_versions() -> &'static str {
+    r#"[package]
+name = \"my-app\"
+version = \"0.1.0\"
 
 [dependencies]
-serde = "1.0"
-tokio = "1.28"
+serde = \"1.0\"
+tokio = \"1.28\"
+"#
+}
+
+pub fn has_pinned_versions() -> bool {
+    let text = manifest_with_pinned_versions();
+    text.contains("serde = \"1.0\"") && text.contains("tokio = \"1.28\"")
+}

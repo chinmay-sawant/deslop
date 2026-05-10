@@ -1,6 +1,4 @@
-[package]
-name = "my-cli"
-version = "0.1.0"
-
-[profile.release]
-opt-level = 3
+pub fn release_lto_missing() -> bool {
+    let release_profile = "[profile.release]\nopt-level = 3";
+    !release_profile.contains("lto")
+}

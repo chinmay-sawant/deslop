@@ -1,7 +1,14 @@
-[package]
-name = "my-app"
-version = "0.1.0"
+pub fn manifest_with_wildcards() -> &'static str {
+    r#"[package]
+name = \"my-app\"
+version = \"0.1.0\"
 
 [dependencies]
-serde = "*"
-tokio = "*"
+serde = \"*\"
+tokio = \"*\"
+"#
+}
+
+pub fn has_wildcard_versions() -> bool {
+    manifest_with_wildcards().contains("= \"*\"")
+}

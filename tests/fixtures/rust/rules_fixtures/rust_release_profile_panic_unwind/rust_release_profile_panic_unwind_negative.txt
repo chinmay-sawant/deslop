@@ -1,6 +1,11 @@
-// GOOD: use abort for smaller binary, or omit to use default
-// Cargo.toml
-[profile.release]
+pub fn release_profile_text() -> &'static str {
+    r#"[profile.release]
 opt-level = 3
-lto = "fat"
-panic = "abort"
+lto = \"fat\"
+panic = \"abort\"
+"#
+}
+
+pub fn release_profile_uses_abort() -> bool {
+    release_profile_text().contains("panic = \"abort\"")
+}

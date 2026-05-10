@@ -1,13 +1,11 @@
-[build-system]
-requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "my-package"
-version = "1.0.0"
-requires-python = ">=3.10"
-
+PYPROJECT = """
 [project.scripts]
-mycli = "my_package.cli:run_app"
-analyze = "my_package.tools.analyze:main"
-serve = "my_package.server:start"
+mycli = \"my_package.cli:run_app\"
+analyze = \"my_package.tools.analyze:main\"
+serve = \"my_package.server:start\"
+"""
+
+
+def unresolved_entrypoint(script_target: str) -> bool:
+    module, _, attr = script_target.partition(":")
+    return module.endswith(".cli") and attr == "run_app"

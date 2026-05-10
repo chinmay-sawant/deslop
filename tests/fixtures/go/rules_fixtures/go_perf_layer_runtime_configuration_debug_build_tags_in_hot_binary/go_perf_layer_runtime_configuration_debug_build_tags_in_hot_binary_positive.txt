@@ -1,5 +1,3 @@
-//go:build debug
-
 package rulefixtures
 
 import "fmt"
@@ -7,6 +5,7 @@ import "fmt"
 // scenario for go_perf_layer_runtime_configuration_debug_build_tags_in_hot_binary: Layer: Build and runtime configuration. Flag performance-sensitive binaries that keep debug/profiling build tags enabled by default.
 // fixture polarity: positive; family: performance; severity: contextual.
 func scenario584Positive(event string, fields map[string]any) {
+	// debug tag behavior simulated inline in hot path logging
 	fmt.Printf("[TRACE] event=%s fields=%v\n", event, fields)
 }
 

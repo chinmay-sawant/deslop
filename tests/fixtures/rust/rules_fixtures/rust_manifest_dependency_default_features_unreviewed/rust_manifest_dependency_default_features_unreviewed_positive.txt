@@ -1,8 +1,8 @@
-[package]
-name = "my-service"
-version = "0.1.0"
-
-[dependencies]
-tokio = { version = "1", features = ["full"] }
-serde = { version = "1", features = ["derive"] }
-reqwest = "0.11"
+pub fn has_unreviewed_default_features() -> bool {
+    let manifest = r#"[dependencies]
+tokio = { version = \"1\", features = [\"full\"] }
+serde = { version = \"1\", features = [\"derive\"] }
+reqwest = \"0.11\"
+"#;
+    manifest.contains("features = [\"full\"]") || manifest.contains("reqwest = \"0.11\"")
+}

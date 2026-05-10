@@ -1,14 +1,10 @@
-myapp/
-    __init__.py
-    models.py
-    service.py
-    auth/
-        __init__.py
-    db/
-        __init__.py
-tests/
-    conftest.py
-    factories.py
-    helpers.py
-    test_service.py
-    test_auth.py
+from myapp.models import User
+from myapp.service import create_user
+
+__all__ = ["User", "create_user"]
+
+
+def register_user(payload: dict) -> User:
+    username = payload.get("username", "guest")
+    role = payload.get("role", "viewer")
+    return create_user(username=username, role=role)
