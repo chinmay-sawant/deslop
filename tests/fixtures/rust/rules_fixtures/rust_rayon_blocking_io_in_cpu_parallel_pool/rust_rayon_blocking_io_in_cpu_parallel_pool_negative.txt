@@ -1,0 +1,36 @@
+use rayon::prelude::*;
+use std::fs;
+
+// GOOD: I/O done sequentially or in dedicated async runtime, CPU work parallelized
+fn process_files(paths: &[String]) -> Vec<ProcessedFile> {
+    // Read files sequentially (I/O bound)
+    let contents: Vec<(String, String)> = paths.iter()
+        .filter_map(|path| {
+            fs::read_to_string(path).ok().map(|content| (path.clone(), content))
+        })
+        .collect();
+
+    // Parse in parallel (CPU bound)
+    contents.par_iter()
+        .map(|(path, content)| {
+            let parsed = parse_content(content);
+            ProcessedFile {
+                path: path.clone(),
+                data: parsed,
+            }
+        })
+        .collect()
+}
+
+// GOOD: use async runtime for I/O, Rayon for CPU
+async fn fetch_and_process(urls: &[String]) -> Vec<Result> {
+    let bodies: Vec<String> = futures::future::join_all(
+        urls.iter().map(|url| async {
+            reqwest::get(url).await.unwrap().text().await.unwrap()
+        })
+    ).await;
+
+    bodies.par_iter()
+        .map(|body| process_body(body))
+        .collect()
+}

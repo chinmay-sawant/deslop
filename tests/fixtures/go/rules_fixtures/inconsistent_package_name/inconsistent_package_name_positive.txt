@@ -1,0 +1,17 @@
+package models
+
+// scenario for inconsistent_package_name: Directories that mix base Go package names after ignoring the _test suffix.
+// fixture polarity: positive; family: style; severity: info.
+
+type User struct {
+	ID        int
+	FirstName string
+	LastName  string
+	Email     string
+}
+
+type Product struct {
+	SKU   string
+	Price float64
+	Stock int
+}

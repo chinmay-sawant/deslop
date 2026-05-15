@@ -1,0 +1,14 @@
+{
+  "id": "concatenation_in_comprehension_body",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "String or collection concatenation happens inside a comprehension body, creating avoidable churn.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

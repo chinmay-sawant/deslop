@@ -1,0 +1,14 @@
+{
+  "id": "rust_clap_path_arg_used_without_validation",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `PathBuf` or path-like CLI values used for reads/writes without root containment, canonicalization strategy, or symlink policy.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

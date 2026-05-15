@@ -1,0 +1,14 @@
+{
+  "id": "eager_full_file_or_stream_read_when_incremental_iteration_suffices",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that reads whole files or streams into memory before simple sequential processing.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

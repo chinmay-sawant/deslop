@@ -1,0 +1,14 @@
+{
+  "id": "rust_libc_call_without_platform_cfg",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

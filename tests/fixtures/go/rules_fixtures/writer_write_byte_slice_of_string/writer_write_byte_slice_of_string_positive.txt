@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for writer_write_byte_slice_of_string: `writer.Write([]byte(s))` instead of `io.WriteString(writer, s)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario695Positive(w *os.File, name string) error {
+	_, err := w.Write([]byte("Hello, " + name + "!\n"))
+	return err
+}

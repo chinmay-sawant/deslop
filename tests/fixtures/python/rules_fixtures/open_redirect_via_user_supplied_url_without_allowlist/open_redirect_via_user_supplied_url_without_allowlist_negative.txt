@@ -1,0 +1,26 @@
+from urllib.parse import urlparse
+from flask import Flask, redirect, request, abort
+
+app = Flask(__name__)
+
+ALLOWED_HOSTS = {"example.com", "www.example.com"}
+
+def _is_safe_redirect(target: str) -> bool:
+    parsed = urlparse(target)
+    if not parsed.netloc:
+        return True
+    return parsed.netloc in ALLOWED_HOSTS
+
+@app.route("/login")
+def login():
+    next_url = request.args.get("next", "/")
+    if not _is_safe_redirect(next_url):
+        abort(400, "Invalid redirect target")
+    return redirect(next_url)
+
+@app.route("/logout")
+def logout():
+    return_url = request.args.get("return_to", "/")
+    if not _is_safe_redirect(return_url):
+        abort(400, "Invalid redirect target")
+    return redirect(return_url)

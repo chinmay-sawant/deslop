@@ -1,0 +1,25 @@
+fn collect_filtered(items: &[u64]) -> Vec<u64> {
+    items.iter().copied().filter(|x| *x > 10).collect()
+}
+
+fn collect_with_transform(items: &[&str]) -> Vec<String> {
+    items.iter().map(|s| s.to_uppercase()).collect()
+}
+
+fn build_matrix(rows: usize, cols: usize) -> Vec<Vec<i32>> {
+    (0..rows)
+        .map(|i| (0..cols).map(|j| (i * cols + j) as i32).collect())
+        .collect()
+}
+
+fn collect_pairs(keys: &[String], values: &[String]) -> Vec<(String, String)> {
+    keys.iter().zip(values.iter()).map(|(k, v)| (k.clone(), v.clone())).collect()
+}
+
+fn collect_with_capacity(items: &[u64]) -> Vec<u64> {
+    let mut result = Vec::with_capacity(items.len());
+    for item in items {
+        result.push(*item);
+    }
+    result
+}

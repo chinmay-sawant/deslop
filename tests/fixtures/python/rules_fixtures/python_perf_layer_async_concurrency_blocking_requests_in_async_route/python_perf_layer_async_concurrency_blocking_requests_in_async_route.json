@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_async_concurrency_blocking_requests_in_async_route",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag requests.* calls inside async routes or coroutines instead of async clients or executor boundaries.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

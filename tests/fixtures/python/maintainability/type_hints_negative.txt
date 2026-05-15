@@ -1,3 +1,0 @@
-
-def build_profile(user_id, active: bool) -> dict[str, str]:
-    return {"id": user_id, "active": str(active)}

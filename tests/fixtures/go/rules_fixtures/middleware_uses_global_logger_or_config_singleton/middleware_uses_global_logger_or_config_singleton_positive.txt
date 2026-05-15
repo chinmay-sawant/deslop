@@ -1,0 +1,47 @@
+package rulefixtures
+
+import (
+	"log"
+	"net/http"
+	"os"
+)
+
+// scenario for middleware_uses_global_logger_or_config_singleton: Middleware that depends on mutable globals instead of injected config and logger instances.
+// fixture polarity: positive; family: architecture; severity: info.
+
+var GlobalLogger = log.New(os.Stdout, "[app] ", log.LstdFlags|log.Lshortfile)
+
+type AppConfig struct {
+	MaxBodySize int64
+	APIKey      string
+	DebugMode   bool
+}
+
+var GlobalConfig = AppConfig{
+	MaxBodySize: 1 << 20,
+	APIKey:      "sk-live-12345",
+	DebugMode:   true,
+}
+
+func GlobalConfigMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		GlobalLogger.Printf("request: %s %s", r.Method, r.URL.Path)
+
+		if GlobalConfig.DebugMode {
+			GlobalLogger.Printf("headers: %v", r.Header)
+		}
+
+		r.Body = http.MaxBytesReader(w, r.Body, GlobalConfig.MaxBodySize)
+
+		apiKey := r.Header.Get("X-API-Key")
+		if apiKey != GlobalConfig.APIKey {
+			GlobalLogger.Printf("auth failed for %s", r.RemoteAddr)
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+var _ = os.DevNull

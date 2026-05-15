@@ -1,0 +1,14 @@
+{
+  "id": "django_queryset_evaluated_multiple_times",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same Django queryset appears to be evaluated multiple times in one function.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_json_indexing_without_type_guard",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `value[\"key\"]`, `value[index]`, or chained indexing without typed deserialization, `.get(...)`, or null/type checks.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,35 @@
+import hashlib
+import json
+from typing import FrozenSet
+
+
+def get_user_cache_key(user_id: int, filters: FrozenSet) -> str:
+    return f"user:{user_id}:filters:{hash(filters)}"
+
+
+def get_product_cache_key(product_ids: tuple) -> str:
+    return f"products:{hash(product_ids)}"
+
+
+def get_search_cache_key(params: tuple) -> str:
+    key_data = json.dumps(params, sort_keys=True)
+    key_hash = hashlib.sha256(key_data.encode()).hexdigest()[:16]
+    return f"search:{key_hash}"
+
+
+def get_report_cache_key(options: tuple) -> str:
+    key_hash = hashlib.sha256(json.dumps(options, sort_keys=True).encode()).hexdigest()[:16]
+    return f"report:{key_hash}"
+
+
+cache = {}
+
+
+def fetch_user_data(user_id: int, filters: dict):
+    frozen_filters = frozenset(filters.items())
+    key = get_user_cache_key(user_id, frozen_filters)
+    if key in cache:
+        return cache[key]
+    data = load_user_data(user_id, filters)
+    cache[key] = data
+    return data

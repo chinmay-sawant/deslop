@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for where_clause_templates_duplicated_across_repositories: Repeated filter templates that should be shared through scopes or query builders.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule220NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule220NegativeService interface {
+	Run(context.Context, Rule220NegativeRecord) error
+}
+
+func scenario220Negative(ctx context.Context, service Rule220NegativeService, input Rule220NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

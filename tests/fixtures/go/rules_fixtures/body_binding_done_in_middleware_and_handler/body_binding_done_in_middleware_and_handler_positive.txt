@@ -1,0 +1,46 @@
+package rulefixtures
+
+import (
+	"bytes"
+	"encoding/json"
+	"io"
+	"net/http"
+)
+
+// scenario for body_binding_done_in_middleware_and_handler: Endpoints where middleware parses the body and the handler also owns body binding.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type CreateUserRequest struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+func bodyParsingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		bodyBytes, _ := io.ReadAll(r.Body)
+		r.Body.Close()
+
+		var parsed CreateUserRequest
+		json.Unmarshal(bodyBytes, &parsed)
+
+		r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+		next.ServeHTTP(w, r)
+	})
+}
+
+func createUserHandler(w http.ResponseWriter, r *http.Request) {
+	bodyBytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "failed to read body", http.StatusBadRequest)
+		return
+	}
+
+	var req CreateUserRequest
+	if err := json.Unmarshal(bodyBytes, &req); err != nil {
+		http.Error(w, "invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{"name": req.Name, "email": req.Email})
+}

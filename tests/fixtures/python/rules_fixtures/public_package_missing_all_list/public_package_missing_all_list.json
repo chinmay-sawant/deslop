@@ -1,0 +1,14 @@
+{
+  "id": "public_package_missing_all_list",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Non-trivial package __init__.py defines public symbols without an __all__ list.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

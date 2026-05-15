@@ -1,0 +1,35 @@
+use tree_sitter::{Parser, Query, QueryCursor};
+
+fn find_all_functions(query: &Query, cursor: &mut QueryCursor, tree: &tree_sitter::Tree, source: &str) -> Vec<String> {
+    let matches = cursor.matches(query, tree.root_node(), source.as_bytes());
+    let captures: Vec<_> = matches
+        .flat_map(|m| m.captures.iter().cloned())
+        .collect();
+
+    let mut results = Vec::new();
+    for capture in captures {
+        let node = capture.node;
+        let text = &source[node.start_byte()..node.end_byte()];
+        let name = text.to_string();
+        if name.starts_with("test_") {
+            results.push(name);
+        }
+    }
+    results
+}
+
+fn find_matching_nodes(query: &Query, cursor: &mut QueryCursor, tree: &tree_sitter::Tree, source: &str) -> Vec<String> {
+    let all_captures: Vec<_> = cursor
+        .matches(query, tree.root_node(), source.as_bytes())
+        .flat_map(|m| m.captures.to_vec())
+        .collect();
+
+    let mut names = Vec::new();
+    for capture in &all_captures {
+        let text = &source[capture.node.start_byte()..capture.node.end_byte()];
+        if text.len() > 3 {
+            names.push(text.to_string());
+        }
+    }
+    names
+}

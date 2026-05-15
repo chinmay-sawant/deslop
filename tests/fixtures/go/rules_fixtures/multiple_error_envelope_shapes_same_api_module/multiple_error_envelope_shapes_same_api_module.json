@@ -1,0 +1,14 @@
+{
+  "id": "multiple_error_envelope_shapes_same_api_module",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Endpoints in the same API surface that serialize unrelated error payload structures.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

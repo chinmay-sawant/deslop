@@ -1,0 +1,14 @@
+{
+  "id": "repository_logs_with_http_status_or_route_labels",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repositories that log transport metadata instead of persistence-domain details.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

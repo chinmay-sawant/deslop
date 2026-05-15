@@ -1,0 +1,20 @@
+use rayon::prelude::*;
+
+// GOOD: filter in the parallel pipeline
+fn find_large_files(paths: &[PathBuf]) -> Vec<PathBuf> {
+    paths.par_iter()
+        .filter(|path| {
+            std::fs::metadata(path)
+                .map(|m| m.len() > 1_000_000)
+                .unwrap_or(false)
+        })
+        .cloned()
+        .collect()
+}
+
+fn process_valid_items(items: &[Item]) -> Vec<Output> {
+    items.par_iter()
+        .filter(|item| item.is_valid())
+        .map(|item| process(item))
+        .collect()
+}

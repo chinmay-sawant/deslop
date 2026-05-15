@@ -1,0 +1,14 @@
+{
+  "id": "sync_mutex_for_atomic_counter",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`mu.Lock(); count++; mu.Unlock()` for simple integer counters",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

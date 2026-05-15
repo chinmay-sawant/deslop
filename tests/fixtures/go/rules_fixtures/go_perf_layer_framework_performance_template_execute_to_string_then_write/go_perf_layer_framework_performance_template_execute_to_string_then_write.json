@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_framework_performance_template_execute_to_string_then_write",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag template rendering to strings before writing to the response writer.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

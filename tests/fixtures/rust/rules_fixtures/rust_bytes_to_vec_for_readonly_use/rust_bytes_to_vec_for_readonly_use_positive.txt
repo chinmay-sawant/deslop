@@ -1,0 +1,17 @@
+fn parse_header(data: &[u8]) -> Vec<u8> {
+    let header_bytes = data[..8].to_vec();
+    header_bytes
+}
+
+fn hash_content(content: &[u8]) -> Vec<u8> {
+    let bytes = content.to_vec();
+    let hash = compute_hash(&bytes);
+    hash.to_vec()
+}
+
+fn compute_hash(_data: &[u8]) -> [u8; 32] { [0u8; 32] }
+
+fn extract_name(full: &[u8]) -> String {
+    let vec = full.to_vec();
+    String::from_utf8(vec).unwrap_or_default()
+}

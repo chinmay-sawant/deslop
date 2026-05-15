@@ -1,0 +1,19 @@
+fn cast_u8_to_bool(val: u8) -> bool {
+    unsafe { std::mem::transmute(val) }
+}
+
+fn cast_i32_to_u32(val: i32) -> u32 {
+    unsafe { std::mem::transmute(val) }
+}
+
+fn cast_bytes_to_string(bytes: Vec<u8>) -> String {
+    unsafe { String::from_utf8_unchecked(bytes) }
+}
+
+fn cast_ref<T, U>(val: &T) -> &U {
+    unsafe { &*(val as *const T as *const U) }
+}
+
+fn transmute_option(val: Option<&u8>) -> &u8 {
+    unsafe { std::mem::transmute(val) }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "exception_swallowed_before_sentry_or_error_tracker_capture",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Exception re-wrapped before capture_exception, causing Sentry or similar to lose the original traceback.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

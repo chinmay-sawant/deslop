@@ -1,0 +1,14 @@
+{
+  "id": "fastapi_dependency_creates_client_per_request",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "FastAPI dependencies construct HTTP clients per request instead of using app lifespan or shared setup.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

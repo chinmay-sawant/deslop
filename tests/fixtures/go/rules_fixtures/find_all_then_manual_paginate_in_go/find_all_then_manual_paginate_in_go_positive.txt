@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for find_all_then_manual_paginate_in_go: All rows fetched and then sliced in Go instead of using database-level pagination.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule262PositiveRecord struct {
+	ID       int
+	TenantID int
+	Name     string
+}
+
+func scenario262Positive(db *gorm.DB, tenantID, offset, limit int) ([]Rule262PositiveRecord, error) {
+	var allItems []Rule262PositiveRecord
+	if err := db.Where("tenant_id = ?", tenantID).Find(&allItems).Error; err != nil {
+		return nil, err
+	}
+	end := offset + limit
+	if end > len(allItems) {
+		end = len(allItems)
+	}
+	return allItems[offset:end], nil
+}

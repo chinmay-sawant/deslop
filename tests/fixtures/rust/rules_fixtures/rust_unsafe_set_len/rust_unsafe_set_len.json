@@ -1,0 +1,14 @@
+{
+  "id": "rust_unsafe_set_len",
+  "language": "rust",
+  "family": "unsafe_soundness",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Unsafe Vec::set_len use that requires initialized elements and correct capacity invariants.",
+  "binding_location": "src/heuristics/rust/unsafe_soundness.rs"
+}

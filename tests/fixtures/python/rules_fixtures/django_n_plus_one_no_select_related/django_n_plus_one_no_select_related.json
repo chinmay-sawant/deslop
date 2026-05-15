@@ -1,0 +1,14 @@
+{
+  "id": "django_n_plus_one_no_select_related",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Django queryset iteration shows N+1 risk with no visible select_related(...) or prefetch_related(...).",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

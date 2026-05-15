@@ -1,0 +1,14 @@
+{
+  "id": "no_batching_on_handler_driven_db_write_loop",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request handlers that drive row-by-row DB writes with no batch path.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

@@ -1,0 +1,36 @@
+def configure_logging(level: str) -> None:
+    if level == "debug":
+        print("Setting debug level")
+    elif level == "info":
+        print("Setting info level")
+    elif level == "warning":
+        print("Setting warning level")
+    elif level == "error":
+        print("Setting error level")
+
+
+def set_sort_order(order: str) -> list:
+    if order == "asc":
+        return [1, 2, 3]
+    elif order == "desc":
+        return [3, 2, 1]
+    return []
+
+
+def apply_format(fmt: str, data: str) -> str:
+    if fmt == "json":
+        return f'{{"data": "{data}"}}'
+    elif fmt == "xml":
+        return f"<data>{data}</data>"
+    elif fmt == "csv":
+        return f"data\n{data}"
+    return data
+
+
+def set_cache_policy(policy: str) -> None:
+    if policy == "no_cache":
+        pass
+    elif policy == "short":
+        pass
+    elif policy == "long":
+        pass

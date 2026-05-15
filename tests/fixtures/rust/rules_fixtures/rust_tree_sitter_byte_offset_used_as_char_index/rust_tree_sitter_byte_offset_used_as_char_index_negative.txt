@@ -1,0 +1,30 @@
+use tree_sitter::{Parser, Node};
+
+fn extract_text(source: &str, node: Node) -> &str {
+    let start = node.start_byte();
+    let end = node.end_byte();
+    &source[start..end]
+}
+
+fn get_column_at_byte(source: &str, byte_offset: usize) -> usize {
+    source[..byte_offset].chars().count()
+}
+
+fn get_display_width(source: &str, node: Node) -> usize {
+    let text = &source[node.start_byte()..node.end_byte()];
+    text.chars().count()
+}
+
+fn line_col_from_byte(source: &str, byte_offset: usize) -> (usize, usize) {
+    let before = &source[..byte_offset];
+    let line = before.lines().count();
+    let col = before.chars().count();
+    (line, col)
+}
+
+fn get_char_at_offset(source: &str, byte_offset: usize) -> Option<char> {
+    if !source.is_char_boundary(byte_offset) {
+        return None;
+    }
+    source[byte_offset..].chars().next()
+}

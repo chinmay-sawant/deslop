@@ -1,0 +1,14 @@
+{
+  "id": "django_migration_code_in_view",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Django views or request paths reference schema or migration operations that belong in migrations.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

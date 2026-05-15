@@ -1,0 +1,30 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class PipelineConfig:
+    source: str
+    transformer: "Transformer"
+    destination: "Destination"
+
+
+class DataPipeline:
+    def __init__(self, config: PipelineConfig):
+        self.source = config.source
+        self.transformer = config.transformer
+        self.destination = config.destination
+
+    def run(self):
+        data = self.extract(self.source)
+        transformed = self.transformer.transform(data)
+        self.destination.write(transformed)
+
+
+pipeline = DataPipeline(
+    PipelineConfig(
+        source="s3://bucket/data",
+        transformer=CsvTransformer(),
+        destination=PostgresDestination("conn_string"),
+    )
+)
+pipeline.run()

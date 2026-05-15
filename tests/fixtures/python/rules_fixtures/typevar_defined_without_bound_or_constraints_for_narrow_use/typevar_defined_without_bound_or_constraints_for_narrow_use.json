@@ -1,0 +1,14 @@
+{
+  "id": "typevar_defined_without_bound_or_constraints_for_narrow_use",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "TypeVar defined without a bound or constraints for a generic that is only used with one or two concrete types.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

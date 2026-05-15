@@ -1,0 +1,14 @@
+{
+  "id": "response_envelope_shape_inconsistent_across_siblings_in_same_router",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Response envelope shape inconsistent across sibling endpoints in the same router file.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

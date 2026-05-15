@@ -1,0 +1,14 @@
+{
+  "id": "regex_compiled_on_each_hot_call",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag hot functions that compile the same regular expression repeatedly instead of reusing a compiled pattern.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

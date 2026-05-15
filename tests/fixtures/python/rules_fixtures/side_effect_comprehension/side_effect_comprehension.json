@@ -1,0 +1,14 @@
+{
+  "id": "side_effect_comprehension",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "List, set, or dicit comprehensions used as standalone statements where the result is discarded.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

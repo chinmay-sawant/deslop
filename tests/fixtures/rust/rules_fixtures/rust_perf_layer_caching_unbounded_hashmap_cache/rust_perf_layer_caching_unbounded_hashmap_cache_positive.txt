@@ -1,0 +1,30 @@
+use std::collections::HashMap;
+use std::sync::{Arc, RwLock};
+
+struct SessionCache {
+    // BAD: unbounded cache with no eviction or size limit
+    sessions: RwLock<HashMap<String, Vec<u8>>>,
+}
+
+impl SessionCache {
+    fn new() -> Self {
+        Self {
+            sessions: RwLock::new(HashMap::new()),
+        }
+    }
+
+    fn insert(&self, session_id: String, data: Vec<u8>) {
+        self.sessions.write().unwrap().insert(session_id, data);
+    }
+
+    fn get(&self, session_id: &str) -> Option<Vec<u8>> {
+        self.sessions.read().unwrap().get(session_id).cloned()
+    }
+}
+
+async fn handle_request(cache: Arc<SessionCache>, session_id: &str) {
+    if cache.get(session_id).is_none() {
+        let data = vec![0u8; 4096];
+        cache.insert(session_id.to_string(), data);
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "shouldbindbodywith_when_single_bind_is_enough",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin handlers that use ShouldBindBodyWith(...) even though only one body bind is observed.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_ordering_mutex_for_result_stability",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag parallel closures that serialize through `Mutex<BTreeMap<_>>`, `Mutex<Vec<_>>`, or sequence counters just to regain output order.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

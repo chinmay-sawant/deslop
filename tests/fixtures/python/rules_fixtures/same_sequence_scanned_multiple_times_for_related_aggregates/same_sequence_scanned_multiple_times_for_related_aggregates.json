@@ -1,0 +1,14 @@
+{
+  "id": "same_sequence_scanned_multiple_times_for_related_aggregates",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that makes several full passes over the same data for related summaries.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

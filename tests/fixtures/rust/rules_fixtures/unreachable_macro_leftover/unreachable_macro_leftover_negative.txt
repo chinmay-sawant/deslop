@@ -1,0 +1,31 @@
+fn parse_command(input: &str) -> Result<Command, Error> {
+    match input {
+        "start" => Ok(Command::Start),
+        "stop" => Ok(Command::Stop),
+        "restart" => Ok(Command::Restart),
+        other => Err(Error::UnknownCommand(other.to_string())),
+    }
+}
+
+fn get_priority(level: &str) -> Result<u8, Error> {
+    match level {
+        "low" => Ok(1),
+        "medium" => Ok(2),
+        "high" => Ok(3),
+        "critical" => Ok(4),
+        other => Err(Error::InvalidPriority(other.to_string())),
+    }
+}
+
+fn process_response(resp: &Response) -> Result<String, Error> {
+    match resp.status {
+        200 => Ok("ok".to_string()),
+        404 => Ok("not found".to_string()),
+        500 => Ok("server error".to_string()),
+        code => Err(Error::UnexpectedStatus(code)),
+    }
+}
+
+enum Command { Start, Stop, Restart }
+struct Response { status: u16 }
+enum Error { UnknownCommand(String), InvalidPriority(String), UnexpectedStatus(u16) }

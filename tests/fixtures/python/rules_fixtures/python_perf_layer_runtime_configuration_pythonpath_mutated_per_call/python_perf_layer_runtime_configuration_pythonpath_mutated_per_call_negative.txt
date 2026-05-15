@@ -1,0 +1,22 @@
+import sys
+import importlib
+
+
+def configure_paths():
+    plugin_path = "/opt/plugins"
+    ext_dir = "/opt/extensions"
+    vendor_path = "/opt/vendor/lib"
+    for p in [plugin_path, ext_dir, vendor_path]:
+        if p not in sys.path:
+            sys.path.insert(0, p)
+
+
+configure_paths()
+
+
+def load_plugin(plugin_name: str) -> object:
+    return importlib.import_module(plugin_name)
+
+
+def load_extension(ext_name: str) -> object:
+    return importlib.import_module(ext_name)

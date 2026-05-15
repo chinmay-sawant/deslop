@@ -1,0 +1,28 @@
+import tempfile
+import os
+import json
+
+def generate_report(data: list[dict]) -> str:
+    tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
+    json.dump(data, tmp)
+    tmp.close()
+    result = process_file(tmp.name)
+    return result
+
+def process_file(path: str) -> str:
+    with open(path) as f:
+        data = json.load(f)
+    return f"Processed {len(data)} items"
+
+def create_workspace():
+    tmpdir = tempfile.mkdtemp(prefix="workspace_")
+    with open(os.path.join(tmpdir, "config.ini"), "w") as f:
+        f.write("[default]\nkey=value\n")
+    return tmpdir
+
+def export_csv(rows: list[dict]) -> str:
+    fd, path = tempfile.mkstemp(suffix=".csv")
+    with os.fdopen(fd, "w") as f:
+        for row in rows:
+            f.write(",".join(str(v) for v in row.values()) + "\n")
+    return path

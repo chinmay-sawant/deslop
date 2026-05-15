@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_error_handling_cost_errors_wrap_in_tight_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag repeated error wrapping inside loops where one aggregated context would be cheaper.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

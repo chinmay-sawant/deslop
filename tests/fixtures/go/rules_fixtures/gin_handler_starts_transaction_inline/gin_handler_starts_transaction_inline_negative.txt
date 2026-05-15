@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_starts_transaction_inline: Handlers that create or own transactions instead of delegating transactional work to services or unit-of-work helpers.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule050NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule050NegativeService interface {
+	Run(context.Context, Rule050NegativeRecord) error
+}
+
+func scenario050Negative(ctx context.Context, service Rule050NegativeService, input Rule050NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

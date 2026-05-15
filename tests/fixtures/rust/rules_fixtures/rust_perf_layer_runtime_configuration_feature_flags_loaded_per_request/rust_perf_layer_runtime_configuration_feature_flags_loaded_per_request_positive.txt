@@ -1,0 +1,20 @@
+use std::collections::HashMap;
+
+fn handle_request(request: &Request) -> Response {
+    // BAD: feature flags file read on every request
+    let flags_raw = std::fs::read_to_string("feature_flags.json").unwrap();
+    let flags: HashMap<String, bool> = serde_json::from_str(&flags_raw).unwrap();
+
+    if flags.get("enable_new_search").copied().unwrap_or(false) {
+        return new_search_handler(request);
+    }
+
+    if flags.get("enable_caching").copied().unwrap_or(false) {
+        let cached = check_cache(&request.key);
+        if let Some(resp) = cached {
+            return resp;
+        }
+    }
+
+    legacy_handler(request)
+}

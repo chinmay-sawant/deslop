@@ -1,0 +1,14 @@
+{
+  "id": "sqlalchemy_query_in_loop",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "SQLAlchemy code issues queries inside loops instead of batching or prefetching.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

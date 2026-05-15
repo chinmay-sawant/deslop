@@ -1,0 +1,14 @@
+{
+  "id": "rust_atomic_seqcst_without_comment",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `Ordering::SeqCst` in non-trivial code without a nearby comment explaining the synchronization requirement.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "repeated_hashlib_new_same_algorithm",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same hashing algorithm is repeatedly constructed in a loop or tight path.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

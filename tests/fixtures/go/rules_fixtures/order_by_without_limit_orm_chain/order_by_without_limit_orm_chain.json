@@ -1,0 +1,14 @@
+{
+  "id": "order_by_without_limit_orm_chain",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "ORM chains that order results without a Limit on request paths.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

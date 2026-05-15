@@ -1,0 +1,14 @@
+{
+  "id": "asyncio_queue_created_without_maxsize_in_producer_path",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "asyncio.Queue created without maxsize on a producer code path, allowing unbounded memory growth.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

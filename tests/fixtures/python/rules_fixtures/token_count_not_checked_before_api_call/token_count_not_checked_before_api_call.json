@@ -1,0 +1,14 @@
+{
+  "id": "token_count_not_checked_before_api_call",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "LLM requests are sent without visible token counting or context-window checks.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

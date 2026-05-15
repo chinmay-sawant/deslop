@@ -1,0 +1,14 @@
+{
+  "id": "circular_import_hidden_by_function_local_import_on_hot_path",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag circular import workarounds that push imports into frequent code paths.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

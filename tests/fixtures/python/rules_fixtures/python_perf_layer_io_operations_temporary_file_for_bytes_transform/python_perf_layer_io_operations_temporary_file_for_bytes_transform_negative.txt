@@ -1,0 +1,15 @@
+import gzip
+import io
+import json
+
+def compress_data(data_bytes):
+    return gzip.compress(data_bytes)
+
+def encode_payload(payload):
+    return json.dumps(payload).encode("utf-8")
+
+def transform_bytes(data):
+    buf = io.BytesIO()
+    buf.write(data)
+    buf.seek(0)
+    return buf.getvalue()

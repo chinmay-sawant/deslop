@@ -1,0 +1,18 @@
+fn process_items(items: &[Item]) -> f64 {
+    // BAD: collect into Vec only to iterate once more
+    let prices: Vec<f64> = items
+        .iter()
+        .filter(|i| i.in_stock)
+        .map(|i| i.price)
+        .collect();
+
+    let total: f64 = prices.iter().sum();
+    let avg = total / prices.len() as f64;
+    avg
+}
+
+struct Item {
+    name: String,
+    price: f64,
+    in_stock: bool,
+}

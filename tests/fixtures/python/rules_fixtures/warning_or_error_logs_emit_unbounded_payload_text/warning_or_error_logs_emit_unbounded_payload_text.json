@@ -1,0 +1,14 @@
+{
+  "id": "warning_or_error_logs_emit_unbounded_payload_text",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag logs that dump unbounded input or result payloads.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

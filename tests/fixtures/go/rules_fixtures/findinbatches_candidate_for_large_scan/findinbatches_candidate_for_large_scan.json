@@ -1,0 +1,14 @@
+{
+  "id": "findinbatches_candidate_for_large_scan",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Unbounded result sets that could use FindInBatches or cursor iteration.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

@@ -1,0 +1,24 @@
+use tokio::time::{sleep, Duration};
+use rand::Rng;
+
+async fn fetch_with_retry(url: &str) -> Result<String, reqwest::Error> {
+    let client = reqwest::Client::new();
+    let max_retries = 5;
+    let mut rng = rand::thread_rng();
+    // GOOD: exponential backoff with jitter
+    for attempt in 0..max_retries {
+        match client.get(url).send().await {
+            Ok(resp) => return resp.text().await,
+            Err(e) => {
+                if attempt < max_retries - 1 {
+                    let base = 100 * 2u64.pow(attempt as u32);
+                    let jitter = rng.gen_range(0..base / 2);
+                    sleep(Duration::from_millis(base + jitter)).await;
+                } else {
+                    return Err(e);
+                }
+            }
+        }
+    }
+    unreachable!()
+}

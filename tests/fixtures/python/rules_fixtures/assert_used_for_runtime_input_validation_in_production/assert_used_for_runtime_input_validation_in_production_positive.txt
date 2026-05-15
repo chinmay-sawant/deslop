@@ -1,0 +1,33 @@
+from flask import Flask, request
+
+app = Flask(__name__)
+
+
+@app.route("/transfer", methods=["POST"])
+def transfer_funds():
+    data = request.json
+    sender_id = data["sender_id"]
+    recipient_id = data["recipient_id"]
+    amount = data["amount"]
+
+    assert amount > 0, "Amount must be positive"
+    assert sender_id != recipient_id, "Cannot transfer to self"
+    assert len(data.get("reference", "")) <= 50, "Reference too long"
+
+    sender = get_account(sender_id)
+    assert sender.balance >= amount, "Insufficient funds"
+
+    execute_transfer(sender_id, recipient_id, amount)
+    return {"status": "completed"}
+
+
+@app.route("/user", methods=["POST"])
+def create_user():
+    data = request.json
+    assert "email" in data, "Email is required"
+    assert "@" in data["email"], "Invalid email"
+    assert len(data["password"]) >= 8, "Password too short"
+    assert data["age"] >= 18, "Must be 18 or older"
+
+    user = save_user(data)
+    return {"id": user.id}

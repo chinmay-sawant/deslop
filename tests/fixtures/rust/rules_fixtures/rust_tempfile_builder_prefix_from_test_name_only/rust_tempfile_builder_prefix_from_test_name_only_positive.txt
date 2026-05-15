@@ -1,0 +1,39 @@
+use std::fs;
+use tempfile::Builder;
+
+#[test]
+fn test_write_output() {
+    let dir = Builder::new()
+        .prefix("test_write_output")
+        .tempdir_in("/tmp")
+        .unwrap();
+    let path = dir.path().join("output.txt");
+    fs::write(&path, "hello").unwrap();
+    assert!(path.exists());
+}
+
+#[test]
+fn test_read_config() {
+    let dir = Builder::new()
+        .prefix("test_read_config")
+        .tempdir_in("/tmp")
+        .unwrap();
+    let config_path = dir.path().join("config.toml");
+    fs::write(&config_path, "[server]\nport = 8080").unwrap();
+    let content = fs::read_to_string(&config_path).unwrap();
+    assert!(content.contains("port"));
+}
+
+#[test]
+fn test_process_data() {
+    let dir = Builder::new()
+        .prefix("test_process_data")
+        .tempdir_in("/tmp")
+        .unwrap();
+    let input = dir.path().join("input.json");
+    let output = dir.path().join("output.json");
+    fs::write(&input, r#"{"key": "value"}"#).unwrap();
+    let data = fs::read_to_string(&input).unwrap();
+    fs::write(&output, data).unwrap();
+    assert!(output.exists());
+}

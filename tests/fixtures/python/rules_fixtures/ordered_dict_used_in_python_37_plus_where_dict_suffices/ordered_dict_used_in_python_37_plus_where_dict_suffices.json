@@ -1,0 +1,14 @@
+{
+  "id": "ordered_dict_used_in_python_37_plus_where_dict_suffices",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "OrderedDict used in Python 3.7+ code where a plain dict preserves insertion order.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

@@ -1,0 +1,29 @@
+struct FileHandle {
+    path: String,
+}
+
+impl FileHandle {
+    fn cleanup(self) -> std::io::Result<()> {
+        std::fs::remove_file(&self.path)?;
+        Ok(())
+    }
+}
+
+struct DatabasePool {
+    connections: Vec<Connection>,
+}
+
+impl DatabasePool {
+    async fn shutdown(mut self) {
+        for conn in self.connections.drain(..) {
+            conn.close().await;
+        }
+    }
+}
+
+struct Connection;
+impl Connection {
+    async fn close(self) {
+        // async cleanup
+    }
+}

@@ -1,0 +1,28 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"net/http"
+
+	_ "github.com/lib/pq"
+	gorm "gorm.io/gorm"
+	"gorm.io/driver/postgres"
+)
+
+// scenario for router_constructor_builds_concrete_dependencies: Router setup that creates DB clients, external clients, or repositories directly instead of receiving prebuilt dependencies.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func NewRouter() http.Handler {
+	db, err := gorm.Open(postgres.Open("host=localhost dbname=app sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	sqlDB, _ := db.DB()
+	sqlDB.SetMaxOpenConns(25)
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	return mux
+}

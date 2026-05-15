@@ -1,0 +1,14 @@
+{
+  "id": "create_and_update_share_same_dto_despite_conflicting_requiredness",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "A single DTO reused for create and update when validation rules clearly differ.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

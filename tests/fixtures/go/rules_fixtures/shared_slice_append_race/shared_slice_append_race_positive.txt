@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"sync"
+)
+
+// scenario for shared_slice_append_race: goroutines appending to a shared slice without synchronization
+// fixture polarity: positive; family: security; severity: warning.
+func scenario732Positive(items []string) []string {
+	var out []string
+	var wg sync.WaitGroup
+	for _, item := range items {
+		wg.Add(1)
+		go func(value string) { defer wg.Done(); out = append(out, value) }(item)
+	}
+	wg.Wait()
+	return out
+}

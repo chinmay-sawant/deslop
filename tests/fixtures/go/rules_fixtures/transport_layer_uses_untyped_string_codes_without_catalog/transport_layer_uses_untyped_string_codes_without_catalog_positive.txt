@@ -1,0 +1,42 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for transport_layer_uses_untyped_string_codes_without_catalog: Response code strings that have no shared type or catalog package.
+// fixture polarity: positive; family: architecture; severity: info.
+type APIError struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+func GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		writeJSON(w, http.StatusBadRequest, APIError{
+			Code:    "USER_001",
+			Message: "missing user id",
+		})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"id": id})
+}
+
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		writeJSON(w, http.StatusBadRequest, APIError{
+			Code:    "USER_001",
+			Message: "request body required",
+		})
+		return
+	}
+	writeJSON(w, http.StatusCreated, map[string]string{"status": "created"})
+}
+
+func writeJSON(w http.ResponseWriter, code int, v interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	_ = json.NewEncoder(w).Encode(v)
+}

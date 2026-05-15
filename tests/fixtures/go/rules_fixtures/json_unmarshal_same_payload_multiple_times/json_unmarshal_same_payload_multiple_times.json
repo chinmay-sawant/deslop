@@ -1,0 +1,14 @@
+{
+  "id": "json_unmarshal_same_payload_multiple_times",
+  "language": "go",
+  "family": "mod",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same local JSON payload binding is unmarshaled into multiple targets in one function.",
+  "binding_location": "src/heuristics/go/mod.rs"
+}

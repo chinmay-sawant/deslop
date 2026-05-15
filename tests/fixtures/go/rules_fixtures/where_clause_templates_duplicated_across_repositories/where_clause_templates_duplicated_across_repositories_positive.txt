@@ -1,0 +1,35 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for where_clause_templates_duplicated_across_repositories: Repeated filter templates that should be shared through scopes or query builders.
+// fixture polarity: positive; family: architecture; severity: info.
+type Account struct {
+	gorm.Model
+	TenantID string
+	DeletedAt *gorm.DeletedAt
+}
+
+type Order struct {
+	gorm.Model
+	TenantID string
+	DeletedAt *gorm.DeletedAt
+}
+
+func scenario220AccountRepo(db *gorm.DB, tenantID string) ([]Account, error) {
+	var accounts []Account
+	err := db.Where("tenant_id = ?", tenantID).
+		Where("deleted_at IS NULL").
+		Find(&accounts).Error
+	return accounts, err
+}
+
+func scenario220OrderRepo(db *gorm.DB, tenantID string) ([]Order, error) {
+	var orders []Order
+	err := db.Where("tenant_id = ?", tenantID).
+		Where("deleted_at IS NULL").
+		Find(&orders).Error
+	return orders, err
+}

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_replace_all_for_single_char: `strings.ReplaceAll(s, "x", "y")` where both old and new are single characters
+// fixture polarity: negative; family: performance; severity: info.
+func scenario661Negative(haystack string, needle string, left string, right string) bool {
+	return strings.Contains(haystack, needle)
+}

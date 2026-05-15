@@ -1,0 +1,49 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for api_examples_embedded_in_handlers_instead_of_transport_docs_helpers: Long example payload blocks hardcoded in handlers rather than doc or example helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+func getOrderHandler(c *gin.Context) {
+	exampleResponse := map[string]any{
+		"order_id": "ord_4JzP8k2LmN",
+		"status":   "confirmed",
+		"customer": map[string]any{
+			"id":    "cus_XyZ987",
+			"name":  "Jane Doe",
+			"email": "jane@example.com",
+		},
+		"items": []map[string]any{
+			{
+				"sku":      "SKU-001",
+				"name":     "Wireless Headphones",
+				"quantity": 2,
+				"price":    79.99,
+			},
+			{
+				"sku":      "SKU-042",
+				"name":     "USB-C Hub Adapter",
+				"quantity": 1,
+				"price":    34.50,
+			},
+		},
+		"shipping_address": map[string]any{
+			"street":  "456 Oak Avenue",
+			"city":    "Portland",
+			"state":   "OR",
+			"zipcode": "97201",
+		},
+		"total":   194.48,
+		"created": "2026-05-09T14:30:00Z",
+	}
+
+	exampleBytes, _ := json.MarshalIndent(exampleResponse, "", "  ")
+
+	c.Writer.Header().Set("X-API-Example", string(exampleBytes))
+	c.JSON(http.StatusOK, exampleResponse)
+}

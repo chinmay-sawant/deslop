@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_blocking_io_in_cpu_parallel_pool",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag filesystem, network, or process I/O inside Rayon CPU-bound closures unless the project documents that Rayon owns the I/O concurrency budget.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

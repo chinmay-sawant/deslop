@@ -1,0 +1,27 @@
+import os
+
+
+def save_config_atomically(config_path: str, data: dict):
+    import json
+    with open(config_path, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+def update_state_file(state_path: str, state: dict):
+    import json
+    with open(state_path, "w") as f:
+        json.dump(state, f)
+
+
+def write_lock_file(lock_path: str, pid: int):
+    with open(lock_path, "w") as f:
+        f.write(str(pid))
+
+
+def replace_template(template_path: str, output_path: str, replacements: dict):
+    with open(template_path, "r") as f:
+        content = f.read()
+    for key, value in replacements.items():
+        content = content.replace(f"{{{{{key}}}}}", value)
+    with open(output_path, "w") as f:
+        f.write(content)

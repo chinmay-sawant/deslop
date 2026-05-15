@@ -1,0 +1,14 @@
+{
+  "id": "rust_cow_to_owned_without_mutation",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `Cow::to_mut`, `to_owned`, or `into_owned` where the owned value is never mutated or stored past the borrow lifetime.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

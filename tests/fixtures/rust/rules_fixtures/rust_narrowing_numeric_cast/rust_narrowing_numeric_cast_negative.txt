@@ -1,0 +1,16 @@
+fn truncate_to_u32(value: u64) -> Result<u32, String> {
+    u32::try_from(value).map_err(|e| format!("value too large: {}", e))
+}
+
+fn f64_to_f32(value: f64) -> Result<f32, String> {
+    let result = value as f32;
+    if result.is_finite() && (result as f64 - value).abs() > f64::EPSILON {
+        Err("precision loss".into())
+    } else {
+        Ok(result)
+    }
+}
+
+fn i64_to_i16(value: i64) -> Result<i16, String> {
+    i16::try_from(value).map_err(|e| format!("value out of range: {}", e))
+}

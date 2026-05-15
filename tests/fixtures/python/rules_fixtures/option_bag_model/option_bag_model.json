@@ -1,0 +1,14 @@
+{
+  "id": "option_bag_model",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Dataclass or TypedDict models that accumulate many optional fields and boolean switches.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

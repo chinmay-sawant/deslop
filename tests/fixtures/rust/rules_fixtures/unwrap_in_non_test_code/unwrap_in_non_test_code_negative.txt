@@ -1,0 +1,31 @@
+use std::collections::HashMap;
+
+pub fn load_config(path: &str) -> Result<Config, Box<dyn std::error::Error>> {
+    let data = std::fs::read_to_string(path)?;
+    let config: Config = serde_json::from_str(&data)?;
+    Ok(config)
+}
+
+pub fn get_value(map: &HashMap<String, String>, key: &str) -> Option<String> {
+    map.get(key).cloned()
+}
+
+pub fn parse_int(s: &str) -> Result<i32, std::num::ParseIntError> {
+    s.parse()
+}
+
+pub fn connect(url: &str) -> Result<Connection, Box<dyn std::error::Error>> {
+    Connection::new(url)
+}
+
+pub fn process_response(resp: &str) -> Result<serde_json::Value, serde_json::Error> {
+    serde_json::from_str(resp)
+}
+
+pub fn read_file(path: &str) -> Result<String, std::io::Error> {
+    std::fs::read_to_string(path)
+}
+
+struct Config;
+struct Connection;
+impl Connection { fn new(_url: &str) -> Result<Self, Box<dyn std::error::Error>> { Ok(Self) } }

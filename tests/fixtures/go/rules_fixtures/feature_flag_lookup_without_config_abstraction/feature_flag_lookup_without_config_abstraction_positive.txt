@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+	"os"
+)
+
+// scenario for feature_flag_lookup_without_config_abstraction: Handlers or services that query feature flags directly without a focused flag interface.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func DashboardHandler(w http.ResponseWriter, r *http.Request) {
+	if os.Getenv("FEATURE_NEW_UI") == "true" {
+		fmt.Fprint(w, "<div id='new-ui'>dashboard v2</div>")
+		return
+	}
+	if os.Getenv("FEATURE_ANALYTICS") == "enabled" {
+		fmt.Fprint(w, "<script>analytics.track()</script>")
+	}
+	fmt.Fprint(w, "<div>dashboard</div>")
+}

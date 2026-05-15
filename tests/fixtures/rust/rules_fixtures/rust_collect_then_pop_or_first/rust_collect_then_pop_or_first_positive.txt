@@ -1,0 +1,16 @@
+fn get_first_and_last(input: &str) -> (String, String) {
+    let parts: Vec<&str> = input.split(',').collect();
+    let first = parts.first().unwrap().to_string();
+    let last = parts.last().unwrap().to_string();
+    (first, last)
+}
+
+fn extract_filename(path: &str) -> String {
+    let segments: Vec<&str> = path.split('/').collect();
+    segments.last().unwrap().to_string()
+}
+
+fn get_domain(email: &str) -> String {
+    let parts: Vec<&str> = email.split('@').collect();
+    parts.last().unwrap().to_string()
+}

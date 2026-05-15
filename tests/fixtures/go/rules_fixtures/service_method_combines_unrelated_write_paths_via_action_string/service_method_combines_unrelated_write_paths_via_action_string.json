@@ -1,0 +1,14 @@
+{
+  "id": "service_method_combines_unrelated_write_paths_via_action_string",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Services that branch on action strings to implement many create, update, or delete variants in one method.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

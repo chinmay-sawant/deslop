@@ -1,0 +1,33 @@
+fn find_matching(items: &[Item], pattern: &str) -> Option<Item> {
+    for item in items {
+        let cloned = item.clone();
+        if cloned.name.contains(pattern) {
+            return Some(cloned);
+        }
+    }
+    None
+}
+
+fn accumulate_tags(entries: &[Entry]) -> Vec<String> {
+    let mut tags = Vec::new();
+    for entry in entries {
+        let name = entry.name.clone();
+        tags.push(name);
+    }
+    tags
+}
+
+fn transform_values(values: &[Value]) -> Vec<String> {
+    let mut results = Vec::new();
+    for value in values {
+        let s = value.to_string();
+        let cloned = s.clone();
+        results.push(cloned);
+    }
+    results
+}
+
+struct Item { name: String }
+struct Entry { name: String }
+struct Value;
+impl Value { fn to_string(&self) -> String { todo!() } }

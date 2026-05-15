@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for sync_mutex_for_readonly_config: `mu.RLock(); v := config.X; mu.RUnlock()` for read-mostly config that changes rarely
+// fixture polarity: negative; family: performance; severity: info.
+type Rule676NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario676Negative(records []Rule676NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

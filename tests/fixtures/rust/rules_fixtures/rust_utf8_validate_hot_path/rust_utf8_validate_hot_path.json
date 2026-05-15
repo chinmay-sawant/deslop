@@ -1,0 +1,14 @@
+{
+  "id": "rust_utf8_validate_hot_path",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "UTF-8 validation appears in a likely hot path and may deserve profiling.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

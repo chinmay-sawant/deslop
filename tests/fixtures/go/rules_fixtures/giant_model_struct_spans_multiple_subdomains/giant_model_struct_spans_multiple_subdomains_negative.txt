@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for giant_model_struct_spans_multiple_subdomains: Oversized model structs that appear to merge multiple bounded contexts into one persistence shape.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule037NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule037NegativeService interface {
+	Run(context.Context, Rule037NegativeRecord) error
+}
+
+func scenario037Negative(ctx context.Context, service Rule037NegativeService, input Rule037NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

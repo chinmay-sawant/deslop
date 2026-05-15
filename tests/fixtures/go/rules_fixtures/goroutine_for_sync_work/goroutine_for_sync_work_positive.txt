@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for goroutine_for_sync_work: `go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited
+// fixture polarity: positive; family: performance; severity: info.
+
+func computeSum(nums []int) int {
+	done := make(chan int)
+	var result int
+	go func() {
+		sum := 0
+		for _, n := range nums {
+			sum += n
+		}
+		result = sum
+		done <- 1
+	}()
+	<-done
+	return result
+}

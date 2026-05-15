@@ -1,0 +1,31 @@
+from prometheus_client import Counter
+
+ROWS_PROCESSED = Counter("db_rows_processed_total", "Total rows processed")
+ERROR_COUNT = Counter("db_row_errors_total", "Total row errors")
+
+
+def process_orders(orders):
+    for order in orders:
+        try:
+            handle_order(order)
+            ROWS_PROCESSED.inc()
+        except Exception:
+            ERROR_COUNT.inc()
+            raise
+
+
+def handle_order(order):
+    pass
+
+
+def aggregate_users(users):
+    count = 0
+    for user in users:
+        process_user(user)
+        ROWS_PROCESSED.inc()
+        count += 1
+    return count
+
+
+def process_user(user):
+    pass

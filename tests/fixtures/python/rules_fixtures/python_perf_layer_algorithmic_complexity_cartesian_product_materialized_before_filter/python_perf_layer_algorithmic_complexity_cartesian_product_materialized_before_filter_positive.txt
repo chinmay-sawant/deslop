@@ -1,0 +1,25 @@
+import itertools
+
+
+def find_matching_pairs(users, products):
+    all_pairs = list(itertools.product(users, products))
+    results = []
+    for user, product in all_pairs:
+        if user.region == product.region and user.age >= product.min_age:
+            results.append((user, product))
+    return results
+
+
+def cross_join_filter(orders, inventory):
+    pairs = list(itertools.product(orders, inventory))
+    matched = []
+    for order, item in pairs:
+        if order.sku == item.sku and order.quantity <= item.stock:
+            matched.append((order, item))
+    return matched
+
+
+def generate_combinations(items_a, items_b):
+    all_combos = [(a, b) for a in items_a for b in items_b]
+    valid = [combo for combo in all_combos if combo[0].type == combo[1].type]
+    return valid

@@ -1,0 +1,29 @@
+use std::sync::Arc;
+
+struct SharedState {
+    config: Arc<Config>,
+    metrics: Arc<Metrics>,
+}
+
+fn process_batch(items: &[Item], state: &SharedState) {
+    for item in items {
+        let cfg = Arc::clone(&state.config);
+        let m = Arc::clone(&state.metrics);
+        for sub in &item.children {
+            let cfg2 = Arc::clone(&cfg);
+            let m2 = Arc::clone(&m);
+            let _ = process_one(sub, &cfg2, &m2);
+        }
+    }
+}
+
+fn process_one(_item: &Item, _cfg: &Config, _m: &Metrics) -> Result<(), ()> {
+    Ok(())
+}
+
+struct Config;
+struct Metrics;
+struct Item {
+    children: Vec<SubItem>,
+}
+struct SubItem;

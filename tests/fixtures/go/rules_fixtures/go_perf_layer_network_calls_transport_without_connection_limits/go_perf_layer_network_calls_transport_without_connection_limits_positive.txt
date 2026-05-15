@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"time"
+)
+
+// scenario for go_perf_layer_network_calls_transport_without_connection_limits: Layer: Network calls. Flag custom http.Transport values missing MaxIdleConns or MaxIdleConnsPerHost for service clients.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario573Positive() *http.Client {
+	transport := &http.Transport{
+		IdleConnTimeout: 90 * time.Second,
+	}
+	return &http.Client{
+		Transport: transport,
+		Timeout:   10 * time.Second,
+	}
+}

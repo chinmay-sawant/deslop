@@ -1,0 +1,14 @@
+{
+  "id": "send_after_local_close_risk",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "A locally owned channel is closed and later used in a send expression.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

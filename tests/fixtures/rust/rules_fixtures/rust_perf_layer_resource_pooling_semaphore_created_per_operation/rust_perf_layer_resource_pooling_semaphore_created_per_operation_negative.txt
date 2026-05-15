@@ -1,0 +1,34 @@
+use std::sync::Arc;
+use tokio::sync::Semaphore;
+
+struct TransferService {
+    concurrency_limit: Arc<Semaphore>,
+}
+
+impl TransferService {
+    // GOOD: semaphore created once, shared across all operations
+    fn new(max_concurrent: usize) -> Self {
+        Self {
+            concurrency_limit: Arc::new(Semaphore::new(max_concurrent)),
+        }
+    }
+
+    async fn upload_file(&self, path: &str) -> Result<(), Error> {
+        let permit = self.concurrency_limit.acquire().await?;
+        
+        let data = tokio::fs::read(path).await?;
+        send_to_storage(&data).await?;
+        
+        drop(permit);
+        Ok(())
+    }
+
+    async fn download_file(&self, url: &str) -> Result<Vec<u8>, Error> {
+        let permit = self.concurrency_limit.acquire().await?;
+        
+        let data = fetch_from_network(url).await?;
+        
+        drop(permit);
+        Ok(data)
+    }
+}

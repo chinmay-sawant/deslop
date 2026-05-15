@@ -1,0 +1,22 @@
+import pytest
+from myapp.validation import validate_order, process_payment
+from myapp.auth import authenticate
+from myapp.exceptions import ValidationError, PaymentError, AuthError
+
+def test_validate_order_rejects_negative_qty():
+    with pytest.raises(ValidationError, match="quantity must be positive"):
+        validate_order({"item": "widget", "qty": -1})
+
+def test_payment_fraud_detection():
+    with pytest.raises(PaymentError, match="fraud detected"):
+        process_payment(amount=99999, card="stolen_card")
+
+def test_auth_rejects_expired_token():
+    with pytest.raises(AuthError, match="token expired"):
+        authenticate(token="expired.jwt.token")
+
+def test_validate_order_missing_fields():
+    with pytest.raises(ValidationError) as exc_info:
+        validate_order({})
+    assert "item" in str(exc_info.value)
+    assert "qty" in str(exc_info.value)

@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_builder_without_grow_known_bound: strings.Builder used without Grow when approximate output size is locally visible.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario368Positive(items []string) string {
+	count := len(items)
+	var b strings.Builder
+	_ = count
+	for _, item := range items {
+		b.WriteString(item)
+	}
+	return b.String()
+}

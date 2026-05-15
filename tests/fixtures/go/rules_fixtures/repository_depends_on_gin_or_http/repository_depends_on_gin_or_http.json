@@ -1,0 +1,14 @@
+{
+  "id": "repository_depends_on_gin_or_http",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repository packages that import Gin, `net/http`, or transport-only response helpers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

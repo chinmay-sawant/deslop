@@ -1,0 +1,15 @@
+struct Config {
+    features: Vec<String>,
+    limits: Vec<(String, u64)>,
+    metadata: Vec<(String, String)>,
+}
+
+fn process_config(config: &Config) {
+    // GOOD: borrow instead of clone for read-only access
+    for feature in &config.features {
+        println!("feature: {}", feature);
+    }
+    for (key, value) in &config.metadata {
+        println!("{}: {}", key, value);
+    }
+}

@@ -1,0 +1,22 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+MAX_LOG_LENGTH = 500
+
+def handle_request_error(request_data: dict, error: Exception):
+    logger.error(f"Request failed: {error}. Payload keys: {list(request_data.keys())}")
+
+def log_parse_failure(raw_input: str, error: Exception):
+    truncated = raw_input[:MAX_LOG_LENGTH] + "..." if len(raw_input) > MAX_LOG_LENGTH else raw_input
+    logger.warning(f"Failed to parse input ({len(raw_input)} chars): {truncated}. Error: {error}")
+
+def log_validation_error(payload: dict, errors: list):
+    logger.error(f"Validation failed. Keys: {list(payload.keys())}. Error count: {len(errors)}")
+
+def log_response_error(response_body: str, status_code: int):
+    truncated = response_body[:MAX_LOG_LENGTH]
+    logger.error(f"Upstream returned {status_code}. Body preview ({len(response_body)} chars): {truncated}")
+
+def log_batch_failure(items: list[dict], error: Exception):
+    logger.error(f"Batch processing failed for {len(items)} items. Error: {error}")

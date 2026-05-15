@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for main_or_cmd_mixes_cli_parsing_server_bootstrap_and_business_config: Entrypoints that do too much without startup composition helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule079PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario079Positive(w http.ResponseWriter, r *http.Request, repo Rule079PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

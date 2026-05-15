@@ -1,0 +1,43 @@
+import asyncio
+from typing import Set
+
+_background_tasks: Set[asyncio.Task] = set()
+
+
+async def process_items(items: list):
+    tasks = []
+    for item in items:
+        task = asyncio.create_task(transform(item))
+        tasks.append(task)
+        _background_tasks.add(task)
+        task.add_done_callback(_background_tasks.discard)
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    for i, result in enumerate(results):
+        if isinstance(result, Exception):
+            raise RuntimeError(f"Item {i} failed: {result}") from result
+
+
+async def handle_request(data: dict):
+    tasks = [
+        asyncio.create_task(validate(data)),
+        asyncio.create_task(audit_log(data)),
+    ]
+    _background_tasks.update(tasks)
+    for t in tasks:
+        t.add_done_callback(_background_tasks.discard)
+    for t in tasks:
+        await t
+    return {"status": "ok"}
+
+
+async def background_sync():
+    while True:
+        try:
+            await asyncio.gather(
+                pull_remote_changes(),
+                push_local_changes(),
+            )
+        except Exception:
+            import logging
+            logging.getLogger(__name__).exception("Background sync failed, retrying")
+        await asyncio.sleep(30)

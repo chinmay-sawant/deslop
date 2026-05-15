@@ -1,0 +1,14 @@
+{
+  "id": "view_or_handler_performs_direct_file_system_io",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Route handler or view calls open(), os.path, or pathlib directly on the request path.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for http_response_body_not_drained_before_close: HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored.
+// fixture polarity: positive; family: idioms; severity: info.
+func checkHealth(url string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	_ = resp.StatusCode
+	return nil
+}
+
+func pingEndpoint(url string) bool {
+	resp, err := http.Get(url)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	return resp.StatusCode == 200
+}

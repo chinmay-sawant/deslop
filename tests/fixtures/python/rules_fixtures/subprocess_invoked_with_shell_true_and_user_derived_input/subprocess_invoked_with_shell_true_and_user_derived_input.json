@@ -1,0 +1,14 @@
+{
+  "id": "subprocess_invoked_with_shell_true_and_user_derived_input",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "subprocess called with shell=True and a command string that includes user-controlled data.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

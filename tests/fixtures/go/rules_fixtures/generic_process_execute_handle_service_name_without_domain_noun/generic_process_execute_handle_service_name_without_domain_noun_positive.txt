@@ -1,0 +1,23 @@
+package rulefixtures
+
+import "context"
+
+// scenario for generic_process_execute_handle_service_name_without_domain_noun: Generic service names and methods that hide business intent instead of naming the actual use case.
+// fixture polarity: positive; family: architecture; severity: info.
+type ProcessManager struct {
+	orders []string
+}
+
+func (p *ProcessManager) Execute(ctx context.Context, payload interface{}) error {
+	p.orders = append(p.orders, "processed")
+	return nil
+}
+
+type ExecuteHandler struct {
+	invoices []string
+}
+
+func (h *ExecuteHandler) Handle(ctx context.Context, data interface{}) error {
+	h.invoices = append(h.invoices, "handled")
+	return nil
+}

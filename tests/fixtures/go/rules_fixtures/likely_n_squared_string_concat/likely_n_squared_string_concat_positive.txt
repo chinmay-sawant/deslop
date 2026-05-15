@@ -1,0 +1,15 @@
+package rulefixtures
+
+// scenario for likely_n_squared_string_concat: Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func scenario613Positive(matrix [][]string) string {
+	var s string
+	for _, row := range matrix {
+		for _, item := range row {
+			s += item
+			s += ","
+		}
+	}
+	return s
+}

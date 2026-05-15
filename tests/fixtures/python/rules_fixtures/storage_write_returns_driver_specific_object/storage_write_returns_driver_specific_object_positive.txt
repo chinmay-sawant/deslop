@@ -1,0 +1,32 @@
+from google.cloud import storage
+from boto3 import client as boto3_client
+
+
+def upload_file_to_gcs(bucket_name: str, file_path: str, data: bytes) -> storage.Blob:
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(file_path)
+    blob.upload_from_string(data)
+    return blob
+
+
+def save_to_s3(bucket_name: str, key: str, data: bytes) -> dict:
+    s3 = boto3_client("s3")
+    response = s3.put_object(Bucket=bucket_name, Key=key, Body=data)
+    return response
+
+
+def write_to_firestore(collection: str, doc_id: str, data: dict) -> dict:
+    from google.cloud import firestore
+    db = firestore.Client()
+    doc_ref = db.collection(collection).document(doc_id)
+    result = doc_ref.set(data)
+    return result
+
+
+def upload_to_azure(container: str, blob_name: str, data: bytes) -> dict:
+    from azure.storage.blob import BlobServiceClient
+    client = BlobServiceClient.from_connection_string("connection_string")
+    blob_client = client.get_blob_client(container, blob_name)
+    result = blob_client.upload_blob(data)
+    return result

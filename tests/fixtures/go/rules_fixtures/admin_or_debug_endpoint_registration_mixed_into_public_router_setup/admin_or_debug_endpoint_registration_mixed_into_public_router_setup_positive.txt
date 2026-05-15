@@ -1,0 +1,30 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"net/http/pprof"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for admin_or_debug_endpoint_registration_mixed_into_public_router_setup: Operational endpoints registered alongside public routes with no clear boundary.
+// fixture polarity: positive; family: architecture; severity: info.
+func setupRouter() *gin.Engine {
+	r := gin.Default()
+
+	r.GET("/api/v1/users", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"users": []string{}}) })
+	r.POST("/api/v1/orders", func(c *gin.Context) { c.JSON(http.StatusCreated, gin.H{}) })
+
+	r.GET("/debug/pprof/", gin.WrapF(pprof.Index))
+	r.GET("/debug/pprof/cmdline", gin.WrapF(pprof.Cmdline))
+	r.GET("/debug/pprof/profile", gin.WrapF(pprof.Profile))
+	r.GET("/debug/pprof/symbol", gin.WrapF(pprof.Symbol))
+	r.GET("/debug/pprof/trace", gin.WrapF(pprof.Trace))
+
+	r.GET("/admin/dashboard", func(c *gin.Context) { c.String(http.StatusOK, "admin") })
+	r.POST("/admin/reindex", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"status": "ok"}) })
+
+	r.GET("/api/v1/products", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"products": []string{}}) })
+
+	return r
+}

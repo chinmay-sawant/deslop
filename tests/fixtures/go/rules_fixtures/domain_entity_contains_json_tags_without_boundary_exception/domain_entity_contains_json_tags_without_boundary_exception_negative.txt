@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for domain_entity_contains_json_tags_without_boundary_exception: Core domain entities that are directly annotated for API serialization without a deliberate boundary exception.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule026NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule026NegativeService interface {
+	Run(context.Context, Rule026NegativeRecord) error
+}
+
+func scenario026Negative(ctx context.Context, service Rule026NegativeService, input Rule026NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

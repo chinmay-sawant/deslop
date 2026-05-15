@@ -1,0 +1,14 @@
+{
+  "id": "readall_body_then_bind_duplicate_deserialize",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin handlers that materialize c.Request.Body with io.ReadAll(...) and then bind the same body again.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

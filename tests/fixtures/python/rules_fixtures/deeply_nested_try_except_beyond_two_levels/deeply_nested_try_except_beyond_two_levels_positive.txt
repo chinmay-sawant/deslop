@@ -1,0 +1,36 @@
+import json
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_order_payload(raw_data):
+    try:
+        data = json.loads(raw_data)
+        try:
+            order = data["order"]
+            try:
+                items = order["line_items"]
+                try:
+                    validated = []
+                    for item in items:
+                        try:
+                            price = float(item["price"])
+                            validated.append({"sku": item["sku"], "price": price})
+                        except (KeyError, ValueError) as e:
+                            logger.warning("Bad item: %s", e)
+                            continue
+                except Exception as e:
+                    logger.error("Item processing failed: %s", e)
+                    validated = []
+            except KeyError as e:
+                logger.error("Missing line_items: %s", e)
+                validated = []
+        except KeyError as e:
+            logger.error("Missing order key: %s", e)
+            validated = []
+    except json.JSONDecodeError as e:
+        logger.error("Invalid JSON: %s", e)
+        validated = []
+
+    return validated

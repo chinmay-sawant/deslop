@@ -1,0 +1,14 @@
+{
+  "id": "business_validation_mixed_with_persistence_calls_in_handler",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that start querying or writing before finishing request validation.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

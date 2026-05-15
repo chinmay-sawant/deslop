@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for gzip_or_zip_writer_created_per_chunk: Gzip or zip writers recreated per chunk inside handler loops instead of reusing per stream.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule318NegativeRecord struct {
+	Name string
+}
+
+type Rule318NegativeService interface {
+	Handle(context.Context, Rule318NegativeRecord) (Rule318NegativeRecord, error)
+}
+
+func scenario318Negative(ctx context.Context, service Rule318NegativeService, input Rule318NegativeRecord) (Rule318NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule318NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

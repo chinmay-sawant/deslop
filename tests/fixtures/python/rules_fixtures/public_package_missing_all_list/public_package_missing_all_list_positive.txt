@@ -1,0 +1,18 @@
+from .user_service import UserService
+from .order_service import OrderService
+from .payment_service import PaymentService
+from .notification_service import NotificationService
+from .internal_helpers import _validate_email, _format_phone
+
+VERSION = "2.1.0"
+
+DEFAULT_TIMEOUT = 30
+
+
+def create_service_registry():
+    return {
+        "user": UserService,
+        "order": OrderService,
+        "payment": PaymentService,
+        "notification": NotificationService,
+    }

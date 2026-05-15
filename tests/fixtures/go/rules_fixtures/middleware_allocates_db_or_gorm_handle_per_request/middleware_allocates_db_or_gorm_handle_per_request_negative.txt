@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for middleware_allocates_db_or_gorm_handle_per_request: Database or GORM connections opened inside handlers or middleware instead of process-level setup.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule324NegativeRecord struct {
+	Name string
+}
+
+type Rule324NegativeService interface {
+	Handle(context.Context, Rule324NegativeRecord) (Rule324NegativeRecord, error)
+}
+
+func scenario324Negative(ctx context.Context, service Rule324NegativeService, input Rule324NegativeRecord) (Rule324NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule324NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

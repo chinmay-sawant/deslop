@@ -1,0 +1,14 @@
+{
+  "id": "numpy_tolist_in_hot_path",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "NumPy arrays are converted to Python lists in hot paths, increasing object overhead.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

@@ -1,0 +1,38 @@
+import re
+from typing import List
+
+
+def normalize_users(raw_users: List[dict]) -> List[dict]:
+    results = []
+    for user in raw_users:
+        name = user["name"].strip().title()
+        email = user["email"].strip().lower()
+        email = re.sub(r"\s+", "", email)
+        if not re.match(r"^[^@]+@[^@]+\.[^@]+$", email):
+            continue
+        results.append({"name": name, "email": email})
+    return results
+
+
+def normalize_contacts(raw_contacts: List[dict]) -> List[dict]:
+    results = []
+    for contact in raw_contacts:
+        name = contact["name"].strip().title()
+        email = contact["email"].strip().lower()
+        email = re.sub(r"\s+", "", email)
+        if not re.match(r"^[^@]+@[^@]+\.[^@]+$", email):
+            continue
+        results.append({"name": name, "email": email})
+    return results
+
+
+def normalize_leads(raw_leads: List[dict]) -> List[dict]:
+    results = []
+    for lead in raw_leads:
+        name = lead["name"].strip().title()
+        email = lead["email"].strip().lower()
+        email = re.sub(r"\s+", "", email)
+        if not re.match(r"^[^@]+@[^@]+\.[^@]+$", email):
+            continue
+        results.append({"name": name, "email": email})
+    return results

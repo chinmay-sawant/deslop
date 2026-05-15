@@ -1,0 +1,14 @@
+{
+  "id": "business_logic_inside_middleware",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Middleware component encodes domain decision logic beyond cross-cutting concerns such as auth and logging.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

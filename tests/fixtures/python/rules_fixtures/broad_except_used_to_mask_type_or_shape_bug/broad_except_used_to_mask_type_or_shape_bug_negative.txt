@@ -1,0 +1,27 @@
+def parse_user_response(data: dict) -> dict:
+    return {
+        "id": data["id"],
+        "name": data["name"],
+        "email": data["email"],
+        "role": data.get("role", "user"),
+    }
+
+
+def calculate_discount(price: float, user_type: str) -> float:
+    discounts = {"premium": 0.8, "vip": 0.7}
+    factor = discounts.get(user_type, 1.0)
+    return price * factor
+
+
+def load_user_preferences(user_id: int) -> dict:
+    defaults = {"theme": "light", "language": "en", "notifications": True}
+    try:
+        raw = fetch_from_db(user_id)
+        return {
+            "theme": raw["settings"]["theme"],
+            "language": raw["settings"]["language"],
+            "notifications": raw["settings"]["notifications"],
+        }
+    except (KeyError, TypeError) as e:
+        logger.warning(f"Failed to load preferences for {user_id}: {e}")
+        return defaults

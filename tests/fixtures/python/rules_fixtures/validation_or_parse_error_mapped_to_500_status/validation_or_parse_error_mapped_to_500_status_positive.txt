@@ -1,0 +1,34 @@
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from pydantic import ValidationError
+
+app = FastAPI()
+
+@app.post("/api/users")
+async def create_user(request: Request):
+    try:
+        body = await request.json()
+        user = UserService.create(body)
+        return {"id": user.id}
+    except ValidationError as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.post("/api/orders")
+async def create_order(request: Request):
+    try:
+        body = await request.json()
+        order = OrderService.create(body)
+        return {"id": order.id}
+    except ValueError as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    except KeyError as e:
+        return JSONResponse(status_code=500, content={"error": f"Missing field: {e}"})
+
+@app.post("/api/import")
+async def import_data(request: Request):
+    try:
+        body = await request.json()
+        records = parse_csv(body["data"])
+        return {"imported": len(records)}
+    except (ValueError, TypeError) as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})

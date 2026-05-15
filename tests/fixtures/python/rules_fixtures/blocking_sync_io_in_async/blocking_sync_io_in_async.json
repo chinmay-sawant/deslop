@@ -1,0 +1,14 @@
+{
+  "id": "blocking_sync_io_in_async",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Synchronous network, subprocess, sleep, or file I/O calls made from async def functions.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "tempfile_without_cleanup",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Temporary files or directories created without a visible cleanup or context-manager ownership path.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

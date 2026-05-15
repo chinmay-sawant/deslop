@@ -1,0 +1,17 @@
+use std::sync::{Arc, Condvar, Mutex};
+
+fn wait_for_ready(state: &Arc<(Mutex<bool>, Condvar)>) {
+    let (lock, cvar) = &**state;
+    let mut ready = lock.lock().unwrap();
+    cvar.wait(ready).unwrap();
+    println!("ready!");
+}
+
+fn wait_for_data(state: &Arc<(Mutex<Option<Data>>, Condvar)>) -> Data {
+    let (lock, cvar) = &**state;
+    let mut guard = lock.lock().unwrap();
+    cvar.wait(guard).unwrap();
+    guard.take().unwrap()
+}
+
+struct Data;

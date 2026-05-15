@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_algorithmic_complexity_full_sort_for_top_n",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag sorted(...)[0:n] or DataFrame sort_values().head() where nlargest/nsmallest or heap selection would bound work.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

@@ -1,7 +1,0 @@
-package sample
-
-var retryBudget = 3
-
-func Reset() {
-	retryBudget = 5
-}

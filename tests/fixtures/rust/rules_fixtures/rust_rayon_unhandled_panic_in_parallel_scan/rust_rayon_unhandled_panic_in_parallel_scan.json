@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_unhandled_panic_in_parallel_scan",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `unwrap`, `expect`, or panicking conversions inside parallel scan/evaluation closures where one bad file can abort the whole batch.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

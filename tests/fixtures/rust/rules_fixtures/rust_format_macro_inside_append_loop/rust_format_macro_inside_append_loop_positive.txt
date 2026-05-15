@@ -1,0 +1,17 @@
+fn build_report(items: &[u32]) -> String {
+    let mut output = String::new();
+    for item in items {
+        let line = format!("item: {}\n", item);
+        output.push_str(&line);
+    }
+    output
+}
+
+fn render_csv(rows: &[(&str, &str)]) -> String {
+    let mut buf = String::new();
+    for (key, val) in rows {
+        let row = format!("{},{}\n", key, val);
+        buf.push_str(&row);
+    }
+    buf
+}

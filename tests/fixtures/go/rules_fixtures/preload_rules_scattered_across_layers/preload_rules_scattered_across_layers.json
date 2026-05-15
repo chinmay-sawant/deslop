@@ -1,0 +1,14 @@
+{
+  "id": "preload_rules_scattered_across_layers",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Preload decisions spread across handlers, services, and repositories instead of one query owner.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

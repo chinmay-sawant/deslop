@@ -1,0 +1,52 @@
+from abc import ABC, abstractmethod
+
+
+class FileParser(ABC):
+    @abstractmethod
+    def parse(self, file_path: str) -> list: ...
+
+    @abstractmethod
+    def parse_bytes(self, data: bytes) -> list: ...
+
+
+class CSVParser(FileParser):
+    def parse(self, file_path: str) -> list:
+        with open(file_path, "r") as f:
+            return list(csv.reader(f))
+
+    def parse_bytes(self, data: bytes) -> list:
+        return list(csv.reader(io.StringIO(data.decode())))
+
+
+class JSONParser(FileParser):
+    def parse(self, file_path: str) -> list:
+        with open(file_path, "r") as f:
+            return json.load(f)
+
+    def parse_bytes(self, data: bytes) -> list:
+        return json.loads(data)
+
+
+PARSERS = {
+    ".csv": CSVParser(),
+    ".json": JSONParser(),
+    ".xml": XMLParser(),
+}
+
+
+def get_parser(filename: str) -> FileParser:
+    ext = os.path.splitext(filename)[1].lower()
+    parser = PARSERS.get(ext)
+    if not parser:
+        raise ValueError(f"Unsupported file type: {ext}")
+    return parser
+
+
+def process_file(file_path: str):
+    parser = get_parser(file_path)
+    return parser.parse(file_path)
+
+
+def handle_upload(filename: str, data: bytes):
+    parser = get_parser(filename)
+    return parser.parse_bytes(data)

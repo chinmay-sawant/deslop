@@ -1,0 +1,14 @@
+{
+  "id": "function_returns_multiple_unlabeled_shape_variants",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions that return unrelated tuple or dict shapes depending on the path taken.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

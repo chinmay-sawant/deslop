@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_serialization_map_any_json_decode_in_hot_path",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag JSON decoding into map[string]any in hot paths where typed structs avoid reflection churn.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

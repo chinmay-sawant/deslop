@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+)
+
+// scenario for repeated_json_marshaling: encoding/json.Marshal or MarshalIndent inside loops - repeated allocation and serialization hot spots.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule631PositiveRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario631Positive(values []Rule631PositiveRecord) (int, error) {
+	total := 0
+	for _, value := range values {
+		data, err := json.Marshal(value)
+		if err != nil { return 0, err }
+		total += len(data)
+	}
+	return total, nil
+}

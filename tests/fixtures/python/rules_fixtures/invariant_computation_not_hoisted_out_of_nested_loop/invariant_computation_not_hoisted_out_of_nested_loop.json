@@ -1,0 +1,14 @@
+{
+  "id": "invariant_computation_not_hoisted_out_of_nested_loop",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag nested loops that recompute invariant values on every inner iteration.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

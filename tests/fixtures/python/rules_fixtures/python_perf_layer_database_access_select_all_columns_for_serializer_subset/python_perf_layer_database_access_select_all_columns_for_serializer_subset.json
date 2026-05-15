@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_database_access_select_all_columns_for_serializer_subset",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Database access. Flag ORM or SQL queries loading all columns when serializers use a small subset.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

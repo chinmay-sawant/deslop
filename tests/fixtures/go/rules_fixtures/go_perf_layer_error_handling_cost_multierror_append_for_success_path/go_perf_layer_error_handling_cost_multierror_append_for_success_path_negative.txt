@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_error_handling_cost_multierror_append_for_success_path: Layer: Error handling cost. Flag multi-error aggregators allocated on success-heavy paths before any error exists.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule531NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario531Negative(records []Rule531NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

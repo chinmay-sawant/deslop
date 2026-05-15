@@ -1,0 +1,14 @@
+{
+  "id": "subprocess_or_shell_call_inside_record_processing_loop",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag per-record subprocess work that should be batched or hoisted.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

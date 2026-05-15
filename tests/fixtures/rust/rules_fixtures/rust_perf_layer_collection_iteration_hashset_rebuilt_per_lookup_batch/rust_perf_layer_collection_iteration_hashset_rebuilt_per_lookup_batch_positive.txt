@@ -1,0 +1,22 @@
+use std::collections::HashSet;
+
+fn find_matching_orders(
+    allowed_ids: &[u64],
+    orders: &[Order],
+) -> Vec<&Order> {
+    let mut results = Vec::new();
+    for order in orders {
+        // BAD: rebuilds HashSet on every iteration
+        let allowed_set: HashSet<u64> = allowed_ids.iter().copied().collect();
+        if allowed_set.contains(&order.product_id) {
+            results.push(order);
+        }
+    }
+    results
+}
+
+struct Order {
+    id: u64,
+    product_id: u64,
+    quantity: u32,
+}

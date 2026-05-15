@@ -1,0 +1,38 @@
+import threading
+
+_shared_state = {"counter": 0, "cache": {}}
+_db_connection = None
+
+
+def get_db_connection():
+    global _db_connection
+    if _db_connection is None:
+        _db_connection = create_connection()
+    return _db_connection
+
+
+class shared_connection:
+    def __enter__(self):
+        return get_db_connection()
+
+    def __exit__(self, *args):
+        pass
+
+
+class shared_cache:
+    def __enter__(self):
+        return _shared_state["cache"]
+
+    def __exit__(self, *args):
+        pass
+
+
+class global_buffer:
+    def __init__(self):
+        self._buffer = []
+
+    def __enter__(self):
+        return self._buffer
+
+    def __exit__(self, *args):
+        pass

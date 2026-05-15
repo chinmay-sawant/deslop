@@ -1,0 +1,18 @@
+def stream_file_lines(filepath):
+    with open(filepath, "r") as f:
+        for line in f:
+            yield line.strip()
+
+def read_chunks(handle):
+    with handle:
+        while True:
+            chunk = handle.read(4096)
+            if not chunk:
+                break
+            yield chunk
+
+def process_rows(connection):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM large_table")
+        for row in cursor:
+            yield transform(row)

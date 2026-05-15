@@ -1,0 +1,14 @@
+{
+  "id": "rust_libc_into_raw_fd_without_reclaim",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `into_raw_fd()` without a visible `from_raw_fd`, `OwnedFd`, or close handoff.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

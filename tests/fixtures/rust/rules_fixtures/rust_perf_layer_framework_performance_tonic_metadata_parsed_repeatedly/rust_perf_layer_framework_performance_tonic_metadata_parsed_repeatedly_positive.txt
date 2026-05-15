@@ -1,0 +1,47 @@
+use tonic::{Request, Response, Status};
+use tonic::metadata::MetadataMap;
+
+struct MyService;
+
+#[tonic::async_trait]
+impl MyService {
+    async fn process(&self, req: Request<()>) -> Result<Response<()>, Status> {
+        let metadata = req.metadata();
+
+        // BAD: parsing the same metadata header repeatedly
+        let tenant_id = parse_tenant(metadata)?;
+        let trace_id = parse_trace(metadata)?;
+        let user_id = parse_user(metadata)?;
+        let role = parse_role(metadata)?;
+
+        Ok(Response::new(()))
+    }
+}
+
+fn parse_tenant(md: &MetadataMap) -> Result<String, Status> {
+    md.get("x-tenant-id")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.to_string())
+        .ok_or_else(|| Status::invalid_argument("missing tenant"))
+}
+
+fn parse_trace(md: &MetadataMap) -> Result<String, Status> {
+    md.get("x-trace-id")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.to_string())
+        .ok_or_else(|| Status::invalid_argument("missing trace"))
+}
+
+fn parse_user(md: &MetadataMap) -> Result<String, Status> {
+    md.get("x-user-id")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.to_string())
+        .ok_or_else(|| Status::invalid_argument("missing user"))
+}
+
+fn parse_role(md: &MetadataMap) -> Result<String, Status> {
+    md.get("x-role")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.to_string())
+        .ok_or_else(|| Status::invalid_argument("missing role"))
+}

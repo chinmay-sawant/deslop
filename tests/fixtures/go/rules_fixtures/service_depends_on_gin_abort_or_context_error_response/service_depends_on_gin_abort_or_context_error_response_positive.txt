@@ -1,0 +1,38 @@
+package service
+
+import (
+	"errors"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for service_depends_on_gin_abort_or_context_error_response: Services that own transport abort behavior.
+// fixture polarity: positive; family: architecture; severity: warning.
+type AuthService struct{}
+
+func (s *AuthService) ValidateToken(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "missing authorization header",
+		})
+		return
+	}
+	if token != "valid-token" {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+			"error": "invalid token",
+		})
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+func (s *AuthService) CheckPermission(c *gin.Context, resource string) {
+	if resource == "" {
+		c.Error(errors.New("resource required"))
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": "resource parameter is required",
+		})
+	}
+}

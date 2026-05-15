@@ -1,0 +1,26 @@
+import csv
+from io import StringIO
+
+def write_results_to_csv(path: str, results: list[dict]):
+    buffer = StringIO()
+    for row in results:
+        buffer.write(",".join(str(v) for v in row.values()) + "\n")
+    with open(path, "w") as f:
+        f.write(buffer.getvalue())
+
+def append_log_entries(path: str, entries: list[str]):
+    content = "\n".join(entries) + "\n"
+    with open(path, "a") as f:
+        f.write(content)
+
+def export_report(path: str, records: list[dict]):
+    lines = []
+    for record in records:
+        lines.append(f"{record['id']},{record['name']},{record['value']}")
+    with open(path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+
+def flush_metrics(path: str, metrics: dict):
+    lines = [f"{key}={value}" for key, value in metrics.items()]
+    with open(path, "a") as f:
+        f.write("\n".join(lines) + "\n")

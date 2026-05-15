@@ -1,0 +1,24 @@
+package rulefixtures
+
+import "fmt"
+
+// scenario for interface_slice_allocation: `[]interface{}` or `[]any` used to pass homogeneous typed data
+// fixture polarity: positive; family: performance; severity: info.
+func printNames(users []string, ages []int) {
+	args := make([]any, 0, len(users)+len(ages))
+	for _, u := range users {
+		args = append(args, u)
+	}
+	for _, a := range ages {
+		args = append(args, a)
+	}
+	fmt.Printf("%v\n", args...)
+}
+
+func collectValues(items []string) []any {
+	result := make([]any, len(items))
+	for i, v := range items {
+		result[i] = v
+	}
+	return result
+}

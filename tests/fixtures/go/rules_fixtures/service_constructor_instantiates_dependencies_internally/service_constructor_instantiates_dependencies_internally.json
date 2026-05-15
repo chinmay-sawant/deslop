@@ -1,0 +1,14 @@
+{
+  "id": "service_constructor_instantiates_dependencies_internally",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Constructors that create repositories, clients, or loggers internally instead of accepting them explicitly.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

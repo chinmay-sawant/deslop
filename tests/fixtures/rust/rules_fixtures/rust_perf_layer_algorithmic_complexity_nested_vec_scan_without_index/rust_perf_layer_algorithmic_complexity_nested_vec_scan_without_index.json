@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_algorithmic_complexity_nested_vec_scan_without_index",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag nested Vec scans that should build a HashMap, BTreeMap, or index before joining large collections.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

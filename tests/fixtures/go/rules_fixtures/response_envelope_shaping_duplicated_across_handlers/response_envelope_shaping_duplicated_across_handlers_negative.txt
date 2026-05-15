@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for response_envelope_shaping_duplicated_across_handlers: Repeated success-response envelope formatting that should live in a renderer or transport helper.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule147NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule147NegativeService interface {
+	Run(context.Context, Rule147NegativeRecord) error
+}
+
+func scenario147Negative(ctx context.Context, service Rule147NegativeService, input Rule147NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

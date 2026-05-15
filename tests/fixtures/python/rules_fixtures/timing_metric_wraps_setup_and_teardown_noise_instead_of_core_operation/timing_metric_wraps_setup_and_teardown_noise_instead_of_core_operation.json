@@ -1,0 +1,14 @@
+{
+  "id": "timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag timers that measure unrelated setup work and make latency metrics noisy.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

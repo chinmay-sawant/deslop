@@ -1,0 +1,14 @@
+{
+  "id": "django_create_single_in_loop",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Django code creates one model at a time inside loops instead of using bulk_create().",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

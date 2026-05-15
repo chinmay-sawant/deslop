@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_trimleft_space_trimspace: `bytes.TrimLeft(..., whitespace)` instead of `bytes.TrimSpace(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario468Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.Equal(bytes.TrimLeft(haystack, " \t\n"), needle)
+}

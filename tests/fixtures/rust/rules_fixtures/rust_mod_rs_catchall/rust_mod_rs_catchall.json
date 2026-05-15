@@ -1,0 +1,14 @@
+{
+  "id": "rust_mod_rs_catchall",
+  "language": "rust",
+  "family": "module_surface",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "mod.rs files that look like catch-all subsystem dumps.",
+  "binding_location": "src/heuristics/rust/module_surface.rs"
+}

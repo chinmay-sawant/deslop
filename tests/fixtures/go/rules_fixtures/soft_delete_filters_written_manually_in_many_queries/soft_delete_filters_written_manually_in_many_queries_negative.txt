@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for soft_delete_filters_written_manually_in_many_queries: Repeated `deleted_at IS NULL` style filters rather than a shared repository or scope policy.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule188NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule188NegativeService interface {
+	Run(context.Context, Rule188NegativeRecord) error
+}
+
+func scenario188Negative(ctx context.Context, service Rule188NegativeService, input Rule188NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

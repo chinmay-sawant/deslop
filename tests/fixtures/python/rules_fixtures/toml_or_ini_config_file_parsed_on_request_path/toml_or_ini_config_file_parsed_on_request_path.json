@@ -1,0 +1,14 @@
+{
+  "id": "toml_or_ini_config_file_parsed_on_request_path",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "TOML, INI, or YAML config file parsed inside a request handler on every request.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

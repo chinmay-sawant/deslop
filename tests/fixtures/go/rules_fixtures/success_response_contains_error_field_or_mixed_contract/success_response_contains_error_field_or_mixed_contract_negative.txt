@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for success_response_contains_error_field_or_mixed_contract: Endpoints that blend success and error shapes into one ambiguous contract.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule194NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule194NegativeService interface {
+	Run(context.Context, Rule194NegativeRecord) error
+}
+
+func scenario194Negative(ctx context.Context, service Rule194NegativeService, input Rule194NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

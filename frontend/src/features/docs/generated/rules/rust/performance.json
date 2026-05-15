@@ -119,6 +119,1406 @@
       "fix": "For Rust Path Join Absolute in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
     },
     {
+      "id": "rust_perf_layer_algorithmic_complexity_iterator_chain_recomputes_expensive_predicate",
+      "label": "Rust Perf Layer Algorithmic Complexity Iterator Chain Recomputes Expensive Predicate",
+      "description": "Layer: Algorithmic complexity. Flag iterator chains that recompute an expensive predicate instead of caching per item.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Algorithmic Complexity Iterator Chain Recomputes Expensive Predicate matters because the pattern here, Layer: Algorithmic complexity. Flag iterator chains that recompute an expensive predicate instead of caching per item, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Perf Layer Algorithmic Complexity Iterator Chain Recomputes Expensive Predicate in Rust, prefer caching per item when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_perf_layer_algorithmic_complexity_nested_vec_scan_without_index",
+      "label": "Rust Perf Layer Algorithmic Complexity Nested Vec Scan without Index",
+      "description": "Layer: Algorithmic complexity. Flag nested Vec scans that should build a HashMap, BTreeMap, or index before joining large collections.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Algorithmic Complexity Nested Vec Scan without Index matters because the pattern here, Layer: Algorithmic complexity. Flag nested Vec scans that should build a HashMap, BTreeMap, or index before joining large collections, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Algorithmic Complexity Nested Vec Scan without Index in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_algorithmic_complexity_quadratic_string_or_vec_growth",
+      "label": "Rust Perf Layer Algorithmic Complexity Quadratic String or Vec Growth",
+      "description": "Layer: Algorithmic complexity. Flag algorithms that repeatedly grow and rescan accumulated String or Vec state.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Algorithmic Complexity Quadratic String or Vec Growth matters because the pattern here, Layer: Algorithmic complexity. Flag algorithms that repeatedly grow and rescan accumulated String or Vec state, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Algorithmic Complexity Quadratic String or Vec Growth in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen",
+      "label": "Rust Perf Layer Algorithmic Complexity Recursive Graph Walk without Seen",
+      "description": "Layer: Algorithmic complexity. Flag recursive graph walks that do not track visited nodes for cyclic or shared inputs.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Algorithmic Complexity Recursive Graph Walk without Seen matters because the pattern here, Layer: Algorithmic complexity. Flag recursive graph walks that do not track visited nodes for cyclic or shared inputs, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Algorithmic Complexity Recursive Graph Walk without Seen in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_algorithmic_complexity_sort_for_top_k",
+      "label": "Rust Perf Layer Algorithmic Complexity Sort for Top K",
+      "description": "Layer: Algorithmic complexity. Flag full Vec sorts used only to keep top-k elements where BinaryHeap or select_nth_unstable would bound work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Algorithmic Complexity Sort for Top K matters because the pattern here, Layer: Algorithmic complexity. Flag full Vec sorts used only to keep top-k elements where BinaryHeap or select_nth_unstable would bound work, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Algorithmic Complexity Sort for Top K in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_async_concurrency_blocking_mutex_in_async_path",
+      "label": "Rust Perf Layer Async Concurrency Blocking Mutex in Async Path",
+      "description": "Layer: Async and concurrency. Flag std::sync::Mutex use in async paths where blocking can stall executor workers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Async Concurrency Blocking Mutex in Async Path matters because the pattern here, Layer: Async and concurrency. Flag std::sync::Mutex use in async paths where blocking can stall executor workers, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Perf Layer Async Concurrency Blocking Mutex in Async Path in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_perf_layer_async_concurrency_busy_poll_future_loop",
+      "label": "Rust Perf Layer Async Concurrency Busy Poll Future Loop",
+      "description": "Layer: Async and concurrency. Flag async loops that poll with try_recv or zero sleeps instead of awaiting notifications.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Async Concurrency Busy Poll Future Loop matters because the pattern here, Layer: Async and concurrency. Flag async loops that poll with try_recv or zero sleeps instead of awaiting notifications, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Perf Layer Async Concurrency Busy Poll Future Loop in Rust, prefer awaiting notifications when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_perf_layer_async_concurrency_lock_guard_held_across_slow_call",
+      "label": "Rust Perf Layer Async Concurrency Lock Guard Held Across Slow Call",
+      "description": "Layer: Async and concurrency. Flag lock guards held during network, disk, database, or expensive compute work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Async Concurrency Lock Guard Held Across Slow Call matters because the pattern here, Layer: Async and concurrency. Flag lock guards held during network, disk, database, or expensive compute work, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Perf Layer Async Concurrency Lock Guard Held Across Slow Call in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_perf_layer_async_concurrency_timeout_created_for_inner_retry",
+      "label": "Rust Perf Layer Async Concurrency Timeout Created for Inner Retry",
+      "description": "Layer: Async and concurrency. Flag timeout futures created inside tight retry loops where an outer deadline would bound the operation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Async Concurrency Timeout Created for Inner Retry matters because the pattern here, Layer: Async and concurrency. Flag timeout futures created inside tight retry loops where an outer deadline would bound the operation, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Perf Layer Async Concurrency Timeout Created for Inner Retry in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_perf_layer_async_concurrency_tokio_spawn_per_item_unbounded",
+      "label": "Rust Perf Layer Async Concurrency Tokio Spawn Per Item Unbounded",
+      "description": "Layer: Async and concurrency. Flag unbounded tokio::spawn per item without JoinSet, semaphore, or bounded queue ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Async Concurrency Tokio Spawn Per Item Unbounded matters because the pattern here, Layer: Async and concurrency. Flag unbounded tokio::spawn per item without JoinSet, semaphore, or bounded queue ownership, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Async Concurrency Tokio Spawn Per Item Unbounded in Rust, add JoinSet, semaphore, or bounded queue ownership or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_caching_cache_key_allocates_string_hot_path",
+      "label": "Rust Perf Layer Caching Cache Key Allocates String Hot Path",
+      "description": "Layer: Caching. Flag cache keys built as allocated Strings in hot paths where borrowed or structured keys fit.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Caching Cache Key Allocates String Hot Path matters because the pattern here, Layer: Caching. Flag cache keys built as allocated Strings in hot paths where borrowed or structured keys fit, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Caching Cache Key Allocates String Hot Path in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_caching_cache_miss_duplicate_async_work",
+      "label": "Rust Perf Layer Caching Cache Miss Duplicate Async Work",
+      "description": "Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Caching Cache Miss Duplicate Async Work matters because the pattern here, Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Perf Layer Caching Cache Miss Duplicate Async Work in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_perf_layer_caching_cached_json_string_deserialized_each_use",
+      "label": "Rust Perf Layer Caching Cached JSON String Deserialized Each Use",
+      "description": "Layer: Caching. Flag caches storing JSON strings only to deserialize before every read.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Caching Cached JSON String Deserialized Each Use matters because the pattern here, Layer: Caching. Flag caches storing JSON strings only to deserialize before every read, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Caching Cached JSON String Deserialized Each Use in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_caching_once_lock_lazy_cost_on_first_request",
+      "label": "Rust Perf Layer Caching Once Lock Lazy Cost on First Request",
+      "description": "Layer: Caching. Flag OnceLock/LazyLock initialization that puts large first-use cost on a user request without warmup.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Caching Once Lock Lazy Cost on First Request matters because the pattern here, Layer: Caching. Flag OnceLock/LazyLock initialization that puts large first-use cost on a user request without warmup, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Caching Once Lock Lazy Cost on First Request in Rust, add warmup or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_caching_unbounded_hashmap_cache",
+      "label": "Rust Perf Layer Caching Unbounded Hashmap Cache",
+      "description": "Layer: Caching. Flag process-level HashMap caches without size, TTL, or eviction policy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Caching Unbounded Hashmap Cache matters because the pattern here, Layer: Caching. Flag process-level HashMap caches without size, TTL, or eviction policy, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Caching Unbounded Hashmap Cache in Rust, add size, TTL, or eviction policy or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_collection_iteration_collect_for_len_or_is_empty",
+      "label": "Rust Perf Layer Collection Iteration Collect for Len or Is Empty",
+      "description": "Layer: Collection iteration. Flag iterator collection used only to call len or check emptiness.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Collection Iteration Collect for Len or Is Empty matters because the pattern here, Layer: Collection iteration. Flag iterator collection used only to call len or check emptiness, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Collection Iteration Collect for Len or Is Empty in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_collection_iteration_hashset_rebuilt_per_lookup_batch",
+      "label": "Rust Perf Layer Collection Iteration Hashset Rebuilt Per Lookup Batch",
+      "description": "Layer: Collection iteration. Flag HashSet rebuilt inside loops instead of once per batch.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Collection Iteration Hashset Rebuilt Per Lookup Batch matters because the pattern here, Layer: Collection iteration. Flag HashSet rebuilt inside loops instead of once per batch, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Perf Layer Collection Iteration Hashset Rebuilt Per Lookup Batch in Rust, prefer once per batch when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_perf_layer_collection_iteration_iter_cloned_before_filter",
+      "label": "Rust Perf Layer Collection Iteration Iter Cloned Before Filter",
+      "description": "Layer: Collection iteration. Flag iter().cloned() before filters that could borrow until ownership is needed.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Collection Iteration Iter Cloned Before Filter matters because the pattern here, Layer: Collection iteration. Flag iter().cloned() before filters that could borrow until ownership is needed, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Collection Iteration Iter Cloned Before Filter in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_collection_iteration_manual_index_loop_over_slice",
+      "label": "Rust Perf Layer Collection Iteration Manual Index Loop Over Slice",
+      "description": "Layer: Collection iteration. Flag manual index loops over slices where iterators or chunks avoid repeated indexing.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Collection Iteration Manual Index Loop Over Slice matters because the pattern here, Layer: Collection iteration. Flag manual index loops over slices where iterators or chunks avoid repeated indexing, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Perf Layer Collection Iteration Manual Index Loop Over Slice in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_perf_layer_collection_iteration_multiple_passes_over_same_slice",
+      "label": "Rust Perf Layer Collection Iteration Multiple Passes Over Same Slice",
+      "description": "Layer: Collection iteration. Flag independent passes over the same slice where aggregation can be fused.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Collection Iteration Multiple Passes Over Same Slice matters because the pattern here, Layer: Collection iteration. Flag independent passes over the same slice where aggregation can be fused, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Collection Iteration Multiple Passes Over Same Slice in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_data_structure_choice_boxed_trait_objects_in_hot_collection",
+      "label": "Rust Perf Layer Data Structure Choice Boxed Trait Objects in Hot Collection",
+      "description": "Layer: Data structure choice. Flag Vec<Box<dyn Trait>> in hot homogeneous collections where enums or generics can avoid dispatch and pointer chasing.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Data Structure Choice Boxed Trait Objects in Hot Collection matters because the pattern here, Layer: Data structure choice. Flag Vec<Box<dyn Trait>> in hot homogeneous collections where enums or generics can avoid dispatch and pointer chasing, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Data Structure Choice Boxed Trait Objects in Hot Collection in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_data_structure_choice_btreemap_for_unordered_hot_lookup",
+      "label": "Rust Perf Layer Data Structure Choice Btreemap for Unordered Hot Lookup",
+      "description": "Layer: Data structure choice. Flag BTreeMap lookups in unordered hot paths where HashMap or indexed Vec may be cheaper.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Data Structure Choice Btreemap for Unordered Hot Lookup matters because the pattern here, Layer: Data structure choice. Flag BTreeMap lookups in unordered hot paths where HashMap or indexed Vec may be cheaper, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Data Structure Choice Btreemap for Unordered Hot Lookup in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_data_structure_choice_hashmap_for_tiny_static_set",
+      "label": "Rust Perf Layer Data Structure Choice Hashmap for Tiny Static Set",
+      "description": "Layer: Data structure choice. Flag HashMap use for tiny static sets where match, arrays, or phf-like tables may avoid hashing cost.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Data Structure Choice Hashmap for Tiny Static Set matters because the pattern here, Layer: Data structure choice. Flag HashMap use for tiny static sets where match, arrays, or phf-like tables may avoid hashing cost, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Data Structure Choice Hashmap for Tiny Static Set in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_data_structure_choice_string_keys_for_enum_domain",
+      "label": "Rust Perf Layer Data Structure Choice String Keys for Enum Domain",
+      "description": "Layer: Data structure choice. Flag String keys for finite domains where enums or interned IDs avoid allocation and hashing.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Data Structure Choice String Keys for Enum Domain matters because the pattern here, Layer: Data structure choice. Flag String keys for finite domains where enums or interned IDs avoid allocation and hashing, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Data Structure Choice String Keys for Enum Domain in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_data_structure_choice_vec_remove_zero_queue",
+      "label": "Rust Perf Layer Data Structure Choice Vec Remove Zero Queue",
+      "description": "Layer: Data structure choice. Flag Vec::remove(0) queue behavior where VecDeque fits front removal.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Data Structure Choice Vec Remove Zero Queue matters because the pattern here, Layer: Data structure choice. Flag Vec::remove(0) queue behavior where VecDeque fits front removal, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Data Structure Choice Vec Remove Zero Queue in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_database_access_count_before_page_fetch_each_request",
+      "label": "Rust Perf Layer Database Access Count Before Page Fetch Each Request",
+      "description": "Layer: Database access. Flag count queries paired with every paginated fetch without caching or product need.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Database Access Count Before Page Fetch Each Request matters because the pattern here, Layer: Database access. Flag count queries paired with every paginated fetch without caching or product need, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Database Access Count Before Page Fetch Each Request in Rust, add caching or product need or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_database_access_row_to_hashmap_decode_hot_path",
+      "label": "Rust Perf Layer Database Access Row to Hashmap Decode Hot Path",
+      "description": "Layer: Database access. Flag database row decoding into HashMap<String, Value> on hot typed paths.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Database Access Row to Hashmap Decode Hot Path matters because the pattern here, Layer: Database access. Flag database row decoding into HashMap<String, Value> on hot typed paths, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Database Access Row to Hashmap Decode Hot Path in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_database_access_select_star_for_typed_projection",
+      "label": "Rust Perf Layer Database Access Select Star for Typed Projection",
+      "description": "Layer: Database access. Flag SELECT * when typed row mapping uses only a subset of columns.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Database Access Select Star for Typed Projection matters because the pattern here, Layer: Database access. Flag SELECT * when typed row mapping uses only a subset of columns, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Database Access Select Star for Typed Projection in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_database_access_sql_query_inside_loop",
+      "label": "Rust Perf Layer Database Access SQL Query Inside Loop",
+      "description": "Layer: Database access. Flag SQL queries inside loops where batching or joins can collapse round trips.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Database Access SQL Query Inside Loop matters because the pattern here, Layer: Database access. Flag SQL queries inside loops where batching or joins can collapse round trips, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Perf Layer Database Access SQL Query Inside Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_perf_layer_database_access_transaction_per_row_bulk_insert",
+      "label": "Rust Perf Layer Database Access Transaction Per Row Bulk Insert",
+      "description": "Layer: Database access. Flag bulk inserts that begin and commit a transaction for every row.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Database Access Transaction Per Row Bulk Insert matters because the pattern here, Layer: Database access. Flag bulk inserts that begin and commit a transaction for every row, stretches the write boundary and makes failure ownership harder to reason about.",
+      "fix": "For Rust Perf Layer Database Access Transaction Per Row Bulk Insert in Rust, keep the transaction focused on the minimum database work and move unrelated orchestration outside the open transaction."
+    },
+    {
+      "id": "rust_perf_layer_error_handling_cost_anyhow_context_in_hot_loop",
+      "label": "Rust Perf Layer Error Handling Cost Anyhow Context in Hot Loop",
+      "description": "Layer: Error handling cost. Flag anyhow/context formatting inside hot loops where one boundary context would suffice.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Error Handling Cost Anyhow Context in Hot Loop matters because the pattern here, Layer: Error handling cost. Flag anyhow/context formatting inside hot loops where one boundary context would suffice, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Perf Layer Error Handling Cost Anyhow Context in Hot Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_perf_layer_error_handling_cost_clone_error_context_large_payload",
+      "label": "Rust Perf Layer Error Handling Cost Clone Error Context Large Payload",
+      "description": "Layer: Error handling cost. Flag error context cloning large payloads only for diagnostic strings.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Error Handling Cost Clone Error Context Large Payload matters because the pattern here, Layer: Error handling cost. Flag error context cloning large payloads only for diagnostic strings, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Perf Layer Error Handling Cost Clone Error Context Large Payload in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_perf_layer_error_handling_cost_error_enum_allocates_string_success_path",
+      "label": "Rust Perf Layer Error Handling Cost Error Enum Allocates String Success Path",
+      "description": "Layer: Error handling cost. Flag error strings built before the failing branch is known.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Error Handling Cost Error Enum Allocates String Success Path matters because the pattern here, Layer: Error handling cost. Flag error strings built before the failing branch is known, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Error Handling Cost Error Enum Allocates String Success Path in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_error_handling_cost_panic_catch_unwind_for_control_flow",
+      "label": "Rust Perf Layer Error Handling Cost Panic Catch Unwind for Control Flow",
+      "description": "Layer: Error handling cost. Flag catch_unwind used for expected branch control in performance-sensitive code.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Error Handling Cost Panic Catch Unwind for Control Flow matters because the pattern here, Layer: Error handling cost. Flag catch_unwind used for expected branch control in performance-sensitive code, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Error Handling Cost Panic Catch Unwind for Control Flow in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_error_handling_cost_vec_errors_allocated_before_error",
+      "label": "Rust Perf Layer Error Handling Cost Vec Errors Allocated Before Error",
+      "description": "Layer: Error handling cost. Flag error aggregation Vec allocated on success-heavy paths before any error exists.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Error Handling Cost Vec Errors Allocated Before Error matters because the pattern here, Layer: Error handling cost. Flag error aggregation Vec allocated on success-heavy paths before any error exists, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Error Handling Cost Vec Errors Allocated Before Error in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_framework_performance_actix_blocking_pool_for_light_work",
+      "label": "Rust Perf Layer Framework Performance Actix Blocking Pool for Light Work",
+      "description": "Layer: Framework-specific performance. Flag actix web::block for light synchronous work where scheduling overhead can dominate.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Framework Performance Actix Blocking Pool for Light Work matters because the pattern here, Layer: Framework-specific performance. Flag actix web::block for light synchronous work where scheduling overhead can dominate, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Framework Performance Actix Blocking Pool for Light Work in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_framework_performance_askama_render_to_string_then_body",
+      "label": "Rust Perf Layer Framework Performance Askama Render to String Then Body",
+      "description": "Layer: Framework-specific performance. Flag template rendering to String before writing to streaming response bodies.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Framework Performance Askama Render to String Then Body matters because the pattern here, Layer: Framework-specific performance. Flag template rendering to String before writing to streaming response bodies, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Framework Performance Askama Render to String Then Body in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_framework_performance_axum_extension_clones_heavy_state",
+      "label": "Rust Perf Layer Framework Performance Axum Extension Clones Heavy State",
+      "description": "Layer: Framework-specific performance. Flag Axum handler state extraction that clones heavy state instead of cheap Arc handles.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Framework Performance Axum Extension Clones Heavy State matters because the pattern here, Layer: Framework-specific performance. Flag Axum handler state extraction that clones heavy state instead of cheap Arc handles, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Perf Layer Framework Performance Axum Extension Clones Heavy State in Rust, prefer cheap Arc handles when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_perf_layer_framework_performance_sqlx_fetch_all_unbounded",
+      "label": "Rust Perf Layer Framework Performance sqlx Fetch All Unbounded",
+      "description": "Layer: Framework-specific performance. Flag sqlx fetch_all on unbounded queries where streaming or limits would control memory.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Framework Performance sqlx Fetch All Unbounded matters because the pattern here, Layer: Framework-specific performance. Flag sqlx fetch_all on unbounded queries where streaming or limits would control memory, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Framework Performance sqlx Fetch All Unbounded in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_framework_performance_tonic_metadata_parsed_repeatedly",
+      "label": "Rust Perf Layer Framework Performance Tonic Metadata Parsed Repeatedly",
+      "description": "Layer: Framework-specific performance. Flag repeated tonic metadata parsing across interceptors and handlers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Framework Performance Tonic Metadata Parsed Repeatedly matters because the pattern here, Layer: Framework-specific performance. Flag repeated tonic metadata parsing across interceptors and handlers, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Perf Layer Framework Performance Tonic Metadata Parsed Repeatedly in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_perf_layer_garbage_collection_cleanup_arc_cycle_without_weak_break",
+      "label": "Rust Perf Layer Garbage Collection Cleanup Arc Cycle without Weak Break",
+      "description": "Layer: Garbage collection and cleanup. Flag Arc graphs that appear cyclic without Weak ownership edges.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Garbage Collection Cleanup Arc Cycle without Weak Break matters because the pattern here, Layer: Garbage collection and cleanup. Flag Arc graphs that appear cyclic without Weak ownership edges, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Garbage Collection Cleanup Arc Cycle without Weak Break in Rust, add Weak ownership edges or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_garbage_collection_cleanup_bufwriter_not_flushed_at_owner_boundary",
+      "label": "Rust Perf Layer Garbage Collection Cleanup Bufwriter Not Flushed at Owner Boundary",
+      "description": "Layer: Garbage collection and cleanup. Flag buffered writers whose flush ownership is unclear at the boundary.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Garbage Collection Cleanup Bufwriter Not Flushed at Owner Boundary matters because the pattern here, Layer: Garbage collection and cleanup. Flag buffered writers whose flush ownership is unclear at the boundary, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Garbage Collection Cleanup Bufwriter Not Flushed at Owner Boundary in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_garbage_collection_cleanup_drop_impl_does_io_or_blocking_work",
+      "label": "Rust Perf Layer Garbage Collection Cleanup Drop Impl Does I/O or Blocking Work",
+      "description": "Layer: Garbage collection and cleanup. Flag Drop implementations that perform I/O, locking, or other blocking cleanup.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Garbage Collection Cleanup Drop Impl Does I/O or Blocking Work matters because the pattern here, Layer: Garbage collection and cleanup. Flag Drop implementations that perform I/O, locking, or other blocking cleanup, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Garbage Collection Cleanup Drop Impl Does I/O or Blocking Work in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_garbage_collection_cleanup_large_vec_clear_retains_spike_capacity",
+      "label": "Rust Perf Layer Garbage Collection Cleanup Large Vec Clear Retains Spike Capacity",
+      "description": "Layer: Garbage collection and cleanup. Flag long-lived Vec buffers cleared after spikes without capacity trimming or replacement policy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Garbage Collection Cleanup Large Vec Clear Retains Spike Capacity matters because the pattern here, Layer: Garbage collection and cleanup. Flag long-lived Vec buffers cleared after spikes without capacity trimming or replacement policy, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Garbage Collection Cleanup Large Vec Clear Retains Spike Capacity in Rust, add capacity trimming or replacement policy or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_garbage_collection_cleanup_leaked_box_for_runtime_singleton",
+      "label": "Rust Perf Layer Garbage Collection Cleanup Leaked Box for Runtime Singleton",
+      "description": "Layer: Garbage collection and cleanup. Flag Box::leak used for runtime singletons where OnceLock or LazyLock would express ownership better.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Garbage Collection Cleanup Leaked Box for Runtime Singleton matters because the pattern here, Layer: Garbage collection and cleanup. Flag Box::leak used for runtime singletons where OnceLock or LazyLock would express ownership better, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Garbage Collection Cleanup Leaked Box for Runtime Singleton in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_hot_path_optimization_allocation_inside_sort_comparator",
+      "label": "Rust Perf Layer Hot Path Optimization Allocation Inside Sort Comparator",
+      "description": "Layer: Hot path optimization. Flag allocation, parsing, or formatting inside sort comparator closures.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Hot Path Optimization Allocation Inside Sort Comparator matters because the pattern here, Layer: Hot path optimization. Flag allocation, parsing, or formatting inside sort comparator closures, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Hot Path Optimization Allocation Inside Sort Comparator in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_hot_path_optimization_bounds_checks_from_repeated_indexing",
+      "label": "Rust Perf Layer Hot Path Optimization Bounds Checks From Repeated Indexing",
+      "description": "Layer: Hot path optimization. Flag repeated indexed access patterns where iterators, windows, or chunks can reduce bounds-check pressure.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Hot Path Optimization Bounds Checks From Repeated Indexing matters because the pattern here, Layer: Hot path optimization. Flag repeated indexed access patterns where iterators, windows, or chunks can reduce bounds-check pressure, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Perf Layer Hot Path Optimization Bounds Checks From Repeated Indexing in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_perf_layer_hot_path_optimization_dynamic_dispatch_in_deep_loop",
+      "label": "Rust Perf Layer Hot Path Optimization Dynamic Dispatch in Deep Loop",
+      "description": "Layer: Hot path optimization. Flag trait-object dynamic dispatch inside deep loops where generics or enum dispatch may fit.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Hot Path Optimization Dynamic Dispatch in Deep Loop matters because the pattern here, Layer: Hot path optimization. Flag trait-object dynamic dispatch inside deep loops where generics or enum dispatch may fit, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Perf Layer Hot Path Optimization Dynamic Dispatch in Deep Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_perf_layer_hot_path_optimization_instant_now_called_many_times_per_item",
+      "label": "Rust Perf Layer Hot Path Optimization Instant Now Called Many Times Per Item",
+      "description": "Layer: Hot path optimization. Flag repeated Instant::now calls per item where one timestamp or measurement scope would suffice.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Hot Path Optimization Instant Now Called Many Times Per Item matters because the pattern here, Layer: Hot path optimization. Flag repeated Instant::now calls per item where one timestamp or measurement scope would suffice, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Perf Layer Hot Path Optimization Instant Now Called Many Times Per Item in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_perf_layer_hot_path_optimization_schema_parsed_inside_handler",
+      "label": "Rust Perf Layer Hot Path Optimization Schema Parsed Inside Handler",
+      "description": "Layer: Hot path optimization. Flag schemas, templates, regex sets, or expressions parsed per request.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Hot Path Optimization Schema Parsed Inside Handler matters because the pattern here, Layer: Hot path optimization. Flag schemas, templates, regex sets, or expressions parsed per request, weakens the contract at the exact place callers need the shape or boundary to be explicit.",
+      "fix": "For Rust Perf Layer Hot Path Optimization Schema Parsed Inside Handler in Rust, tighten the type, annotation, schema, or response contract so callers can see the expected shape at the boundary."
+    },
+    {
+      "id": "rust_perf_layer_io_operations_command_spawn_per_item",
+      "label": "Rust Perf Layer I/O Operations Command Spawn Per Item",
+      "description": "Layer: I/O operations. Flag process spawning inside item loops where batching or long-lived workers may fit.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer I/O Operations Command Spawn Per Item matters because the pattern here, Layer: I/O operations. Flag process spawning inside item loops where batching or long-lived workers may fit, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Perf Layer I/O Operations Command Spawn Per Item in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_perf_layer_io_operations_metadata_before_open_without_need",
+      "label": "Rust Perf Layer I/O Operations Metadata Before Open without Need",
+      "description": "Layer: I/O operations. Flag fs::metadata calls immediately followed by open/read without using metadata meaningfully.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer I/O Operations Metadata Before Open without Need matters because the pattern here, Layer: I/O operations. Flag fs::metadata calls immediately followed by open/read without using metadata meaningfully, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer I/O Operations Metadata Before Open without Need in Rust, add using metadata meaningfully or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_io_operations_read_to_string_for_line_processing",
+      "label": "Rust Perf Layer I/O Operations Read to String for Line Processing",
+      "description": "Layer: I/O operations. Flag read_to_string/read_to_end before sequential line or chunk processing.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer I/O Operations Read to String for Line Processing matters because the pattern here, Layer: I/O operations. Flag read_to_string/read_to_end before sequential line or chunk processing, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer I/O Operations Read to String for Line Processing in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_io_operations_tempfile_for_stream_transform",
+      "label": "Rust Perf Layer I/O Operations Tempfile for Stream Transform",
+      "description": "Layer: I/O operations. Flag temporary files used only to pass data between streaming transformations.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer I/O Operations Tempfile for Stream Transform matters because the pattern here, Layer: I/O operations. Flag temporary files used only to pass data between streaming transformations, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer I/O Operations Tempfile for Stream Transform in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_io_operations_unbuffered_writes_in_loop",
+      "label": "Rust Perf Layer I/O Operations Unbuffered Writes in Loop",
+      "description": "Layer: I/O operations. Flag repeated file or socket writes without BufWriter or batching.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer I/O Operations Unbuffered Writes in Loop matters because the pattern here, Layer: I/O operations. Flag repeated file or socket writes without BufWriter or batching, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer I/O Operations Unbuffered Writes in Loop in Rust, add BufWriter or batching or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_lazy_loading_eager_compile_unused_templates",
+      "label": "Rust Perf Layer Lazy Loading Eager Compile Unused Templates",
+      "description": "Layer: Lazy loading. Flag compiling templates or route metadata for disabled features.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Lazy Loading Eager Compile Unused Templates matters because the pattern here, Layer: Lazy loading. Flag compiling templates or route metadata for disabled features, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Rust Perf Layer Lazy Loading Eager Compile Unused Templates in Rust, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "rust_perf_layer_lazy_loading_eager_connect_all_upstreams",
+      "label": "Rust Perf Layer Lazy Loading Eager Connect All Upstreams",
+      "description": "Layer: Lazy loading. Flag connecting to every optional upstream during startup instead of lazy or feature-gated initialization.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Lazy Loading Eager Connect All Upstreams matters because the pattern here, Layer: Lazy loading. Flag connecting to every optional upstream during startup instead of lazy or feature-gated initialization, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Perf Layer Lazy Loading Eager Connect All Upstreams in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_perf_layer_lazy_loading_eager_load_optional_assets",
+      "label": "Rust Perf Layer Lazy Loading Eager Load Optional Assets",
+      "description": "Layer: Lazy loading. Flag optional assets, dictionaries, or models loaded at startup before any feature uses them.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Lazy Loading Eager Load Optional Assets matters because the pattern here, Layer: Lazy loading. Flag optional assets, dictionaries, or models loaded at startup before any feature uses them, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Perf Layer Lazy Loading Eager Load Optional Assets in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_perf_layer_lazy_loading_lazy_static_hides_tail_latency",
+      "label": "Rust Perf Layer Lazy Loading Lazy Static Hides Tail Latency",
+      "description": "Layer: Lazy loading. Flag lazy statics initialized on first request without warmup or latency accounting.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Lazy Loading Lazy Static Hides Tail Latency matters because the pattern here, Layer: Lazy loading. Flag lazy statics initialized on first request without warmup or latency accounting, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Lazy Loading Lazy Static Hides Tail Latency in Rust, add warmup or latency accounting or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_lazy_loading_optional_crate_init_on_default_path",
+      "label": "Rust Perf Layer Lazy Loading Optional Crate Init on Default Path",
+      "description": "Layer: Lazy loading. Flag optional crate initialization on the default path when feature-gated initialization would avoid cost.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Lazy Loading Optional Crate Init on Default Path matters because the pattern here, Layer: Lazy loading. Flag optional crate initialization on the default path when feature-gated initialization would avoid cost, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Lazy Loading Optional Crate Init on Default Path in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_logging_overhead_debug_format_large_value_unconditional",
+      "label": "Rust Perf Layer Logging Overhead Debug Format Large Value Unconditional",
+      "description": "Layer: Logging overhead. Flag debug formatting before log level checks.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Logging Overhead Debug Format Large Value Unconditional matters because the pattern here, Layer: Logging overhead. Flag debug formatting before log level checks, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Logging Overhead Debug Format Large Value Unconditional in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_logging_overhead_log_fields_allocated_before_enabled",
+      "label": "Rust Perf Layer Logging Overhead Log Fields Allocated Before Enabled",
+      "description": "Layer: Logging overhead. Flag expensive tracing/log fields allocated before level or subscriber filters can skip them.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Logging Overhead Log Fields Allocated Before Enabled matters because the pattern here, Layer: Logging overhead. Flag expensive tracing/log fields allocated before level or subscriber filters can skip them, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Logging Overhead Log Fields Allocated Before Enabled in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_logging_overhead_payload_serialized_for_disabled_trace",
+      "label": "Rust Perf Layer Logging Overhead Payload Serialized for Disabled Trace",
+      "description": "Layer: Logging overhead. Flag payload serialization for tracing even when tracing is disabled.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Logging Overhead Payload Serialized for Disabled Trace matters because the pattern here, Layer: Logging overhead. Flag payload serialization for tracing even when tracing is disabled, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Logging Overhead Payload Serialized for Disabled Trace in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_logging_overhead_per_item_info_span_in_batch",
+      "label": "Rust Perf Layer Logging Overhead Per Item Info Span in Batch",
+      "description": "Layer: Logging overhead. Flag tracing spans or info logs emitted per record in large batch loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Logging Overhead Per Item Info Span in Batch matters because the pattern here, Layer: Logging overhead. Flag tracing spans or info logs emitted per record in large batch loops, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Perf Layer Logging Overhead Per Item Info Span in Batch in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_perf_layer_logging_overhead_span_created_inside_tight_loop",
+      "label": "Rust Perf Layer Logging Overhead Span Created Inside Tight Loop",
+      "description": "Layer: Logging overhead. Flag tracing span construction in very tight loops without sampling or aggregation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Logging Overhead Span Created Inside Tight Loop matters because the pattern here, Layer: Logging overhead. Flag tracing span construction in very tight loops without sampling or aggregation, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Logging Overhead Span Created Inside Tight Loop in Rust, add sampling or aggregation or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_memory_allocation_clone_large_value_for_readonly_use",
+      "label": "Rust Perf Layer Memory Allocation Clone Large Value for Readonly Use",
+      "description": "Layer: Memory allocation. Flag Clone of large values immediately before read-only operations.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Memory Allocation Clone Large Value for Readonly Use matters because the pattern here, Layer: Memory allocation. Flag Clone of large values immediately before read-only operations, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Memory Allocation Clone Large Value for Readonly Use in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_memory_allocation_collect_vec_only_to_iterate_once",
+      "label": "Rust Perf Layer Memory Allocation Collect Vec Only to Iterate Once",
+      "description": "Layer: Memory allocation. Flag collect::<Vec<_>>() used only to iterate once into another consumer.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Memory Allocation Collect Vec Only to Iterate Once matters because the pattern here, Layer: Memory allocation. Flag collect::<Vec<_>>() used only to iterate once into another consumer, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Memory Allocation Collect Vec Only to Iterate Once in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_memory_allocation_format_allocates_for_writer",
+      "label": "Rust Perf Layer Memory Allocation Format Allocates for Writer",
+      "description": "Layer: Memory allocation. Flag format! used before write!/push_str where direct writing avoids temporary allocation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Memory Allocation Format Allocates for Writer matters because the pattern here, Layer: Memory allocation. Flag format! used before write!/push_str where direct writing avoids temporary allocation, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Memory Allocation Format Allocates for Writer in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_memory_allocation_string_reallocated_per_record",
+      "label": "Rust Perf Layer Memory Allocation String Reallocated Per Record",
+      "description": "Layer: Memory allocation. Flag String allocation per record where a reusable buffer can be cleared safely.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Memory Allocation String Reallocated Per Record matters because the pattern here, Layer: Memory allocation. Flag String allocation per record where a reusable buffer can be cleared safely, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Memory Allocation String Reallocated Per Record in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_memory_allocation_vec_push_without_capacity",
+      "label": "Rust Perf Layer Memory Allocation Vec Push without Capacity",
+      "description": "Layer: Memory allocation. Flag Vec pushes in builders where an obvious capacity is known.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Memory Allocation Vec Push without Capacity matters because the pattern here, Layer: Memory allocation. Flag Vec pushes in builders where an obvious capacity is known, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Memory Allocation Vec Push without Capacity in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_network_calls_dns_resolution_in_request_path",
+      "label": "Rust Perf Layer Network Calls Dns Resolution in Request Path",
+      "description": "Layer: Network calls. Flag DNS or endpoint resolution in request paths without cache or resolver ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Network Calls Dns Resolution in Request Path matters because the pattern here, Layer: Network calls. Flag DNS or endpoint resolution in request paths without cache or resolver ownership, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Network Calls Dns Resolution in Request Path in Rust, add cache or resolver ownership or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_network_calls_hyper_connector_rebuilt_per_request",
+      "label": "Rust Perf Layer Network Calls Hyper Connector Rebuilt Per Request",
+      "description": "Layer: Network calls. Flag HTTP connector or TLS connector construction per request.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Network Calls Hyper Connector Rebuilt Per Request matters because the pattern here, Layer: Network calls. Flag HTTP connector or TLS connector construction per request, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Perf Layer Network Calls Hyper Connector Rebuilt Per Request in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_perf_layer_network_calls_reqwest_client_created_per_call",
+      "label": "Rust Perf Layer Network Calls Reqwest Client Created Per Call",
+      "description": "Layer: Network calls. Flag reqwest::Client construction per call instead of reuse per upstream.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Network Calls Reqwest Client Created Per Call matters because the pattern here, Layer: Network calls. Flag reqwest::Client construction per call instead of reuse per upstream, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Perf Layer Network Calls Reqwest Client Created Per Call in Rust, prefer reuse per upstream when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_perf_layer_network_calls_retry_without_backoff_jitter",
+      "label": "Rust Perf Layer Network Calls Retry without Backoff Jitter",
+      "description": "Layer: Network calls. Flag network retry loops without backoff and jitter.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Network Calls Retry without Backoff Jitter matters because the pattern here, Layer: Network calls. Flag network retry loops without backoff and jitter, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Network Calls Retry without Backoff Jitter in Rust, add backoff and jitter or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_network_calls_tls_config_loaded_per_request",
+      "label": "Rust Perf Layer Network Calls Tls Config Loaded Per Request",
+      "description": "Layer: Network calls. Flag rustls/native-tls configuration loading per request instead of shared immutable state.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Network Calls Tls Config Loaded Per Request matters because the pattern here, Layer: Network calls. Flag rustls/native-tls configuration loading per request instead of shared immutable state, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Perf Layer Network Calls Tls Config Loaded Per Request in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_perf_layer_profiling_benchmarking_alloc_sensitive_benchmark_without_alloc_counts",
+      "label": "Rust Perf Layer Profiling Benchmarking Alloc Sensitive Benchmark without Alloc Counts",
+      "description": "Layer: Profiling and benchmarking. Flag allocation-sensitive benchmarks that omit allocation counting or heap profiling.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Profiling Benchmarking Alloc Sensitive Benchmark without Alloc Counts matters because the pattern here, Layer: Profiling and benchmarking. Flag allocation-sensitive benchmarks that omit allocation counting or heap profiling, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Profiling Benchmarking Alloc Sensitive Benchmark without Alloc Counts in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_profiling_benchmarking_benchmark_missing_black_box",
+      "label": "Rust Perf Layer Profiling Benchmarking Benchmark Missing Black Box",
+      "description": "Layer: Profiling and benchmarking. Flag microbenchmarks that do not use black_box or otherwise consume results.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Profiling Benchmarking Benchmark Missing Black Box matters because the pattern here, Layer: Profiling and benchmarking. Flag microbenchmarks that do not use black_box or otherwise consume results, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Profiling Benchmarking Benchmark Missing Black Box in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_profiling_benchmarking_criterion_benchmark_includes_setup",
+      "label": "Rust Perf Layer Profiling Benchmarking Criterion Benchmark Includes Setup",
+      "description": "Layer: Profiling and benchmarking. Flag Criterion benchmarks that include setup in the measured closure instead of setup/measurement separation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Profiling Benchmarking Criterion Benchmark Includes Setup matters because the pattern here, Layer: Profiling and benchmarking. Flag Criterion benchmarks that include setup in the measured closure instead of setup/measurement separation, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Perf Layer Profiling Benchmarking Criterion Benchmark Includes Setup in Rust, prefer setup/measurement separation when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_perf_layer_profiling_benchmarking_load_test_payload_too_small",
+      "label": "Rust Perf Layer Profiling Benchmarking Load Test Payload Too Small",
+      "description": "Layer: Profiling and benchmarking. Flag performance tests using tiny payloads despite targeting large-input behavior.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Profiling Benchmarking Load Test Payload Too Small matters because the pattern here, Layer: Profiling and benchmarking. Flag performance tests using tiny payloads despite targeting large-input behavior, weakens the evidence that tests or review are supposed to provide.",
+      "fix": "For Rust Perf Layer Profiling Benchmarking Load Test Payload Too Small in Rust, tighten the tests until the failure mode, edge case, or assertion signal is obvious to a reviewer."
+    },
+    {
+      "id": "rust_perf_layer_profiling_benchmarking_optimization_comment_without_measurement",
+      "label": "Rust Perf Layer Profiling Benchmarking Optimization Comment without Measurement",
+      "description": "Layer: Profiling and benchmarking. Flag optimization comments without benchmark, profile, or trace evidence.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Profiling Benchmarking Optimization Comment without Measurement matters because the pattern here, Layer: Profiling and benchmarking. Flag optimization comments without benchmark, profile, or trace evidence, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Rust Perf Layer Profiling Benchmarking Optimization Comment without Measurement in Rust, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "rust_perf_layer_resource_pooling_buffer_pool_returns_oversized_vec",
+      "label": "Rust Perf Layer Resource Pooling Buffer Pool Returns Oversized Vec",
+      "description": "Layer: Resource pooling. Flag reusable Vec/String pools that retain oversized buffers after spikes.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Resource Pooling Buffer Pool Returns Oversized Vec matters because the pattern here, Layer: Resource pooling. Flag reusable Vec/String pools that retain oversized buffers after spikes, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Resource Pooling Buffer Pool Returns Oversized Vec in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_resource_pooling_connection_pool_without_limits",
+      "label": "Rust Perf Layer Resource Pooling Connection Pool without Limits",
+      "description": "Layer: Resource pooling. Flag connection pools missing max size, idle, or timeout controls.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Resource Pooling Connection Pool without Limits matters because the pattern here, Layer: Resource pooling. Flag connection pools missing max size, idle, or timeout controls, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Resource Pooling Connection Pool without Limits in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_resource_pooling_pool_created_per_request",
+      "label": "Rust Perf Layer Resource Pooling Pool Created Per Request",
+      "description": "Layer: Resource pooling. Flag database, HTTP, or worker pools created per request instead of process or dependency ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Resource Pooling Pool Created Per Request matters because the pattern here, Layer: Resource pooling. Flag database, HTTP, or worker pools created per request instead of process or dependency ownership, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Perf Layer Resource Pooling Pool Created Per Request in Rust, prefer process or dependency ownership when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_perf_layer_resource_pooling_semaphore_created_per_operation",
+      "label": "Rust Perf Layer Resource Pooling Semaphore Created Per Operation",
+      "description": "Layer: Resource pooling. Flag Semaphore or rate limiter construction per operation instead of shared dependency ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Resource Pooling Semaphore Created Per Operation matters because the pattern here, Layer: Resource pooling. Flag Semaphore or rate limiter construction per operation instead of shared dependency ownership, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Perf Layer Resource Pooling Semaphore Created Per Operation in Rust, prefer shared dependency ownership when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_perf_layer_resource_pooling_threadpool_without_shutdown_owner",
+      "label": "Rust Perf Layer Resource Pooling Threadpool without Shutdown Owner",
+      "description": "Layer: Resource pooling. Flag custom thread pools without explicit shutdown/drain ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Resource Pooling Threadpool without Shutdown Owner matters because the pattern here, Layer: Resource pooling. Flag custom thread pools without explicit shutdown/drain ownership, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Resource Pooling Threadpool without Shutdown Owner in Rust, add explicit shutdown/drain ownership or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_runtime_configuration_debug_assertions_expected_in_bench",
+      "label": "Rust Perf Layer Runtime Configuration Debug Assertions Expected in Bench",
+      "description": "Layer: Build and runtime configuration. Flag benchmark or performance docs that mix debug-assertion builds with release numbers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Runtime Configuration Debug Assertions Expected in Bench matters because the pattern here, Layer: Build and runtime configuration. Flag benchmark or performance docs that mix debug-assertion builds with release numbers, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Runtime Configuration Debug Assertions Expected in Bench in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_runtime_configuration_env_parsed_per_operation",
+      "label": "Rust Perf Layer Runtime Configuration Env Parsed Per Operation",
+      "description": "Layer: Build and runtime configuration. Flag environment parsing and type conversion per operation instead of startup config load.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Runtime Configuration Env Parsed Per Operation matters because the pattern here, Layer: Build and runtime configuration. Flag environment parsing and type conversion per operation instead of startup config load, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Perf Layer Runtime Configuration Env Parsed Per Operation in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_perf_layer_runtime_configuration_feature_flags_loaded_per_request",
+      "label": "Rust Perf Layer Runtime Configuration Feature Flags Loaded Per Request",
+      "description": "Layer: Build and runtime configuration. Flag feature flag or config files loaded in request paths.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Runtime Configuration Feature Flags Loaded Per Request matters because the pattern here, Layer: Build and runtime configuration. Flag feature flag or config files loaded in request paths, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Perf Layer Runtime Configuration Feature Flags Loaded Per Request in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_perf_layer_runtime_configuration_lto_codegen_claim_without_profile",
+      "label": "Rust Perf Layer Runtime Configuration Lto Codegen Claim without Profile",
+      "description": "Layer: Build and runtime configuration. Flag Cargo profile performance claims without benchmark notes or profile evidence.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Runtime Configuration Lto Codegen Claim without Profile matters because the pattern here, Layer: Build and runtime configuration. Flag Cargo profile performance claims without benchmark notes or profile evidence, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer Runtime Configuration Lto Codegen Claim without Profile in Rust, add benchmark notes or profile evidence or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_runtime_configuration_rayon_threads_set_in_library",
+      "label": "Rust Perf Layer Runtime Configuration Rayon Threads Set in Library",
+      "description": "Layer: Build and runtime configuration. Flag library code configuring global Rayon thread pools and overriding host policy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Runtime Configuration Rayon Threads Set in Library matters because the pattern here, Layer: Build and runtime configuration. Flag library code configuring global Rayon thread pools and overriding host policy, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Runtime Configuration Rayon Threads Set in Library in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_serialization_base64_roundtrip_same_process",
+      "label": "Rust Perf Layer Serialization Base64 Roundtrip Same Process",
+      "description": "Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside one process boundary.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Serialization Base64 Roundtrip Same Process matters because the pattern here, Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside one process boundary, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Serialization Base64 Roundtrip Same Process in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_serialization_bincode_or_postcard_for_tiny_messages",
+      "label": "Rust Perf Layer Serialization Bincode or Postcard for Tiny Messages",
+      "description": "Layer: Serialization and deserialization. Flag binary serialization setup for tiny in-process messages where direct structs or slices would do.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Serialization Bincode or Postcard for Tiny Messages matters because the pattern here, Layer: Serialization and deserialization. Flag binary serialization setup for tiny in-process messages where direct structs or slices would do, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Serialization Bincode or Postcard for Tiny Messages in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_serialization_gzip_encoder_per_tiny_payload",
+      "label": "Rust Perf Layer Serialization Gzip Encoder Per Tiny Payload",
+      "description": "Layer: Serialization and deserialization. Flag compression writers created for tiny payloads where CPU overhead dominates.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Serialization Gzip Encoder Per Tiny Payload matters because the pattern here, Layer: Serialization and deserialization. Flag compression writers created for tiny payloads where CPU overhead dominates, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Serialization Gzip Encoder Per Tiny Payload in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_serialization_serde_json_to_value_hot_path",
+      "label": "Rust Perf Layer Serialization Serde JSON to Value Hot Path",
+      "description": "Layer: Serialization and deserialization. Flag serde_json::Value decoding in hot typed paths where concrete structs avoid dynamic lookup.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Serialization Serde JSON to Value Hot Path matters because the pattern here, Layer: Serialization and deserialization. Flag serde_json::Value decoding in hot typed paths where concrete structs avoid dynamic lookup, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Serialization Serde JSON to Value Hot Path in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_serialization_serialize_for_hash_or_eq",
+      "label": "Rust Perf Layer Serialization Serialize for Hash or Eq",
+      "description": "Layer: Serialization and deserialization. Flag serialization used only to hash, compare, or deduplicate values.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer Serialization Serialize for Hash or Eq matters because the pattern here, Layer: Serialization and deserialization. Flag serialization used only to hash, compare, or deduplicate values, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer Serialization Serialize for Hash or Eq in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_perf_layer_string_handling_format_in_loop_for_simple_append",
+      "label": "Rust Perf Layer String Handling Format in Loop for Simple Append",
+      "description": "Layer: String handling. Flag format! in loops for simple string appends where write! or push_str can reuse buffers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer String Handling Format in Loop for Simple Append matters because the pattern here, Layer: String handling. Flag format! in loops for simple string appends where write! or push_str can reuse buffers, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Perf Layer String Handling Format in Loop for Simple Append in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_string_handling_regex_new_in_function_path",
+      "label": "Rust Perf Layer String Handling Regex New in Function Path",
+      "description": "Layer: String handling. Flag Regex::new in repeated functions or loops instead of LazyLock or once_cell.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer String Handling Regex New in Function Path matters because the pattern here, Layer: String handling. Flag Regex::new in repeated functions or loops instead of LazyLock or once_cell, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Perf Layer String Handling Regex New in Function Path in Rust, prefer LazyLock or once_cell when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_perf_layer_string_handling_split_collect_for_first_segment",
+      "label": "Rust Perf Layer String Handling Split Collect for First Segment",
+      "description": "Layer: String handling. Flag split().collect::<Vec<_>>() used only to access one segment.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer String Handling Split Collect for First Segment matters because the pattern here, Layer: String handling. Flag split().collect::<Vec<_>>() used only to access one segment, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer String Handling Split Collect for First Segment in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_perf_layer_string_handling_string_from_utf8_roundtrip",
+      "label": "Rust Perf Layer String Handling String From Utf8 Roundtrip",
+      "description": "Layer: String handling. Flag String/Vec<u8> roundtrips without transformation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer String Handling String From Utf8 Roundtrip matters because the pattern here, Layer: String handling. Flag String/Vec<u8> roundtrips without transformation, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Perf Layer String Handling String From Utf8 Roundtrip in Rust, add transformation or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_perf_layer_string_handling_to_lowercase_compare",
+      "label": "Rust Perf Layer String Handling to Lowercase Compare",
+      "description": "Layer: String handling. Flag to_lowercase/to_uppercase comparisons where eq_ignore_ascii_case or normalized keys avoid allocation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Perf Layer String Handling to Lowercase Compare matters because the pattern here, Layer: String handling. Flag to_lowercase/to_uppercase comparisons where eq_ignore_ascii_case or normalized keys avoid allocation, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Perf Layer String Handling to Lowercase Compare in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
       "id": "rust_pointer_chasing_vec_box",
       "label": "Rust Pointer Chasing Vec Box",
       "description": "Pointer-heavy boxed vector-style storage that may hurt cache locality.",

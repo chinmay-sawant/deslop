@@ -1,0 +1,18 @@
+import pandas as pd
+
+
+def load_users(path):
+    return pd.read_csv(path, dtype={"user_id": int, "name": str, "email": str})
+
+
+def load_transactions(path):
+    df = pd.read_csv(path, dtype={
+        "tx_id": int,
+        "amount": float,
+        "timestamp": "datetime64[ns]",
+    })
+    return df
+
+
+def load_products(path):
+    return pd.read_csv(path, dtype={"sku": str, "price": float}, index_col=0)

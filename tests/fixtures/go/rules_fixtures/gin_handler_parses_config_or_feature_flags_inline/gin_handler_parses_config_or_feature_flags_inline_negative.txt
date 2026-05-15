@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_parses_config_or_feature_flags_inline: Handlers that read feature flags, tenant configuration, or rollout toggles directly instead of using injected policy/config abstractions.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule046NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule046NegativeService interface {
+	Run(context.Context, Rule046NegativeRecord) error
+}
+
+func scenario046Negative(ctx context.Context, service Rule046NegativeService, input Rule046NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

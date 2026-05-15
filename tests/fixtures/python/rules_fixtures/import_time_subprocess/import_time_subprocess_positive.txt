@@ -1,0 +1,18 @@
+import subprocess
+
+result = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True)
+GIT_COMMIT_HASH = result.stdout.strip()
+
+result = subprocess.run(["whoami"], capture_output=True, text=True)
+CURRENT_USER = result.stdout.strip()
+
+result = subprocess.run(["openssl", "version"], capture_output=True, text=True)
+OPENSSL_VERSION = result.stdout.strip()
+
+
+def get_commit_hash() -> str:
+    return GIT_COMMIT_HASH
+
+
+def get_current_user() -> str:
+    return CURRENT_USER

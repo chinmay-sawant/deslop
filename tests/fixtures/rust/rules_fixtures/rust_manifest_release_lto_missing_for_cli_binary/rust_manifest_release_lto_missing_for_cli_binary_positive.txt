@@ -1,0 +1,4 @@
+pub fn release_lto_missing() -> bool {
+    let release_profile = "[profile.release]\nopt-level = 3";
+    !release_profile.contains("lto")
+}

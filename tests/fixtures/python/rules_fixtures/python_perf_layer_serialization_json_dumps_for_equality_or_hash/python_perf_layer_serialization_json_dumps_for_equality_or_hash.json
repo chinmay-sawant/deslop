@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_serialization_json_dumps_for_equality_or_hash",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag json.dumps used only for equality checks, hashing, or dedup keys.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

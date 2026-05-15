@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for create_single_in_loop_instead_of_batches: GORM .Create(...) used inside loops with no visible CreateInBatches(...) path in the same function.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule252NegativeRecord struct { ID int }
+
+func scenario252Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule252NegativeRecord{}).Error
+}

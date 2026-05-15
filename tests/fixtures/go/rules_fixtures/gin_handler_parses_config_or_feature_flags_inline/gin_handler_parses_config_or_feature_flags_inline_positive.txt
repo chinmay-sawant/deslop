@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for gin_handler_parses_config_or_feature_flags_inline: Handlers that read feature flags, tenant configuration, or rollout toggles directly instead of using injected policy/config abstractions.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func GetCheckoutOptionsHandler(c *gin.Context) {
+	enableNewFlow, _ := strconv.ParseBool(os.Getenv("ENABLE_NEW_CHECKOUT"))
+	maxItems, _ := strconv.Atoi(os.Getenv("MAX_CHECKOUT_ITEMS"))
+	tenantFeature := os.Getenv("TENANT_FEATURE_FLAG")
+
+	if tenantFeature == "beta" || enableNewFlow {
+		c.JSON(http.StatusOK, gin.H{
+			"flow":        "new",
+			"max_items":   maxItems,
+			"tenant_mode": tenantFeature,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"flow":      "legacy",
+		"max_items": 10,
+	})
+}

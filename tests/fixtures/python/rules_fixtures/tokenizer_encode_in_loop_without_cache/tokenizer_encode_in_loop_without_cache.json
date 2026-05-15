@@ -1,0 +1,14 @@
+{
+  "id": "tokenizer_encode_in_loop_without_cache",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Tokenizer encode calls repeated inside loops without caching or batching signals.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

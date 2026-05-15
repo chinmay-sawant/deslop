@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_collect_all_then_filter_sequentially",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `par_iter().map(...).collect::<Vec<_>>()` immediately followed by sequential filtering or flattening that could stay in the parallel pipeline.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

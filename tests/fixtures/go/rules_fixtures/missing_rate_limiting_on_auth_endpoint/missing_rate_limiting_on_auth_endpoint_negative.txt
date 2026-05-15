@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for missing_rate_limiting_on_auth_endpoint: login/authentication handler functions (name contains `Login`, `Authenticate`, `SignIn`) that don't reference rate limiting, throttling, or brute-force protection mechanisms
+// fixture polarity: negative; family: security; severity: warning.
+type Rule725NegativeRecordLimiter interface { Allow(string) bool }
+
+func Loginscenario725Negative(w http.ResponseWriter, r *http.Request, limiter Rule725NegativeRecordLimiter) {
+	if !limiter.Allow(r.RemoteAddr) { w.WriteHeader(http.StatusTooManyRequests); return }
+	w.WriteHeader(http.StatusOK)
+}

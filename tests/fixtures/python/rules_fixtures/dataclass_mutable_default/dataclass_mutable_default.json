@@ -1,0 +1,14 @@
+{
+  "id": "dataclass_mutable_default",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Dataclass fields that use mutable defaults instead of default_factory.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

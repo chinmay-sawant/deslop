@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_lazy_loading_eager_template_compile_for_unused_views",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Lazy loading. Flag compiling templates for disabled or rarely used views during startup.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

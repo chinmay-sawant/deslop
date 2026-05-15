@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_recursive_walk_without_depth_guard",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag recursive AST walkers over repository input without an explicit depth guard, iterative cursor, or stack budget.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

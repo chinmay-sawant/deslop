@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_flatten_catchall",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "#[serde(flatten)] catch-all maps or loose value bags that absorb unknown fields.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

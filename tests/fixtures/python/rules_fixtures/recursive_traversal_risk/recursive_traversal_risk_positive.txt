@@ -1,0 +1,26 @@
+import os
+
+
+def find_all_python_files(root: str) -> list[str]:
+    results = []
+    for entry in os.listdir(root):
+        path = os.path.join(root, entry)
+        if os.path.isdir(path):
+            results.extend(find_all_python_files(path))
+        elif entry.endswith(".py"):
+            results.append(path)
+    return results
+
+
+def count_nodes(node: dict) -> int:
+    total = 1
+    for child in node.get("children", []):
+        total += count_nodes(child)
+    return total
+
+
+def flatten_tree(tree: dict) -> list[dict]:
+    result = [tree]
+    for child in tree.get("children", []):
+        result.extend(flatten_tree(child))
+    return result

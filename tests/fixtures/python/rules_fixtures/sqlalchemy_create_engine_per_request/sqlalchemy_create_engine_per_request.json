@@ -1,0 +1,14 @@
+{
+  "id": "sqlalchemy_create_engine_per_request",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "SQLAlchemy engines are created on request or handler paths instead of being process-scoped.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

@@ -1,0 +1,26 @@
+from typing import Optional
+
+def get_user_name(user: Optional[dict]) -> str:
+    if user is None:
+        return "Unknown"
+    return user["name"]
+
+def process_order(order: Optional[dict]) -> float:
+    if order is None:
+        return 0.0
+    return order["items"][0]["price"] * order["quantity"]
+
+def format_address(address: Optional[dict]) -> str:
+    if address is None:
+        return ""
+    return f"{address['street']}, {address['city']}, {address['state']} {address['zip']}"
+
+def calculate_total(items: Optional[list]) -> float:
+    if items is None:
+        return 0.0
+    return sum(item["amount"] for item in items)
+
+def get_config_value(config: Optional[dict], key: str) -> Optional[str]:
+    if config is None:
+        return None
+    return config.get(key)

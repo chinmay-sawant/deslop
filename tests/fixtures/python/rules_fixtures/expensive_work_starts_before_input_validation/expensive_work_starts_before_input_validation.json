@@ -1,0 +1,14 @@
+{
+  "id": "expensive_work_starts_before_input_validation",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions that begin heavy computation or I/O before validating cheap preconditions.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

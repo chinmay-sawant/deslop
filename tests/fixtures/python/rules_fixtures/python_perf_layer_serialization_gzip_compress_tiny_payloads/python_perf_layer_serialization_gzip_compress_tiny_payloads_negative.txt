@@ -1,0 +1,26 @@
+import gzip
+import json
+
+MIN_COMPRESS_SIZE = 1024
+
+
+def compress_metrics(metrics: dict) -> bytes:
+    payload = json.dumps(metrics).encode("utf-8")
+    if len(payload) < MIN_COMPRESS_SIZE:
+        return payload
+    return gzip.compress(payload)
+
+
+def compress_status(status: dict) -> bytes:
+    data = json.dumps(status).encode()
+    if len(data) < MIN_COMPRESS_SIZE:
+        return data
+    return gzip.compress(data)
+
+
+def send_heartbeat() -> bytes:
+    heartbeat = {"ts": 1234567890, "status": "alive"}
+    payload = json.dumps(heartbeat).encode()
+    if len(payload) < MIN_COMPRESS_SIZE:
+        return payload
+    return gzip.compress(payload)

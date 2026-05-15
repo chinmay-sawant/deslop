@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for request_dto_contains_gorm_tags: Request DTOs that carry persistence-only `gorm` tags.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type CreateOrderRequest struct {
+	CustomerID  int     `json:"customer_id" gorm:"column:customer_id"`
+	ProductName string  `json:"product_name" gorm:"column:product_name"`
+	Quantity    int     `json:"quantity" gorm:"column:qty"`
+	TotalAmount float64 `json:"total_amount" gorm:"column:total_amount"`
+}
+
+func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
+	var req CreateOrderRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "created"})
+}

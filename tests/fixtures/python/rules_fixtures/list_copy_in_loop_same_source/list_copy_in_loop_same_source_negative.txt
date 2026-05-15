@@ -1,0 +1,19 @@
+def apply_filters(data: list[dict], filters: list) -> list[dict]:
+    result = list(data)
+    for f in filters:
+        result = [item for item in result if f(item)]
+    return result
+
+
+def process_with_checkpoints(records: list[dict]) -> list[dict]:
+    record_ids = {r["id"] for r in records}
+    processed = []
+    for record in records:
+        if record["id"] in record_ids:
+            processed.append(transform(record))
+    return processed
+
+
+def validate_against_source(items: list[dict], source: list[dict]) -> list[dict]:
+    source_refs = {s["id"] for s in source}
+    return [item for item in items if item["ref"] in source_refs]

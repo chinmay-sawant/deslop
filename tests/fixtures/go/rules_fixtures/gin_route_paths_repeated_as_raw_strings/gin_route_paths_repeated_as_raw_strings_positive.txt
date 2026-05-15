@@ -1,0 +1,42 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for gin_route_paths_repeated_as_raw_strings: Repeated route path literals that should be centralized or grouped more intentionally.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func SetupRoutes(r *gin.Engine) {
+	r.GET("/api/v1/users", listUsers)
+	r.POST("/api/v1/users", createUser)
+	r.GET("/api/v1/users/:id", getUser)
+	r.PUT("/api/v1/users/:id", updateUser)
+	r.DELETE("/api/v1/users/:id", deleteUser)
+}
+
+func listUsers(c *gin.Context) {
+	c.Redirect(http.StatusMovedPermanently, "/api/v1/users")
+}
+
+func createUser(c *gin.Context) {
+	c.Header("Location", "/api/v1/users/123")
+	c.JSON(http.StatusCreated, gin.H{"id": "123"})
+}
+
+func getUser(c *gin.Context) {
+	logRoute("/api/v1/users/" + c.Param("id"))
+	c.JSON(http.StatusOK, gin.H{"id": c.Param("id")})
+}
+
+func updateUser(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"updated": "/api/v1/users/" + c.Param("id")})
+}
+
+func deleteUser(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"deleted": "/api/v1/users/" + c.Param("id")})
+}
+
+func logRoute(path string) {}

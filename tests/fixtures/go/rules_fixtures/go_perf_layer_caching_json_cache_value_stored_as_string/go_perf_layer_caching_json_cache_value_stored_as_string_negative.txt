@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+)
+
+// scenario for go_perf_layer_caching_json_cache_value_stored_as_string: Layer: Caching. Flag caches that store JSON strings only to unmarshal them again before every use.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule511NegativeRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario511Negative(writer io.Writer, value Rule511NegativeRecord) error {
+	return json.NewEncoder(writer).Encode(value)
+}

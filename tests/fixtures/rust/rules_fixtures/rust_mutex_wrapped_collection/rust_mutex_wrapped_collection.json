@@ -1,0 +1,14 @@
+{
+  "id": "rust_mutex_wrapped_collection",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Collection-plus-lock fields embedded directly in public or central state structs.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

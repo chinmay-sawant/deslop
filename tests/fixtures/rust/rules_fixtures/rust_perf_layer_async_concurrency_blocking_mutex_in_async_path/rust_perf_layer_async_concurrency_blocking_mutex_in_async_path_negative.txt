@@ -1,0 +1,15 @@
+use tokio::net::TcpListener;
+use tokio::sync::Mutex;
+
+async fn handle_connections(listener: TcpListener, state: Mutex<Vec<String>>) {
+    loop {
+        let (stream, _) = listener.accept().await.unwrap();
+        let addr = stream.peer_addr().unwrap().to_string();
+        let mut guard = state.lock().await;
+        guard.push(addr);
+        drop(guard);
+        process_stream(stream).await;
+    }
+}
+
+async fn process_stream(_stream: tokio::net::TcpStream) {}

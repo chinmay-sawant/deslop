@@ -1,0 +1,29 @@
+from celery import group, chord, chain
+from myapp.tasks import send_notification, process_item, generate_report
+
+
+def notify_all_users(users):
+    job = group(send_notification.s(user.email, "Your report is ready") for user in users)
+    job.apply_async()
+
+
+def batch_process_items(items):
+    job = group(process_item.s(item.id) for item in items)
+    job.apply_async(countdown=10)
+
+
+def generate_reports_for_team(team_members):
+    job = group(generate_report.s(m.id, m.department) for m in team_members)
+    job.apply_async()
+
+
+def enqueue_orders(orders):
+    tasks = []
+    for order in orders:
+        tasks.append(
+            chain(
+                process_item.s(order.id),
+                send_notification.s(order.customer_email, "Order processed"),
+            )
+        )
+    group(tasks).apply_async()

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_write_passthrough_without_domain_validation: Write-style service methods that mostly forward to repositories without visible domain guard checks.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule184NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule184NegativeService interface {
+	Run(context.Context, Rule184NegativeRecord) error
+}
+
+func scenario184Negative(ctx context.Context, service Rule184NegativeService, input Rule184NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

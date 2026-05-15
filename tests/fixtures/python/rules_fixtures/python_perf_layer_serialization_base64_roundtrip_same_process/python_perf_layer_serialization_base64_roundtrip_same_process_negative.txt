@@ -1,0 +1,10 @@
+import json
+
+
+def process_request(config: dict) -> dict:
+    result = run_computation(config)
+    return {"result": result, "config": config}
+
+
+def run_computation(config: dict) -> int:
+    return sum(v for v in config.values() if isinstance(v, (int, float)))

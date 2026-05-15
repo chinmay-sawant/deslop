@@ -1,0 +1,33 @@
+from fastapi import FastAPI
+from fastapi.responses import Response
+
+app = FastAPI()
+
+
+@app.get("/export/csv")
+async def export_csv():
+    rows = []
+    for i in range(100000):
+        rows.append(f"{i},item_{i},{i * 10.5}")
+    body = "\n".join(rows)
+    return Response(content=body, media_type="text/csv")
+
+
+@app.get("/export/json")
+async def export_json():
+    import json
+    records = []
+    for i in range(50000):
+        records.append({"id": i, "name": f"record_{i}", "value": i * 3.14})
+    body = json.dumps(records)
+    return Response(content=body, media_type="application/json")
+
+
+@app.get("/download/report")
+async def download_report():
+    import csv, io
+    output = io.StringIO()
+    writer = csv.writer(output)
+    for i in range(200000):
+        writer.writerow([i, f"data_{i}", i * 2.7])
+    return Response(content=output.getvalue(), media_type="text/csv")

@@ -1,0 +1,27 @@
+import torch
+import torch.nn as nn
+from torch.optim import Adam
+
+model = nn.Sequential(nn.Linear(10, 64), nn.ReLU(), nn.Linear(64, 2))
+optimizer = Adam(model.parameters(), lr=0.001)
+criterion = nn.CrossEntropyLoss()
+
+def train_epoch(dataloader):
+    total_loss = 0.0
+    for batch_x, batch_y in dataloader:
+        optimizer.zero_grad()
+        output = model(batch_x)
+        loss = criterion(output, batch_y)
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    return total_loss / len(dataloader)
+
+def train_with_grad_clip(dataloader):
+    for batch_x, batch_y in dataloader:
+        optimizer.zero_grad()
+        output = model(batch_x)
+        loss = criterion(output, batch_y)
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        optimizer.step()

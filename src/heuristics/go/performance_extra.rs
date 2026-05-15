@@ -591,6 +591,14 @@ const ALIAS_RULES: &[AliasRuleSpec] = &[
         []
     ),
     alias_rule!(
+        "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call",
+        "context",
+        Loop,
+        "Layer: Async and concurrency. Flag context.WithTimeout creation inside tight retry loops when an outer deadline would suffice.",
+        ["{alias}.WithTimeout("],
+        []
+    ),
+    alias_rule!(
         "json_marshalindent_in_loop",
         "encoding/json",
         Loop,

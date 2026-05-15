@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_lazy_loading_lazy_once_hides_slow_first_request",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Lazy loading. Flag sync.Once lazy initialization on request paths without warmup or latency accounting.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

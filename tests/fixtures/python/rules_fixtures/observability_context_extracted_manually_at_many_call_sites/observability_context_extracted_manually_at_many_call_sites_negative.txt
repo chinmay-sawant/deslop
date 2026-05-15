@@ -1,0 +1,41 @@
+import logging
+from typing import Any, Dict
+from opentelemetry import trace
+from contextvars import ContextVar
+
+logger = logging.getLogger(__name__)
+
+_correlation_id: ContextVar[str] = ContextVar("correlation_id", default="")
+
+def set_correlation_id(cid: str) -> None:
+    _correlation_id.set(cid)
+
+def get_observability_context() -> Dict[str, Any]:
+    span = trace.get_current_span()
+    return {
+        "correlation_id": _correlation_id.get(),
+        "trace_id": format(span.get_span_context().trace_id, "032x"),
+        "span_id": format(span.get_span_context().span_id, "016x"),
+    }
+
+def log_operation(operation: str, **kwargs: Any) -> None:
+    ctx = get_observability_context()
+    logger.info(f"{operation}", extra={**ctx, **kwargs})
+
+def process_payment(order_id: int, amount: float, user_id: int) -> dict:
+    log_operation("payment.start", order_id=order_id, user_id=user_id)
+    result = _charge_card(amount)
+    log_operation("payment.complete", transaction_id=result["transaction_id"])
+    return result
+
+def _charge_card(amount: float) -> dict:
+    return {"transaction_id": "txn_123", "status": "success"}
+
+def refund_payment(order_id: int, amount: float, user_id: int) -> dict:
+    log_operation("refund.start", order_id=order_id, user_id=user_id)
+    result = _issue_refund(amount)
+    log_operation("refund.complete", refund_id=result["refund_id"])
+    return result
+
+def _issue_refund(amount: float) -> dict:
+    return {"refund_id": "ref_456", "status": "success"}

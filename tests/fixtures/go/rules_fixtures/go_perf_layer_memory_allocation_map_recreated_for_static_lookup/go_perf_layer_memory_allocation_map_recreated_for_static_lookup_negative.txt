@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_memory_allocation_map_recreated_for_static_lookup: Layer: Memory allocation. Flag static lookup maps rebuilt inside functions instead of package-level immutable tables.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule567NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario567Negative(records []Rule567NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

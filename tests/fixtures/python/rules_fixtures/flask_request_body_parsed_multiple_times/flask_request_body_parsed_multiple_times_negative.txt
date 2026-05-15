@@ -1,0 +1,20 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route("/register", methods=["POST"])
+def register():
+    data = request.get_json()
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+    role = data.get("role", "user")
+
+    if not email:
+        return jsonify({"error": "email required"}), 400
+
+    if len(password) < 8:
+        return jsonify({"error": "password too short"}), 400
+
+    save_user(username, email, password, role)
+    return jsonify({"status": "created"})

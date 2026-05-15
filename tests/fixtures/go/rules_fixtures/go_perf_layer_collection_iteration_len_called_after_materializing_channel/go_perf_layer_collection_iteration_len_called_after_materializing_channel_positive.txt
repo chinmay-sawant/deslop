@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_collection_iteration_len_called_after_materializing_channel: Layer: Collection iteration. Flag channel streams collected into slices only to measure length or emptiness.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func collectFromChannel(ch <-chan int) []int {
+	var items []int
+	for v := range ch {
+		items = append(items, v)
+	}
+	return items
+}
+
+func scenario515Positive(ch <-chan int) int {
+	items := collectFromChannel(ch)
+	return len(items)
+}

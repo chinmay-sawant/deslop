@@ -1,0 +1,14 @@
+{
+  "id": "fmt_sprintf_single_string_passthrough",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`fmt.Sprintf(\"%s\", s)` instead of returning or writing the string directly.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

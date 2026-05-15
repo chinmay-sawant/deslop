@@ -1,0 +1,31 @@
+use std::collections::HashMap;
+
+pub fn load_config(path: &str) -> Config {
+    let data = std::fs::read_to_string(path).unwrap();
+    let config: Config = serde_json::from_str(&data).unwrap();
+    config
+}
+
+pub fn get_value(map: &HashMap<String, String>, key: &str) -> String {
+    map.get(key).unwrap().clone()
+}
+
+pub fn parse_int(s: &str) -> i32 {
+    s.parse().unwrap()
+}
+
+pub fn connect(url: &str) -> Connection {
+    Connection::new(url).unwrap()
+}
+
+pub fn process_response(resp: &str) -> serde_json::Value {
+    serde_json::from_str(resp).unwrap()
+}
+
+pub fn read_file(path: &str) -> String {
+    std::fs::read_to_string(path).unwrap()
+}
+
+struct Config;
+struct Connection;
+impl Connection { fn new(_url: &str) -> Result<Self, Box<dyn std::error::Error>> { Ok(Self) } }

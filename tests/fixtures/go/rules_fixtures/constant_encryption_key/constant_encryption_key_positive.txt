@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"crypto/aes"
+	"crypto/cipher"
+)
+
+// scenario for constant_encryption_key: `[]byte("...")` used directly as arguments to `cipher.NewGCM`, `aes.NewCipher`, or similar encryption constructor calls
+// fixture polarity: positive; family: security; severity: error.
+func scenario699Positive(payload []byte) ([]byte, error) {
+	block, err := aes.NewCipher([]byte("0123456789abcdef"))
+	if err != nil { return nil, err }
+	gcm, err := cipher.NewGCM(block)
+	if err != nil { return nil, err }
+	return gcm.Seal(nil, make([]byte, gcm.NonceSize()), payload, nil), nil
+}

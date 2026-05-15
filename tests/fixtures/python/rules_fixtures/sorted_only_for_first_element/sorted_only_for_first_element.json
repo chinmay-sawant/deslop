@@ -1,0 +1,14 @@
+{
+  "id": "sorted_only_for_first_element",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "A sequence is fully sorted even though only the first or smallest element is used.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

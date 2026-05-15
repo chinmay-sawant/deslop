@@ -1,0 +1,14 @@
+{
+  "id": "rust_anyhow_eager_format_context",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `.context(format!(...))` where `.with_context(|| format!(...))` would avoid allocation on the success path.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "bun_select_scan_without_limit",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Bun select-and-scan request paths without a visible limit or pagination marker.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

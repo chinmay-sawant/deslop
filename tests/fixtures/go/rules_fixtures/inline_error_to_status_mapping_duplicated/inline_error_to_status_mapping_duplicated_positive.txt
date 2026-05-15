@@ -1,0 +1,48 @@
+package rulefixtures
+
+import (
+	"errors"
+	"net/http"
+)
+
+// scenario for inline_error_to_status_mapping_duplicated: Repeated error-to-status translation switches across handlers.
+// fixture polarity: positive; family: architecture; severity: info.
+
+var (
+	ErrNotFound    = errors.New("not found")
+	ErrForbidden   = errors.New("forbidden")
+	ErrValidation  = errors.New("validation")
+)
+
+func GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	if err := fetchUser(r.URL.Query().Get("id")); err != nil {
+		switch {
+		case errors.Is(err, ErrNotFound):
+			http.Error(w, "user not found", http.StatusNotFound)
+		case errors.Is(err, ErrForbidden):
+			http.Error(w, "access denied", http.StatusForbidden)
+		default:
+			http.Error(w, "internal error", http.StatusInternalServerError)
+		}
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func GetOrderHandler(w http.ResponseWriter, r *http.Request) {
+	if err := fetchOrder(r.URL.Query().Get("id")); err != nil {
+		switch {
+		case errors.Is(err, ErrNotFound):
+			http.Error(w, "order not found", http.StatusNotFound)
+		case errors.Is(err, ErrForbidden):
+			http.Error(w, "access denied", http.StatusForbidden)
+		default:
+			http.Error(w, "internal error", http.StatusInternalServerError)
+		}
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func fetchUser(id string) error  { return ErrNotFound }
+func fetchOrder(id string) error { return ErrForbidden }

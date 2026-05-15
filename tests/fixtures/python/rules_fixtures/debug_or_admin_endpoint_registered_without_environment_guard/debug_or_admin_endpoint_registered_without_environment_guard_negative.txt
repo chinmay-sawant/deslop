@@ -1,0 +1,30 @@
+import os
+
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok"})
+
+
+if os.environ.get("FLASK_ENV") == "development":
+    @app.route("/debug/config")
+    def debug_config():
+        return jsonify({"env": dict(os.environ), "cwd": os.getcwd()})
+
+    @app.route("/debug/slow-query")
+    def debug_slow_query():
+        import time
+        time.sleep(5)
+        return jsonify({"done": True})
+
+
+if os.environ.get("ADMIN_ENABLED", "").lower() == "true":
+    @app.route("/admin/reset-cache")
+    def admin_reset_cache():
+        import importlib
+        importlib.invalidate_caches()
+        return jsonify({"cache": "cleared"})

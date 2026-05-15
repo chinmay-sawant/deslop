@@ -1,0 +1,14 @@
+{
+  "id": "pytest_parametrize_with_single_test_case",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "@pytest.mark.parametrize applied with only one parameter set; use a plain test function instead.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

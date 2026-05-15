@@ -1,0 +1,31 @@
+from unittest.mock import Mock
+from typing import Any
+
+import pytest
+
+
+def get_user(user_id: int) -> dict:
+    return {"id": user_id, "name": "John", "email": "john@example.com"}
+
+
+def get_user_count() -> int:
+    return 42
+
+
+class TestUserFunctions:
+    def test_get_user_returns_dict(self):
+        mock_get_user = Mock(return_value={"id": 1, "name": "Jane", "email": "jane@example.com"})
+        result = mock_get_user(1)
+        assert isinstance(result, dict)
+        assert result["name"] == "Jane"
+
+    def test_get_user_count_returns_int(self):
+        mock_count = Mock(return_value=42)
+        result = mock_count()
+        assert isinstance(result, int)
+        assert result == 42
+
+    def test_process_user(self):
+        mock_fetch = Mock(return_value={"id": 1, "status": "active"})
+        result = mock_fetch(1)
+        assert result["status"] == "active"

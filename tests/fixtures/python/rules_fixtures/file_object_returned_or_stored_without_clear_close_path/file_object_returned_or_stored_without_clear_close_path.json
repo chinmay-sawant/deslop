@@ -1,0 +1,14 @@
+{
+  "id": "file_object_returned_or_stored_without_clear_close_path",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "File object returned from a function or stored in an attribute without a guaranteed close path.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

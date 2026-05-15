@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for transaction_helper_outside_repository_or_uow_package: Transaction helpers buried in handlers or services instead of a repository or unit-of-work package.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule208NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule208NegativeService interface {
+	Run(context.Context, Rule208NegativeRecord) error
+}
+
+func scenario208Negative(ctx context.Context, service Rule208NegativeService, input Rule208NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

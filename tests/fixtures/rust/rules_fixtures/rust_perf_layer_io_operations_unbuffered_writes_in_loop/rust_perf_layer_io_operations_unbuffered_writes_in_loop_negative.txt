@@ -1,0 +1,19 @@
+use std::fs::File;
+use std::io::{BufWriter, Write};
+
+fn write_csv(path: &str, rows: &[Row]) -> std::io::Result<()> {
+    let file = File::create(path)?;
+    // GOOD: BufWriter batches small writes into larger syscalls
+    let mut writer = BufWriter::new(file);
+    for row in rows {
+        writeln!(writer, "{},{},{}", row.id, row.name, row.value)?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+struct Row {
+    id: u64,
+    name: String,
+    value: f64,
+}

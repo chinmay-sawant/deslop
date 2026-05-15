@@ -1,0 +1,14 @@
+{
+  "id": "http_server_bootstrap_without_graceful_shutdown_flow",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "HTTP server startup paths that lack visible signal handling and Shutdown ownership for graceful shutdown.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

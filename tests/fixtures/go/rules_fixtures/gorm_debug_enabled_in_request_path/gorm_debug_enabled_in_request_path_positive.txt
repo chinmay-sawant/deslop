@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_debug_enabled_in_request_path: GORM debug logging enabled on request paths.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule265PositiveRecord struct {
+	ID       int
+	TenantID int
+	Name     string
+}
+
+func scenario265Positive(db *gorm.DB, tenantID int) ([]Rule265PositiveRecord, error) {
+	var items []Rule265PositiveRecord
+	if err := db.Debug().Where("tenant_id = ?", tenantID).Find(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_bytes_to_vec_for_readonly_use",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `bytes.to_vec()` on byte slices that are only read afterward.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,44 @@
+import asyncio
+import aiohttp
+import aiofiles
+
+async def fetch_user_data(user_id: str) -> dict:
+    await asyncio.sleep(2)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://api.example.com/users/{user_id}") as resp:
+            return await resp.json()
+
+async def process_batch(user_ids: list[str]) -> list[dict]:
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        for uid in user_ids:
+            tasks.append(session.get(f"https://api.example.com/users/{uid}"))
+        responses = await asyncio.gather(*tasks)
+        return [await r.json() for r in responses]
+
+async def heavy_computation(data: list[float]) -> float:
+    loop = asyncio.get_running_loop()
+    result = await loop.run_in_executor(None, _compute, data)
+    return result
+
+def _compute(data: list[float]) -> float:
+    total = 0.0
+    for i in range(10_000_000):
+        total += i * 0.1
+    return total
+
+async def save_to_disk(path: str, content: bytes) -> None:
+    async with aiofiles.open(path, "wb") as f:
+        await f.write(content)
+
+async def background_sync():
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, _query_db)
+
+def _query_db():
+    import sqlite3
+    conn = sqlite3.connect("cache.db")
+    cursor = conn.execute("SELECT * FROM items")
+    rows = cursor.fetchall()
+    conn.close()
+    return rows

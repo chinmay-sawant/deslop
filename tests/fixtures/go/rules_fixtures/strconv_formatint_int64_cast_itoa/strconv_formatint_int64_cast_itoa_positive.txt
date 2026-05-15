@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"strconv"
+)
+
+// scenario for strconv_formatint_int64_cast_itoa: `strconv.FormatInt(int64(v), 10)` instead of `strconv.Itoa(v)`.
+// fixture polarity: positive; family: performance; severity: info.
+
+func scenario643Positive(ids []uint64) []string {
+	out := make([]string, 0, len(ids))
+	for _, id := range ids {
+		out = append(out, strconv.FormatInt(int64(id), 10))
+	}
+	return out
+}

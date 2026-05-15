@@ -1,0 +1,14 @@
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
+fn count_lines_matching(path: &str, pattern: &str) -> std::io::Result<usize> {
+    // GOOD: stream lines via BufReader, no need to load entire file
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+    let count = reader
+        .lines()
+        .filter_map(|l| l.ok())
+        .filter(|line| line.contains(pattern))
+        .count();
+    Ok(count)
+}

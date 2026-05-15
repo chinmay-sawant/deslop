@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for unscoped_query_without_explicit_danger_naming: `Unscoped()` usage in generic repository methods without a clearly dangerous or admin-only name.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule213NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule213NegativeService interface {
+	Run(context.Context, Rule213NegativeRecord) error
+}
+
+func scenario213Negative(ctx context.Context, service Rule213NegativeService, input Rule213NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

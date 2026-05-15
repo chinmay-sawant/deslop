@@ -1,0 +1,14 @@
+{
+  "id": "django_values_vs_full_model_in_loop",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Django loops hydrate full model instances where values(), values_list(), or only() would likely be cheaper.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

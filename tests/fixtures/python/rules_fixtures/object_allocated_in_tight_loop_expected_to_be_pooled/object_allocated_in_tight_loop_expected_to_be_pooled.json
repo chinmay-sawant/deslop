@@ -1,0 +1,14 @@
+{
+  "id": "object_allocated_in_tight_loop_expected_to_be_pooled",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Heavyweight object such as HTTPSession or DB connection allocated fresh on every loop iteration.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

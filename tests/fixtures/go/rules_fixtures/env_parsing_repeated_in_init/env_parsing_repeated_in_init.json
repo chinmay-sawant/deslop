@@ -1,0 +1,14 @@
+{
+  "id": "env_parsing_repeated_in_init",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "multiple `os.Getenv` + `strconv.Atoi` / `strconv.ParseBool` chains that could be replaced with a config struct + `envconfig` or `env` library",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

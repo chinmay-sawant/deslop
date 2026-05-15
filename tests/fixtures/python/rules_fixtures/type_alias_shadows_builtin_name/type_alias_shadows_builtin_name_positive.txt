@@ -1,0 +1,18 @@
+from typing import TypeAlias
+
+list: TypeAlias = list[str]
+dict: TypeAlias = dict[str, int]
+type: TypeAlias = str | int
+set: TypeAlias = set[str]
+tuple: TypeAlias = tuple[int, ...]
+int: TypeAlias = int | float
+str: TypeAlias = str | bytes
+float: TypeAlias = float | int
+bool: TypeAlias = bool | int
+bytes: TypeAlias = bytes | bytearray
+
+def process_items(items: list) -> dict:
+    result: dict = {}
+    for item in items:
+        result[item] = len(item)
+    return result

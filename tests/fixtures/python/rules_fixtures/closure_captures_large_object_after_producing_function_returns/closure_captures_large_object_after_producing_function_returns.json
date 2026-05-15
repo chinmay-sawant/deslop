@@ -1,0 +1,14 @@
+{
+  "id": "closure_captures_large_object_after_producing_function_returns",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Inner function or lambda captures a large local variable after the producer returns, preventing GC.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "cross_layer_import_violation_by_package_name",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Imports where package names clearly violate a layered direction such as `repository -> handler` or `model -> gin`.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

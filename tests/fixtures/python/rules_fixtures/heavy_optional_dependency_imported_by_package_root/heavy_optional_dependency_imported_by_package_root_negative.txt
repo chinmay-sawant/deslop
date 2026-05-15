@@ -1,0 +1,16 @@
+def process_data(data):
+    try:
+        import pandas as pd
+    except ImportError:
+        raise ImportError("pandas is required for process_data. Install with: pip install pandas")
+    return pd.DataFrame(data)
+
+def calculate_sum(numbers):
+    return sum(numbers)
+
+def train_model(dataset):
+    try:
+        import torch
+    except ImportError:
+        raise ImportError("torch is required for train_model. Install with: pip install torch")
+    return torch.nn.Linear(10, 1)

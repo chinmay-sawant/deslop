@@ -1,0 +1,14 @@
+{
+  "id": "rust_string_push_without_capacity_from_known_bound",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `String::new()` plus repeated `push_str`, `push`, or `write!` with a known bound and no capacity reservation.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

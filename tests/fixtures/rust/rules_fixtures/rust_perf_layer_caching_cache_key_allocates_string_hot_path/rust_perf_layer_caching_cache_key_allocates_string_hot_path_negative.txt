@@ -1,0 +1,28 @@
+use std::collections::HashMap;
+use std::borrow::Cow;
+
+#[derive(Hash, Eq, PartialEq, Clone)]
+struct CacheKey {
+    tenant_id: u64,
+    user_id: u64,
+}
+
+struct Cache {
+    store: HashMap<CacheKey, Vec<u8>>,
+}
+
+impl Cache {
+    fn get(&self, key: &CacheKey) -> Option<&Vec<u8>> {
+        self.store.get(key)
+    }
+
+    fn insert(&mut self, key: CacheKey, value: Vec<u8>) {
+        self.store.insert(key, value);
+    }
+}
+
+fn lookup_user(cache: &Cache, tenant_id: u64, user_id: u64) -> Option<Vec<u8>> {
+    // GOOD: structured key avoids String allocation
+    let key = CacheKey { tenant_id, user_id };
+    cache.get(&key).cloned()
+}

@@ -1,0 +1,14 @@
+{
+  "id": "bufio_reader_missing_for_small_read_loop",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "File or socket reads inside loops without visible bufio buffering.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

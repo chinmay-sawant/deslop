@@ -1,0 +1,15 @@
+def load_and_process(config_path):
+    with open(config_path, "r") as f:
+        lines = f.readlines()
+
+    content = "".join(lines)
+    version = lines[0].strip() if lines else ""
+    line_count = len(lines)
+    sections = [line for line in lines if line.startswith("[")]
+
+    return {
+        "version": version,
+        "content": content,
+        "line_count": line_count,
+        "sections": sections,
+    }

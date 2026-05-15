@@ -1,0 +1,22 @@
+def read_file_contents(path: str) -> str:
+    with open(path, "r") as f:
+        return f.read()
+
+
+def write_report(path: str, content: str) -> None:
+    with open(path, "w") as f:
+        f.write(content)
+
+
+def connect_and_query(host: str, port: int) -> list[dict]:
+    import socket
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.connect((host, port))
+        sock.send(b"QUERY ALL")
+        data = sock.recv(4096)
+    return parse_response(data)
+
+
+def parse_response(data: bytes) -> list[dict]:
+    return []

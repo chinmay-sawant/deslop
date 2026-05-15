@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for byte_string_conversion_in_loop: Byte-to-string or string-to-byte conversion observed inside loops in short-lived lookup or append paths.
+// fixture polarity: negative; family: hot_path; severity: info.
+func scenario346Negative(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.Contains(haystack, needle)
+}

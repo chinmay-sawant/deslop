@@ -1,0 +1,22 @@
+import os
+import redis
+
+
+_redis_client: redis.Redis | None = None
+
+
+def get_redis_client() -> redis.Redis:
+    global _redis_client
+    if _redis_client is None:
+        redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
+        _redis_client = redis.from_url(redis_url)
+        _redis_client.ping()
+    return _redis_client
+
+
+def get_cached_value(key: str):
+    return get_redis_client().get(key)
+
+
+def set_cached_value(key: str, value: str):
+    get_redis_client().set(key, value)

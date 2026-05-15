@@ -1,0 +1,14 @@
+{
+  "id": "loop_run_until_complete_inside_running_loop",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "loop.run_until_complete called from within a running event loop, which raises RuntimeError.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "enthusiastic_commentary",
+  "language": "python",
+  "family": "ai_smells",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Unusually enthusiastic or emoji-heavy production comments.",
+  "binding_location": "src/heuristics/python/ai_smells.rs"
+}

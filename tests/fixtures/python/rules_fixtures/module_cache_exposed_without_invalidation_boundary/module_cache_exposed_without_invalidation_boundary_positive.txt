@@ -1,0 +1,24 @@
+import time
+from typing import Any
+
+_cache: dict[str, tuple[Any, float]] = {}
+
+
+def get_cached_value(key: str) -> Any | None:
+    if key in _cache:
+        value, ts = _cache[key]
+        return value
+    return None
+
+
+def set_cached_value(key: str, value: Any, ttl: float = 300) -> None:
+    _cache[key] = (value, time.time())
+
+
+def invalidate_cache(key: str) -> None:
+    if key in _cache:
+        del _cache[key]
+
+
+def get_cache_stats() -> dict:
+    return {"size": len(_cache), "keys": list(_cache.keys())}

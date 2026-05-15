@@ -1,0 +1,14 @@
+{
+  "id": "http_response_body_not_drained_before_close",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

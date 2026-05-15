@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_replace_neg_one_replaceall: `strings.Replace(..., -1)` instead of `strings.ReplaceAll(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario662Positive(s, old, new string) string {
+	return strings.Replace(s, old, new, -1)
+}

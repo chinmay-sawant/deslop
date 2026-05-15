@@ -1,0 +1,45 @@
+import torch
+import torch.nn as nn
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+class TextClassifier(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.embedding = nn.Embedding(10000, 256)
+        self.lstm = nn.LSTM(256, 128)
+        self.fc = nn.Linear(128, 5)
+
+    def forward(self, x):
+        emb = self.embedding(x)
+        _, (hidden, _) = self.lstm(emb)
+        return self.fc(hidden.squeeze(0))
+
+
+model = TextClassifier()
+model.load_state_dict(torch.load("models/classifier.pt"))
+model.eval()
+
+
+@app.post("/classify")
+async def classify_text(text: str):
+    tokens = tokenize(text)
+    tensor = torch.tensor([tokens])
+    with torch.no_grad():
+        output = model(tensor)
+    return {"label": output.argmax().item()}
+
+
+@app.post("/batch_classify")
+async def batch_classify(texts: list[str]):
+    tokens = [tokenize(text) for text in texts]
+    tensor = torch.tensor(tokens)
+    with torch.no_grad():
+        output = model(tensor)
+    return {"labels": output.argmax(dim=-1).tolist()}
+
+
+def tokenize(text: str) -> list[int]:
+    return [ord(c) % 10000 for c in text]

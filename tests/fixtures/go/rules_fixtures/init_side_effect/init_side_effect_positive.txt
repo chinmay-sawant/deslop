@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"io"
+	"net/http"
+)
+
+// scenario for init_side_effect: init() functions that perform network, file-system, or subprocess side effects.
+// fixture polarity: positive; family: idioms; severity: info.
+var scenario387PositiveData []byte
+
+func init() {
+	resp, err := http.Get("https://example.com/config.json")
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	scenario387PositiveData = data
+}

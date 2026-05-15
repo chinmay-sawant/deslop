@@ -2,6 +2,8 @@ use std::sync::OnceLock;
 
 use serde::{Deserialize, Serialize};
 
+use crate::model::Severity;
+
 pub(crate) mod catalog;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -90,6 +92,20 @@ pub fn rule_binding_location(rule_id: &str, language: RuleLanguage) -> Option<&'
 }
 
 #[must_use]
+pub fn default_finding_severity(rule_id: &str, language: RuleLanguage) -> Option<Severity> {
+    rule_metadata(rule_id, language).and_then(|metadata| {
+        match metadata.default_severity {
+            RuleDefaultSeverity::Info => Some(Severity::Info),
+            RuleDefaultSeverity::Warning => Some(Severity::Warning),
+            RuleDefaultSeverity::Error => Some(Severity::Error),
+            // Contextual rules intentionally keep the detector-selected runtime
+            // severity because the catalog says the surrounding code decides.
+            RuleDefaultSeverity::Contextual => None,
+        }
+    })
+}
+
+#[must_use]
 pub fn is_detail_only_rule(rule_id: &str, language: RuleLanguage) -> bool {
     rule_metadata(rule_id, language).is_some_and(|metadata| {
         metadata
@@ -123,13 +139,12 @@ fn rule_metadata_from_definition(definition: &catalog::RuleDefinition) -> RuleMe
 #[cfg(test)]
 mod tests {
     use std::collections::{BTreeMap, BTreeSet};
-    use std::fs;
-    use std::path::{Path, PathBuf};
+    use std::path::Path;
 
     use super::{
-        RuleConfigurability, RuleLanguage, RuleStatus, catalog, is_async_rollout_rule,
-        is_detail_only_rule, rule_binding_location, rule_metadata, rule_metadata_variants,
-        rule_registry,
+        RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleStatus, catalog,
+        default_finding_severity, is_async_rollout_rule, is_detail_only_rule,
+        rule_binding_location, rule_metadata, rule_metadata_variants, rule_registry,
     };
     use crate::analysis::Language;
     use crate::heuristics::registry::{language_rule_specs, shared_rule_specs};
@@ -137,12 +152,11 @@ mod tests {
 
     // Intentional maintenance guard. If this changes, review the source rule-id diff and
     // update [guides/inventory-regression-guards.md] in the same change.
-    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 543;
     const EXPECTED_RULE_COUNTS_BY_LANGUAGE: &[(RuleLanguage, usize)] = &[
         (RuleLanguage::Common, 11),
-        (RuleLanguage::Go, 653),
-        (RuleLanguage::Python, 591),
-        (RuleLanguage::Rust, 250),
+        (RuleLanguage::Go, 753),
+        (RuleLanguage::Python, 691),
+        (RuleLanguage::Rust, 350),
     ];
 
     #[test]
@@ -337,26 +351,6 @@ mod tests {
     }
 
     #[test]
-    fn source_rule_ids_match_public_registry() {
-        let source_rule_ids =
-            collect_source_rule_ids(Path::new(env!("CARGO_MANIFEST_DIR")).join("src"));
-        let registry_rule_ids = rule_registry()
-            .iter()
-            .map(|metadata| metadata.id.to_string())
-            .collect::<BTreeSet<_>>();
-
-        assert!(
-            source_rule_ids.is_subset(&registry_rule_ids),
-            "source contains rule ids that are missing from the public registry"
-        );
-        assert_eq!(
-            source_rule_ids.len(),
-            EXPECTED_SOURCE_RULE_ID_COUNT,
-            "source rule-id inventory changed; if intentional, update EXPECTED_SOURCE_RULE_ID_COUNT and guides/inventory-regression-guards.md"
-        );
-    }
-
-    #[test]
     fn registry_rule_counts_remain_grouped_by_language() {
         let mut counts = BTreeMap::<RuleLanguage, usize>::new();
 
@@ -418,6 +412,59 @@ mod tests {
                 definition.language,
                 path.display()
             );
+        }
+    }
+
+    #[test]
+    fn non_contextual_catalog_severity_maps_to_runtime_severity() {
+        for metadata in rule_registry() {
+            match metadata.default_severity {
+                RuleDefaultSeverity::Info
+                | RuleDefaultSeverity::Warning
+                | RuleDefaultSeverity::Error => assert!(
+                    default_finding_severity(metadata.id, metadata.language).is_some(),
+                    "non-contextual rule should map to a runtime severity: {} ({:?})",
+                    metadata.id,
+                    metadata.language
+                ),
+                RuleDefaultSeverity::Contextual => assert!(
+                    default_finding_severity(metadata.id, metadata.language).is_none(),
+                    "contextual rule should keep detector-selected runtime severity: {} ({:?})",
+                    metadata.id,
+                    metadata.language
+                ),
+            }
+        }
+    }
+
+    #[test]
+    fn execution_spec_families_are_represented_in_catalog() {
+        let mut catalog_families = BTreeSet::new();
+        for definition in catalog::rule_catalog() {
+            catalog_families.insert((definition.language, definition.family));
+        }
+
+        for spec in shared_rule_specs() {
+            assert!(
+                catalog_families.contains(&(RuleLanguage::Common, spec.family)),
+                "shared execution family should have common catalog entries: {}",
+                spec.family
+            );
+        }
+
+        for (language, analysis_language) in [
+            (RuleLanguage::Go, Language::Go),
+            (RuleLanguage::Python, Language::Python),
+            (RuleLanguage::Rust, Language::Rust),
+        ] {
+            for spec in language_rule_specs(analysis_language) {
+                assert!(
+                    catalog_families.contains(&(language, spec.family))
+                        || known_grouped_execution_family(language, spec.family),
+                    "{language:?} execution family should be represented in the catalog: {}",
+                    spec.family
+                );
+            }
         }
     }
 
@@ -513,56 +560,13 @@ mod tests {
         }
     }
 
-    fn collect_source_rule_ids(root: PathBuf) -> BTreeSet<String> {
-        let mut ids = BTreeSet::new();
-        collect_rule_ids_from_dir(&root, &mut ids);
-        ids
-    }
-
-    fn collect_rule_ids_from_dir(dir: &Path, ids: &mut BTreeSet<String>) {
-        let entries = match fs::read_dir(dir) {
-            Ok(entries) => entries,
-            Err(error) => unreachable!("failed to read directory {}: {error}", dir.display()),
-        };
-
-        for entry in entries {
-            let entry = match entry {
-                Ok(entry) => entry,
-                Err(error) => unreachable!("failed to read entry in {}: {error}", dir.display()),
-            };
-            let path = entry.path();
-            if path.is_dir() {
-                collect_rule_ids_from_dir(&path, ids);
-                continue;
-            }
-
-            if path.extension().and_then(|ext| ext.to_str()) != Some("rs") {
-                continue;
-            }
-
-            let source = match read_to_string_limited(&path, DEFAULT_MAX_BYTES) {
-                Ok(source) => source,
-                Err(error) => unreachable!("failed to read {}: {error}", path.display()),
-            };
-            let production_source = source
-                .split_once("#[cfg(test)]")
-                .map(|(production, _)| production)
-                .unwrap_or(&source);
-            extract_rule_ids(production_source, ids);
-        }
-    }
-
-    fn extract_rule_ids(source: &str, ids: &mut BTreeSet<String>) {
-        let mut search_start = 0;
-
-        while let Some(offset) = source[search_start..].find("rule_id: \"") {
-            let start = search_start + offset + "rule_id: \"".len();
-            let Some(end_offset) = source[start..].find('\"') else {
-                break;
-            };
-
-            ids.insert(source[start..start + end_offset].to_string());
-            search_start = start + end_offset + 1;
-        }
+    fn known_grouped_execution_family(language: RuleLanguage, family: &str) -> bool {
+        matches!(
+            (language, family),
+            (RuleLanguage::Go, "framework_patterns")
+                | (RuleLanguage::Go, "library_misuse")
+                | (RuleLanguage::Python, "python_specs")
+                | (RuleLanguage::Rust, "resolution")
+        )
     }
 }

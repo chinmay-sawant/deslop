@@ -1,0 +1,14 @@
+{
+  "id": "gorm_model_outside_models_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "GORM-backed structs with `gorm` tags declared outside `model` or `models` packages unless an explicit `entity` or `schema` package already exists.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

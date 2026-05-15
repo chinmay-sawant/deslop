@@ -1,0 +1,14 @@
+{
+  "id": "rust_workspace_missing_resolver",
+  "language": "rust",
+  "family": "runtime_boundary",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Workspace Cargo manifests with multiple members but no explicit resolver version.",
+  "binding_location": "src/heuristics/rust/runtime_boundary.rs"
+}

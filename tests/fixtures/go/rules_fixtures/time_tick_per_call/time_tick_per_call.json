@@ -1,0 +1,14 @@
+{
+  "id": "time_tick_per_call",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`time.Tick(...)` on regular call paths instead of owning a reusable ticker.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

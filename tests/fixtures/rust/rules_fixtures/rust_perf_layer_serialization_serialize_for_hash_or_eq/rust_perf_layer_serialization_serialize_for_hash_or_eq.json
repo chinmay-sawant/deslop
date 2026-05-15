@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_serialization_serialize_for_hash_or_eq",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag serialization used only to hash, compare, or deduplicate values.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

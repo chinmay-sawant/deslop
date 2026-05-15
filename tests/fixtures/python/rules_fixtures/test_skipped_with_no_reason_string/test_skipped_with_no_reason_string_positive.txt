@@ -1,0 +1,21 @@
+import pytest
+import sys
+
+@pytest.mark.skip
+def test_feature_not_ready():
+    pass
+
+@pytest.mark.skipif(sys.platform == "win32")
+def test_linux_only():
+    pass
+
+@pytest.mark.skip
+def test_waiting_for_api():
+    pass
+
+def test_normal():
+    assert True
+
+@pytest.mark.skipif(sys.version_info < (3, 12))
+def test_requires_312():
+    pass

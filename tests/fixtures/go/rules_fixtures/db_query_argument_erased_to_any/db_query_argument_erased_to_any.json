@@ -1,0 +1,14 @@
+{
+  "id": "db_query_argument_erased_to_any",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Concrete DB arguments erased to `any` or `interface{}` immediately before query execution.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

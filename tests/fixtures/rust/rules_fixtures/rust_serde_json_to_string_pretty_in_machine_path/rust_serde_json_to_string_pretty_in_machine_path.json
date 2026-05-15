@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_json_to_string_pretty_in_machine_path",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `serde_json::to_string_pretty` in non-human-output hot paths, APIs, or report generation loops.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

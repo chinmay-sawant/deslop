@@ -1,0 +1,14 @@
+{
+  "id": "parsemultipartform_large_default_memory",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin handlers that call ParseMultipartForm(...) with large in-memory thresholds on request paths.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

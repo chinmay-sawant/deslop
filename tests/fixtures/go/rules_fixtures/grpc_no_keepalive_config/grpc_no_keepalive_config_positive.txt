@@ -1,0 +1,10 @@
+package rulefixtures
+
+import grpc "google.golang.org/grpc"
+
+// scenario for grpc_no_keepalive_config: `grpc.NewServer()` without keepalive server parameters in long-running services
+// fixture polarity: positive; family: library; severity: info.
+func scenario413Positive() *grpc.Server {
+	srv := grpc.NewServer()
+	return srv
+}

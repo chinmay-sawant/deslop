@@ -1,0 +1,14 @@
+{
+  "id": "gin_handler_returns_multiple_response_shapes",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that manually build several unrelated success payload shapes instead of delegating to clearer endpoints or render helpers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

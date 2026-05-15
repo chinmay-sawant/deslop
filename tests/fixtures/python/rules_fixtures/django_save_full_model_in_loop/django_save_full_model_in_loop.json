@@ -1,0 +1,14 @@
+{
+  "id": "django_save_full_model_in_loop",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Django code saves full model instances in loops without update_fields or bulk updates.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

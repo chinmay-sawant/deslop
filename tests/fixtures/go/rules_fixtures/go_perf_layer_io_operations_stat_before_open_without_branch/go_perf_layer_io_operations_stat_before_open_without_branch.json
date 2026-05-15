@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_io_operations_stat_before_open_without_branch",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag os.Stat checks immediately followed by open/read operations without using the stat result meaningfully.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

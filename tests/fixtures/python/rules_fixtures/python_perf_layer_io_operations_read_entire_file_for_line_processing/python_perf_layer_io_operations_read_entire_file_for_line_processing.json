@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_io_operations_read_entire_file_for_line_processing",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag read()/readlines() on files that are processed line by line.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

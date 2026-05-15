@@ -1,0 +1,14 @@
+{
+  "id": "background_goroutine_started_inside_transaction_scope",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Goroutines launched while relying on open transaction state.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

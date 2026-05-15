@@ -1,0 +1,29 @@
+import asyncio
+import json
+
+
+async def handle_request(data: bytes) -> dict:
+    parsed = json.loads(data)
+    
+    enriched = []
+    for item in parsed["items"]:
+        transformed = heavy_computation(item)
+        enriched.append(transformed)
+    
+    return {"results": enriched}
+
+
+async def process_batch(items: list[dict]) -> list[dict]:
+    results = []
+    for item in items:
+        embedding = compute_embedding(item["text"])
+        score = compute_similarity(embedding, item["target"])
+        results.append({**item, "score": score})
+    return results
+
+
+async def transform_payload(payload: dict) -> bytes:
+    validated = validate_schema(payload)
+    compressed = compress_data(validated)
+    encrypted = encrypt(compressed)
+    return encrypted

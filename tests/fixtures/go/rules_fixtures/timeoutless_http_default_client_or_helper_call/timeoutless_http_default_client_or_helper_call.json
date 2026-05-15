@@ -1,0 +1,14 @@
+{
+  "id": "timeoutless_http_default_client_or_helper_call",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "net/http helper calls or http.DefaultClient usage that carry no explicit application timeout.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

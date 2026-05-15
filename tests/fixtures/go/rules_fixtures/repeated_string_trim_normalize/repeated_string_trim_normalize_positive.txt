@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for repeated_string_trim_normalize: chains like `strings.TrimSpace(strings.ToLower(strings.TrimPrefix(s, ...)))` that scan the string multiple times
+// fixture polarity: positive; family: performance; severity: info.
+func scenario632Positive(inputs []string) []string {
+	var results []string
+	for _, s := range inputs {
+		s = strings.TrimSpace(s)
+		s = strings.ToLower(s)
+		results = append(results, s)
+	}
+	return results
+}

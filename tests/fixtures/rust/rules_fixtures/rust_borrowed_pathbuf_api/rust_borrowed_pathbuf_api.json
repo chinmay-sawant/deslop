@@ -1,0 +1,14 @@
+{
+  "id": "rust_borrowed_pathbuf_api",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public signatures that borrow &PathBuf instead of &Path.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

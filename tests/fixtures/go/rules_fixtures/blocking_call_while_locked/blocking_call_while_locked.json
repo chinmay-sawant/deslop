@@ -1,0 +1,14 @@
+{
+  "id": "blocking_call_while_locked",
+  "language": "go",
+  "family": "concurrency",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Potentially blocking calls observed between Lock and Unlock.",
+  "binding_location": "src/heuristics/go/concurrency.rs"
+}

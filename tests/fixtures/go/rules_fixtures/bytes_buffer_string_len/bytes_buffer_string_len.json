@@ -1,0 +1,14 @@
+{
+  "id": "bytes_buffer_string_len",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`len(buf.String())` instead of `buf.Len()`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

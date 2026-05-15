@@ -1,0 +1,26 @@
+from pydantic import BaseModel
+
+
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+
+
+def serialize_user(user: UserResponse) -> str:
+    return user.model_dump_json()
+
+
+def get_user_json(user_id: int) -> str:
+    user = fetch_user(user_id)
+    return user.model_dump_json()
+
+
+def build_api_response(items: list[UserResponse]) -> str:
+    serialized = [item.model_dump() for item in items]
+    return UserResponse.__pydantic_serializer__.to_json({"items": serialized}).decode()
+
+
+def export_users(users: list[UserResponse]) -> bytes:
+    payload = {"users": [u.model_dump() for u in users]}
+    return UserResponse.__pydantic_serializer__.to_json(payload)

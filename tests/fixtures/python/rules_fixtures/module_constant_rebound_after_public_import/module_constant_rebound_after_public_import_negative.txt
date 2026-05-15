@@ -1,0 +1,39 @@
+import os
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class ServiceConfig:
+    api_base_url: str = "https://api.example.com"
+    max_retries: int = 3
+    timeout: int = 30
+
+
+DEFAULT_CONFIG = ServiceConfig()
+
+
+def configure(config: ServiceConfig) -> ServiceConfig:
+    return config
+
+
+def make_request(path: str, config: ServiceConfig = DEFAULT_CONFIG) -> dict:
+    import requests
+
+    url = f"{config.api_base_url}{path}"
+    for attempt in range(config.max_retries):
+        try:
+            resp = requests.get(url, timeout=config.timeout)
+            return resp.json()
+        except Exception:
+            if attempt == config.max_retries - 1:
+                raise
+
+
+def health_check(config: ServiceConfig = DEFAULT_CONFIG) -> bool:
+    import requests
+
+    try:
+        requests.get(f"{config.api_base_url}/health", timeout=5)
+        return True
+    except Exception:
+        return False

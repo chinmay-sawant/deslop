@@ -1,0 +1,48 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for gin_handler_returns_multiple_response_shapes: Handlers that manually build several unrelated success payload shapes instead of delegating to clearer endpoints or render helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type UserSummary struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+}
+
+type UserDetail struct {
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Address string `json:"address"`
+	Phone   string `json:"phone"`
+}
+
+func GetUserHandler(c *gin.Context) {
+	view := c.Query("view")
+
+	if view == "detail" {
+		c.JSON(http.StatusOK, UserDetail{
+			ID:      "1",
+			Name:    "John",
+			Email:   "john@example.com",
+			Address: "123 Main St",
+			Phone:   "555-0100",
+		})
+		return
+	}
+
+	if view == "compact" {
+		c.JSON(http.StatusOK, gin.H{
+			"id":       "1",
+			"initials": "JD",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, UserSummary{ID: "1", Name: "John"})
+}

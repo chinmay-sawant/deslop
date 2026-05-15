@@ -1,0 +1,14 @@
+{
+  "id": "map_lookup_double_access",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`if _, ok := m[k]; ok { v := m[k] }` \u2014 two map lookups for the same key",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

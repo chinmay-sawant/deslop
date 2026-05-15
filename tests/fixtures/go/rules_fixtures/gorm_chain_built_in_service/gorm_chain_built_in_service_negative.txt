@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_chain_built_in_service: Services that own detailed ORM query shape instead of delegating to repositories.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule058NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule058NegativeService interface {
+	Run(context.Context, Rule058NegativeRecord) error
+}
+
+func scenario058Negative(ctx context.Context, service Rule058NegativeService, input Rule058NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

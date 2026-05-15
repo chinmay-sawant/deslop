@@ -1,0 +1,14 @@
+{
+  "id": "rust_format_macro_inside_append_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `format!` in loops when appending to an existing `String` would avoid temporary allocation.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

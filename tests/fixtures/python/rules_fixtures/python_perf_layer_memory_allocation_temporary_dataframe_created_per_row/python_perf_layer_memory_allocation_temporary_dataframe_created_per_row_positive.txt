@@ -1,0 +1,18 @@
+import pandas as pd
+
+def process_records(records):
+    results = []
+    for record in records:
+        df = pd.DataFrame([record])
+        df["total"] = df["price"] * df["quantity"]
+        df["tax"] = df["total"] * 0.08
+        results.append(df)
+    return pd.concat(results, ignore_index=True)
+
+def enrich_data(items):
+    enriched = []
+    for item in items:
+        df = pd.DataFrame({"value": [item["score"]]})
+        df["normalized"] = (df["value"] - df["value"].mean()) / df["value"].std()
+        enriched.append(df.iloc[0]["normalized"])
+    return enriched

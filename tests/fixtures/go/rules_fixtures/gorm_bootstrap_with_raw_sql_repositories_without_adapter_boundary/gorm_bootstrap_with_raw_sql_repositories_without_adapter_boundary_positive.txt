@@ -1,0 +1,29 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary: Codebases that bootstrap persistence with GORM but run repository queries through raw SQL without a clear adapter boundary.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule056PositiveRecord struct {
+	ID       int
+	TenantID int
+	Name     string
+}
+
+func scenario056Positive(db *gorm.DB, tenantID int) ([]Rule056PositiveRecord, error) {
+	var items []Rule056PositiveRecord
+	if err := db.Where("tenant_id = ?", tenantID).Find(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+func scenario056PositiveRaw(db *gorm.DB, tenantID string) ([]Rule056PositiveRecord, error) {
+	var items []Rule056PositiveRecord
+	if err := db.Raw("SELECT * FROM rule_056_positive_records WHERE tenant_id = ?", tenantID).Scan(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
+}

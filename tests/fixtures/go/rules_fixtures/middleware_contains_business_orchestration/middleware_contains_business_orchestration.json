@@ -1,0 +1,14 @@
+{
+  "id": "middleware_contains_business_orchestration",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Middleware that performs domain workflows instead of cross-cutting concerns such as auth, tracing, or request enrichment.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

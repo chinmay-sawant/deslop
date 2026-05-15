@@ -1,0 +1,14 @@
+{
+  "id": "rust_unsafe_raw_pointer_cast",
+  "language": "rust",
+  "family": "unsafe_soundness",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Unsafe raw pointer cast that depends on aliasing and lifetime guarantees.",
+  "binding_location": "src/heuristics/rust/unsafe_soundness.rs"
+}

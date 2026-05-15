@@ -1,0 +1,14 @@
+{
+  "id": "rust_anyhow_context_missing_on_boundary_io",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `?` on filesystem, environment, process, parser, config, or network calls in CLI/boundary code without `.context(...)` or `.with_context(...)`.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

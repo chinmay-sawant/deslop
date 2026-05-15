@@ -266,8 +266,12 @@ fn bootstrap_sequence_findings(file: &ParsedFile) -> Vec<Finding> {
             "Builder::new_current_thread(",
             "Client::new(",
             ".connect().await",
+            "connect_db().await",
+            "connect_cache().await",
+            "load_config().await",
         ];
-        if markers.iter().any(|marker| body.contains(marker)) {
+        let marker_hits = markers.iter().filter(|marker| body.contains(**marker)).count();
+        if marker_hits >= 2 {
             bootstrap_hits.push((
                 function.fingerprint.name.clone(),
                 function.fingerprint.start_line,

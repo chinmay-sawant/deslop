@@ -1,0 +1,66 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class UserNotFoundError(Exception):
+    pass
+
+
+class UserTimeoutError(Exception):
+    pass
+
+
+class DuplicateUserError(Exception):
+    pass
+
+
+def fetch_user(user_id: str) -> dict:
+    try:
+        return db.query(f"SELECT * FROM users WHERE id = '{user_id}'")
+    except UserNotFoundError:
+        return {"id": user_id, "status": "not_found"}
+    except UserTimeoutError:
+        return {"id": user_id, "status": "timeout"}
+    except DuplicateUserError:
+        raise ValueError("User already exists")
+
+
+class InsufficientFundsError(Exception):
+    pass
+
+
+class CardExpiredError(Exception):
+    pass
+
+
+class LimitExceededError(Exception):
+    pass
+
+
+def process_payment(amount: float) -> dict:
+    try:
+        return gateway.charge(amount)
+    except InsufficientFundsError:
+        return {"status": "declined", "reason": "funds"}
+    except CardExpiredError:
+        return {"status": "declined", "reason": "card_expired"}
+    except LimitExceededError:
+        return {"status": "declined", "reason": "limit"}
+
+
+class ServiceUnavailableError(Exception):
+    pass
+
+
+class ConnectionTimedOutError(Exception):
+    pass
+
+
+def connect_service(url: str):
+    try:
+        return connect(url)
+    except ServiceUnavailableError:
+        logger.warning("Service unavailable")
+    except ConnectionTimedOutError:
+        logger.warning("Connection timed out")

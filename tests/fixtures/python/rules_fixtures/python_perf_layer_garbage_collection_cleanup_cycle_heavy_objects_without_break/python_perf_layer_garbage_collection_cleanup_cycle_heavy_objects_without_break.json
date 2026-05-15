@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_garbage_collection_cleanup_cycle_heavy_objects_without_break",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag cyclic object graphs that keep large buffers alive after request or batch completion.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

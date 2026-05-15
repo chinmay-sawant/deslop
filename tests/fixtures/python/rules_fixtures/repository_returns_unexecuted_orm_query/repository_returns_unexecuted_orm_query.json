@@ -1,0 +1,14 @@
+{
+  "id": "repository_returns_unexecuted_orm_query",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repository method returns a raw ORM query object instead of executing it and returning domain values.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

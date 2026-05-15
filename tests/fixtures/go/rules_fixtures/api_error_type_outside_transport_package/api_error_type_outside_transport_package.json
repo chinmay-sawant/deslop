@@ -1,0 +1,14 @@
+{
+  "id": "api_error_type_outside_transport_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

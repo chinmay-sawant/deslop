@@ -1,0 +1,18 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+def handle_request_error(request_data: dict, error: Exception):
+    logger.error(f"Request failed: {error}. Full payload: {request_data}")
+
+def log_parse_failure(raw_input: str, error: Exception):
+    logger.warning(f"Failed to parse input: {raw_input}. Error: {error}")
+
+def log_validation_error(payload: dict, errors: list):
+    logger.error(f"Validation failed for payload: {payload}. Errors: {errors}")
+
+def log_response_error(response_body: str, status_code: int):
+    logger.error(f"Upstream returned {status_code}. Response body: {response_body}")
+
+def log_batch_failure(items: list[dict], error: Exception):
+    logger.error(f"Batch processing failed for {len(items)} items. Data: {items}. Error: {error}")

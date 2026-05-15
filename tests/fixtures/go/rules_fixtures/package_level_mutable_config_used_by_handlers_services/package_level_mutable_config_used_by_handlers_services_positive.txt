@@ -1,0 +1,36 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+)
+
+// scenario for package_level_mutable_config_used_by_handlers_services: Mutable package globals used as live config in request paths.
+// fixture polarity: positive; family: architecture; severity: info.
+type Config struct {
+	MaxRetries int
+	BaseURL    string
+}
+
+var Settings = Config{
+	MaxRetries: 3,
+	BaseURL:    "https://api.example.com",
+}
+
+func UpdateConfigHandler(w http.ResponseWriter, r *http.Request) {
+	Settings.MaxRetries = 5
+	Settings.BaseURL = r.URL.Query().Get("base_url")
+	fmt.Fprintf(w, "config updated")
+}
+
+func ServeRequest(w http.ResponseWriter, r *http.Request) {
+	client := &http.Client{}
+	for i := 0; i < Settings.MaxRetries; i++ {
+		resp, err := client.Get(Settings.BaseURL + "/data")
+		if err == nil {
+			fmt.Fprintf(w, "status: %d", resp.StatusCode)
+			return
+		}
+	}
+	http.Error(w, "all retries exhausted", http.StatusServiceUnavailable)
+}

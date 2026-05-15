@@ -1,0 +1,14 @@
+{
+  "id": "plugin_discovery_scans_filesystem_each_invocation",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag plugin or extension discovery that rescans disk on every invocation.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

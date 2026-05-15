@@ -57,9 +57,16 @@ const GORM_HOOK_METHODS: &[&str] = &[
 
 pub(crate) fn go_architecture_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let looks_like_test_source = file.is_test_file
+        || file
+            .imports
+            .iter()
+            .any(|import| import.path == "testing" || import.path.ends_with("/testing"));
 
-    if file.is_test_file {
+    if looks_like_test_source {
         findings.extend(test_architecture_findings(file));
+    }
+    if file.is_test_file {
         return findings;
     }
 
@@ -70,6 +77,25 @@ pub(crate) fn go_architecture_file_findings(file: &ParsedFile) -> Vec<Finding> {
             continue;
         }
         findings.extend(function_architecture_findings(file, function));
+        let body = function.body_text.as_str();
+        if body.contains("Decode(&")
+            && (body.contains("Vars(") || body.contains(".URL.Query().Get("))
+        {
+            findings.push(Finding {
+                rule_id: "multiple_bind_sources_into_same_struct_without_precedence_contract"
+                    .to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: function.fingerprint.start_line,
+                end_line: function.fingerprint.start_line,
+                message: "handler merges several request sources into one DTO inline".to_string(),
+                evidence: vec![
+                    "body decode and path/query merges were observed in one handler flow"
+                        .to_string(),
+                ],
+            });
+        }
     }
 
     findings

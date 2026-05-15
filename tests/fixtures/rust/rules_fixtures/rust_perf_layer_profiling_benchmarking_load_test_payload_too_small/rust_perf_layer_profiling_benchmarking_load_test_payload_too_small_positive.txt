@@ -1,0 +1,28 @@
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+
+fn serialize_batch(items: &[Request]) -> Vec<u8> {
+    serde_json::to_vec(items).unwrap()
+}
+
+#[derive(serde::Serialize)]
+struct Request {
+    id: u64,
+    payload: String,
+}
+
+fn bench_serialize_batch(c: &mut Criterion) {
+    // BAD: tiny payload for a function designed to handle batch workloads
+    let items: Vec<Request> = (0..3)
+        .map(|i| Request {
+            id: i,
+            payload: format!("item_{i}"),
+        })
+        .collect();
+
+    c.bench_function("serialize_batch", |b| {
+        b.iter(|| serialize_batch(black_box(&items)))
+    });
+}
+
+criterion_group!(benches, bench_serialize_batch);
+criterion_main!(benches);

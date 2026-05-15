@@ -1,0 +1,13 @@
+import json
+
+
+def serialize_events(events):
+    return [json.dumps(event).encode() for event in events]
+
+
+def save_records(records):
+    return [json.dumps({"id": r["id"], "value": r["value"]}).encode() for r in records]
+
+
+def cache_items(items):
+    return [json.dumps(item).encode() for item in items]

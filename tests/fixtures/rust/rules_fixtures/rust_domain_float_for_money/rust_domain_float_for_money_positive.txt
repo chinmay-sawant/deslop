@@ -1,0 +1,28 @@
+struct Invoice {
+    amount: f64,
+    tax: f64,
+    total: f64,
+    currency: String,
+}
+
+impl Invoice {
+    fn new(amount: f64, tax_rate: f64, currency: &str) -> Self {
+        let tax = amount * tax_rate;
+        Self {
+            amount,
+            tax,
+            total: amount + tax,
+            currency: currency.into(),
+        }
+    }
+
+    fn apply_discount(&mut self, pct: f64) {
+        self.amount *= 1.0 - pct;
+        self.total = self.amount + self.tax;
+    }
+}
+
+struct PriceBook {
+    base_price: f64,
+    discount: f64,
+}

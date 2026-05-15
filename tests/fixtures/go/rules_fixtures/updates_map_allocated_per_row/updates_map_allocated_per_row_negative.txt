@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for updates_map_allocated_per_row: GORM Updates(map[string]...) maps allocated inside loops for per-row updates.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule303NegativeRecord struct { ID int }
+
+func scenario303Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule303NegativeRecord{}).Error
+}

@@ -1,0 +1,14 @@
+{
+  "id": "json_marshal_then_write",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`data, _ := json.Marshal(v); w.Write(data)` when `json.NewEncoder(w).Encode(v)` would stream directly",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "service_method_returns_http_response_object",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Service-layer method returns an HTTP response object that belongs to the transport layer.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

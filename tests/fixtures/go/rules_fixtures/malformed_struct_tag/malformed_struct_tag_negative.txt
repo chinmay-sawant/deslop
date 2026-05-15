@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for malformed_struct_tag: Struct field tags that do not parse as valid Go tag key/value pairs.
+// fixture polarity: negative; family: consistency; severity: contextual.
+type Rule230NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario230Negative(records []Rule230NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

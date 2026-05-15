@@ -1,0 +1,27 @@
+import threading
+from contextlib import contextmanager
+
+
+class ConnectionPool:
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._connections = []
+
+    @contextmanager
+    def connection(self):
+        with self._lock:
+            conn = self._connections.pop() if self._connections else None
+            try:
+                yield conn
+            finally:
+                if conn is not None:
+                    self._connections.append(conn)
+
+
+pool = ConnectionPool()
+
+
+def process_request():
+    with pool.connection() as conn:
+        result = conn.execute("SELECT 1")
+    return result

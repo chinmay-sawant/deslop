@@ -1,0 +1,14 @@
+{
+  "id": "service_write_passthrough_without_domain_validation",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Write-style service methods that mostly forward to repositories without visible domain guard checks.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_hook_mutates_unrelated_tables: Hooks that reach beyond the owning aggregate and write unrelated records.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule059NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule059NegativeService interface {
+	Run(context.Context, Rule059NegativeRecord) error
+}
+
+func scenario059Negative(ctx context.Context, service Rule059NegativeService, input Rule059NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

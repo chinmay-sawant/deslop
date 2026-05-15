@@ -1,0 +1,23 @@
+import numpy as np
+from typing import List
+
+def build_feature_matrix(chunks: List[np.ndarray]) -> np.ndarray:
+    result = np.empty((0, chunks[0].shape[1]))
+    for chunk in chunks:
+        result = np.vstack([result, chunk])
+    return result
+
+def combine_signals(signals: List[np.ndarray]) -> np.ndarray:
+    combined = np.empty((signals[0].shape[0], 0))
+    for signal in signals:
+        combined = np.hstack([combined, signal.reshape(-1, 1)])
+    return combined
+
+def stack_batches(batches: List[np.ndarray]) -> np.ndarray:
+    stacked = np.array([])
+    for batch in batches:
+        if stacked.size == 0:
+            stacked = batch
+        else:
+            stacked = np.vstack([stacked, batch])
+    return stacked

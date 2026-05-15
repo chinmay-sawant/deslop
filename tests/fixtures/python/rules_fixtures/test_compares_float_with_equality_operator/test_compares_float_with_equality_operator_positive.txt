@@ -1,0 +1,24 @@
+import pytest
+from myapp.math_utils import calculate_discount, compute_tax, average
+
+def test_discount_calculation():
+    result = calculate_discount(100.0, 0.15)
+    assert result == 85.0
+
+def test_tax_computation():
+    tax = compute_tax(49.99, 0.08)
+    assert tax == 3.9992
+
+def test_average_function():
+    values = [1.1, 2.2, 3.3]
+    assert average(values) == 2.2
+
+def test_price_after_promotion():
+    from myapp.pricing import apply_promotion
+    price = apply_promotion(29.99, "SAVE10")
+    assert price == 26.991
+
+def test_vector_magnitude():
+    from myapp.linalg import magnitude
+    result = magnitude([3.0, 4.0])
+    assert result == 5.0

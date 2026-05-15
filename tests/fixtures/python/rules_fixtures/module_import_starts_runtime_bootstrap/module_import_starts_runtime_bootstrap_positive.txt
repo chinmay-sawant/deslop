@@ -1,0 +1,20 @@
+import threading
+import asyncio
+
+background_thread = threading.Thread(target=lambda: None, daemon=True)
+background_thread.start()
+
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
+
+def run_background_task():
+    import time
+
+    while True:
+        time.sleep(60)
+        print("Background task running")
+
+
+bg = threading.Thread(target=run_background_task, daemon=True)
+bg.start()

@@ -1,0 +1,14 @@
+{
+  "id": "rust_manifest_release_lto_missing_for_cli_binary",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag CLI/binary crates with release profiles that omit any LTO setting when binary size or startup matters.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

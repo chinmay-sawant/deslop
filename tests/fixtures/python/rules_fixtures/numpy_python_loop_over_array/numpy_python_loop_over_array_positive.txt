@@ -1,0 +1,23 @@
+import numpy as np
+
+def classify_scores(scores: np.ndarray, threshold: float) -> np.ndarray:
+    results = np.empty(len(scores))
+    for i in range(len(scores)):
+        if scores[i] > threshold:
+            results[i] = 1.0
+        else:
+            results[i] = 0.0
+    return results
+
+def apply_scaling(values: np.ndarray, factor: float) -> np.ndarray:
+    output = np.zeros_like(values)
+    for idx in range(len(values)):
+        output[idx] = values[idx] * factor + 1.0
+    return output
+
+def compute_distances(points_a: np.ndarray, points_b: np.ndarray) -> np.ndarray:
+    distances = np.zeros(len(points_a))
+    for i in range(len(points_a)):
+        diff = points_a[i] - points_b[i]
+        distances[i] = np.sqrt(np.sum(diff ** 2))
+    return distances

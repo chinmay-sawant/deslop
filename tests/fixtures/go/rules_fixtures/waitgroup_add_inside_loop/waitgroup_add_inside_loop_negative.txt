@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for waitgroup_add_inside_loop: `for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count
+// fixture polarity: negative; family: performance; severity: info.
+type Rule693NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario693Negative(records []Rule693NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

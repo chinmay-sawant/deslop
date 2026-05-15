@@ -1,0 +1,32 @@
+import httpx
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+@app.get("/api/user/{user_id}")
+async def get_user(user_id: int, request: Request):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"https://users.example.com/api/users/{user_id}")
+        response.raise_for_status()
+        return response.json()
+
+@app.post("/api/orders")
+async def create_order(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient() as client:
+        inventory_response = await client.post(
+            "https://inventory.example.com/reserve",
+            json={"items": body["items"]},
+        )
+        payment_response = await client.post(
+            "https://payments.example.com/charge",
+            json={"amount": body["total"], "card": body["payment_token"]},
+        )
+    return {"order_id": "abc123", "status": "confirmed"}
+
+@app.get("/api/search")
+async def search_products(request: Request):
+    query = request.query_params.get("q", "")
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"https://search.example.com/products?q={query}")
+        return response.json()

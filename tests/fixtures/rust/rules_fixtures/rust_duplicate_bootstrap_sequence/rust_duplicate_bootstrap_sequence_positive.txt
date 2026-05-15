@@ -1,0 +1,28 @@
+fn init_cli() {
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(async {
+        let db = connect_db().await;
+        let cache = connect_cache().await;
+        let config = load_config().await;
+        run_server(db, cache, config).await;
+    });
+}
+
+fn init_worker() {
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(async {
+        let db = connect_db().await;
+        let cache = connect_cache().await;
+        let config = load_config().await;
+        run_worker(db, cache, config).await;
+    });
+}
+
+async fn connect_db() -> Db { todo!() }
+async fn connect_cache() -> Cache { todo!() }
+async fn load_config() -> Config { todo!() }
+async fn run_server(_db: Db, _cache: Cache, _config: Config) { todo!() }
+async fn run_worker(_db: Db, _cache: Cache, _config: Config) { todo!() }
+struct Db;
+struct Cache;
+struct Config;

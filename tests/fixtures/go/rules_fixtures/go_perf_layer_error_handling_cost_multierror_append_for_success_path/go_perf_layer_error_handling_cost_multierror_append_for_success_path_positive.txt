@@ -1,0 +1,24 @@
+package rulefixtures
+
+import "fmt"
+
+// scenario for go_perf_layer_error_handling_cost_multierror_append_for_success_path: Layer: Error handling cost. Flag multi-error aggregators allocated on success-heavy paths before any error exists.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func ValidateItems(items []string) error {
+	var errs []error
+	for _, item := range items {
+		errs = append(errs, validate(item))
+	}
+	if len(errs) > 0 {
+		return fmt.Errorf("validation failed: %v", errs)
+	}
+	return nil
+}
+
+func validate(item string) error {
+	if item == "" {
+		return fmt.Errorf("empty item")
+	}
+	return nil
+}

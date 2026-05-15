@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for manual_required_checks_after_validate_tags_available: Handlers that re-check required fields manually even though struct-tag validation already exists.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule080NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule080NegativeService interface {
+	Run(context.Context, Rule080NegativeRecord) error
+}
+
+func scenario080Negative(ctx context.Context, service Rule080NegativeService, input Rule080NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,33 @@
+def process_log_file(filepath: str) -> list[str]:
+    results = []
+    with open(filepath, "r") as f:
+        for line in f:
+            if "ERROR" in line:
+                results.append(line.strip())
+    return results
+
+
+def parse_csv(filepath: str) -> list[dict]:
+    rows = []
+    with open(filepath, "r") as f:
+        headers = None
+        for line in f:
+            values = line.strip().split(",")
+            if headers is None:
+                headers = values
+            else:
+                rows.append(dict(zip(headers, values)))
+    return rows
+
+
+def filter_large_files(paths: list[str]) -> list[str]:
+    results = []
+    for path in paths:
+        count = 0
+        with open(path, "r") as f:
+            for _ in f:
+                count += 1
+                if count > 1000:
+                    results.append(path)
+                    break
+    return results

@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"database/sql"
+)
+
+// scenario for tx_without_rollback_guard: Transactions begun and later committed with no observed rollback guard.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario402Positive(db *sql.DB) error {
+	tx, err := db.Begin()
+	if err != nil { return err }
+	if _, err := tx.Exec("update jobs set done = true"); err != nil { return err }
+	return tx.Commit()
+}

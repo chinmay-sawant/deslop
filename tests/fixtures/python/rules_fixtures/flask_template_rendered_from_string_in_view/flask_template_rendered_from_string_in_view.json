@@ -1,0 +1,14 @@
+{
+  "id": "flask_template_rendered_from_string_in_view",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flask views render templates from inline strings instead of using file-backed templates.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

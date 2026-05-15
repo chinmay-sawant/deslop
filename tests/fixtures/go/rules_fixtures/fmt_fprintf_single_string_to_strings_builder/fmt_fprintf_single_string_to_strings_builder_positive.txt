@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"strings"
+)
+
+// scenario for fmt_fprintf_single_string_to_strings_builder: `fmt.Fprintf(&builder, "%s", s)` instead of `WriteString(s)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario487Positive(values []string) string {
+	var builder strings.Builder
+	for _, s := range values {
+		fmt.Fprintf(&builder, "%s", s)
+	}
+	return builder.String()
+}

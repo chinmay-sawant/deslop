@@ -1,0 +1,14 @@
+{
+  "id": "rust_tokio_runtime_built_per_call",
+  "language": "rust",
+  "family": "runtime_boundary",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Tokio runtimes created per call instead of being owned at process or bootstrap boundaries.",
+  "binding_location": "src/heuristics/rust/runtime_boundary.rs"
+}

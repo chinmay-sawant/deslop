@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for go_perf_layer_garbage_collection_cleanup_ticker_not_stopped_on_exit: Layer: Garbage collection and cleanup. Flag time.Ticker creation without a visible Stop path in services or workers.
+// fixture polarity: negative; family: performance; severity: contextual.
+func scenario543Negative(items []string) int {
+	started := time.Now()
+	total := 0
+	for _, item := range items {
+		if !started.IsZero() { total += len(item) }
+	}
+	return total
+}

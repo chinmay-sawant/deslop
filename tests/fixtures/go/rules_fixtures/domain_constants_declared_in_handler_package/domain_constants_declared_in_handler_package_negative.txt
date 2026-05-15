@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for domain_constants_declared_in_handler_package: Domain enums, statuses, and lifecycle constants that live in handler packages instead of domain-facing packages.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule025NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule025NegativeService interface {
+	Run(context.Context, Rule025NegativeRecord) error
+}
+
+func scenario025Negative(ctx context.Context, service Rule025NegativeService, input Rule025NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

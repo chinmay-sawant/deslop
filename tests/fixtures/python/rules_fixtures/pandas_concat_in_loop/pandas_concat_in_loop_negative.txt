@@ -1,0 +1,29 @@
+import pandas as pd
+
+
+def combine_csv_files(file_paths):
+    chunks = []
+    for path in file_paths:
+        chunk = pd.read_csv(path)
+        chunks.append(chunk)
+    return pd.concat(chunks, ignore_index=True)
+
+
+def aggregate_monthly_data(dataframes):
+    monthly_frames = []
+    for month_df in dataframes:
+        monthly = month_df.groupby("region").sum()
+        monthly_frames.append(monthly)
+    return pd.concat(monthly_frames)
+
+
+def build_report(sources):
+    frames = []
+    for source in sources:
+        df = fetch_data(source)
+        frames.append(df)
+    return pd.concat(frames, ignore_index=True)
+
+
+def fetch_data(source):
+    return pd.DataFrame({"value": [1, 2, 3]})

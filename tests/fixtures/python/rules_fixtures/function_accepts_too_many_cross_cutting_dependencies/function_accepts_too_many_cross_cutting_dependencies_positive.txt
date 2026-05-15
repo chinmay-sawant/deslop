@@ -1,0 +1,34 @@
+def process_order(
+    order,
+    db_connection,
+    logger,
+    cache_client,
+    metrics_collector,
+    auth_service,
+    email_sender,
+    config,
+    clock,
+    rate_limiter,
+):
+    logger.info("Processing order %s", order["id"])
+    metrics_collector.increment("orders.received")
+    if not auth_service.verify(order["user_id"]):
+        logger.warning("Auth failed for order %s", order["id"])
+        return None
+    if rate_limiter.is_limited(order["user_id"]):
+        logger.warning("Rate limited")
+        return None
+    cached = cache_client.get(f"order:{order['id']}")
+    if cached:
+        return cached
+    db_connection.begin()
+    try:
+        db_connection.execute("INSERT INTO orders ...", order)
+        db_connection.commit()
+    except Exception:
+        db_connection.rollback()
+        raise
+    email_sender.send(order["email"], "Order confirmed")
+    metrics_collector.increment("orders.completed")
+    cache_client.set(f"order:{order['id']}", order, ttl=3600)
+    return order

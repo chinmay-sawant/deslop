@@ -1,0 +1,14 @@
+{
+  "id": "rust_rwlock_write_guard_for_readonly_access",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag write locks where the guarded value is only read.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

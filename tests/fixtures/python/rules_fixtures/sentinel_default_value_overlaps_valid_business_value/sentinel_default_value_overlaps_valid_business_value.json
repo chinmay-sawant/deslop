@@ -1,0 +1,14 @@
+{
+  "id": "sentinel_default_value_overlaps_valid_business_value",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag APIs whose sentinel or fallback value can also be a valid domain value.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

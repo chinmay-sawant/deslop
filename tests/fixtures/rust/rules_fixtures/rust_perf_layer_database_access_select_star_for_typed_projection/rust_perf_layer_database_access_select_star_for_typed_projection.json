@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_database_access_select_star_for_typed_projection",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Database access. Flag SELECT * when typed row mapping uses only a subset of columns.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

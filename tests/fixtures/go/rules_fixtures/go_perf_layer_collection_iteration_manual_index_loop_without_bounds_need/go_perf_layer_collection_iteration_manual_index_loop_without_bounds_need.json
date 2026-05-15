@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag manual index loops over slices where range would avoid repeated bounds-sensitive indexing.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

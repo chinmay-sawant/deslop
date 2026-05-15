@@ -1,0 +1,22 @@
+use rayon::prelude::*;
+
+// BAD: nested parallel iterators
+fn process_matrix(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
+    matrix.par_iter()
+        .map(|row| {
+            row.par_iter() // nested par_iter
+                .map(|val| val * 2.0)
+                .collect()
+        })
+        .collect()
+}
+
+fn cross_compare(items: &[Item]) -> Vec<Comparison> {
+    items.par_iter()
+        .flat_map(|a| {
+            items.par_iter() // nested par_iter in flat_map
+                .map(|b| compare(a, b))
+                .collect::<Vec<_>>()
+        })
+        .collect()
+}

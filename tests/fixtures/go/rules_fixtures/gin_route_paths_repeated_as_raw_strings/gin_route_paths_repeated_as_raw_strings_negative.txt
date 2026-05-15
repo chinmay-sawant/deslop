@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_route_paths_repeated_as_raw_strings: Repeated route path literals that should be centralized or grouped more intentionally.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule054NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule054NegativeService interface {
+	Run(context.Context, Rule054NegativeRecord) error
+}
+
+func scenario054Negative(ctx context.Context, service Rule054NegativeService, input Rule054NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

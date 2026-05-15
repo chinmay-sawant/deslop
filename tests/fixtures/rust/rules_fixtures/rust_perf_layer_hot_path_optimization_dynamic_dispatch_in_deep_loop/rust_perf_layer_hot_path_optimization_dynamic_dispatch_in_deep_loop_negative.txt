@@ -1,0 +1,22 @@
+enum Processor {
+    Doubling,
+    Clamping,
+}
+
+impl Processor {
+    fn process(&self, value: f64) -> f64 {
+        // GOOD: enum dispatch — static dispatch, no pointer chasing
+        match self {
+            Processor::Doubling => value * 2.0,
+            Processor::Clamping => value.clamp(0.0, 100.0),
+        }
+    }
+}
+
+fn apply_pipeline(data: &mut [f64], processors: &[Processor]) {
+    for value in data.iter_mut() {
+        for proc in processors {
+            *value = proc.process(*value);
+        }
+    }
+}

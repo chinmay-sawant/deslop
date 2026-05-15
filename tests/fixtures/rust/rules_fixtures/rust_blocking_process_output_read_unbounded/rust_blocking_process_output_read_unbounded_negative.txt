@@ -1,0 +1,37 @@
+use std::process::{Command, Stdio};
+use std::io::{BufRead, BufReader};
+
+fn run_script(script: &str, max_bytes: usize) -> Result<String, String> {
+    let mut child = Command::new("bash")
+        .arg("-c")
+        .arg(script)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("spawn failed: {e}"))?;
+
+    let stdout = child.stdout.take().unwrap();
+    let reader = BufReader::new(stdout);
+    let mut output = Vec::new();
+    let mut total = 0;
+    for line in reader.lines() {
+        let line = line.map_err(|e| format!("read error: {e}"))?;
+        total += line.len() + 1;
+        if total > max_bytes {
+            return Err("output exceeded size limit".into());
+        }
+        output.push(line);
+    }
+    let status = child.wait().map_err(|e| format!("wait error: {e}"))?;
+    if !status.success() {
+        return Err(format!("process exited with {status}"));
+    }
+    Ok(output.join("\n"))
+}
+
+fn get_git_log(max_lines: usize) -> Result<String, String> {
+    run_script(
+        &format!("git log --oneline -{max_lines}"),
+        max_lines * 256,
+    )
+}

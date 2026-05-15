@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_async_concurrency_select_default_busy_poll",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag select loops with default branches that spin instead of blocking or using timers.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

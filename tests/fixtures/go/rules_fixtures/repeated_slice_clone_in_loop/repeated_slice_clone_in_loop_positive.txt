@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"slices"
+)
+
+// scenario for repeated_slice_clone_in_loop: slices.Clone(...) or similar whole-slice cloning observed inside loops.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario362Positive(source []int, rounds int) [][]int {
+	var results [][]int
+	for i := 0; i < rounds; i++ {
+		clone := slices.Clone(source)
+		clone = append(clone, i)
+		results = append(results, clone)
+	}
+	return results
+}

@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_data_structure_choice_pandas_object_dtype_for_numeric_hot_columns",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag numeric pandas columns kept as object dtype on transformation-heavy paths.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

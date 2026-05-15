@@ -1,0 +1,16 @@
+package rulefixtures
+
+// scenario for map_delete_in_loop_vs_new_map: `for k := range m { delete(m, k) }` patterns
+// fixture polarity: positive; family: performance; severity: info.
+
+func scenario615Positive(rounds int) map[string]int {
+	m := make(map[string]int)
+	for i := 0; i < rounds; i++ {
+		m["a"] = 1
+		m["b"] = 2
+		for k := range m {
+			delete(m, k)
+		}
+	}
+	return m
+}

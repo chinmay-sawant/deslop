@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_model_contains_calculated_response_fields: Persistence structs that carry API-only derived presentation fields.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule062NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule062NegativeService interface {
+	Run(context.Context, Rule062NegativeRecord) error
+}
+
+func scenario062Negative(ctx context.Context, service Rule062NegativeService, input Rule062NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

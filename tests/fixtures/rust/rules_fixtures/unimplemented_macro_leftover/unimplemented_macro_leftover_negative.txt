@@ -1,0 +1,33 @@
+pub fn handle_event(event: &Event) -> Result<(), Error> {
+    match event.kind {
+        EventKind::Message => process_message(event),
+        EventKind::Error => process_error(event),
+        EventKind::Unknown => Err(Error::UnsupportedEvent),
+    }
+}
+
+pub fn encode(data: &[u8], format: Format) -> Result<Vec<u8>, Error> {
+    match format {
+        Format::Json => serde_json::to_vec(data).map_err(|_| Error::EncodeFailed),
+        Format::Binary => Ok(data.to_vec()),
+        Format::Xml => Err(Error::UnsupportedFormat("XML")),
+    }
+}
+
+pub fn connect(transport: Transport) -> Result<Connection, Error> {
+    match transport {
+        Transport::Tcp => Ok(connect_tcp()),
+        Transport::Udp => Err(Error::UnsupportedTransport("UDP")),
+        Transport::Unix => Err(Error::UnsupportedTransport("Unix")),
+    }
+}
+
+struct Event { kind: EventKind }
+enum EventKind { Message, Error, Unknown }
+enum Format { Json, Binary, Xml }
+enum Transport { Tcp, Udp, Unix }
+struct Connection;
+enum Error { UnsupportedEvent, EncodeFailed, UnsupportedFormat(&'static str), UnsupportedTransport(&'static str) }
+fn process_message(_e: &Event) -> Result<(), Error> { Ok(()) }
+fn process_error(_e: &Event) -> Result<(), Error> { Ok(()) }
+fn connect_tcp() -> Connection { Connection }

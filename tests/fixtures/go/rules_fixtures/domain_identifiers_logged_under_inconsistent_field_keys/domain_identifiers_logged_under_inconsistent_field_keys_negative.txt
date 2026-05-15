@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for domain_identifiers_logged_under_inconsistent_field_keys: The same entity ID being logged under many different keys across packages.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule028NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule028NegativeService interface {
+	Run(context.Context, Rule028NegativeRecord) error
+}
+
+func scenario028Negative(ctx context.Context, service Rule028NegativeService, input Rule028NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

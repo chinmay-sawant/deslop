@@ -1,0 +1,17 @@
+class UserService:
+    def get_user(self, user_id: int, tenant_id: str) -> dict:
+        return {"id": user_id, "tenant": tenant_id}
+
+    def create_user(self, data: dict, ip_address: str) -> dict:
+        return {"id": 1, "created_from": ip_address, **data}
+
+
+class OrderService:
+    def __init__(self, session_id: str):
+        self.session_id = session_id
+
+    def get_order(self, order_id: int) -> dict:
+        return {"id": order_id, "session": self.session_id}
+
+    def cancel_order(self, order_id: int, reason: str = "none") -> dict:
+        return {"id": order_id, "cancelled": True, "reason": reason}

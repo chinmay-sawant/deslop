@@ -1,0 +1,14 @@
+{
+  "id": "generator_materialized_to_tuple_or_list_only_for_len_or_truthiness",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag iterator pipelines that materialize only to test truthiness or size.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

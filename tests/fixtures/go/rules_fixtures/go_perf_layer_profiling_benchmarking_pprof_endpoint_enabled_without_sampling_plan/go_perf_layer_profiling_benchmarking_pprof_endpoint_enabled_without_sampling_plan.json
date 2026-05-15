@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_profiling_benchmarking_pprof_endpoint_enabled_without_sampling_plan",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag always-on profiling endpoints in production services without access or sampling controls.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

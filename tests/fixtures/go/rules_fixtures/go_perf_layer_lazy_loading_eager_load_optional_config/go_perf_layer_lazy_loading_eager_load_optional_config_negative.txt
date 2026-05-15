@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_lazy_loading_eager_load_optional_config: Layer: Lazy loading. Flag optional configuration or metadata loaded at startup before any feature uses it.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule555NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario555Negative(records []Rule555NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

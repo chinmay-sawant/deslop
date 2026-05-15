@@ -1,0 +1,14 @@
+{
+  "id": "helper_returns_success_shape_even_when_substeps_partially_fail",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag helpers that claim success while hiding partial failures.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

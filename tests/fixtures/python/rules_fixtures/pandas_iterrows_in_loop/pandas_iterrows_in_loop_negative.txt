@@ -1,0 +1,18 @@
+import pandas as pd
+
+
+def calculate_totals(df):
+    df["total"] = df["price"] * df["quantity"]
+    return df
+
+
+def filter_active_users(df):
+    mask = (df["status"] == "active") & (df["age"] >= 18)
+    return df[mask]
+
+
+def build_summary(df):
+    return pd.DataFrame({
+        "name": df["name"],
+        "revenue": df["price"] * df["units_sold"],
+    })

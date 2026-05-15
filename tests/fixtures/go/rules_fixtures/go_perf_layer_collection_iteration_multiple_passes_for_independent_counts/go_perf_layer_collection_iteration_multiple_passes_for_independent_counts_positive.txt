@@ -1,0 +1,24 @@
+package rulefixtures
+
+// scenario for go_perf_layer_collection_iteration_multiple_passes_for_independent_counts: Layer: Collection iteration. Flag multiple full passes over the same slice for independent counters that can be combined.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func scenario517Positive(numbers []int) (int, int, int) {
+	count := 0
+	for _, n := range numbers {
+		if n > 0 {
+			count++
+		}
+	}
+	sum := 0
+	for _, n := range numbers {
+		sum += n
+	}
+	maxVal := 0
+	for _, n := range numbers {
+		if n > maxVal {
+			maxVal = n
+		}
+	}
+	return count, sum, maxVal
+}

@@ -1,0 +1,33 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+// scenario for tests_assert_raw_json_strings_without_response_dto: Brittle raw-JSON string assertions when typed response DTOs exist.
+// fixture polarity: positive; family: architecture; severity: info.
+type UserResponse struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+func TestGetUser(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = json.NewEncoder(w).Encode(UserResponse{ID: 1, Name: "John", Email: "john@example.com"})
+	}))
+	defer srv.Close()
+
+	resp, _ := http.Get(srv.URL)
+	body, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	want := `{"id":1,"name":"John","email":"john@example.com"}`
+	if string(body) != want {
+		t.Errorf("body = %s, want %s", string(body), want)
+	}
+}

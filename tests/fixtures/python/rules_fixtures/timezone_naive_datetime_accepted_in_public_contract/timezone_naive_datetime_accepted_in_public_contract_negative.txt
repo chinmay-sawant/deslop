@@ -1,0 +1,46 @@
+from datetime import datetime, timezone
+
+class EventScheduler:
+    def schedule(
+        self, name: str, start: datetime, end: datetime
+    ) -> dict:
+        if start.tzinfo is None or end.tzinfo is None:
+            raise ValueError("start and end must be timezone-aware")
+        if end <= start:
+            raise ValueError("end must be after start")
+        return {"name": name, "start": start, "end": end}
+
+    def find_events(self, after: datetime, before: datetime) -> list[dict]:
+        if after.tzinfo is None or before.tzinfo is None:
+            raise ValueError("Query bounds must be timezone-aware")
+        return [e for e in self._events if after <= e["start"] <= before]
+
+class ReportService:
+    def generate(
+        self, from_date: datetime, to_date: datetime
+    ) -> dict:
+        if from_date.tzinfo is None or to_date.tzinfo is None:
+            raise TypeError("Dates must include timezone info")
+        return {"from": from_date.isoformat(), "to": to_date.isoformat()}
+
+    def daily_summary(self, date: datetime) -> dict:
+        if date.tzinfo is None:
+            raise TypeError("date must be timezone-aware")
+        return {"date": date.strftime("%Y-%m-%d"), "count": 0}
+
+class BookingAPI:
+    def create_booking(
+        self,
+        user_id: str,
+        start_time: datetime,
+        end_time: datetime,
+        room_id: str,
+    ) -> dict:
+        if start_time.tzinfo is None or end_time.tzinfo is None:
+            raise ValueError("Times must be timezone-aware")
+        return {
+            "user": user_id,
+            "start": start_time,
+            "end": end_time,
+            "room": room_id,
+        }

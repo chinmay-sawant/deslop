@@ -1,0 +1,21 @@
+import random
+import string
+
+def generate_api_key() -> str:
+    chars = string.ascii_letters + string.digits
+    return "".join(random.choice(chars) for _ in range(32))
+
+def generate_reset_token() -> str:
+    return "".join(random.choices(string.hexdigits, k=16))
+
+def generate_session_id() -> str:
+    return str(random.random())[2:]
+
+def generate_csrf_token() -> str:
+    token = ""
+    for _ in range(24):
+        token += random.choice(string.ascii_letters + string.digits)
+    return token
+
+def generate_invite_code() -> str:
+    return "".join(random.choices(string.ascii_uppercase + string.digits, k=8))

@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+)
+
+// scenario for file_upload_validation_mixed_with_storage_write: Functions that validate upload metadata and also persist the upload in the same boundary step.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func UploadHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseMultipartForm(10 << 20)
+	file, header, _ := r.FormFile("attachment")
+
+	if header.Size > 5<<20 {
+		http.Error(w, "file too large", http.StatusBadRequest)
+		return
+	}
+	buf, _ := io.ReadAll(file)
+	if len(buf) < 10 {
+		http.Error(w, "file too small", http.StatusBadRequest)
+		return
+	}
+	dst, _ := os.Create("/uploads/" + header.Filename)
+	dst.Write(buf)
+	dst.Close()
+	file.Close()
+	fmt.Fprint(w, "uploaded")
+}

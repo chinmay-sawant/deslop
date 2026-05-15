@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_data_structure_choice_list_as_fifo_queue",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag list pop(0) or insert(0, ...) queue usage where collections.deque fits the access pattern.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

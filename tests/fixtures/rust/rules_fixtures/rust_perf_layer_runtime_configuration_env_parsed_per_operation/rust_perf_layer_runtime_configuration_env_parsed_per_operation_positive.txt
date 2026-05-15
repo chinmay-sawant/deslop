@@ -1,0 +1,27 @@
+fn process_request(request: &Request) -> Response {
+    // BAD: env var parsed and converted on every request
+    let max_retries: u32 = std::env::var("MAX_RETRIES")
+        .unwrap_or_else(|_| "3".into())
+        .parse()
+        .unwrap_or(3);
+
+    let timeout_ms: u64 = std::env::var("TIMEOUT_MS")
+        .unwrap_or_else(|_| "5000".into())
+        .parse()
+        .unwrap_or(5000);
+
+    let batch_size: usize = std::env::var("BATCH_SIZE")
+        .unwrap_or_else(|_| "100".into())
+        .parse()
+        .unwrap_or(100);
+
+    for batch in request.items.chunks(batch_size) {
+        for _ in 0..max_retries {
+            if process_batch(batch, timeout_ms).is_ok() {
+                break;
+            }
+        }
+    }
+
+    Response::ok()
+}

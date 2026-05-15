@@ -1,0 +1,40 @@
+from typing import List, Dict, Any
+
+class UserSession:
+    permissions: List[str] = []
+    metadata: Dict[str, Any] = {}
+    history: List[str] = []
+
+    def __init__(self, user_id: str) -> None:
+        self.user_id = user_id
+
+    def add_permission(self, perm: str) -> None:
+        self.permissions.append(perm)
+
+    def set_metadata(self, key: str, value: Any) -> None:
+        self.metadata[key] = value
+
+    def add_history(self, action: str) -> None:
+        self.history.append(action)
+
+class CacheEntry:
+    tags: List[str] = []
+    data: Dict[str, Any] = {}
+
+    def __init__(self, key: str, value: Any) -> None:
+        self.key = key
+        self.data["value"] = value
+
+    def add_tag(self, tag: str) -> None:
+        self.tags.append(tag)
+
+class TaskQueue:
+    pending: List[str] = []
+    completed: List[str] = []
+
+    def enqueue(self, task_id: str) -> None:
+        self.pending.append(task_id)
+
+    def complete(self, task_id: str) -> None:
+        self.pending.remove(task_id)
+        self.completed.append(task_id)

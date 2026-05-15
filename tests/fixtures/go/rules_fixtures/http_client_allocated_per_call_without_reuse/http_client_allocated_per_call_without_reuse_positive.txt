@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for http_client_allocated_per_call_without_reuse: http.Client literals allocated on regular call paths instead of being reused as shared client state.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario379Positive(url string) (*http.Response, error) {
+	client := &http.Client{}
+	return client.Get(url)
+}

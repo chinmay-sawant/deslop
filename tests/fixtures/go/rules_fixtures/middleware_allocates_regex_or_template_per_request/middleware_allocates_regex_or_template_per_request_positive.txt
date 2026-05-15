@@ -1,0 +1,32 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"regexp"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for middleware_allocates_regex_or_template_per_request: Regexp compilation inside Gin handlers instead of using precompiled patterns.
+// fixture polarity: positive; family: gin; severity: contextual.
+
+func RegexCompileMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		email := c.Query("email")
+		pattern := regexp.QuoteMeta(email)
+		re, err := regexp.Compile("^" + pattern + "$")
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid regex"})
+			return
+		}
+
+		username := c.Query("username")
+		if re.MatchString(username) {
+			c.AbortWithStatusJSON(http.StatusOK, gin.H{"match": true})
+			return
+		}
+		c.Next()
+	}
+}
+
+var _ = regexp.Compile

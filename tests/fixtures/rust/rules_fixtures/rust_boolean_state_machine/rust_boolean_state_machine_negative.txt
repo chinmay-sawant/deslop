@@ -1,0 +1,60 @@
+enum ConnectionState {
+    Disconnected,
+    Connected {
+        encrypted: bool,
+        compressed: bool,
+    },
+    Authenticated {
+        encrypted: bool,
+        compressed: bool,
+    },
+}
+
+impl ConnectionState {
+    fn new() -> Self {
+        ConnectionState::Disconnected
+    }
+
+    fn connect(self) -> Self {
+        match self {
+            ConnectionState::Disconnected => ConnectionState::Connected {
+                encrypted: false,
+                compressed: false,
+            },
+            other => other,
+        }
+    }
+
+    fn authenticate(self) -> Self {
+        match self {
+            ConnectionState::Connected { encrypted, compressed } => {
+                ConnectionState::Authenticated { encrypted, compressed }
+            }
+            other => other,
+        }
+    }
+
+    fn set_encryption(self, enabled: bool) -> Self {
+        match self {
+            ConnectionState::Connected { compressed, .. } => {
+                ConnectionState::Connected { encrypted: enabled, compressed }
+            }
+            ConnectionState::Authenticated { compressed, .. } => {
+                ConnectionState::Authenticated { encrypted: enabled, compressed }
+            }
+            other => other,
+        }
+    }
+
+    fn status(&self) -> String {
+        match self {
+            ConnectionState::Disconnected => "disconnected".into(),
+            ConnectionState::Connected { encrypted, compressed } => {
+                format!("connected encrypted={encrypted} compressed={compressed}")
+            }
+            ConnectionState::Authenticated { encrypted, compressed } => {
+                format!("authenticated encrypted={encrypted} compressed={compressed}")
+            }
+        }
+    }
+}

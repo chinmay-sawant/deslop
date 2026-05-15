@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for handler_calls_repository_directly_without_service: Handlers that bypass a visible service layer and call repositories or query helpers directly for business orchestration.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule071NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule071NegativeService interface {
+	Run(context.Context, Rule071NegativeRecord) error
+}
+
+func scenario071Negative(ctx context.Context, service Rule071NegativeService, input Rule071NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

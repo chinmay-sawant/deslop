@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for type_switch_vs_repeated_assertions: multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns
+// fixture polarity: negative; family: performance; severity: info.
+type Rule689NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario689Negative(records []Rule689NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

@@ -1,0 +1,14 @@
+{
+  "id": "package_name_role_drift",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Packages whose names advertise one role, such as `service` or `model`, but whose exported symbols primarily belong to another role.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

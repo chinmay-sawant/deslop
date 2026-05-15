@@ -1,0 +1,27 @@
+package rulefixtures
+
+import "fmt"
+
+// scenario for mixed_receiver_kinds: Methods on the same receiver type mix pointer and value receivers.
+// fixture polarity: positive; family: consistency; severity: contextual.
+
+type Counter struct {
+	value int
+	label string
+}
+
+func (c Counter) Read() int {
+	return c.value
+}
+
+func (c *Counter) Increment() {
+	c.value++
+}
+
+func (c Counter) String() string {
+	return fmt.Sprintf("%s=%d", c.label, c.value)
+}
+
+func (c *Counter) Reset() {
+	c.value = 0
+}

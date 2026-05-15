@@ -1,0 +1,14 @@
+{
+  "id": "rust_split_at_unchecked_external_input",
+  "language": "rust",
+  "family": "security_footguns",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Slice splitting and range indexing on externally-derived offsets without obvious bounds guards.",
+  "binding_location": "src/heuristics/rust/security_footguns.rs"
+}

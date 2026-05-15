@@ -1,0 +1,14 @@
+{
+  "id": "readlines_then_iterate",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "readlines() materializes the whole file before line-by-line iteration.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

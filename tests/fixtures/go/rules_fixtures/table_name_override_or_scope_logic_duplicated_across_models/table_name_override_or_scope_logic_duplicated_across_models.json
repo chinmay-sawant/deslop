@@ -1,0 +1,14 @@
+{
+  "id": "table_name_override_or_scope_logic_duplicated_across_models",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated table-name or model-scope customization across many model files without a shared convention.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

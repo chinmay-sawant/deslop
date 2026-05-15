@@ -1,0 +1,14 @@
+{
+  "id": "vector_store_client_created_per_request",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Vector-store clients created on request paths instead of reused application state.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

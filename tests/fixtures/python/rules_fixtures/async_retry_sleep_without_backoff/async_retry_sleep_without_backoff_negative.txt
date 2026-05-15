@@ -1,0 +1,36 @@
+import asyncio
+import random
+
+
+async def fetch_with_retry(url: str, max_retries: int = 5):
+    for attempt in range(max_retries):
+        try:
+            response = await make_request(url)
+            return response
+        except ConnectionError:
+            backoff = min(2 ** attempt, 30)
+            jitter = random.uniform(0, backoff * 0.1)
+            await asyncio.sleep(backoff + jitter)
+    raise ConnectionError(f"Failed after {max_retries} retries")
+
+
+async def send_message_with_retry(queue, message: dict, max_retries: int = 3):
+    for attempt in range(max_retries):
+        try:
+            await queue.put(message)
+            return
+        except Exception:
+            backoff = (2 ** attempt) + random.uniform(0, 1)
+            await asyncio.sleep(backoff)
+    raise RuntimeError("Failed to send message")
+
+
+async def upload_with_retry(file_path: str, max_retries: int = 5):
+    for attempt in range(max_retries):
+        try:
+            result = await upload_file(file_path)
+            return result
+        except TimeoutError:
+            backoff = min(2 ** attempt * 2, 60)
+            await asyncio.sleep(backoff + random.uniform(0, 1))
+    raise TimeoutError(f"Upload failed after {max_retries} retries")

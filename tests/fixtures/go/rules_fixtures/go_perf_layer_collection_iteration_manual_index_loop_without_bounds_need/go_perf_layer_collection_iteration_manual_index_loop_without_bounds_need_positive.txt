@@ -1,0 +1,12 @@
+package rulefixtures
+
+// scenario for go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need: Layer: Collection iteration. Flag manual index loops over slices where range would avoid repeated bounds-sensitive indexing.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func scenario516Positive(data []string) int {
+	total := 0
+	for i := 0; i < len(data); i++ {
+		total += len(data[i])
+	}
+	return total
+}

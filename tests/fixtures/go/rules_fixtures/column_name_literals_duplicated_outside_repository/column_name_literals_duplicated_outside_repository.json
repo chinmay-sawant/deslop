@@ -1,0 +1,14 @@
+{
+  "id": "column_name_literals_duplicated_outside_repository",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated column-name strings outside repository or query packages.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

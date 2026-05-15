@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_algorithmic_complexity_iterator_chain_recomputes_expensive_predicate",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag iterator chains that recompute an expensive predicate instead of caching per item.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

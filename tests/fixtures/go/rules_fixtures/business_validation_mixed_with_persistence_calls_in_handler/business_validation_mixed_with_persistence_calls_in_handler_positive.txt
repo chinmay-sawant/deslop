@@ -1,0 +1,53 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+	"strings"
+
+	"gorm.io/gorm"
+)
+
+// scenario for business_validation_mixed_with_persistence_calls_in_handler: Handlers that start querying or writing before finishing request validation.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type User struct {
+	ID    int `gorm:"primaryKey"`
+	Name  string
+	Email string
+}
+
+func registerHandler(w http.ResponseWriter, r *http.Request, db *gorm.DB) {
+	name := r.FormValue("name")
+	email := r.FormValue("email")
+
+	if len(name) < 2 {
+		http.Error(w, "name too short", http.StatusBadRequest)
+		return
+	}
+
+	var existing User
+	if err := db.Where("email = ?", email).First(&existing).Error; err == nil {
+		http.Error(w, "email already taken", http.StatusConflict)
+		return
+	}
+
+	if !strings.Contains(email, "@") {
+		http.Error(w, "invalid email format", http.StatusBadRequest)
+		return
+	}
+
+	if len(strings.TrimSpace(name)) == 0 {
+		http.Error(w, "name required", http.StatusBadRequest)
+		return
+	}
+
+	user := User{Name: name, Email: email}
+	if err := db.Create(&user).Error; err != nil {
+		http.Error(w, fmt.Sprintf("create failed: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprintf(w, "user %d created", user.ID)
+}

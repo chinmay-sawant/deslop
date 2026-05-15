@@ -1,0 +1,30 @@
+from typing import Any
+from datetime import datetime, timezone
+
+
+def update_user(user_id: int, data: dict[str, Any]) -> dict[str, Any]:
+    if not data.get("name"):
+        raise ValueError("Name is required")
+
+    record = {
+        **data,
+        "updated_by": "system",
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    return save_user(user_id, record)
+
+
+def patch_order(order_id: int, patch: dict[str, Any]) -> dict[str, Any]:
+    if patch.get("amount", 0) < 0:
+        raise ValueError("Amount cannot be negative")
+
+    record = {**patch, "status": "pending_review"}
+    return save_order(order_id, record)
+
+
+def save_user(user_id, data):
+    return {"id": user_id, **data}
+
+
+def save_order(order_id, data):
+    return {"id": order_id, **data}

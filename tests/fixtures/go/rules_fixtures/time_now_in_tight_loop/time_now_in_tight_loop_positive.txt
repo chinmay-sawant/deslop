@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_now_in_tight_loop: `time.Now()` called on every iteration of a tight inner loop
+// fixture polarity: positive; family: performance; severity: info.
+func scenario684Positive(items []string) int {
+	total := 0
+	for _, item := range items {
+		_ = time.Now()
+		_ = time.After(time.Millisecond)
+		total += len(item)
+	}
+	return total
+}

@@ -1,0 +1,21 @@
+use proptest::prelude::*;
+
+fn parse_json(input: &str) -> Result<serde_json::Value, serde_json::Error> {
+    serde_json::from_str(input)
+}
+
+proptest! {
+    // BAD: unbounded string strategy can generate massive inputs
+    #[test]
+    fn test_parse_roundtrip(input in ".*") {
+        let result = parse_json(&input);
+        // This can hang or OOM on large inputs
+    }
+
+    // BAD: unbounded vec strategy
+    #[test]
+    fn test_process_items(items in vec(any::<u64>(), 0..usize::MAX)) {
+        let sum: u64 = items.iter().sum();
+        prop_assert!(sum >= 0);
+    }
+}

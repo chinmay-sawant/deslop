@@ -1,0 +1,21 @@
+from myapp.boundaries.validation import validate_email, normalize_phone
+from myapp.boundaries.rate_limit import check_rate_limit
+from myapp.boundaries.audit import log_action
+
+
+def register_user(data):
+    validate_email(data["email"])
+    normalize_phone(data["phone"])
+    check_rate_limit(data["user_id"])
+    log_action("register", data["user_id"])
+    return create_user(data)
+
+
+def update_profile(user_id, data):
+    if "email" in data:
+        validate_email(data["email"])
+    if "phone" in data:
+        normalize_phone(data["phone"])
+    check_rate_limit(user_id)
+    log_action("update_profile", user_id)
+    return save_user(user_id, data)

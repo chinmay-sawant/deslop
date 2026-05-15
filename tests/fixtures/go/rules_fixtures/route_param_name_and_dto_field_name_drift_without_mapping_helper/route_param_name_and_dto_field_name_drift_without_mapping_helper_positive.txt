@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for route_param_name_and_dto_field_name_drift_without_mapping_helper: Repeated manual renaming between route params and DTO fields that lacks a shared mapper.
+// fixture polarity: positive; family: architecture; severity: info.
+type UserRequest struct {
+	UserID    int    `json:"user_id"`
+	AccountID int    `json:"account_id"`
+	Name      string `json:"name"`
+}
+
+func GetUser(c *gin.Context) {
+	var req UserRequest
+	req.UserID, _ = strconv.Atoi(c.Param("user-id"))
+	req.AccountID, _ = strconv.Atoi(c.Param("account-id"))
+	req.Name = c.Query("display-name")
+	c.JSON(http.StatusOK, req)
+}
+
+func UpdateUser(c *gin.Context) {
+	var req UserRequest
+	req.UserID, _ = strconv.Atoi(c.Param("user-id"))
+	req.Name = c.Param("display-name")
+	c.JSON(http.StatusOK, req)
+}

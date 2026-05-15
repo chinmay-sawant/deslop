@@ -1,0 +1,25 @@
+import csv
+
+
+def export_users(users, filepath):
+    with open(filepath, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["id", "name", "email", "role"])
+        for user in users:
+            writer.writerow([user.id, user.name, user.email, user.role])
+
+
+def write_log_entries(entries, filepath):
+    with open(filepath, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["timestamp", "level", "message"])
+        for entry in entries:
+            writer.writerow([entry.ts, entry.level, entry.msg])
+
+
+def generate_report(data, filepath):
+    with open(filepath, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["metric", "value", "date"])
+        writer.writeheader()
+        for row in data:
+            writer.writerow(row)

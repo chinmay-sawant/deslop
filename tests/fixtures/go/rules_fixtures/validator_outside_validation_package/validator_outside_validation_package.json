@@ -1,0 +1,14 @@
+{
+  "id": "validator_outside_validation_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Reusable validators that are scattered across handlers instead of living in a dedicated validation helper package.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

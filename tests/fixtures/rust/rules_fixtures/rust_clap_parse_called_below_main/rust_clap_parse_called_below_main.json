@@ -1,0 +1,14 @@
+{
+  "id": "rust_clap_parse_called_below_main",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `Cli::parse()` or `try_parse()` called from library code or tests without dependency injection, making the code hard to reuse and test.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,32 @@
+import time
+import logging
+from functools import wraps
+
+logger = logging.getLogger(__name__)
+
+
+def timed(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        elapsed = time.time() - start
+        logger.info(f"{func.__name__} took {elapsed:.3f}s")
+        return result
+    return wrapper
+
+
+@timed
+def get_order(order_id: int) -> dict:
+    return {"id": order_id, "total": 99.99, "status": "shipped"}
+
+
+@timed
+def calculate_discount(amount: float) -> float:
+    return amount * 0.1
+
+
+order = get_order(42)
+assert "_elapsed_ms" not in order
+discount = calculate_discount(100.0)
+assert isinstance(discount, float)

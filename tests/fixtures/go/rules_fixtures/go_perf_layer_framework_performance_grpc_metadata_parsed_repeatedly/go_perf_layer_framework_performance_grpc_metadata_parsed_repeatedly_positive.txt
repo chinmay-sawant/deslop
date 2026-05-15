@@ -1,0 +1,34 @@
+package rulefixtures
+
+import (
+	"context"
+
+	"google.golang.org/grpc/metadata"
+)
+
+// scenario for go_perf_layer_framework_performance_grpc_metadata_parsed_repeatedly: Layer: Framework-specific performance. Flag repeated metadata extraction/parsing in gRPC interceptors and handlers.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func AuthInterceptor(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", nil
+	}
+	tokens := md.Get("authorization")
+	if len(tokens) == 0 {
+		return "", nil
+	}
+	return tokens[0], nil
+}
+
+func RateLimitInterceptor(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", nil
+	}
+	keys := md.Get("x-api-key")
+	if len(keys) == 0 {
+		return "", nil
+	}
+	return keys[0], nil
+}

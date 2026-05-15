@@ -1,0 +1,21 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Employee
+
+
+class EmployeeExportView(View):
+    def get(self, request):
+        employees = Employee.objects.filter(active=True).select_related(
+            "department", "manager"
+        ).values("id", "name", "department__name", "manager__name")
+        rows = [
+            {
+                "id": e["id"],
+                "name": e["name"],
+                "department": e["department__name"],
+                "manager": e["manager__name"],
+            }
+            for e in employees
+        ]
+        return JsonResponse({"employees": rows})

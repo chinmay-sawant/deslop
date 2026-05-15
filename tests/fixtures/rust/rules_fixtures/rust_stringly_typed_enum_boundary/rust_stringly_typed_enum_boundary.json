@@ -1,0 +1,14 @@
+{
+  "id": "rust_stringly_typed_enum_boundary",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Enum-like boundary fields kept as String instead of a dedicated enum.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

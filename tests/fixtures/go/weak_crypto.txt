@@ -1,7 +1,0 @@
-package sample
-
-import "crypto/md5"
-
-func Fingerprint(payload []byte) [16]byte {
-	return md5.Sum(payload)
-}

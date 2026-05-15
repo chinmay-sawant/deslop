@@ -1,0 +1,16 @@
+// GOOD: sequential iteration for trivial per-item work
+fn check_all_enabled(items: &[Item]) -> bool {
+    items.iter().all(|item| item.enabled)
+}
+
+fn filter_by_name<'a>(items: &'a [Item], name: &str) -> Vec<&'a Item> {
+    items.iter()
+        .filter(|item| item.name == name)
+        .collect()
+}
+
+fn count_lines(files: &[PathBuf]) -> usize {
+    files.iter()
+        .map(|f| std::fs::read_to_string(f).unwrap().lines().count())
+        .sum()
+}

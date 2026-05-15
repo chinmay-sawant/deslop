@@ -1,0 +1,14 @@
+{
+  "id": "json_indent_in_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`json.Indent(...)` inside loops.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

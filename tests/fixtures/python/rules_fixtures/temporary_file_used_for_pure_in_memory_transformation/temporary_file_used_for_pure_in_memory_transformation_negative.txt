@@ -1,0 +1,21 @@
+import json
+import io
+
+def transform_users(users: list[dict]) -> list[dict]:
+    data = json.loads(json.dumps(users))
+    return [
+        {
+            "full_name": f"{user['first']} {user['last']}",
+            "email": user["email"].lower(),
+        }
+        for user in data
+    ]
+
+def compute_stats(values: list[float]) -> dict:
+    return {"mean": sum(values) / len(values), "count": len(values)}
+
+def encode_payload(data: dict) -> bytes:
+    import pickle
+    buf = io.BytesIO()
+    pickle.dump(data, buf)
+    return buf.getvalue()

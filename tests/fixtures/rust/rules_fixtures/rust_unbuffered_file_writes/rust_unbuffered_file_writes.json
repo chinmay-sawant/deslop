@@ -1,0 +1,14 @@
+{
+  "id": "rust_unbuffered_file_writes",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "File-like writes performed inside a loop without buffering or batching.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

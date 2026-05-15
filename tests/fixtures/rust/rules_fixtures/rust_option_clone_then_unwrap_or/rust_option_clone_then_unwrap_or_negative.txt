@@ -1,0 +1,7 @@
+fn get_name(config: &Option<String>) -> &str {
+    config.as_deref().unwrap_or("default")
+}
+
+fn get_value_or_default<'a>(maybe_val: &'a Option<Vec<u8>>, default: &'a [u8]) -> &'a [u8] {
+    maybe_val.as_deref().unwrap_or(default)
+}

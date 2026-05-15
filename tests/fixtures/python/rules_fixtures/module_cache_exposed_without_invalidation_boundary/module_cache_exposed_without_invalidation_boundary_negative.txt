@@ -1,0 +1,39 @@
+import time
+from typing import Any
+
+
+class Cache:
+    def __init__(self, default_ttl: float = 300):
+        self._store: dict[str, tuple[Any, float]] = {}
+        self._default_ttl = default_ttl
+
+    def get(self, key: str) -> Any | None:
+        if key in self._store:
+            value, expires_at = self._store[key]
+            if time.time() < expires_at:
+                return value
+            del self._store[key]
+        return None
+
+    def set(self, key: str, value: Any, ttl: float | None = None) -> None:
+        self._store[key] = (value, time.time() + (ttl or self._default_ttl))
+
+    def delete(self, key: str) -> None:
+        self._store.pop(key, None)
+
+    def clear(self) -> None:
+        self._store.clear()
+
+    def size(self) -> int:
+        return len(self._store)
+
+
+_cache = Cache()
+
+
+def get_cached_value(key: str) -> Any | None:
+    return _cache.get(key)
+
+
+def set_cached_value(key: str, value: Any, ttl: float = 300) -> None:
+    _cache.set(key, value, ttl)

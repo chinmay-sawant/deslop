@@ -1,0 +1,42 @@
+struct CustomerId(u64);
+struct ProductId(u64);
+
+impl CustomerId {
+    fn new(v: u64) -> Self { Self(v) }
+    fn as_u64(&self) -> u64 { self.0 }
+}
+
+impl ProductId {
+    fn new(v: u64) -> Self { Self(v) }
+    fn as_u64(&self) -> u64 { self.0 }
+}
+
+struct Percentage(f64);
+struct Money(f64);
+struct Weight(f64);
+struct Distance(f64);
+
+struct Customer {
+    id: CustomerId,
+    name: String,
+    email: String,
+    discount_rate: Percentage,
+    credit_limit: Money,
+}
+
+impl Customer {
+    fn apply_discount(&self, amount: Money) -> Money {
+        Money(amount.0 * (1.0 - self.discount_rate.0))
+    }
+}
+
+struct Order {
+    customer_id: CustomerId,
+    product_id: ProductId,
+    quantity: u32,
+    total: Money,
+}
+
+fn calculate_shipping(weight: Weight, distance: Distance) -> Money {
+    Money(weight.0 * distance.0 * 0.01)
+}

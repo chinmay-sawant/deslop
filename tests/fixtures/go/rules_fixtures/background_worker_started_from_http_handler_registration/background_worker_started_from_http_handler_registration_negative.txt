@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for background_worker_started_from_http_handler_registration: Route or middleware setup that also starts unrelated background jobs.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule008NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule008NegativeService interface {
+	Run(context.Context, Rule008NegativeRecord) error
+}
+
+func scenario008Negative(ctx context.Context, service Rule008NegativeService, input Rule008NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

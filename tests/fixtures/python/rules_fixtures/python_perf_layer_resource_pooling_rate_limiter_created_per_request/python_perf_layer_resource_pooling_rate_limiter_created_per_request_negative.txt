@@ -1,0 +1,41 @@
+import time
+
+
+class RateLimiter:
+    def __init__(self, max_calls: int, period: float):
+        self.max_calls = max_calls
+        self.period = period
+        self.calls: list[float] = []
+
+    def acquire(self) -> bool:
+        now = time.monotonic()
+        self.calls = [t for t in self.calls if now - t < self.period]
+        if len(self.calls) < self.max_calls:
+            self.calls.append(now)
+            return True
+        return False
+
+
+_limiters: dict[str, RateLimiter] = {}
+
+
+def _get_limiter(user_id: str) -> RateLimiter:
+    if user_id not in _limiters:
+        _limiters[user_id] = RateLimiter(max_calls=100, period=60)
+    return _limiters[user_id]
+
+
+def handle_request(user_id: str) -> dict:
+    limiter = _get_limiter(user_id)
+    if not limiter.acquire():
+        raise RuntimeError("Rate limit exceeded")
+    return {"user_id": user_id, "status": "ok"}
+
+
+def process_batch(user_ids: list[str]) -> list[dict]:
+    results = []
+    for uid in user_ids:
+        limiter = _get_limiter(uid)
+        if limiter.acquire():
+            results.append({"user_id": uid, "status": "ok"})
+    return results

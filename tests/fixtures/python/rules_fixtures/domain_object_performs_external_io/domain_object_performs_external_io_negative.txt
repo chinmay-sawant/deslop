@@ -1,0 +1,24 @@
+import json
+from dataclasses import dataclass
+
+
+@dataclass
+class UserPreference:
+    user_id: int
+    theme: str = "light"
+    language: str = "en"
+
+    def to_dict(self) -> dict:
+        return {"user_id": self.user_id, "theme": self.theme, "lang": self.language}
+
+
+class PreferenceRepository:
+    def __init__(self, remote_client, file_storage):
+        self._remote = remote_client
+        self._storage = file_storage
+
+    def sync(self, pref: UserPreference) -> bool:
+        return self._remote.post("/preferences", pref.to_dict())
+
+    def export_to_file(self, pref: UserPreference, path: str) -> None:
+        self._storage.write(path, json.dumps(pref.to_dict()))

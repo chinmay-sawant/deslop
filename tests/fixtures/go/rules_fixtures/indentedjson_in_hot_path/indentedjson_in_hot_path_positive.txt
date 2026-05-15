@@ -1,0 +1,20 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for indentedjson_in_hot_path: IndentedJSON(...) used on a request path instead of compact JSON rendering.
+// fixture polarity: positive; family: gin; severity: contextual.
+
+func scenario319Positive(w http.ResponseWriter, r *http.Request) {
+	payload := map[string]any{
+		"status":  "ok",
+		"message": "request processed successfully",
+		"data":    []string{"alpha", "beta", "gamma"},
+	}
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "  ")
+	enc.Encode(payload)
+}

@@ -1,0 +1,36 @@
+import tarfile
+import os
+
+def extract_archive(archive_path: str, dest: str):
+    with tarfile.open(archive_path, "r:gz") as tar:
+        tar.extractall(
+            path=dest,
+            members=_safe_members(tar, dest),
+        )
+
+def _safe_members(tar: tarfile.TarFile, dest: str):
+    for member in tar:
+        member_path = os.path.join(dest, member.name)
+        abs_dest = os.path.abspath(dest)
+        abs_member = os.path.abspath(member_path)
+        if not abs_member.startswith(abs_dest + os.sep) and abs_member != abs_dest:
+            continue
+        yield member
+
+def unpack_upload(upload_path: str):
+    target = "/tmp/uploads"
+    with tarfile.open(upload_path, "r:*") as tar:
+        safe = [m for m in tar if not m.name.startswith("/") and ".." not in m.name]
+        tar.extractall(target, members=safe)
+    return target
+
+def restore_backup(backup_file: str, restore_dir: str):
+    with tarfile.open(backup_file, "r:bz2") as archive:
+        def filter_members(member):
+            dest = os.path.join(restore_dir, member.name)
+            if os.path.abspath(dest).startswith(os.path.abspath(restore_dir)):
+                return member
+            return None
+        archive.extractall(path=restore_dir, members=(
+            m for m in (filter_members(m) for m in archive) if m is not None
+        ))

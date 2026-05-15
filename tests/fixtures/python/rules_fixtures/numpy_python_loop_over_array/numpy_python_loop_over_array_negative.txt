@@ -1,0 +1,11 @@
+import numpy as np
+
+def classify_scores(scores: np.ndarray, threshold: float) -> np.ndarray:
+    return (scores > threshold).astype(np.float64)
+
+def apply_scaling(values: np.ndarray, factor: float) -> np.ndarray:
+    return values * factor + 1.0
+
+def compute_distances(points_a: np.ndarray, points_b: np.ndarray) -> np.ndarray:
+    diff = points_a - points_b
+    return np.sqrt(np.sum(diff ** 2, axis=1))

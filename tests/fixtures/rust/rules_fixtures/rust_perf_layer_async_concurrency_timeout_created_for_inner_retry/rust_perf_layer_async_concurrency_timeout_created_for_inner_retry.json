@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_async_concurrency_timeout_created_for_inner_retry",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag timeout futures created inside tight retry loops where an outer deadline would bound the operation.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

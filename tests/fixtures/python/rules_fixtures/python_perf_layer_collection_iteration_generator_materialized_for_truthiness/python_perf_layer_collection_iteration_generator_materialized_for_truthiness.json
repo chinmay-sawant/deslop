@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_collection_iteration_generator_materialized_for_truthiness",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag list(generator) or tuple(generator) used only for truthiness checks.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

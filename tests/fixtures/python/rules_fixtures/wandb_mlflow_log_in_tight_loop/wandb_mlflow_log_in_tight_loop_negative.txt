@@ -1,0 +1,33 @@
+import wandb
+import mlflow
+
+LOG_INTERVAL = 100
+
+def train_model(model, dataloader, epochs: int):
+    for epoch in range(epochs):
+        epoch_loss = 0.0
+        for batch_idx, (data, target) in enumerate(dataloader):
+            loss = model.train_step(data, target)
+            epoch_loss += loss
+            if batch_idx % LOG_INTERVAL == 0:
+                wandb.log({"train_loss": loss, "epoch": epoch, "batch": batch_idx})
+        wandb.log({"epoch_loss": epoch_loss / len(dataloader), "epoch": epoch})
+
+def train_with_mlflow(model, dataloader, epochs: int):
+    for epoch in range(epochs):
+        epoch_loss = 0.0
+        for batch_idx, (data, target) in enumerate(dataloader):
+            loss = model.train_step(data, target)
+            epoch_loss += loss
+        avg_loss = epoch_loss / len(dataloader)
+        mlflow.log_metric("train_loss", avg_loss, step=epoch)
+
+def evaluate_and_log(model, val_loader):
+    total_accuracy = 0.0
+    count = 0
+    for data, target in val_loader:
+        accuracy = model.evaluate(data, target)
+        total_accuracy += accuracy
+        count += 1
+    wandb.log({"val_accuracy": total_accuracy / count})
+    mlflow.log_metric("val_accuracy", total_accuracy / count)

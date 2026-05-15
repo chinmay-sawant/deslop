@@ -1,0 +1,14 @@
+{
+  "id": "url_redirect_without_validation",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`http.Redirect(w, r, r.FormValue(\"redirect_url\"), 302)` or `c.Redirect(302, c.Query(\"url\"))` without URL validation",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_json_value_internal_hot_path",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `serde_json::Value` used as an internal data model in non-boundary modules where typed structs would reduce dynamic lookups and runtime errors.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

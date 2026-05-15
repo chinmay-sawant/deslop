@@ -1,0 +1,26 @@
+from celery import shared_task
+import redis
+import boto3
+
+@shared_task
+def send_notification(user_id, message):
+    settings = load_settings()
+    r = redis.Redis(host=settings["REDIS_HOST"], port=settings["REDIS_PORT"])
+    client = boto3.client("ses", region_name=settings["AWS_REGION"])
+    client.send_email(
+        Source=settings["FROM_EMAIL"],
+        Destination={"ToAddresses": [get_email(user_id)]},
+        Message={"Subject": {"Data": "Alert"}, "Body": {"Text": {"Data": message}}},
+    )
+    r.publish(f"notifications:{user_id}", message)
+
+def load_settings():
+    return {
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": 6379,
+        "AWS_REGION": "us-east-1",
+        "FROM_EMAIL": "noreply@example.com",
+    }
+
+def get_email(user_id):
+    return f"user{user_id}@example.com"

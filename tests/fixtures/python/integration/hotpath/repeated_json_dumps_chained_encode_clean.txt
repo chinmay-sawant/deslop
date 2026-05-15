@@ -1,7 +1,0 @@
-import json
-
-
-def serialize_payload(payload):
-    # Single serialization chained into encode() should not count as repeated dumps.
-    body = json.dumps(payload).encode("utf-8")
-    return body

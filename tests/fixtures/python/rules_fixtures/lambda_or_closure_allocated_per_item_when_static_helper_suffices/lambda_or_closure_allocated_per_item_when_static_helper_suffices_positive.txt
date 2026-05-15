@@ -1,0 +1,24 @@
+def process_items(items: list[dict]) -> list[dict]:
+    results = []
+    for item in items:
+        validator = lambda x: x.get("status") == "active" and x.get("amount", 0) > 0
+        if validator(item):
+            results.append(item)
+    return results
+
+
+def transform_records(records: list[dict]) -> list[str]:
+    output = []
+    for record in records:
+        formatter = lambda r: f"{r['name']} ({r['id']})"
+        output.append(formatter(record))
+    return output
+
+
+def filter_and_sort(items: list[dict]) -> list[dict]:
+    filtered = []
+    for item in items:
+        check = lambda x: x["priority"] > 3 and x["active"]
+        if check(item):
+            filtered.append(item)
+    return filtered

@@ -1,0 +1,21 @@
+def has_active_users(db):
+    users = list(db.execute("SELECT id FROM users WHERE active = 1"))
+    return len(users) > 0
+
+def count_valid_records(records):
+    valid = list(r for r in records if r["status"] == "ok")
+    return len(valid)
+
+def any_errors(log_lines):
+    errors = list(line for line in log_lines if "ERROR" in line)
+    return bool(errors)
+
+def get_result_count(generator):
+    items = list(generator)
+    return len(items)
+
+def has_items(data_source):
+    collected = list(data_source.iterate())
+    if collected:
+        return True
+    return False

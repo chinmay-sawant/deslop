@@ -1,0 +1,14 @@
+{
+  "id": "upstream_http_call_per_item_in_handler_loop",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Upstream HTTP calls made per item inside handler loops.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

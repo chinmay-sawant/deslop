@@ -1,0 +1,14 @@
+{
+  "id": "upstream_call_without_timeout_in_handler",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request handlers issue upstream HTTP calls without visible timeout configuration.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

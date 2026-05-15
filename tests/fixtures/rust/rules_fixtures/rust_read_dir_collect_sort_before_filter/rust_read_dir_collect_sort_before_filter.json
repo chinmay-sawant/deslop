@@ -1,0 +1,14 @@
+{
+  "id": "rust_read_dir_collect_sort_before_filter",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `read_dir` entries collected and sorted before filtering by type/extension.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

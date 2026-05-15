@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_replace_all_for_single_char: `strings.ReplaceAll(s, "x", "y")` where both old and new are single characters
+// fixture polarity: positive; family: performance; severity: info.
+func scenario661Positive(s string) string {
+	return strings.ReplaceAll(s, ",", ";")
+}

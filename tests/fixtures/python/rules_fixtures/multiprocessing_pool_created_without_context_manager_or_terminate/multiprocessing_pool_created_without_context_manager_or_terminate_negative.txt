@@ -1,0 +1,23 @@
+import multiprocessing
+from typing import List, Any
+
+def process_data(items: List[int]) -> List[int]:
+    with multiprocessing.Pool(processes=4) as pool:
+        return pool.map(_square, items)
+
+def _square(x: int) -> int:
+    return x * x
+
+def process_batch(data: List[dict]) -> List[dict]:
+    with multiprocessing.Pool() as pool:
+        return pool.map(_transform, data)
+
+def _transform(item: dict) -> dict:
+    return {k: v.upper() if isinstance(v, str) else v for k, v in item.items()}
+
+def run_pipeline(items: List[str]) -> List[str]:
+    with multiprocessing.Pool(processes=8) as pool:
+        return pool.map(_process_item, items)
+
+def _process_item(item: str) -> str:
+    return item.strip().lower()

@@ -1,0 +1,22 @@
+import requests
+from typing import Optional, Dict, Any
+
+def fetch_user(user_id: int) -> Dict[str, Any]:
+    response = requests.get(f"https://api.example.com/users/{user_id}")
+    return response.json()
+
+def post_order(order_data: dict) -> dict:
+    response = requests.post("https://api.example.com/orders", json=order_data)
+    return response.json()
+
+def upload_file(file_path: str, endpoint: str) -> dict:
+    with open(file_path, "rb") as f:
+        response = requests.post(endpoint, files={"file": f})
+    return response.json()
+
+def check_health() -> bool:
+    response = requests.get("https://api.example.com/health")
+    return response.status_code == 200
+
+def send_webhook(url: str, payload: dict) -> None:
+    requests.post(url, json=payload)

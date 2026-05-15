@@ -1,0 +1,26 @@
+from typing import Union
+
+
+def normalize(value):
+    if isinstance(value, str):
+        return value.strip().lower()
+    elif isinstance(value, list):
+        return [normalize(item) for item in value]
+    elif isinstance(value, dict):
+        return {k: normalize(v) for k, v in value.items()}
+    else:
+        return value
+
+
+def format_output(data, as_json=False):
+    if isinstance(data, str):
+        if as_json:
+            return f'{{"text": "{data}"}}'
+        return data
+    elif isinstance(data, list):
+        if as_json:
+            import json
+            return json.dumps(data)
+        return "\n".join(str(item) for item in data)
+    else:
+        return str(data)

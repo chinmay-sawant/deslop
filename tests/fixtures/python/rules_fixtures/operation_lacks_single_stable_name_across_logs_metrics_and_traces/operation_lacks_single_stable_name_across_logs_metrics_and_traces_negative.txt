@@ -1,0 +1,24 @@
+import logging
+from prometheus_client import Counter
+from opentelemetry import trace
+
+logger = logging.getLogger(__name__)
+tracer = trace.get_tracer(__name__)
+
+OPERATION_COUNTER = Counter("payment_operations_total", "Payment operations", ["operation"])
+
+def process_payment(order_id: int, amount: float) -> dict:
+    with tracer.start_as_current_span("payment.process") as span:
+        span.set_attribute("order_id", order_id)
+        span.set_attribute("operation", "charge")
+        logger.info("payment.process", extra={"order_id": order_id, "operation": "charge"})
+        OPERATION_COUNTER.labels(operation="charge").inc()
+        return {"status": "charged"}
+
+def refund_payment(order_id: int, amount: float) -> dict:
+    with tracer.start_as_current_span("payment.process") as span:
+        span.set_attribute("order_id", order_id)
+        span.set_attribute("operation", "refund")
+        logger.info("payment.process", extra={"order_id": order_id, "operation": "refund"})
+        OPERATION_COUNTER.labels(operation="refund").inc()
+        return {"status": "refunded"}

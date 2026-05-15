@@ -1,0 +1,14 @@
+{
+  "id": "domain_constants_declared_in_handler_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Domain enums, statuses, and lifecycle constants that live in handler packages instead of domain-facing packages.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

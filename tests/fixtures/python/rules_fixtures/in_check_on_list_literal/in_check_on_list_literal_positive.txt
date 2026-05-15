@@ -1,0 +1,21 @@
+def process_status(status: str):
+    if status in ["active", "pending", "suspended"]:
+        handle_valid(status)
+    if status not in ["error", "failed", "cancelled"]:
+        proceed(status)
+
+
+def categorize_size(size: int) -> str:
+    if size in [1, 2, 3, 4, 5]:
+        return "small"
+    if size in [6, 7, 8, 9, 10]:
+        return "medium"
+    return "large"
+
+
+def is_allowed_method(method: str) -> bool:
+    return method in ["GET", "POST", "PUT", "DELETE", "PATCH"]
+
+
+def should_skip_file(filename: str) -> bool:
+    return filename in [".gitignore", ".env", "__pycache__", ".DS_Store"]

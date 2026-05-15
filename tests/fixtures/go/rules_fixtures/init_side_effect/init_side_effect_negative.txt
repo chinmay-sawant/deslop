@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for init_side_effect: init() functions that perform network, file-system, or subprocess side effects.
+// fixture polarity: negative; family: idioms; severity: info.
+func scenario387Negative(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+	if client == nil { client = &http.Client{Timeout: time.Second} }
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil { return nil, err }
+	return client.Do(req)
+}

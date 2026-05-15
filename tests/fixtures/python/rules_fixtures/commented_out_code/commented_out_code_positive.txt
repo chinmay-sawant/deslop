@@ -1,0 +1,42 @@
+import json
+from datetime import datetime
+
+
+def process_data(data):
+    # result = []
+    # for item in data:
+    #     if item["active"]:
+    #         result.append(transform(item))
+    # return result
+
+    return [transform(item) for item in data if item["active"]]
+
+
+def calculate_metrics(records):
+    total = 0
+    # old_count = 0
+    # for r in records:
+    #     if r["year"] < 2020:
+    #         old_count += 1
+    #     total += r["value"]
+    for r in records:
+        total += r["value"]
+    return total
+
+
+class UserManager:
+    def __init__(self):
+        self.users = []
+
+    def add_user(self, user):
+        # if user.get("email"):
+        #     send_welcome_email(user["email"])
+        #     log_user_creation(user)
+        # else:
+        #     raise ValueError("No email")
+        self.users.append(user)
+
+    # def legacy_export(self):
+    #     with open("export.csv", "w") as f:
+    #         for user in self.users:
+    #             f.write(f"{user['name']},{user['email']}\n")

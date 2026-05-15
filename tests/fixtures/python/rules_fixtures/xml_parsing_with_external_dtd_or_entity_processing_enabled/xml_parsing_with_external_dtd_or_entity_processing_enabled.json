@@ -1,0 +1,14 @@
+{
+  "id": "xml_parsing_with_external_dtd_or_entity_processing_enabled",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "XML parsed with a parser that processes external DTDs or entities, enabling XXE attacks.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

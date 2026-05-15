@@ -1,0 +1,39 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route("/transfer", methods=["POST"])
+def transfer_funds():
+    data = request.get_json()
+    from_account = data["from"]
+    to_account = data["to"]
+    amount = data["amount"]
+
+    db = get_db()
+    db.execute("BEGIN")
+    try:
+        db.execute("UPDATE accounts SET balance = balance - ? WHERE id = ?", (amount, from_account))
+        db.execute("UPDATE accounts SET balance = balance + ? WHERE id = ?", (amount, to_account))
+        db.execute("INSERT INTO transfers (from_id, to_id, amount) VALUES (?, ?, ?)",
+                   (from_account, to_account, amount))
+        db.execute("COMMIT")
+    except Exception:
+        db.execute("ROLLBACK")
+        return jsonify({"error": "transfer failed"}), 500
+    return jsonify({"status": "completed"})
+
+@app.route("/orders", methods=["POST"])
+def create_order():
+    data = request.get_json()
+    db = get_db()
+    db.execute("BEGIN")
+    try:
+        db.execute("INSERT INTO orders (user_id, total) VALUES (?, ?)",
+                   (data["user_id"], data["total"]))
+        db.execute("UPDATE inventory SET qty = qty - 1 WHERE product_id = ?",
+                   (data["product_id"],))
+        db.execute("COMMIT")
+    except Exception:
+        db.execute("ROLLBACK")
+        return jsonify({"error": "order failed"}), 500
+    return jsonify({"status": "created"})

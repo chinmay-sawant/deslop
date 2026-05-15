@@ -1,0 +1,42 @@
+use tree_sitter::{Parser, Query, QueryCursor};
+
+fn find_functions(source: &str, tree: &tree_sitter::Tree) -> Vec<String> {
+    let language = tree_sitter_rust::LANGUAGE.into();
+    let query = Query::new(&language, "(function_item name: (identifier) @name)").unwrap();
+    let mut cursor = QueryCursor::new();
+    let matches = cursor.matches(&query, tree.root_node(), source.as_bytes());
+
+    matches
+        .map(|m| {
+            let node = m.captures[0].node;
+            source[node.start_byte()..node.end_byte()].to_string()
+        })
+        .collect()
+}
+
+fn find_identifiers(source: &str, tree: &tree_sitter::Tree) -> Vec<String> {
+    let language = tree_sitter_rust::LANGUAGE.into();
+    let query = Query::new(&language, "(identifier) @id").unwrap();
+    let mut cursor = QueryCursor::new();
+    let matches = cursor.matches(&query, tree.root_node(), source.as_bytes());
+
+    matches
+        .map(|m| {
+            let node = m.captures[0].node;
+            source[node.start_byte()..node.end_byte()].to_string()
+        })
+        .collect()
+}
+
+fn find_calls(source: &str, tree: &tree_sitter::Tree) -> Vec<String> {
+    let language = tree_sitter_rust::LANGUAGE.into();
+    let query = Query::new(&language, "(call_expression function: (identifier) @func)").unwrap();
+    let mut cursor = QueryCursor::new();
+    cursor
+        .matches(&query, tree.root_node(), source.as_bytes())
+        .map(|m| {
+            let node = m.captures[0].node;
+            source[node.start_byte()..node.end_byte()].to_string()
+        })
+        .collect()
+}

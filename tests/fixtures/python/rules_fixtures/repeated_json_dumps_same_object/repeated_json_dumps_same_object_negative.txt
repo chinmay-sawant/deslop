@@ -1,0 +1,13 @@
+import json
+
+
+def send_to_endpoints(payload, endpoints):
+    serialized = json.dumps(payload)
+    results = []
+    for url in endpoints:
+        result = post(url, serialized)
+        results.append(result)
+
+    log_to_file(serialized)
+    store_in_cache("last_payload", serialized)
+    return results

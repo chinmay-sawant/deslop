@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for handler_and_service_both_log_same_error_chain: Duplicated logging ownership where both service and handler log the same failure.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule068NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule068NegativeService interface {
+	Run(context.Context, Rule068NegativeRecord) error
+}
+
+func scenario068Negative(ctx context.Context, service Rule068NegativeService, input Rule068NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

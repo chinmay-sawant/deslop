@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_chain_built_in_service: Services that own detailed ORM query shape instead of delegating to repositories.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule058PositiveRecord struct {
+	ID       int
+	TenantID int
+	Name     string
+}
+type Rule058RelatedRecord struct {
+	ID       int
+	ParentID int
+	Detail   string
+}
+
+func scenario058Positive(db *gorm.DB, tenantID int) ([]Rule058PositiveRecord, error) {
+	var items []Rule058PositiveRecord
+	if err := db.Where("tenant_id = ?", tenantID).Preload("Related").Order("created_at DESC").Limit(50).Find(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
+}

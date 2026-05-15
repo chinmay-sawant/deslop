@@ -1,0 +1,29 @@
+package rulefixtures
+
+import (
+	"log"
+
+	"example.com/myapp/internal/testutil"
+)
+
+// scenario for test_bootstrap_package_reused_by_production_wiring: Production startup code that imports test-only bootstrap helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+type AppConfig struct {
+	DSN  string
+	Port int
+}
+
+func NewApp(cfg AppConfig) error {
+	db := testutil.SetupTestDB(cfg.DSN)
+	defer testutil.TeardownTestDB(db)
+
+	repo := testutil.NewMockUserRepo(db)
+	if repo == nil {
+		log.Fatal("failed to bootstrap repository")
+	}
+
+	queue := testutil.NewFakeMessageQueue()
+	testutil.PopulateSeedData(db, "./testdata/seeds.json")
+
+	return nil
+}

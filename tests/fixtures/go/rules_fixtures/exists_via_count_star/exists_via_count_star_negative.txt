@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for exists_via_count_star: COUNT(*) used for an existence check instead of EXISTS or LIMIT 1.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule261NegativeRecord struct { ID int }
+
+func scenario261Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule261NegativeRecord{}).Error
+}

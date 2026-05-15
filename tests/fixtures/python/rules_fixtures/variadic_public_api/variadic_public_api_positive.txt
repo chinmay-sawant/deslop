@@ -1,0 +1,26 @@
+def build_query(*args, **kwargs):
+    clauses = []
+    for arg in args:
+        clauses.append(str(arg))
+    for key, value in kwargs.items():
+        clauses.append(f"{key}={value}")
+    return " AND ".join(clauses)
+
+def log_event(event_type: str, *args, **kwargs):
+    parts = [event_type]
+    parts.extend(str(a) for a in args)
+    parts.extend(f"{k}={v}" for k, v in kwargs.items())
+    print(" | ".join(parts))
+
+def create_config(name: str, *args, **kwargs):
+    config = {"name": name}
+    for i, arg in enumerate(args):
+        config[f"pos_{i}"] = arg
+    config.update(kwargs)
+    return config
+
+def dispatch(action: str, *args, **kwargs):
+    handler = HANDLERS.get(action)
+    if handler is None:
+        raise ValueError(f"Unknown action: {action}")
+    return handler(*args, **kwargs)

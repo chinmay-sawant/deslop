@@ -1,0 +1,25 @@
+from flask import Flask, request, Response
+import json
+from datetime import datetime, date
+
+app = Flask(__name__)
+
+class CustomEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, (datetime, date)):
+            return obj.isoformat()
+        return super().default(obj)
+
+@app.route("/events")
+def list_events():
+    encoder = CustomEncoder()
+    events = [{"name": "launch", "date": datetime.now()}]
+    payload = encoder.encode(events)
+    return Response(payload, mimetype="application/json")
+
+@app.route("/status")
+def get_status():
+    encoder = CustomEncoder()
+    data = {"timestamp": datetime.now(), "healthy": True}
+    payload = encoder.encode(data)
+    return Response(payload, mimetype="application/json")

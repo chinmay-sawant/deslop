@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_joins_plus_preload_plus_find_without_limit: GORM chains combining Joins, Preload, and unbounded Find on request paths.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule267PositiveRecord struct { ID int }
+
+func scenario267Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule267PositiveRecord{}).Error
+}

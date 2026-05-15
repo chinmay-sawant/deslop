@@ -1,0 +1,21 @@
+struct LargePayload {
+    buffer: Vec<u8>,
+    metadata: Vec<String>,
+    tags: Vec<String>,
+}
+
+#[derive(Debug)]
+enum AppError {
+    ValidationFailed { context: String },
+    IoError(std::io::Error),
+}
+
+fn validate_payload(payload: &LargePayload) -> Result<(), AppError> {
+    if payload.buffer.is_empty() {
+        // GOOD: extract only the needed diagnostic info without cloning
+        return Err(AppError::ValidationFailed {
+            context: format!("empty buffer, metadata count={}", payload.metadata.len()),
+        });
+    }
+    Ok(())
+}

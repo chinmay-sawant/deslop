@@ -1,0 +1,32 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for parsemultipartform_large_default_memory: Gin handlers that call ParseMultipartForm(...) with large in-memory thresholds on request paths.
+// fixture polarity: positive; family: gin; severity: contextual.
+func UploadHandler(c *gin.Context) {
+	if err := c.Request.ParseMultipartForm(32 << 20); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing file"})
+		return
+	}
+	defer file.Close()
+	c.JSON(http.StatusOK, gin.H{"filename": header.Filename, "size": header.Size})
+}
+
+func BulkUploadHandler(c *gin.Context) {
+	if err := c.Request.ParseMultipartForm(64 << 20); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	files := c.Request.MultipartForm.File["files"]
+	c.JSON(http.StatusOK, gin.H{"count": len(files)})
+}

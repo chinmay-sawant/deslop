@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_par_bridge_on_small_or_indexed_iterator",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `par_bridge()` over known indexed collections or tiny iterators where normal `par_iter` or sequential iteration is likely cheaper.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

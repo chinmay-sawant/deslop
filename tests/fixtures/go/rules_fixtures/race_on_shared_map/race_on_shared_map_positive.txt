@@ -1,0 +1,33 @@
+package rulefixtures
+
+import "sync"
+
+// scenario for race_on_shared_map: map reads/writes from multiple goroutines without mutex or `sync.Map` protection (detect goroutine launches + shared map access patterns)
+// fixture polarity: positive; family: security; severity: warning.
+var sharedCache = make(map[string]int)
+
+func WriteToCache(items []string) map[string]int {
+	var wg sync.WaitGroup
+	for _, item := range items {
+		wg.Add(1)
+		go func(key string) {
+			defer wg.Done()
+			sharedCache[key]++
+		}(item)
+	}
+	wg.Wait()
+	return sharedCache
+}
+
+func ReadAndWriteCache(keys []string, values []int) {
+	var wg sync.WaitGroup
+	for i, k := range keys {
+		wg.Add(1)
+		go func(key string, val int) {
+			defer wg.Done()
+			_ = sharedCache[key]
+			sharedCache[key] = val
+		}(k, values[i])
+	}
+	wg.Wait()
+}

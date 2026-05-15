@@ -1,0 +1,28 @@
+def read_config_and_validate(path):
+    with open(path, "r") as f:
+        raw = f.read()
+
+    with open(path, "r") as f:
+        lines = f.readlines()
+
+    with open(path, "r") as f:
+        header = f.readline()
+
+    config = parse_config(raw)
+    line_count = len(lines)
+    return {"config": config, "lines": line_count, "header": header}
+
+
+def update_and_verify(path, new_value):
+    with open(path, "r") as f:
+        current = f.read()
+
+    updated = current.replace("OLD", new_value)
+
+    with open(path, "w") as f:
+        f.write(updated)
+
+    with open(path, "r") as f:
+        written = f.read()
+
+    return written == updated

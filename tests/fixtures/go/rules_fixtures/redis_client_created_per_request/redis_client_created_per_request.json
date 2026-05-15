@@ -1,0 +1,14 @@
+{
+  "id": "redis_client_created_per_request",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Redis clients created per request instead of reused as shared process infrastructure.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

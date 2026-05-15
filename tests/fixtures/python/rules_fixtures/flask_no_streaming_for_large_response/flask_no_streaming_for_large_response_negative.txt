@@ -1,0 +1,27 @@
+from flask import Flask, Response, stream_with_context
+import csv
+import io
+
+app = Flask(__name__)
+
+def generate_csv_rows(db):
+    yield "id,name,email,address,phone\n"
+    cursor = db.execute("SELECT id, name, email, address, phone FROM users")
+    for row in cursor:
+        yield f"{row['id']},{row['name']},{row['email']},{row['address']},{row['phone']}\n"
+
+@app.route("/export/users")
+def export_users():
+    db = get_db()
+    return Response(
+        stream_with_context(generate_csv_rows(db)),
+        mimetype="text/csv"
+    )
+
+def generate_log_lines():
+    for i in range(500000):
+        yield f"2024-01-01 00:00:00 INFO Request {i} processed\n"
+
+@app.route("/export/logs")
+def export_logs():
+    return Response(stream_with_context(generate_log_lines()), mimetype="text/plain")

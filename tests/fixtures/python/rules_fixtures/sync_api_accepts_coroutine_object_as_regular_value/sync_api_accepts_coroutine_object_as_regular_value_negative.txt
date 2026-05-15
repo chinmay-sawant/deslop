@@ -1,0 +1,45 @@
+import asyncio
+from typing import Any, Callable, Awaitable
+
+class EventBus:
+    def __init__(self):
+        self._handlers: dict[str, list[Callable]] = {}
+
+    def subscribe(self, event_type: str, handler: Callable) -> None:
+        if asyncio.iscoroutinefunction(handler):
+            raise TypeError("Use subscribe_async for coroutine handlers")
+        self._handlers.setdefault(event_type, []).append(handler)
+
+    def publish(self, event_type: str, data: Any) -> None:
+        for handler in self._handlers.get(event_type, []):
+            handler(data)
+
+def process_results(results: list[dict]) -> list[dict]:
+    aggregated = []
+    for item in results:
+        aggregated.append(item)
+    return aggregated
+
+async def fetch_data() -> dict:
+    return {"value": 42}
+
+bus = EventBus()
+bus.subscribe("data_ready", process_results)
+bus.publish("data_ready", [{"value": 1}])
+
+class TaskQueue:
+    def __init__(self):
+        self._tasks: list[Callable] = []
+
+    def add(self, task: Callable) -> None:
+        if asyncio.iscoroutine(task):
+            raise TypeError("Cannot add a coroutine object; call the function first")
+        self._tasks.append(task)
+
+    def run_all(self):
+        for task in self._tasks:
+            task()
+
+queue = TaskQueue()
+queue.add(lambda: process_results([{"value": 1}]))
+queue.run_all()

@@ -1,0 +1,14 @@
+{
+  "id": "sqlalchemy_session_not_closed",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "SQLAlchemy Session objects are created without context-manager or close handling.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

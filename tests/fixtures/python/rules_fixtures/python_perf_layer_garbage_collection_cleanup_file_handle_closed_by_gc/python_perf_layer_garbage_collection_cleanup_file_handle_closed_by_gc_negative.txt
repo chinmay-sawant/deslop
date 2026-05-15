@@ -1,0 +1,17 @@
+import csv
+
+def parse_csv_header(filepath):
+    with open(filepath, "r") as f:
+        reader = csv.reader(f)
+        header = next(reader)
+    return header
+
+def read_config(path):
+    with open(path, "r") as fh:
+        content = fh.read()
+    return content.splitlines()
+
+def write_report(data, path):
+    with open(path, "w") as f:
+        for row in data:
+            f.write(",".join(str(v) for v in row) + "\n")

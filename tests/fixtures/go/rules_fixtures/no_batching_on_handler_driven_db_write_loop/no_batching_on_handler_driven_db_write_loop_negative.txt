@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for no_batching_on_handler_driven_db_write_loop: Request handlers that drive row-by-row DB writes with no batch path.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule329NegativeRecord struct {
+	Name string
+}
+
+type Rule329NegativeService interface {
+	Handle(context.Context, Rule329NegativeRecord) (Rule329NegativeRecord, error)
+}
+
+func scenario329Negative(ctx context.Context, service Rule329NegativeService, input Rule329NegativeRecord) (Rule329NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule329NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

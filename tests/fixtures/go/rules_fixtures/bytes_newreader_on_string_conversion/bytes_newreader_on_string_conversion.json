@@ -1,0 +1,14 @@
+{
+  "id": "bytes_newreader_on_string_conversion",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.NewReader([]byte(s))` instead of `strings.NewReader(s)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

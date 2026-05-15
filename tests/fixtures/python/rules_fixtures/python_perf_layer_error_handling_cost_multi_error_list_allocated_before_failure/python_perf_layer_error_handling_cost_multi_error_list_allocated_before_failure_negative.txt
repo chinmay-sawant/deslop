@@ -1,0 +1,21 @@
+def validate_batch(items):
+    for item in items:
+        if not item.get("name"):
+            raise ValueError(f"Missing name for item {item.get('id')}")
+        if item.get("quantity", 0) < 0:
+            raise ValueError(f"Negative quantity for item {item['id']}")
+        if item.get("price", 0) < 0:
+            raise ValueError(f"Negative price for item {item['id']}")
+    return items
+
+def process_orders(orders):
+    results = []
+    for order in orders:
+        validated = validate_single_order(order)
+        results.append(validated)
+    return results
+
+def validate_single_order(order):
+    if not order.get("customer_id"):
+        raise ValueError("Missing customer_id")
+    return order

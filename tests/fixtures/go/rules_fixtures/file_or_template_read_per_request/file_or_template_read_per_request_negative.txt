@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for file_or_template_read_per_request: Request-path handlers that read files directly instead of using startup caching or dedicated file-serving paths.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule313NegativeRecord struct {
+	Name string
+}
+
+type Rule313NegativeService interface {
+	Handle(context.Context, Rule313NegativeRecord) (Rule313NegativeRecord, error)
+}
+
+func scenario313Negative(ctx context.Context, service Rule313NegativeService, input Rule313NegativeRecord) (Rule313NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule313NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

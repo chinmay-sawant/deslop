@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_stores_context_in_struct_field: Code that saves `*gin.Context` onto long-lived structs.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule051NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule051NegativeService interface {
+	Run(context.Context, Rule051NegativeRecord) error
+}
+
+func scenario051Negative(ctx context.Context, service Rule051NegativeService, input Rule051NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

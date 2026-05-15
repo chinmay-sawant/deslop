@@ -1,0 +1,14 @@
+{
+  "id": "context_background_used",
+  "language": "go",
+  "family": "context",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Functions or request handlers that already have a caller-owned context available but still create context.Background() or context.TODO() locally.",
+  "binding_location": "src/heuristics/go/context.rs"
+}

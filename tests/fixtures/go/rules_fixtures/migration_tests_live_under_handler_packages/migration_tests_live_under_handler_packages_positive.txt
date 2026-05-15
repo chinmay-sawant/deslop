@@ -1,0 +1,28 @@
+package handlers
+
+import "testing"
+
+// scenario for migration_tests_live_under_handler_packages: Migration-specific tests located in transport packages.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func TestMigrationUp(t *testing.T) {
+	dsn := "postgres://test:test@localhost:5432/testdb"
+	if err := runSchemaMigration(dsn); err != nil {
+		t.Fatalf("migration up failed: %v", err)
+	}
+}
+
+func TestMigrationDown(t *testing.T) {
+	dsn := "postgres://test:test@localhost:5432/testdb"
+	if err := rollbackSchemaMigration(dsn); err != nil {
+		t.Fatalf("migration down failed: %v", err)
+	}
+}
+
+func runSchemaMigration(dsn string) error {
+	return nil
+}
+
+func rollbackSchemaMigration(dsn string) error {
+	return nil
+}

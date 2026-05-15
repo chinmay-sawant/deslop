@@ -1,0 +1,14 @@
+{
+  "id": "domain_model_class_imports_http_library",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Domain model or entity file imports an HTTP framework module such as Flask, Django, or FastAPI.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

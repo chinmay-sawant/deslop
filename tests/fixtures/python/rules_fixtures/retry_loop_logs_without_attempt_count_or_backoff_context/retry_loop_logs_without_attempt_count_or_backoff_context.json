@@ -1,0 +1,14 @@
+{
+  "id": "retry_loop_logs_without_attempt_count_or_backoff_context",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag retry logging that omits attempt number, delay, or terminal outcome.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

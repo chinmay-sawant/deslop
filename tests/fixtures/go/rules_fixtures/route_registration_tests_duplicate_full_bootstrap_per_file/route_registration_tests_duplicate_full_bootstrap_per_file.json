@@ -1,0 +1,14 @@
+{
+  "id": "route_registration_tests_duplicate_full_bootstrap_per_file",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Tests that rebuild the full application bootstrap repeatedly instead of using shared test setup.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

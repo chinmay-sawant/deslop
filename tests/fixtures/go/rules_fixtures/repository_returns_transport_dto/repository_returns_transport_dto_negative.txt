@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_returns_transport_dto: Repositories that know about response contracts instead of returning persistence or domain results.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule135NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule135NegativeService interface {
+	Run(context.Context, Rule135NegativeRecord) error
+}
+
+func scenario135Negative(ctx context.Context, service Rule135NegativeService, input Rule135NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

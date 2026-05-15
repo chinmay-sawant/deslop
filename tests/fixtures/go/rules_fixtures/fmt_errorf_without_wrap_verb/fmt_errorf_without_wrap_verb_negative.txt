@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"strconv"
+)
+
+// scenario for fmt_errorf_without_wrap_verb: `fmt.Errorf("context: %v", err)` instead of `%w`
+// fixture polarity: negative; family: performance; severity: warning.
+func scenario483Negative(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, strconv.Itoa(value))
+	}
+	return out
+}

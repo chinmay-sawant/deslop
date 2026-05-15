@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+)
+
+// scenario for json_number_vs_float64_decode: `json.Unmarshal` into `map[string]any` for numeric data without `UseNumber()`
+// fixture polarity: positive; family: performance; severity: warning.
+type Rule609PositiveRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario609Positive(values []Rule609PositiveRecord) (int, error) {
+	total := 0
+	for _, value := range values {
+		data, err := json.Marshal(value)
+		if err != nil { return 0, err }
+		total += len(data)
+	}
+	return total, nil
+}

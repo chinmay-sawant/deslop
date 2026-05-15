@@ -1,0 +1,44 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"reflect"
+)
+
+// scenario for generic_base_repository_with_reflection_dispatch: Catch-all repositories that depend on reflection-heavy generic CRUD instead of bounded repository APIs.
+// fixture polarity: positive; family: architecture; severity: info.
+type GenericRepo struct {
+	db *sql.DB
+}
+
+func (r *GenericRepo) FindByID(ctx context.Context, model interface{}, id int) error {
+	table := reflect.ValueOf(model).Elem().Type().Name()
+	row := r.db.QueryRowContext(ctx, "SELECT * FROM "+table+" WHERE id = $1", id)
+	v := reflect.ValueOf(model).Elem()
+	fields := make([]interface{}, v.NumField())
+	for i := 0; i < v.NumField(); i++ {
+		fields[i] = v.Field(i).Addr().Interface()
+	}
+	return row.Scan(fields...)
+}
+
+func (r *GenericRepo) Save(ctx context.Context, model interface{}) error {
+	v := reflect.ValueOf(model).Elem()
+	t := v.Type()
+	table := t.Name()
+	cols := ""
+	vals := ""
+	args := make([]interface{}, 0, v.NumField())
+	for i := 0; i < v.NumField(); i++ {
+		if i > 0 {
+			cols += ", "
+			vals += ", "
+		}
+		cols += t.Field(i).Name
+		vals += "?"
+		args = append(args, v.Field(i).Interface())
+	}
+	_, err := r.db.ExecContext(ctx, "INSERT INTO "+table+" ("+cols+") VALUES ("+vals+")", args...)
+	return err
+}

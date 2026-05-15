@@ -1,0 +1,14 @@
+{
+  "id": "pandas_inplace_false_reassignment_missing",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "DataFrame-transform methods are called without reassignment or inplace=True, silently discarding results.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

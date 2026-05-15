@@ -1,0 +1,25 @@
+use std::io::Read;
+use std::net::TcpStream;
+
+// BAD: unbounded read then parse
+fn handle_connection(mut stream: TcpStream) -> Result<(), Error> {
+    let mut buf = String::new();
+    stream.read_to_string(&mut buf)?; // reads until EOF, no size limit
+
+    let request: Request = serde_json::from_str(&buf)?;
+    process_request(request);
+    Ok(())
+}
+
+fn load_and_parse(path: &str) -> Result<Data, Error> {
+    let content = std::fs::read_to_string(path)?; // no size limit
+    let data: Data = serde_json::from_str(&content)?;
+    Ok(data)
+}
+
+fn read_request(body: &mut dyn Read) -> Result<Request, Error> {
+    let mut buf = Vec::new();
+    body.read_to_end(&mut buf)?; // no size limit
+    let request: Request = serde_json::from_slice(&buf)?;
+    Ok(request)
+}

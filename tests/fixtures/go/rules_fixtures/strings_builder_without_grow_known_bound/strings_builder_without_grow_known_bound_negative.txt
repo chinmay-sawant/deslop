@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_builder_without_grow_known_bound: strings.Builder used without Grow when approximate output size is locally visible.
+// fixture polarity: negative; family: hot_path; severity: info.
+func scenario368Negative(haystack string, needle string, left string, right string) bool {
+	return strings.Contains(haystack, needle)
+}

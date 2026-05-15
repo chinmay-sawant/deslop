@@ -1,0 +1,14 @@
+{
+  "id": "rust_large_enum_variant_without_boxing",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag enums with one much larger variant causing every enum value to carry the largest layout.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for cookie_without_secure_flag: `http.Cookie{...}` literals without `Secure: true` for session or authentication cookies
+// fixture polarity: positive; family: security; severity: warning.
+func scenario703Positive(token string) *http.Cookie {
+	return &http.Cookie{Name: "session", Value: token, Path: "/"}
+}

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for cookie_without_samesite: `http.Cookie{...}` without `SameSite` set, particularly for auth/session cookies
+// fixture polarity: positive; family: security; severity: warning.
+func scenario702Positive(token string) *http.Cookie {
+	return &http.Cookie{Name: "session", Value: token, Path: "/"}
+}

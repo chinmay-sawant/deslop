@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_garbage_collection_cleanup_leaked_box_for_runtime_singleton",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag Box::leak used for runtime singletons where OnceLock or LazyLock would express ownership better.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

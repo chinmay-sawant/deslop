@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_method_returns_http_status: Services that return raw HTTP status codes or transport response metadata.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule176NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule176NegativeService interface {
+	Run(context.Context, Rule176NegativeRecord) error
+}
+
+func scenario176Negative(ctx context.Context, service Rule176NegativeService, input Rule176NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

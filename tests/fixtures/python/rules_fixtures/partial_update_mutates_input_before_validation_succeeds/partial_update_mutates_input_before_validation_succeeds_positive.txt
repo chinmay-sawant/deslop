@@ -1,0 +1,28 @@
+from typing import Any
+
+
+def update_user(user_id: int, data: dict[str, Any]) -> dict[str, Any]:
+    data["updated_by"] = "system"
+    data["updated_at"] = "2024-01-01"
+
+    if not data.get("name"):
+        raise ValueError("Name is required")
+
+    return save_user(user_id, data)
+
+
+def patch_order(order_id: int, patch: dict[str, Any]) -> dict[str, Any]:
+    patch["status"] = "pending_review"
+
+    if patch.get("amount", 0) < 0:
+        raise ValueError("Amount cannot be negative")
+
+    return save_order(order_id, patch)
+
+
+def save_user(user_id, data):
+    return {"id": user_id, **data}
+
+
+def save_order(order_id, data):
+    return {"id": order_id, **data}

@@ -1,0 +1,14 @@
+{
+  "id": "branching_on_file_suffix_or_mode_string_scattered_across_codebase",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag suffix or mode dispatch logic duplicated across distant modules.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

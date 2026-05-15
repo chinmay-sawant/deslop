@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"bytes"
+	"html/template"
+	"net/http"
+)
+
+// scenario for go_perf_layer_framework_performance_template_execute_to_string_then_write: Layer: Framework-specific performance. Flag template rendering to strings before writing to the response writer.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+var pageTmpl = template.Must(template.New("page").Parse("<html><body>{{.Title}}</body></html>"))
+
+func RenderPage(w http.ResponseWriter, data map[string]string) {
+	var buf bytes.Buffer
+	pageTmpl.Execute(&buf, data)
+	w.Write(buf.Bytes())
+}
+
+func RenderFragment(w http.ResponseWriter, item string) {
+	var buf bytes.Buffer
+	pageTmpl.Execute(&buf, map[string]string{"Title": item})
+	w.Write(buf.Bytes())
+}

@@ -1,0 +1,46 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+	"time"
+)
+
+// scenario for middleware_writes_business_response_payloads: Middleware that emits domain success payloads instead of leaving response bodies to handlers or render helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type DashboardData struct {
+	TotalUsers    int       `json:"total_users"`
+	ActiveUsers   int       `json:"active_users"`
+	NewSignups    int       `json:"new_signups"`
+	GeneratedAt   time.Time `json:"generated_at"`
+}
+
+func dashboardDataFromCache() DashboardData {
+	return DashboardData{
+		TotalUsers:  1024,
+		ActiveUsers: 312,
+		NewSignups:  17,
+		GeneratedAt: time.Now(),
+	}
+}
+
+func CacheResponseMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("cached") == "true" {
+			data := dashboardDataFromCache()
+
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(data)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func MetricsHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNoContent)
+}
+
+var _ = json.Marshal

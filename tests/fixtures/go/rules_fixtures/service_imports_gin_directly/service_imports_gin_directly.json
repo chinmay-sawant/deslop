@@ -1,0 +1,14 @@
+{
+  "id": "service_imports_gin_directly",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Service packages that depend on `github.com/gin-gonic/gin` instead of transport-neutral inputs.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

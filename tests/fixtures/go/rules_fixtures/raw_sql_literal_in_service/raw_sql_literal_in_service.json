@@ -1,0 +1,14 @@
+{
+  "id": "raw_sql_literal_in_service",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Literal SQL strings executed from services instead of repositories or query packages.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

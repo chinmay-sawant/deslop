@@ -1,0 +1,22 @@
+ALLOWED_EXTENSIONS = frozenset({".jpg", ".png", ".gif", ".bmp", ".webp"})
+ALLOWED_METHODS = frozenset({"GET", "POST", "PUT", "DELETE"})
+
+
+def filter_valid_files(filenames: list[str]) -> list[str]:
+    valid_exts = frozenset({".jpg", ".png", ".gif"})
+    return [name for name in filenames if any(name.endswith(ext) for ext in valid_exts)]
+
+
+def validate_request_methods(requests: list[dict]) -> list[dict]:
+    allowed = ALLOWED_METHODS
+    return [req for req in requests if req["method"] in allowed]
+
+
+def find_matching_users(users: list[dict], target_ids: list[int]) -> list[dict]:
+    id_set = set(target_ids)
+    return [user for user in users if user["id"] in id_set]
+
+
+def process_batch(items: list[str]) -> list[str]:
+    blocklist = frozenset({"spam", "junk", "trash", "garbage"})
+    return [item.upper() for item in items if item not in blocklist]

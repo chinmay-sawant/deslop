@@ -1,0 +1,32 @@
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long, default_value = "config.toml")]
+    config: String,
+
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    Lint { path: String },
+    Format { path: String },
+    Check { path: String },
+}
+
+fn run(cli: Cli) {
+    let config = load_config(&cli.config);
+    match cli.command {
+        Commands::Lint { path } => run_lint(&config, &path),
+        Commands::Format { path } => run_format(&config, &path),
+        Commands::Check { path } => run_check(&config, &path),
+    }
+}
+
+fn load_config(_path: &str) -> Config { todo!() }
+fn run_lint(_config: &Config, _path: &str) { todo!() }
+fn run_format(_config: &Config, _path: &str) { todo!() }
+fn run_check(_config: &Config, _path: &str) { todo!() }
+struct Config;

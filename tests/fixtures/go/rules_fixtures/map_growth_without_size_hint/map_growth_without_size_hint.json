@@ -1,0 +1,14 @@
+{
+  "id": "map_growth_without_size_hint",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Map insertions inside loops without a visible size hint on the initial make call.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

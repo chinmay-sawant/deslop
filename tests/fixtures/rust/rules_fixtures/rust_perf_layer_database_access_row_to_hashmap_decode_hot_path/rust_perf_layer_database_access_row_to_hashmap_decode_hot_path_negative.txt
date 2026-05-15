@@ -1,0 +1,21 @@
+use sqlx::PgPool;
+use std::collections::HashMap;
+
+#[derive(sqlx::FromRow)]
+struct UserRow {
+    id: i64,
+    name: String,
+    email: String,
+}
+
+async fn fetch_user_map(pool: &PgPool, user_ids: &[i64]) -> Result<HashMap<i64, UserRow>, sqlx::Error> {
+    // GOOD: typed row decode directly into struct
+    let rows = sqlx::query_as::<_, UserRow>(
+        "SELECT id, name, email FROM users WHERE id = ANY($1)"
+    )
+    .bind(user_ids)
+    .fetch_all(pool)
+    .await?;
+
+    Ok(rows.into_iter().map(|r| (r.id, r)).collect())
+}

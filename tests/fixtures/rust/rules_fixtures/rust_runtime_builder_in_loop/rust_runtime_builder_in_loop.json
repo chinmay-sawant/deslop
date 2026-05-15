@@ -1,0 +1,14 @@
+{
+  "id": "rust_runtime_builder_in_loop",
+  "language": "rust",
+  "family": "runtime_ownership",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated runtime or executor builder setup inside loops or retry bodies.",
+  "binding_location": "src/heuristics/rust/runtime_ownership.rs"
+}

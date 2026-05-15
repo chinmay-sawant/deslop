@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for sort_or_filter_whitelist_logic_duplicated_across_handlers: Repeated client-field whitelist logic across endpoints.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule189NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule189NegativeService interface {
+	Run(context.Context, Rule189NegativeRecord) error
+}
+
+func scenario189Negative(ctx context.Context, service Rule189NegativeService, input Rule189NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

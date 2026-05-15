@@ -1,0 +1,14 @@
+{
+  "id": "property_returns_live_internal_cache_object",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag properties that expose live mutable cache objects directly to callers.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

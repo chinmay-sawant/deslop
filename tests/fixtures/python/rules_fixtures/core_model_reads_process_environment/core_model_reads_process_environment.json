@@ -1,0 +1,14 @@
+{
+  "id": "core_model_reads_process_environment",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag core classes or pure helper layers that directly access os.environ, os.getenv, or global settings.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

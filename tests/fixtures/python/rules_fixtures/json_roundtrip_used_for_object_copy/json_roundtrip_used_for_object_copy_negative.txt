@@ -1,0 +1,17 @@
+import copy
+
+
+def copy_config(config: dict) -> dict:
+    return copy.deepcopy(config)
+
+
+def duplicate_record(record: dict) -> dict:
+    return dict(record)
+
+
+def clone_settings(settings: dict) -> dict:
+    return copy.deepcopy(settings)
+
+
+def snapshot_state(state: dict) -> dict:
+    return copy.deepcopy(state)

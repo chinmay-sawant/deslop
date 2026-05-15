@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_serialization_serde_json_to_value_hot_path",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag serde_json::Value decoding in hot typed paths where concrete structs avoid dynamic lookup.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for health_or_readiness_handlers_reach_into_business_repositories_directly: Health endpoints that depend on full business repositories instead of focused probes.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule075NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule075NegativeService interface {
+	Run(context.Context, Rule075NegativeRecord) error
+}
+
+func scenario075Negative(ctx context.Context, service Rule075NegativeService, input Rule075NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

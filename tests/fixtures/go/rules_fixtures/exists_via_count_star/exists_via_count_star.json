@@ -1,0 +1,14 @@
+{
+  "id": "exists_via_count_star",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "COUNT(*) used for an existence check instead of EXISTS or LIMIT 1.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

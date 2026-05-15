@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for cache_invalidation_before_transaction_commit: Cache mutation or eviction that happens before a write transaction commits.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule012NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule012NegativeService interface {
+	Run(context.Context, Rule012NegativeRecord) error
+}
+
+func scenario012Negative(ctx context.Context, service Rule012NegativeService, input Rule012NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

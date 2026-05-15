@@ -1,0 +1,45 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for success_response_contains_error_field_or_mixed_contract: Endpoints that blend success and error shapes into one ambiguous contract.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type APIResponse struct {
+	Success bool              `json:"success"`
+	Data    interface{}       `json:"data"`
+	Error   string            `json:"error"`
+	Errors  map[string]string `json:"errors"`
+}
+
+type CreateResult struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+func CreateItemHandler(w http.ResponseWriter, r *http.Request) {
+	result := CreateResult{ID: 99, Name: "NewItem"}
+
+	resp := APIResponse{
+		Success: true,
+		Data:    result,
+		Error:   "",
+		Errors:  nil,
+	}
+
+	json.NewEncoder(w).Encode(resp)
+}
+
+func GetItemHandler(w http.ResponseWriter, r *http.Request) {
+	result := CreateResult{ID: 42, Name: "ExistingItem"}
+
+	resp := APIResponse{
+		Success: true,
+		Data:    result,
+	}
+
+	json.NewEncoder(w).Encode(resp)
+}

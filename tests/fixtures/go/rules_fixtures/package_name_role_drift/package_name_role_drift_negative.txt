@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for package_name_role_drift: Packages whose names advertise one role, such as `service` or `model`, but whose exported symbols primarily belong to another role.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule108NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule108NegativeService interface {
+	Run(context.Context, Rule108NegativeRecord) error
+}
+
+func scenario108Negative(ctx context.Context, service Rule108NegativeService, input Rule108NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

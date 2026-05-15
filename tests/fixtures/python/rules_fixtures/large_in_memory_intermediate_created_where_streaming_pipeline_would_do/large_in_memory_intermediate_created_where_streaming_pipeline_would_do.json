@@ -1,0 +1,14 @@
+{
+  "id": "large_in_memory_intermediate_created_where_streaming_pipeline_would_do",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag workflows that build large temporary structures where streaming would suffice.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "string_to_byte_for_single_char_check",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`[]byte(s)[0]` or `string(b) == \"x\"` for single-character comparisons",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

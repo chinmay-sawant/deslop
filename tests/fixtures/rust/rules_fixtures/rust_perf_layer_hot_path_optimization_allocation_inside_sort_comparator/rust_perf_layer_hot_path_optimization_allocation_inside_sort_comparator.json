@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_hot_path_optimization_allocation_inside_sort_comparator",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Hot path optimization. Flag allocation, parsing, or formatting inside sort comparator closures.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

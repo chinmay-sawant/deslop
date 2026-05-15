@@ -1,0 +1,14 @@
+{
+  "id": "gorm_preload_clause_associations_on_wide_graph",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request-path GORM chains that use Preload(clause.Associations) or other broad preload graphs.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

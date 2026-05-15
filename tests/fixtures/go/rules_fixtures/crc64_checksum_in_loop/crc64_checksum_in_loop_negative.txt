@@ -1,0 +1,11 @@
+package rulefixtures
+
+// scenario for crc64_checksum_in_loop: `crc64.Checksum(...)` inside loops.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario474Negative(chunks [][]byte) int {
+	total := 0
+	for _, payload := range chunks {
+		total += len(payload)
+	}
+	return total
+}

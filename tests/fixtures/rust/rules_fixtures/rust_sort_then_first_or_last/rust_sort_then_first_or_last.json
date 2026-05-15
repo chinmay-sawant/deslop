@@ -1,0 +1,14 @@
+{
+  "id": "rust_sort_then_first_or_last",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag sorting an entire collection only to take min/max-like first or last values.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

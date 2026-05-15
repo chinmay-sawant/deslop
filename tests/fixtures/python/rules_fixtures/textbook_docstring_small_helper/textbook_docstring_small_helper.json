@@ -1,0 +1,14 @@
+{
+  "id": "textbook_docstring_small_helper",
+  "language": "python",
+  "family": "ai_smells",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Very small helper functions that have unusually long, textbook-style docstrings.",
+  "binding_location": "src/heuristics/python/ai_smells.rs"
+}

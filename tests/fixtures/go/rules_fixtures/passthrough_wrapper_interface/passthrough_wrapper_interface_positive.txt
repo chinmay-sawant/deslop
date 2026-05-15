@@ -1,0 +1,37 @@
+package rulefixtures
+
+// scenario for passthrough_wrapper_interface: Wrapper structs that mostly forward one-to-one through an interface field with little added policy.
+// fixture polarity: positive; family: idioms; severity: info.
+
+type UserStore interface {
+	Create(name string, email string) (int, error)
+	FindByID(id int) (*User, error)
+	Update(id int, name string) error
+	Delete(id int) error
+}
+
+type UserStoreWrapper struct {
+	store UserStore
+}
+
+func (w *UserStoreWrapper) Create(name string, email string) (int, error) {
+	return w.store.Create(name, email)
+}
+
+func (w *UserStoreWrapper) FindByID(id int) (*User, error) {
+	return w.store.FindByID(id)
+}
+
+func (w *UserStoreWrapper) Update(id int, name string) error {
+	return w.store.Update(id, name)
+}
+
+func (w *UserStoreWrapper) Delete(id int) error {
+	return w.store.Delete(id)
+}
+
+type User struct {
+	ID    int
+	Name  string
+	Email string
+}

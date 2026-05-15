@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_newreplacer_per_call: `strings.NewReplacer(...)` recreated on request or loop paths.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario660Positive(items []string) string {
+	var b strings.Builder
+	for _, item := range items {
+		r := strings.NewReplacer("a", "b", "c", "d")
+		b.WriteString(r.Replace(item))
+	}
+	return b.String()
+}

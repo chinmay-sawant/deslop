@@ -1,0 +1,15 @@
+{
+  "id": "rust_async_std_mutex_await",
+  "language": "rust",
+  "family": "async_patterns",
+  "default_severity": "contextual",
+  "status": "experimental",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override",
+    "rust_async_experimental"
+  ],
+  "description": "std::sync::Mutex appears to be held across .await in async code.",
+  "binding_location": "src/heuristics/rust/async_patterns.rs"
+}

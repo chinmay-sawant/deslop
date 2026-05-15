@@ -1,0 +1,14 @@
+{
+  "id": "retry_loop_catches_broad_base_exception",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Retry loop catches Exception or BaseException instead of the specific transient errors that warrant a retry.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

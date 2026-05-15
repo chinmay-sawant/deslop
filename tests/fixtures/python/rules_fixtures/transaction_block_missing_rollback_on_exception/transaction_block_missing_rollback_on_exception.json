@@ -1,0 +1,14 @@
+{
+  "id": "transaction_block_missing_rollback_on_exception",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Database transaction started manually without a corresponding rollback in an except or finally clause.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

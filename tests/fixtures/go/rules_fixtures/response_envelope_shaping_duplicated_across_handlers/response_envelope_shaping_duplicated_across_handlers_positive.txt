@@ -1,0 +1,40 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+	"time"
+)
+
+// scenario for response_envelope_shaping_duplicated_across_handlers: Repeated success-response envelope formatting that should live in a renderer or transport helper.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type Order struct {
+	ID     int    `json:"id"`
+	Status string `json:"status"`
+}
+
+type Customer struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+func GetOrderHandler(w http.ResponseWriter, r *http.Request) {
+	order := Order{ID: 1, Status: "shipped"}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{
+		"data":     order,
+		"meta":     map[string]any{"timestamp": time.Now().Unix()},
+		"success":  true,
+	})
+}
+
+func GetCustomerHandler(w http.ResponseWriter, r *http.Request) {
+	customer := Customer{ID: 42, Name: "Acme Corp"}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{
+		"data":     customer,
+		"meta":     map[string]any{"timestamp": time.Now().Unix()},
+		"success":  true,
+	})
+}

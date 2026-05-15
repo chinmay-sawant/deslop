@@ -1,0 +1,14 @@
+{
+  "id": "time_since_candidate_via_now_sub",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`time.Now().Sub(start)` instead of `time.Since(start)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

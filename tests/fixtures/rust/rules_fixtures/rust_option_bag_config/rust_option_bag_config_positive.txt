@@ -1,0 +1,27 @@
+struct ServerConfig {
+    host: Option<String>,
+    port: Option<u16>,
+    max_connections: Option<usize>,
+    timeout_secs: Option<u64>,
+    tls_cert: Option<String>,
+    tls_key: Option<String>,
+    log_level: Option<String>,
+    worker_threads: Option<usize>,
+    max_request_size: Option<usize>,
+}
+
+impl Default for ServerConfig {
+    fn default() -> Self {
+        ServerConfig {
+            host: None,
+            port: None,
+            max_connections: None,
+            timeout_secs: None,
+            tls_cert: None,
+            tls_key: None,
+            log_level: None,
+            worker_threads: None,
+            max_request_size: None,
+        }
+    }
+}

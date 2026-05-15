@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_depends_on_gin_or_http: Repository packages that import Gin, `net/http`, or transport-only response helpers.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule126NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule126NegativeService interface {
+	Run(context.Context, Rule126NegativeRecord) error
+}
+
+func scenario126Negative(ctx context.Context, service Rule126NegativeService, input Rule126NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

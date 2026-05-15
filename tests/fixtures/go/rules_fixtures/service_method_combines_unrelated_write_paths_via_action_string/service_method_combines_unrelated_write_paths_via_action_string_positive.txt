@@ -1,0 +1,43 @@
+package service
+
+import (
+	"context"
+	"fmt"
+)
+
+// scenario for service_method_combines_unrelated_write_paths_via_action_string: Services that branch on action strings to implement many create, update, or delete variants in one method.
+// fixture polarity: positive; family: architecture; severity: info.
+type ContentService struct {
+	repo ContentRepository
+}
+
+func (s *ContentService) Execute(ctx context.Context, action string, payload map[string]interface{}) error {
+	switch action {
+	case "create_post":
+		return s.repo.InsertPost(ctx, payload)
+	case "update_post":
+		return s.repo.UpdatePost(ctx, payload)
+	case "delete_post":
+		return s.repo.DeletePost(ctx, payload)
+	case "create_page":
+		return s.repo.InsertPage(ctx, payload)
+	case "update_page":
+		return s.repo.UpdatePage(ctx, payload)
+	case "delete_page":
+		return s.repo.DeletePage(ctx, payload)
+	case "publish":
+		return s.repo.PublishContent(ctx, payload)
+	default:
+		return fmt.Errorf("unknown action: %s", action)
+	}
+}
+
+type ContentRepository interface {
+	InsertPost(ctx context.Context, payload map[string]interface{}) error
+	UpdatePost(ctx context.Context, payload map[string]interface{}) error
+	DeletePost(ctx context.Context, payload map[string]interface{}) error
+	InsertPage(ctx context.Context, payload map[string]interface{}) error
+	UpdatePage(ctx context.Context, payload map[string]interface{}) error
+	DeletePage(ctx context.Context, payload map[string]interface{}) error
+	PublishContent(ctx context.Context, payload map[string]interface{}) error
+}

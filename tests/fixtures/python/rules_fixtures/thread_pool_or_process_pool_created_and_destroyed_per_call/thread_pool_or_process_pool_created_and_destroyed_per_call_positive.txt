@@ -1,0 +1,35 @@
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+import multiprocessing
+
+def fetch_all(urls: list[str]) -> list[bytes]:
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(fetch_url, urls))
+    return results
+
+def fetch_url(url: str) -> bytes:
+    import requests
+    return requests.get(url).content
+
+def process_batch(items: list[dict]) -> list[dict]:
+    with ProcessPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(transform, item) for item in items]
+        return [f.result() for f in futures]
+
+def transform(item: dict) -> dict:
+    return {k: str(v).upper() for k, v in item.items()}
+
+def parallel_compute(data_chunks: list[list[float]]) -> list[float]:
+    with ProcessPoolExecutor() as pool:
+        results = list(pool.map(compute_sum, data_chunks))
+    return results
+
+def compute_sum(chunk: list[float]) -> float:
+    return sum(chunk)
+
+def bulk_download(files: list[str]) -> list[bytes]:
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        return list(executor.map(download_file, files))
+
+def download_file(path: str) -> bytes:
+    with open(path, "rb") as f:
+        return f.read()

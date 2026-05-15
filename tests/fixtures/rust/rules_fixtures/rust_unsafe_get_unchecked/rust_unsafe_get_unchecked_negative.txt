@@ -1,0 +1,23 @@
+fn get_safe(slice: &[u8], idx: usize) -> Option<u8> {
+    slice.get(idx).copied()
+}
+
+fn get_safe_mut(slice: &mut [u8], idx: usize) -> Option<&mut u8> {
+    slice.get_mut(idx)
+}
+
+fn access_matrix(data: &[i32], row: usize, col: usize, cols: usize) -> Option<i32> {
+    let idx = row.checked_mul(cols)?.checked_add(col)?;
+    data.get(idx).copied()
+}
+
+fn safe_string_chars(s: &str, idx: usize) -> Option<char> {
+    s.chars().nth(idx)
+}
+
+fn get_with_bounds_check(slice: &[u8], idx: usize) -> Result<u8, String> {
+    if idx >= slice.len() {
+        return Err(format!("index {} out of bounds", idx));
+    }
+    Ok(slice[idx])
+}

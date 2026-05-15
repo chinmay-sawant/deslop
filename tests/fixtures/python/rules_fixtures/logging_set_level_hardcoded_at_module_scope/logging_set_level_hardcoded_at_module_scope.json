@@ -1,0 +1,14 @@
+{
+  "id": "logging_set_level_hardcoded_at_module_scope",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "logger.setLevel(logging.DEBUG) or similar hardcoded at module scope instead of via application config.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "repository_method_accepts_pydantic_request_schema",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repository method parameter type is a Pydantic request schema that belongs to the presentation layer.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

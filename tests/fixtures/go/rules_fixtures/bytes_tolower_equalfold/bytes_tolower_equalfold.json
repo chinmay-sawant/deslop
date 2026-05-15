@@ -1,0 +1,14 @@
+{
+  "id": "bytes_tolower_equalfold",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.Equal(bytes.ToLower(...), bytes.ToLower(...))` instead of `bytes.EqualFold(...)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

@@ -1,0 +1,26 @@
+import json
+from datetime import datetime
+
+
+def process_data(data):
+    return [transform(item) for item in data if item["active"]]
+
+
+def calculate_metrics(records):
+    total = 0
+    for r in records:
+        total += r["value"]
+    return total
+
+
+class UserManager:
+    def __init__(self):
+        self.users = []
+
+    def add_user(self, user):
+        if not user.get("email"):
+            raise ValueError("No email")
+        self.users.append(user)
+
+    def get_active_users(self):
+        return [u for u in self.users if u.get("active")]

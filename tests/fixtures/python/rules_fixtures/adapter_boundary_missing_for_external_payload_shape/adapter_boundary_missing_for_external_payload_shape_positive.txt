@@ -1,0 +1,26 @@
+import requests
+
+
+def fetch_stripe_payment(event_id: str) -> dict:
+    resp = requests.get(f"https://api.stripe.com/v1/events/{event_id}")
+    data = resp.json()
+    return {
+        "id": data["data"]["object"]["id"],
+        "amount": data["data"]["object"]["amount"],
+        "currency": data["data"]["object"]["currency"],
+        "status": data["data"]["object"]["status"],
+    }
+
+
+def process_webhook(payload: dict):
+    event_type = payload["type"]
+    amount = payload["data"]["object"]["amount"]
+    customer_id = payload["data"]["object"]["customer"]
+    save_transaction(event_type, amount, customer_id)
+
+
+def save_transaction(event_type: str, amount: int, customer_id: str):
+    db.execute(
+        "INSERT INTO transactions (event_type, amount, customer_id) VALUES (%s, %s, %s)",
+        (event_type, amount, customer_id),
+    )

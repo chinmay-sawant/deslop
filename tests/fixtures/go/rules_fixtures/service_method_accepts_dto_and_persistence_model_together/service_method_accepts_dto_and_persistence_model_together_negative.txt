@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_method_accepts_dto_and_persistence_model_together: Signatures that mix transport DTOs and GORM models in the same service API.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule167NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule167NegativeService interface {
+	Run(context.Context, Rule167NegativeRecord) error
+}
+
+func scenario167Negative(ctx context.Context, service Rule167NegativeService, input Rule167NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

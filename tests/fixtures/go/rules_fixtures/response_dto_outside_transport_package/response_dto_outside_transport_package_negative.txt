@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for response_dto_outside_transport_package: Response envelope structs that live in persistence or repository packages instead of transport or API contract packages.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule145NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule145NegativeService interface {
+	Run(context.Context, Rule145NegativeRecord) error
+}
+
+func scenario145Negative(ctx context.Context, service Rule145NegativeService, input Rule145NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

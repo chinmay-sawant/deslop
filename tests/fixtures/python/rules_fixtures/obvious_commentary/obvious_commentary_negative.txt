@@ -1,0 +1,14 @@
+def calculate_area(width: float, height: float) -> float:
+    return width * height
+
+def is_even(number: int) -> bool:
+    return number % 2 == 0
+
+def get_first_item(items: list):
+    return items[0]
+
+def merge_dicts(dict1: dict, dict2: dict) -> dict:
+    return {**dict1, **dict2}
+
+def format_name(first: str, last: str) -> str:
+    return f"{first} {last}"

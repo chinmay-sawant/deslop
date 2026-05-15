@@ -1,0 +1,22 @@
+package rulefixtures
+
+import "gorm.io/gorm"
+
+// scenario for placeholder_seed_function_in_production: Seed entrypoints in production code that are still TODO-shaped or effectively no-ops.
+// fixture polarity: positive; family: architecture; severity: info.
+func SeedDatabase(db *gorm.DB) error {
+	panic("not implemented")
+}
+
+func SeedUsers(db *gorm.DB) error {
+	return nil
+}
+
+func SeedMigration(db *gorm.DB) error {
+	db.AutoMigrate(&struct{ ID int }{})
+	return nil
+}
+
+func Seed() {
+	panic("seed function not yet implemented")
+}

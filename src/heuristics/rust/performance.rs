@@ -5,6 +5,7 @@ use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
+use super::super::performance_layers::{PerfLayerLanguage, performance_layer_findings};
 use super::{
     file_finding, first_await_after, function_finding, is_scanner_infra_file, is_tokio_mutex,
 };
@@ -271,6 +272,17 @@ pub(crate) fn performance_function_findings(
     findings
 }
 
+pub(crate) fn rust_performance_layer_rule_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if is_scanner_infra_file(file) {
+        return Vec::new();
+    }
+
+    performance_layer_findings(PerfLayerLanguage::Rust, file, function)
+}
+
 pub(crate) fn performance_file_findings(file: &ParsedFile) -> Vec<Finding> {
     if is_scanner_infra_file(file) {
         return Vec::new();
@@ -455,7 +467,7 @@ mod tests {
     use super::{
         contains_default_hashmap_ctor, should_skip_in_memory_write, strip_double_quoted_strings,
     };
-    use crate::analysis::ParsedFunction;
+    use crate::analysis::{LanguageFunctionData, ParsedFunction, RustFunctionEvidence};
     use crate::model::FunctionFingerprint;
 
     fn sample_function(
@@ -491,9 +503,7 @@ mod tests {
             body_text: body_text.to_string(),
             local_strings: Vec::new(),
             test_summary: None,
-            go: None,
-            python: None,
-            rust: None,
+            lang: LanguageFunctionData::Rust(RustFunctionEvidence::default()),
         }
     }
 

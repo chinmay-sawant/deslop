@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_imports_gin_directly: Service packages that depend on `github.com/gin-gonic/gin` instead of transport-neutral inputs.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule166NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule166NegativeService interface {
+	Run(context.Context, Rule166NegativeRecord) error
+}
+
+func scenario166Negative(ctx context.Context, service Rule166NegativeService, input Rule166NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

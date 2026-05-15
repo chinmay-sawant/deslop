@@ -1,0 +1,23 @@
+from celery import Celery
+from flask import current_app
+from myapp.web import create_app
+
+flask_app = create_app()
+celery = Celery("myapp", broker="redis://localhost:6379/0")
+
+
+@celery.task
+def send_email(user_id, subject, body):
+    with flask_app.app_context():
+        db = flask_app.extensions["sqlalchemy"]
+        user = db.session.query(User).get(user_id)
+        mailer = flask_app.extensions["mail"]
+        mailer.send(user.email, subject, body)
+
+
+@celery.task
+def process_upload(file_path):
+    upload_folder = flask_app.config["UPLOAD_FOLDER"]
+    with open(f"{upload_folder}/{file_path}", "rb") as f:
+        data = f.read()
+    return len(data)

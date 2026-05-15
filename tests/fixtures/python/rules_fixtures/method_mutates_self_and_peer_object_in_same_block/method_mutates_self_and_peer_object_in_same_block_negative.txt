@@ -1,0 +1,41 @@
+class Order:
+    def __init__(self, order_id: int, items: list[dict]):
+        self.order_id = order_id
+        self.items = items
+        self.status = "pending"
+        self.total = 0.0
+
+    def calculate_total(self) -> float:
+        return sum(item["price"] * item["quantity"] for item in self.items)
+
+
+class InventoryManager:
+    def __init__(self, stock: dict[str, int]):
+        self.stock = stock
+
+    def check_availability(self, items: list[dict]) -> bool:
+        for item in items:
+            if self.stock.get(item["sku"], 0) < item["quantity"]:
+                return False
+        return True
+
+    def reserve_items(self, items: list[dict]) -> None:
+        for item in items:
+            self.stock[item["sku"]] -= item["quantity"]
+
+
+class UserAccount:
+    def __init__(self, username: str, balance: float):
+        self.username = username
+        self.balance = balance
+
+    def debit(self, amount: float) -> None:
+        self.balance -= amount
+
+    def credit(self, amount: float) -> None:
+        self.balance += amount
+
+
+def transfer_funds(sender: UserAccount, receiver: UserAccount, amount: float) -> None:
+    sender.debit(amount)
+    receiver.credit(amount)

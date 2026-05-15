@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_garbage_collection_cleanup_large_list_cleared_but_retained",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag long-lived lists cleared after spikes while still retaining oversized capacity-sensitive state.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

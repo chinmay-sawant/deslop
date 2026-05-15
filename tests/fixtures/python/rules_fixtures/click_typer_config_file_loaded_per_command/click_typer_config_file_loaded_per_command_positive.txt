@@ -1,0 +1,29 @@
+import click
+import yaml
+
+
+@click.command()
+@click.option("--name", required=True)
+def greet(name):
+    with open("config.yaml") as f:
+        config = yaml.safe_load(f)
+    greeting = config.get("greeting", "Hello")
+    click.echo(f"{greeting}, {name}!")
+
+
+@click.command()
+@click.option("--count", default=1)
+def process(count):
+    with open("config.yaml") as f:
+        config = yaml.safe_load(f)
+    batch_size = config.get("batch_size", 10)
+    for i in range(0, count, batch_size):
+        click.echo(f"Processing batch {i}")
+
+
+@click.command()
+def status():
+    with open("config.yaml") as f:
+        config = yaml.safe_load(f)
+    api_url = config.get("api_url", "http://localhost")
+    click.echo(f"API: {api_url}")

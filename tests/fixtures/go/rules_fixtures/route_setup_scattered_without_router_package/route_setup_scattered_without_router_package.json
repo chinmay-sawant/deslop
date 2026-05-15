@@ -1,0 +1,14 @@
+{
+  "id": "route_setup_scattered_without_router_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Route registration split across unrelated files without a clear `router`, `routes`, or `transport` home.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,6 +1,6 @@
 // ── Owned evidence storage ────────────────────────────────────────────────────
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub(crate) struct RustFunctionEvidence {
     pub safety_comment_lines: Vec<usize>,
     pub unsafe_lines: Vec<usize>,

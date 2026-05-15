@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for gin_engine_as_global_singleton: Package-level `*gin.Engine` singletons reused across unrelated startup paths.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+var engine = gin.Default()
+
+func init() {
+	engine.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
+}
+
+func StartServer() {
+	engine.GET("/users", func(c *gin.Context) {
+		c.JSON(200, gin.H{"users": []string{}})
+	})
+	engine.Run(":8080")
+}

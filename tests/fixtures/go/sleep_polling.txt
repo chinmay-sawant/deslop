@@ -1,9 +1,0 @@
-package sample
-
-import "time"
-
-func Poll() {
-	for {
-		time.Sleep(time.Second)
-	}
-}

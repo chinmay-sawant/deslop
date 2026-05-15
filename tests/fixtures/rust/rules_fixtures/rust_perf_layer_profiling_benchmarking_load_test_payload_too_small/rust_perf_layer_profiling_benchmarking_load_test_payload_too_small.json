@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_profiling_benchmarking_load_test_payload_too_small",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag performance tests using tiny payloads despite targeting large-input behavior.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

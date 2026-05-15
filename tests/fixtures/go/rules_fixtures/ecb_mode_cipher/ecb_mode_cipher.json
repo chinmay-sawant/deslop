@@ -1,0 +1,14 @@
+{
+  "id": "ecb_mode_cipher",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "direct use of `cipher.Block.Encrypt` / `cipher.Block.Decrypt` without a block mode wrapper (CBC, CTR, GCM)",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

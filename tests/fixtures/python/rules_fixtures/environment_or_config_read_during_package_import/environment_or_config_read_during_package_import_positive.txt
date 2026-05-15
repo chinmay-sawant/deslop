@@ -1,0 +1,22 @@
+import os
+import json
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+API_KEY = os.environ.get("API_KEY", "")
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
+
+with open("config.json") as f:
+    CONFIG = json.load(f)
+
+FEATURE_FLAGS = {
+    "new_ui": os.environ.get("FEATURE_NEW_UI", "false") == "true",
+    "dark_mode": os.environ.get("FEATURE_DARK_MODE", "false") == "true",
+}
+
+
+def get_connection():
+    return connect(DATABASE_URL)
+
+
+def get_api_key():
+    return API_KEY

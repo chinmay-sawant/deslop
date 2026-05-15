@@ -1,0 +1,25 @@
+struct AuthConfig {
+    enabled: bool,
+    token: Option<String>,
+    api_key: Option<String>,
+}
+
+impl AuthConfig {
+    fn new(enabled: bool, token: Option<String>, api_key: Option<String>) -> Self {
+        Self { enabled, token, api_key }
+    }
+
+    fn is_valid(&self) -> bool {
+        if self.enabled {
+            self.token.is_some() || self.api_key.is_some()
+        } else {
+            true
+        }
+    }
+}
+
+struct DatabaseConfig {
+    use_tls: bool,
+    cert_path: Option<String>,
+    key_path: Option<String>,
+}

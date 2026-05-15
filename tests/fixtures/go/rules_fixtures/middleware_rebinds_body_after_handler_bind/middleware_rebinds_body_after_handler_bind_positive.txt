@@ -1,0 +1,49 @@
+package rulefixtures
+
+import (
+	"bytes"
+	"encoding/json"
+	"io"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+)
+
+// scenario for middleware_rebinds_body_after_handler_bind: Middleware or helper chains that parse the request body after the main handler has already bound it.
+// fixture polarity: positive; family: gin; severity: contextual.
+
+type CreateUserRequest struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+func BodyInspectionMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		bodyBytes, err := io.ReadAll(c.Request.Body)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "cannot read body"})
+			return
+		}
+		c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
+		var payload map[string]interface{}
+		if err := json.Unmarshal(bodyBytes, &payload); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid json"})
+			return
+		}
+		c.Set("raw_body", payload)
+		c.Next()
+	}
+}
+
+func CreateUserHandler(c *gin.Context) {
+	var req CreateUserRequest
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"user": req})
+}
+
+var _ = io.Discard

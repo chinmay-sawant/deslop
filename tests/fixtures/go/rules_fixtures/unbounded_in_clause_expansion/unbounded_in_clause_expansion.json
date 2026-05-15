@@ -1,0 +1,14 @@
+{
+  "id": "unbounded_in_clause_expansion",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "IN clauses built from request-driven collections without bound limits.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

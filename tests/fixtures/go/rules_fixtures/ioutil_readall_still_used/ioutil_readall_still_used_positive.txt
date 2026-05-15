@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	"io/ioutil"
+	"net/http"
+)
+
+// scenario for ioutil_readall_still_used: `ioutil.ReadAll` usage when `io.ReadAll` is available (Go 1.16+)
+// fixture polarity: positive; family: performance; severity: info.
+func readRequestBody(r *http.Request) ([]byte, error) {
+	defer r.Body.Close()
+	return ioutil.ReadAll(r.Body)
+}
+
+func loadFile(path string) ([]byte, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}

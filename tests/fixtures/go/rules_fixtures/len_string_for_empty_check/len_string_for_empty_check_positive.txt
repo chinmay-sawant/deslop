@@ -1,0 +1,20 @@
+package rulefixtures
+
+import "strings"
+
+// scenario for len_string_for_empty_check: `len(s) == 0` used interchangeably with `s == ""`
+// fixture polarity: positive; family: performance; severity: info.
+
+func scenario611Positive(input string) string {
+	if len(input) == 0 {
+		return "default"
+	}
+	if len(strings.TrimSpace(input)) == 0 {
+		return "whitespace"
+	}
+	return input
+}
+
+func validateName(name string) bool {
+	return len(name) > 0
+}

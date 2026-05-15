@@ -1,0 +1,33 @@
+package rulefixtures
+
+import (
+	"sync"
+)
+
+// scenario for sync_mutex_for_readonly_config: `mu.RLock(); v := config.X; mu.RUnlock()` for read-mostly config that changes rarely
+// fixture polarity: positive; family: performance; severity: info.
+
+type AppConfig struct {
+	Port    int
+	Env     string
+	Version string
+}
+
+type ConfigManager struct {
+	mu     sync.RWMutex
+	config AppConfig
+}
+
+func (cm *ConfigManager) GetPort() int {
+	cm.mu.RLock()
+	port := cm.config.Port
+	cm.mu.RUnlock()
+	return port
+}
+
+func (cm *ConfigManager) GetEnv() string {
+	cm.mu.RLock()
+	env := cm.config.Env
+	cm.mu.RUnlock()
+	return env
+}

@@ -1,0 +1,14 @@
+{
+  "id": "module_exposes_mutable_singleton_client",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag modules that export long-lived mutable client instances for direct cross-module mutation.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

@@ -1,0 +1,26 @@
+use proptest::prelude::*;
+
+fn build_large_index() -> HashMap<String, Vec<String>> {
+    // expensive operation: reads files, builds trie, etc.
+    let mut index = HashMap::new();
+    for entry in std::fs::read_dir("/usr/share/dict").unwrap() {
+        let path = entry.unwrap().path();
+        let words = std::fs::read_to_string(&path).unwrap();
+        for word in words.lines() {
+            let key = word.chars().take(3).collect::<String>();
+            index.entry(key).or_insert_with(Vec::new).push(word.to_string());
+        }
+    }
+    index
+}
+
+proptest! {
+    // BAD: expensive fixture recreated for every test case
+    #[test]
+    fn test_word_lookup(word in "[a-z]{3,20}") {
+        let index = build_large_index();
+        let key = &word[..3.min(word.len())];
+        let results = index.get(key);
+        prop_assert!(results.is_some() || true);
+    }
+}

@@ -1,0 +1,27 @@
+use std::fs::File;
+use std::io::Write;
+
+// BAD: ? after partial side effects without cleanup
+fn write_and_backup(data: &[u8], path: &str, backup_path: &str) -> Result<(), Error> {
+    let mut file = File::create(path)?;
+    file.write_all(data)?;
+    file.flush()?;
+
+    // If this fails, we've already written to `path` but have no backup
+    let mut backup = File::create(backup_path)?;
+    backup.write_all(data)?;
+    backup.flush()?;
+
+    Ok(())
+}
+
+fn transfer_funds(from: &mut Account, to: &mut Account, amount: u64) -> Result<(), Error> {
+    from.balance -= amount;
+    from.save()?;
+
+    // If this fails, funds are deducted but not credited
+    to.balance += amount;
+    to.save()?;
+
+    Ok(())
+}

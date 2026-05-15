@@ -1,0 +1,14 @@
+{
+  "id": "world_readable_file_permissions",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`os.OpenFile(path, flag, 0666)` or `os.WriteFile(path, data, 0777)` with world-readable/writable permissions",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

@@ -1,0 +1,33 @@
+use std::fs;
+use std::io::ErrorKind;
+use std::path::Path;
+
+fn read_if_exists(path: &Path) -> Option<String> {
+    match fs::read_to_string(path) {
+        Ok(contents) => Some(contents),
+        Err(e) if e.kind() == ErrorKind::NotFound => None,
+        Err(_) => None,
+    }
+}
+
+fn open_log(path: &Path) -> std::io::Result<std::fs::File> {
+    match std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+    {
+        Ok(f) => Ok(f),
+        Err(e) if e.kind() == ErrorKind::NotFound => {
+            if let Some(parent) = path.parent() {
+                fs::create_dir_all(parent)?;
+                std::fs::OpenOptions::new()
+                    .create(true)
+                    .append(true)
+                    .open(path)
+            } else {
+                Err(e)
+            }
+        }
+        Err(e) => Err(e),
+    }
+}

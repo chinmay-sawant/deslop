@@ -1,0 +1,25 @@
+import json
+
+
+def deduplicate_events(events: list[dict]) -> list[dict]:
+    seen = set()
+    unique = []
+    for event in events:
+        key = json.dumps(event, sort_keys=True)
+        if key not in seen:
+            seen.add(key)
+            unique.append(event)
+    return unique
+
+
+def find_matching(items: list[dict], target: dict) -> list[dict]:
+    target_str = json.dumps(target, sort_keys=True)
+    return [item for item in items if json.dumps(item, sort_keys=True) == target_str]
+
+
+def group_by_content(records: list[dict]) -> dict:
+    groups = {}
+    for rec in records:
+        key = json.dumps(rec, sort_keys=True)
+        groups.setdefault(key, []).append(rec)
+    return groups

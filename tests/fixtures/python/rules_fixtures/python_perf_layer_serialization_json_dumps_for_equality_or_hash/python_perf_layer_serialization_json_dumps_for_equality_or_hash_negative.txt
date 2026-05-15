@@ -1,0 +1,34 @@
+import json
+from typing import Any
+
+
+def _make_hashable(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return tuple(sorted((k, _make_hashable(v)) for k, v in obj.items()))
+    if isinstance(obj, list):
+        return tuple(_make_hashable(v) for v in obj)
+    return obj
+
+
+def deduplicate_events(events: list[dict]) -> list[dict]:
+    seen = set()
+    unique = []
+    for event in events:
+        key = _make_hashable(event)
+        if key not in seen:
+            seen.add(key)
+            unique.append(event)
+    return unique
+
+
+def find_matching(items: list[dict], target: dict) -> list[dict]:
+    target_key = _make_hashable(target)
+    return [item for item in items if _make_hashable(item) == target_key]
+
+
+def group_by_content(records: list[dict]) -> dict:
+    groups = {}
+    for rec in records:
+        key = _make_hashable(rec)
+        groups.setdefault(key, []).append(rec)
+    return groups

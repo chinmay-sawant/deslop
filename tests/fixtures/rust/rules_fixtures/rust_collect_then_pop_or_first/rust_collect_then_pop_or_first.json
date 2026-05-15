@@ -1,0 +1,14 @@
+{
+  "id": "rust_collect_then_pop_or_first",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag collecting a split iterator into `Vec` just to read the first and last entries with `first()` and `pop()`.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

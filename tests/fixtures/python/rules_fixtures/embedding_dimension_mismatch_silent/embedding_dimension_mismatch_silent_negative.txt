@@ -1,0 +1,29 @@
+import numpy as np
+
+
+def compute_similarity(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
+    if vec_a.shape != vec_b.shape:
+        raise ValueError(
+            f"Dimension mismatch: {vec_a.shape} vs {vec_b.shape}"
+        )
+    return float(np.dot(vec_a, vec_b))
+
+
+def find_nearest(query_embedding: np.ndarray, corpus_embeddings: np.ndarray) -> int:
+    if query_embedding.shape[0] != corpus_embeddings.shape[1]:
+        raise ValueError(
+            f"Query dim {query_embedding.shape[0]} != corpus dim {corpus_embeddings.shape[1]}"
+        )
+    scores = np.dot(corpus_embeddings, query_embedding)
+    return int(np.argmax(scores))
+
+
+def rank_documents(query_vec: list[float], doc_vecs: list[list[float]]) -> list[int]:
+    q = np.array(query_vec)
+    docs = np.array(doc_vecs)
+    if q.shape[0] != docs.shape[1]:
+        raise ValueError(
+            f"Query dim {q.shape[0]} != doc dim {docs.shape[1]}"
+        )
+    similarities = docs @ q
+    return list(np.argsort(similarities)[::-1])

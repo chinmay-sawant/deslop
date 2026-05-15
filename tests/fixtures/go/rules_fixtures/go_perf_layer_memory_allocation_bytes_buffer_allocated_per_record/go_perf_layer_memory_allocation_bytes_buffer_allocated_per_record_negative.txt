@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_memory_allocation_bytes_buffer_allocated_per_record: Layer: Memory allocation. Flag bytes.Buffer construction per record when a reusable buffer can be reset safely.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule565NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario565Negative(records []Rule565NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

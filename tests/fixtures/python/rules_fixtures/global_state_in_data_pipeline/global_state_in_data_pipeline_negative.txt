@@ -1,0 +1,25 @@
+class Pipeline:
+    def __init__(self):
+        self.stage_results = {}
+
+    def run_preprocessing(self, data):
+        cleaned = [remove_nulls(row) for row in data]
+        self.stage_results["preprocessing"] = len(cleaned)
+        return cleaned
+
+    def run_feature_engineering(self, data):
+        features = [extract_features(row) for row in data]
+        self.stage_results["features"] = len(features)
+        return features
+
+    def run_training(self, data):
+        model = train_model(data)
+        self.stage_results["model_score"] = model.score()
+        return model
+
+def compute_metrics(dataset):
+    results = []
+    for batch in dataset.batches():
+        result = evaluate(batch)
+        results.append(result)
+    return results

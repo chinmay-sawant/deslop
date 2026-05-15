@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_open_per_request: gorm.Open(...) called on request paths instead of process-level setup.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule268NegativeRecord struct { ID int }
+
+func scenario268Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule268NegativeRecord{}).Error
+}

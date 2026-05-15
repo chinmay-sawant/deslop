@@ -1,0 +1,14 @@
+{
+  "id": "module_global_registry_mutated_from_import_time_registration",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag global registries that are populated by import side effects.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

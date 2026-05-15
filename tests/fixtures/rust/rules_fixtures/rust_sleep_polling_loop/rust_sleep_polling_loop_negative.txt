@@ -1,0 +1,43 @@
+use std::sync::{Arc, Condvar, Mutex};
+use std::thread;
+use std::time::Duration;
+
+fn wait_for_ready_cv(signal: Arc<(Mutex<bool>, Condvar)>) {
+    let (lock, cvar) = &*signal;
+    let mut ready = lock.lock().unwrap();
+    while !*ready {
+        ready = cvar.wait(ready).unwrap();
+    }
+}
+
+fn poll_with_exponential_backoff() {
+    let mut delay = Duration::from_millis(10);
+    let max_delay = Duration::from_secs(5);
+    loop {
+        match check_service_health() {
+            Ok(()) => break,
+            Err(_) => {
+                thread::sleep(delay);
+                delay = (delay * 2).min(max_delay);
+            }
+        }
+    }
+}
+
+async fn async_wait_with_notify() {
+    let (tx, rx) = tokio::sync::watch::channel(false);
+    tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_secs(1)).await;
+        let _ = tx.send(true);
+    });
+    let mut rx = rx;
+    while !*rx.borrow() {
+        rx.changed().await.unwrap();
+    }
+}
+
+fn check_service_health() -> Result<(), ()> { Err(()) }
+
+fn main() {
+    poll_with_exponential_backoff();
+}

@@ -1,0 +1,14 @@
+{
+  "id": "unrelated_heavy_import",
+  "language": "python",
+  "family": "ai_smells",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Heavy ecosystem imports with little local evidence of real need.",
+  "binding_location": "src/heuristics/python/ai_smells.rs"
+}

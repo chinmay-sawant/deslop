@@ -1,0 +1,14 @@
+{
+  "id": "repeated_json_marshaling",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "encoding/json.Marshal or MarshalIndent inside loops \u2014 repeated allocation and serialization hot spots.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

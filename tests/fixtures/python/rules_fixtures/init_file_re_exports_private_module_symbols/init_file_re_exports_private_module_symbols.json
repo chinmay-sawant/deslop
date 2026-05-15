@@ -1,0 +1,14 @@
+{
+  "id": "init_file_re_exports_private_module_symbols",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "__init__.py re-exports a symbol with a leading underscore, leaking private implementation details.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

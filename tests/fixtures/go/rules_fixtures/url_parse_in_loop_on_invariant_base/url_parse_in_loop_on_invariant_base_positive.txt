@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"net/url"
+)
+
+// scenario for url_parse_in_loop_on_invariant_base: url.Parse(...) or ParseRequestURI(...) observed inside loops with a stable-looking base input.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario372Positive(paths []string) ([]string, error) {
+	var results []string
+	for _, path := range paths {
+		u, err := url.Parse("https://api.example.com/" + path)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, u.String())
+	}
+	return results, nil
+}

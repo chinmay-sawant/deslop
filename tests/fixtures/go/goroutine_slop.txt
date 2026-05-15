@@ -1,7 +1,0 @@
-package sample
-
-func Run(tasks []func()) {
-	for _, task := range tasks {
-		go task()
-	}
-}

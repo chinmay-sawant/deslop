@@ -1,0 +1,33 @@
+package service
+
+import (
+	"context"
+)
+
+// scenario for service_write_passthrough_without_domain_validation: Write-style service methods that mostly forward to repositories without visible domain guard checks.
+// fixture polarity: positive; family: architecture; severity: info.
+type CommentService struct {
+	repo CommentRepository
+}
+
+func NewCommentService(repo CommentRepository) *CommentService {
+	return &CommentService{repo: repo}
+}
+
+func (s *CommentService) PostComment(ctx context.Context, userID, postID, body string) error {
+	return s.repo.Insert(ctx, userID, postID, body)
+}
+
+func (s *CommentService) DeleteComment(ctx context.Context, commentID string) error {
+	return s.repo.SoftDelete(ctx, commentID)
+}
+
+func (s *CommentService) EditComment(ctx context.Context, commentID, newBody string) error {
+	return s.repo.UpdateBody(ctx, commentID, newBody)
+}
+
+type CommentRepository interface {
+	Insert(ctx context.Context, userID, postID, body string) error
+	SoftDelete(ctx context.Context, commentID string) error
+	UpdateBody(ctx context.Context, commentID, body string) error
+}

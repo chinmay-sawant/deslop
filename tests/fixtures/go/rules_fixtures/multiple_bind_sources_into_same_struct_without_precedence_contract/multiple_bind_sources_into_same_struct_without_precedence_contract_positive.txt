@@ -1,0 +1,38 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
+)
+
+// scenario for multiple_bind_sources_into_same_struct_without_precedence_contract: One DTO being filled from body, query, and path without a clear precedence policy.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type SearchParams struct {
+	Query    string `json:"query" form:"query"`
+	Page     int    `json:"page" form:"page"`
+	Category string `json:"category" form:"category"`
+}
+
+func SearchHandler(w http.ResponseWriter, r *http.Request) {
+	var params SearchParams
+
+	json.NewDecoder(r.Body).Decode(&params)
+
+	vars := mux.Vars(r)
+	if q, ok := vars["query"]; ok && params.Query == "" {
+		params.Query = q
+	}
+
+	if p := r.URL.Query().Get("page"); p != "" && params.Page == 0 {
+		params.Page, _ = strconv.Atoi(p)
+	}
+	if c := r.URL.Query().Get("category"); c != "" && params.Category == "" {
+		params.Category = c
+	}
+
+	json.NewEncoder(w).Encode(params)
+}

@@ -1,0 +1,14 @@
+{
+  "id": "fmt_sprintf_quote_to_string",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`fmt.Sprintf(\"%q\", s)` instead of `strconv.Quote(s)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

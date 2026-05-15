@@ -1,4 +1,0 @@
-import itertools
-
-def flatten_batches(batches):
-    return list(itertools.chain.from_iterable(batches))

@@ -1,0 +1,14 @@
+{
+  "id": "duplicate_validation_pipeline",
+  "language": "python",
+  "family": "duplication",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated validation guard pipelines across functions in one file.",
+  "binding_location": "src/heuristics/python/duplication.rs"
+}

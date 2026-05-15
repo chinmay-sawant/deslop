@@ -1,0 +1,48 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class UserProfile:
+    name: str
+    email: str
+    age: int
+    is_active: bool
+
+
+def get_user_profile(user_id: int) -> UserProfile:
+    user = fetch_user(user_id)
+    return UserProfile(
+        name=user.name,
+        email=user.email,
+        age=user.age,
+        is_active=user.is_active,
+    )
+
+
+def process_order(order_id: int):
+    profile = get_user_profile(order_id)
+    if not profile.is_active:
+        return
+    send_email(profile.email, profile.name)
+
+
+@dataclass
+class LatencyMetrics:
+    p50: float
+    p95: float
+    p99: float
+    throughput: float
+    error_rate: float
+
+
+def fetch_metrics() -> LatencyMetrics:
+    return LatencyMetrics(
+        p50=0.95, p95=120.5, p99=45.2, throughput=300, error_rate=0.02
+    )
+
+
+def analyze_performance():
+    metrics = fetch_metrics()
+    if metrics.error_rate > 0.01:
+        alert(f"High error rate: {metrics.error_rate}")
+    report_latency(metrics.p50, metrics.p95, metrics.p99)

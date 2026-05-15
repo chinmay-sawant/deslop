@@ -1,0 +1,14 @@
+{
+  "id": "rust_tonic_channel_connect_per_request",
+  "language": "rust",
+  "family": "runtime_boundary",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "tonic transport channels dialed on request paths instead of reusing configured clients.",
+  "binding_location": "src/heuristics/rust/runtime_boundary.rs"
+}

@@ -1,0 +1,34 @@
+from celery import shared_task, chain, chord
+from myapp.tasks import fetch_user_data, compute_metrics
+
+
+@shared_task
+def aggregate_user_report(user_id):
+    workflow = chord(
+        [fetch_user_data.s(user_id), compute_metrics.s(user_id)],
+        build_report.s(),
+    )
+    result = workflow.apply_async()
+    return result.id
+
+
+@shared_task
+def build_report(results):
+    user, metrics = results
+    return {"user": user, "metrics": metrics}
+
+
+@shared_task
+def sync_order_processing(order_id):
+    workflow = chain(
+        validate_payment.s(order_id),
+        update_inventory_on_success.s(order_id),
+    )
+    return workflow.apply_async()
+
+
+@shared_task
+def update_inventory_on_success(payment, order_id):
+    if payment["status"] == "success":
+        return {"order_id": order_id, "inventory": "updated"}
+    return {"order_id": order_id, "error": "payment failed"}

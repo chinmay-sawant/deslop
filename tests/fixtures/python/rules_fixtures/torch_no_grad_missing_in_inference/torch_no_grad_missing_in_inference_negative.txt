@@ -1,0 +1,31 @@
+import torch
+import torch.nn as nn
+
+class TextClassifier(nn.Module):
+    def __init__(self, vocab_size: int, embed_dim: int, num_classes: int):
+        super().__init__()
+        self.embedding = nn.Embedding(vocab_size, embed_dim)
+        self.fc = nn.Linear(embed_dim, num_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        embedded = self.embedding(x).mean(dim=1)
+        return self.fc(embedded)
+
+model = TextClassifier(10000, 128, 5)
+
+def predict(text_ids: torch.Tensor) -> int:
+    with torch.no_grad():
+        output = model(text_ids.unsqueeze(0))
+    return output.argmax(dim=-1).item()
+
+def predict_batch(batch_ids: torch.Tensor) -> list[int]:
+    with torch.inference_mode():
+        logits = model(batch_ids)
+    predictions = logits.argmax(dim=-1)
+    return predictions.tolist()
+
+def get_confidence(text_ids: torch.Tensor) -> float:
+    with torch.no_grad():
+        logits = model(text_ids.unsqueeze(0))
+        probs = torch.softmax(logits, dim=-1)
+    return probs.max().item()

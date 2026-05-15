@@ -1,0 +1,14 @@
+{
+  "id": "repository_depends_on_service_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repositories that import service packages, which inverts the expected dependency flow.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

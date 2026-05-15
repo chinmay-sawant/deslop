@@ -1,0 +1,30 @@
+use tokio::runtime::Builder;
+
+// BAD: runtime builder in loop or retry body
+fn process_with_retries(items: &[Item]) -> Vec<Output> {
+    let mut results = Vec::new();
+    for item in items {
+        let rt = Builder::new_multi_thread()
+            .worker_threads(4)
+            .build()
+            .unwrap();
+
+        let result = rt.block_on(async {
+            process_item(item).await
+        });
+        results.push(result);
+    }
+    results
+}
+
+fn run_tasks(tasks: Vec<Task>) {
+    for task in tasks {
+        let rt = Builder::new_current_thread()
+            .build()
+            .unwrap();
+
+        rt.block_on(async {
+            execute_task(task).await;
+        });
+    }
+}

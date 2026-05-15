@@ -1,0 +1,14 @@
+{
+  "id": "unnecessary_slice_copy_for_readonly",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`copy := append([]T(nil), original...)` when `copy` is only read, never mutated",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

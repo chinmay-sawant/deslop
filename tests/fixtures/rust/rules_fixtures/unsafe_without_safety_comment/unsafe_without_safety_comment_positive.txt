@@ -1,0 +1,23 @@
+pub fn read_ptr(ptr: *const u8) -> u8 {
+    unsafe { *ptr }
+}
+
+pub fn write_ptr(ptr: *mut u8, val: u8) {
+    unsafe { *ptr = val; }
+}
+
+pub fn transmute_val<T>(val: T) -> u64 {
+    unsafe { std::mem::transmute(val) }
+}
+
+pub fn get_unchecked(slice: &[u8], idx: usize) -> u8 {
+    unsafe { *slice.get_unchecked(idx) }
+}
+
+pub fn from_utf8_unchecked(bytes: &[u8]) -> &str {
+    unsafe { std::str::from_utf8_unchecked(bytes) }
+}
+
+pub fn set_len(vec: &mut Vec<u8>, len: usize) {
+    unsafe { vec.set_len(len); }
+}

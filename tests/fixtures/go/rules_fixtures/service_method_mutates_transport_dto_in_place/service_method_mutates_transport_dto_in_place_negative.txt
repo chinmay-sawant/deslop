@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_method_mutates_transport_dto_in_place: Services that rewrite handler DTOs instead of mapping to service-layer inputs.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule174NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule174NegativeService interface {
+	Run(context.Context, Rule174NegativeRecord) error
+}
+
+func scenario174Negative(ctx context.Context, service Rule174NegativeService, input Rule174NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,14 @@
+{
+  "id": "count_then_find_same_filter",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request-path GORM flows that run Count(...) and then a broad Find(...) with the same filter shape.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

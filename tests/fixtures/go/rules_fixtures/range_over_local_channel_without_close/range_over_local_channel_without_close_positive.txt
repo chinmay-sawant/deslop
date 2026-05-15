@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for range_over_local_channel_without_close: Functions that range over a locally owned channel without an observed close path.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario391Positive() []int {
+	ch := make(chan int)
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			ch <- i
+		}
+	}()
+
+	var results []int
+	for v := range ch {
+		results = append(results, v)
+	}
+	return results
+}

@@ -1,0 +1,37 @@
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    Lint { path: String },
+    Format { path: String },
+    Check { path: String },
+}
+
+fn run(cli: Cli) {
+    match cli.command {
+        Commands::Lint { path } => {
+            let config = load_config(&path);
+            run_lint(&config);
+        }
+        Commands::Format { path } => {
+            let config = load_config(&path);
+            run_format(&config);
+        }
+        Commands::Check { path } => {
+            let config = load_config(&path);
+            run_check(&config);
+        }
+    }
+}
+
+fn load_config(_path: &str) -> Config { todo!() }
+fn run_lint(_config: &Config) { todo!() }
+fn run_format(_config: &Config) { todo!() }
+fn run_check(_config: &Config) { todo!() }
+struct Config;

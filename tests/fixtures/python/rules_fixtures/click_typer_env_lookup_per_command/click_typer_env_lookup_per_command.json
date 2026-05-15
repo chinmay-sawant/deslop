@@ -1,0 +1,14 @@
+{
+  "id": "click_typer_env_lookup_per_command",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "click or typer commands scatter repeated environment lookups through the command body.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

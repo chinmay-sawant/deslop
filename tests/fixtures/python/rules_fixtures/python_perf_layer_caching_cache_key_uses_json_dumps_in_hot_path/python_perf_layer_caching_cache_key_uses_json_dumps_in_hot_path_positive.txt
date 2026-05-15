@@ -1,0 +1,21 @@
+import json
+
+cache = {}
+
+
+def get_user_profile(user_id: str, filters: dict) -> dict:
+    cache_key = json.dumps({"user_id": user_id, "filters": filters})
+    if cache_key in cache:
+        return cache[cache_key]
+    profile = fetch_profile(user_id, filters)
+    cache[cache_key] = profile
+    return profile
+
+
+def search_products(query: str, category: str, sort_by: str) -> list:
+    cache_key = json.dumps({"q": query, "cat": category, "sort": sort_by})
+    if cache_key in cache:
+        return cache[cache_key]
+    results = db.search(query, category, sort_by)
+    cache[cache_key] = results
+    return results

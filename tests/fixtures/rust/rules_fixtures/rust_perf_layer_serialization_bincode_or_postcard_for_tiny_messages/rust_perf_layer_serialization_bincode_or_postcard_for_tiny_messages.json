@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_serialization_bincode_or_postcard_for_tiny_messages",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag binary serialization setup for tiny in-process messages where direct structs or slices would do.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"path/filepath"
+	"strings"
+)
+
+// scenario for filepath_join_with_user_path: `filepath.Join(baseDir, userInput)` without subsequent `filepath.Rel` or path-containment validation
+// fixture polarity: negative; family: security; severity: warning.
+func scenario710Negative(base string, userInput string) (string, bool) {
+	joined := filepath.Join(base, userInput)
+	rel, err := filepath.Rel(base, joined)
+	return joined, err == nil && !strings.HasPrefix(rel, "..")
+}

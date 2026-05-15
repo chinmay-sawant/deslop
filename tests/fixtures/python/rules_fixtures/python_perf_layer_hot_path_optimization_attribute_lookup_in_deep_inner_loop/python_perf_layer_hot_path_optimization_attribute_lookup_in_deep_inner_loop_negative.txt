@@ -1,0 +1,24 @@
+import math
+
+def compute_distances(points_a, points_b):
+    results = []
+    sqrt = math.sqrt
+    for pa in points_a:
+        coords_a = pa.coordinates
+        for pb in points_b:
+            coords_b = pb.coordinates
+            dx = coords_a[0] - coords_b[0]
+            dy = coords_a[1] - coords_b[1]
+            dist = sqrt(dx * dx + dy * dy)
+            results.append(dist)
+    return results
+
+def apply_transforms(matrix, vectors):
+    output = []
+    data = matrix.data
+    bias = matrix.bias
+    for v in vectors:
+        for i in range(len(v)):
+            v[i] = data[i] * v[i] + bias[i]
+        output.append(v)
+    return output

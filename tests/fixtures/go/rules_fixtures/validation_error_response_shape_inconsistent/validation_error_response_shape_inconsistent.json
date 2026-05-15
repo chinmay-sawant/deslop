@@ -1,0 +1,14 @@
+{
+  "id": "validation_error_response_shape_inconsistent",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers in the same API module that emit different validation error contracts.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

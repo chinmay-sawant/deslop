@@ -1,0 +1,24 @@
+def extract_columns(rows):
+    results = []
+    for row in rows:
+        name = row[0]
+        value = row[0]
+        category = row[1]
+        label = row[1]
+        results.append({
+            "name": name,
+            "value": value,
+            "category": category,
+            "label": label,
+        })
+    return results
+
+
+def compute_averages(data_points):
+    averages = []
+    for point in data_points:
+        total = point[2] + point[3]
+        count = point[2] - point[3]
+        if count > 0:
+            averages.append(total / count)
+    return averages

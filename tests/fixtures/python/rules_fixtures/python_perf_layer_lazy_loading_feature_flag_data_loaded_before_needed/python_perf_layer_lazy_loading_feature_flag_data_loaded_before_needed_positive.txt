@@ -1,0 +1,28 @@
+import json
+
+FEATURE_FLAGS = {}
+AB_TEST_CONFIG = {}
+PREMIUM_TIERS = {}
+
+def initialize_app():
+    global FEATURE_FLAGS, AB_TEST_CONFIG, PREMIUM_TIERS
+    FEATURE_FLAGS = load_feature_flags()
+    AB_TEST_CONFIG = load_ab_tests()
+    PREMIUM_TIERS = load_premium_tiers()
+
+def load_feature_flags():
+    with open("flags.json") as f:
+        return json.load(f)
+
+def load_ab_tests():
+    with open("ab_tests.json") as f:
+        return json.load(f)
+
+def load_premium_tiers():
+    with open("premium.json") as f:
+        return json.load(f)
+
+def handle_request(request):
+    if FEATURE_FLAGS.get("new_ui"):
+        return render_new_ui(request)
+    return render_old_ui(request)

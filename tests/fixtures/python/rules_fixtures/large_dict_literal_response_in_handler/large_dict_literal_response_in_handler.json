@@ -1,0 +1,14 @@
+{
+  "id": "large_dict_literal_response_in_handler",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers build large inline dict responses where typed response models would be clearer and cheaper.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

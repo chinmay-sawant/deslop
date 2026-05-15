@@ -1,0 +1,14 @@
+{
+  "id": "repeated_open_read_close_of_same_small_file_in_single_workflow",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag workflows that reopen the same file many times instead of caching its contents or handle.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

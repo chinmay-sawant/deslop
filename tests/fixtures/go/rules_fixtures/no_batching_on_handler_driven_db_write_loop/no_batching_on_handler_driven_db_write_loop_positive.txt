@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+	gin "github.com/gin-gonic/gin"
+	binding "github.com/gin-gonic/gin/binding"
+)
+
+// scenario for no_batching_on_handler_driven_db_write_loop: Request handlers that drive row-by-row DB writes with no batch path.
+// fixture polarity: positive; family: gin; severity: contextual.
+type Rule329PositiveRecord struct {
+	Name string `json:"name"`
+}
+
+func scenario329Positive(ctx *gin.Context) error {
+	var first Rule329PositiveRecord
+	if err := ctx.ShouldBindBodyWith(&first, binding.JSON); err != nil {
+		return err
+	}
+	body, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		return err
+	}
+	data, err := json.Marshal(gin.H{"item": first, "raw": string(body)})
+	if err != nil {
+		return err
+	}
+	ctx.Data(200, "application/json", data)
+	return nil
+}

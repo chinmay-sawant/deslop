@@ -1,0 +1,14 @@
+{
+  "id": "prepare_on_every_request_same_sql",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same literal SQL is prepared multiple times on one request path.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

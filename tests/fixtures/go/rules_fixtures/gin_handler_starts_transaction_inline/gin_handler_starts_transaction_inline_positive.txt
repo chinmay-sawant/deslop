@@ -1,0 +1,33 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"net/http"
+)
+
+// scenario for gin_handler_starts_transaction_inline: Handlers that create or own transactions instead of delegating transactional work to services or unit-of-work helpers.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule050PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario050Positive(w http.ResponseWriter, r *http.Request, repo Rule050PositiveRecord) error {
+	tx, err := repo.db.Begin()
+	if err != nil {
+		http.Error(w, "failed to begin transaction", http.StatusInternalServerError)
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(r.Context(), "UPDATE accounts SET balance = balance - 10 WHERE id = ?", 1)
+	if err != nil {
+		http.Error(w, "update failed", http.StatusInternalServerError)
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		http.Error(w, "commit failed", http.StatusInternalServerError)
+		return err
+	}
+	return nil
+}

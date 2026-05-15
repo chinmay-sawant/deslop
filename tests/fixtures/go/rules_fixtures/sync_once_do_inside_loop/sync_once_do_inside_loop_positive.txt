@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"sync"
+)
+
+// scenario for sync_once_do_inside_loop: `sync.Once.Do(...)` inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+var scenario677PositiveGlobal []int
+
+func scenario677Positive(items []int) {
+	var once sync.Once
+	for _, item := range items {
+		once.Do(func() {
+			scenario677PositiveGlobal = append(scenario677PositiveGlobal, item)
+		})
+	}
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_returns_persistence_model_directly: Handlers that serialize database models directly to the client instead of mapping to response DTOs.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule048NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule048NegativeService interface {
+	Run(context.Context, Rule048NegativeRecord) error
+}
+
+func scenario048Negative(ctx context.Context, service Rule048NegativeService, input Rule048NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

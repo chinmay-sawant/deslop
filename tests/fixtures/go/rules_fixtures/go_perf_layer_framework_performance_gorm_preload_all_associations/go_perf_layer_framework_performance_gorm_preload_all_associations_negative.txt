@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_framework_performance_gorm_preload_all_associations: Layer: Framework-specific performance. Flag GORM Preload of broad association sets on list endpoints.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule535NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario535Negative(records []Rule535NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

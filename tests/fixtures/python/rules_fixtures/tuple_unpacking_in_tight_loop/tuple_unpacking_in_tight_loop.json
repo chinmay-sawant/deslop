@@ -1,0 +1,14 @@
+{
+  "id": "tuple_unpacking_in_tight_loop",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Tuple unpacking is repeated in tight loops where reducing per-iteration overhead may help.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

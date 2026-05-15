@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_preload_clause_associations_on_wide_graph: Request-path GORM chains that use Preload(clause.Associations) or other broad preload graphs.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule269NegativeRecord struct { ID int }
+
+func scenario269Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule269NegativeRecord{}).Error
+}

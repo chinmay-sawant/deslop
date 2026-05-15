@@ -1,0 +1,37 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class Order:
+    id: int
+    total: float
+    status: str
+    discount: float = 0
+    requires_approval: bool = False
+
+
+def apply_pricing_rules(order: Order) -> Order:
+    if order.total > 1000:
+        order.status = "pending_review"
+        order.requires_approval = True
+    elif order.total > 500:
+        order.discount = order.total * 0.05
+        order.status = "processing"
+    else:
+        order.status = "processing"
+    return order
+
+
+def serialize_order(order: Order) -> dict:
+    return {
+        "id": order.id,
+        "total": order.total,
+        "status": order.status,
+        "discount": order.discount,
+        "requires_approval": order.requires_approval,
+    }
+
+
+def create_order_response(order: Order) -> dict:
+    order = apply_pricing_rules(order)
+    return serialize_order(order)

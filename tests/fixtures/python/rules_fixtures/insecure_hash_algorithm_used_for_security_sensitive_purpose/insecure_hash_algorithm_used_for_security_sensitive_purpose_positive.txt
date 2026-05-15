@@ -1,0 +1,19 @@
+import hashlib
+
+
+def hash_password(password: str) -> str:
+    return hashlib.md5(password.encode()).hexdigest()
+
+
+def generate_api_token(user_id: int, secret: str) -> str:
+    payload = f"{user_id}:{secret}"
+    return hashlib.sha1(payload.encode()).hexdigest()
+
+
+def verify_integrity(data: bytes, expected_hash: str) -> bool:
+    computed = hashlib.md5(data).hexdigest()
+    return computed == expected_hash
+
+
+def create_session_id(user_id: int) -> str:
+    return hashlib.md5(str(user_id).encode()).hexdigest()

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for transport_tests_bypass_service_interface_and_touch_repo_directly: Transport tests that skip the service seam and assert repository behavior.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule212NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule212NegativeService interface {
+	Run(context.Context, Rule212NegativeRecord) error
+}
+
+func scenario212Negative(ctx context.Context, service Rule212NegativeService, input Rule212NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

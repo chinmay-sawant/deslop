@@ -1,0 +1,11 @@
+fn safe_parse(input: &str) -> Result<i64, std::num::ParseIntError> {
+    // GOOD: use Result for expected failure paths
+    input.parse::<i64>()
+}
+
+fn process_items(items: &[&str]) -> Vec<i64> {
+    items
+        .iter()
+        .filter_map(|s| safe_parse(s).ok())
+        .collect()
+}

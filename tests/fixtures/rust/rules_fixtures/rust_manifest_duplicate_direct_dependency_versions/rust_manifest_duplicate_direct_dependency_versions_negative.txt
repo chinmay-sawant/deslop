@@ -1,0 +1,6 @@
+pub fn workspace_dependency_is_centralized() -> bool {
+    let root = "serde = \"1.0.190\"";
+    let app = "serde.workspace = true";
+    let lib = "serde.workspace = true";
+    matches!((app, lib), ("serde.workspace = true", "serde.workspace = true")) && root.contains("1.0.190")
+}

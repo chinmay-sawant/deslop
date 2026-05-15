@@ -1,0 +1,14 @@
+{
+  "id": "weak_crypto",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Direct use of weak standard-library crypto packages such as crypto/md5, crypto/sha1, crypto/des, and crypto/rc4.",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

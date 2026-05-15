@@ -1,0 +1,14 @@
+{
+  "id": "blocking_io_call_executed_per_item_without_batching",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag per-item blocking I/O where batching or grouping is possible.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

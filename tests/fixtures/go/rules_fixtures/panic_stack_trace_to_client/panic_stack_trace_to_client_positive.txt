@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+	"runtime/debug"
+)
+
+// scenario for panic_stack_trace_to_client: `recover()` in HTTP middleware that sends the panic message/stack to the response writer
+// fixture polarity: positive; family: security; severity: warning.
+func RecoveryMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if rec := recover(); rec != nil {
+				w.Header().Set("Content-Type", "text/plain")
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintf(w, "panic: %v\n\nStack Trace:\n%s", rec, debug.Stack())
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
+func PanicHandler(w http.ResponseWriter, r *http.Request) {
+	panic("deliberate crash in request handler")
+}

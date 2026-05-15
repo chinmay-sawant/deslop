@@ -1,0 +1,14 @@
+{
+  "id": "bindjson_into_map_any_hot_endpoint",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin handlers that bind JSON into map[string]any or map[string]interface{} on hot request paths.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

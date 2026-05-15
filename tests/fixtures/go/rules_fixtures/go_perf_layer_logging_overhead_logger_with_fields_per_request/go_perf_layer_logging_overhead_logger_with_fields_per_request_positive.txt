@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"log/slog"
+	"os"
+)
+
+// scenario for go_perf_layer_logging_overhead_logger_with_fields_per_request: Layer: Logging overhead. Flag derived logger construction per request when stable fields can be attached once.
+// fixture polarity: positive; family: performance; severity: contextual.
+var baseLogger = slog.New(slog.NewTextHandler(os.Stderr, nil))
+
+func scenario562Positive(requestID string) {
+	// A new derived logger is created for every request, allocating
+	// a fresh logger with the request_id field. This is expensive at
+	// high QPS. The handler-level logger should be reused.
+	logger := baseLogger.With(slog.String("request_id", requestID))
+	logger.Info("handling request")
+}

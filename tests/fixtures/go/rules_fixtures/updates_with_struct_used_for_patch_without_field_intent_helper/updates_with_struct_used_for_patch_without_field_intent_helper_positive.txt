@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for updates_with_struct_used_for_patch_without_field_intent_helper: PATCH-style repository writes that rely on struct zero-value semantics without explicit field intent.
+// fixture polarity: positive; family: architecture; severity: info.
+type User struct {
+	gorm.Model
+	Name  string
+	Email string
+	Age   int
+}
+
+func scenario214Positive(db *gorm.DB, id uint, partial User) error {
+	return db.Model(&User{}).Where("id = ?", id).Updates(partial).Error
+}

@@ -1,0 +1,14 @@
+{
+  "id": "read_then_splitlines",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "File contents are fully read and then splitlines() is called instead of streaming lines.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

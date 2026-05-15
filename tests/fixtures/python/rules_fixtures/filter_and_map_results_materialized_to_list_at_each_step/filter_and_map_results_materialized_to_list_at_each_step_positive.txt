@@ -1,0 +1,22 @@
+def process_orders(orders: list[dict]) -> list[dict]:
+    valid = list(filter(lambda o: o["status"] == "pending", orders))
+    amounts = list(map(lambda o: o["total"], valid))
+    return list(map(lambda a: {"amount": a, "tax": a * 0.1}, amounts))
+
+
+def get_active_user_emails(users: list[dict]) -> list[str]:
+    active = list(filter(lambda u: u["is_active"], users))
+    emails = list(map(lambda u: u["email"], active))
+    return emails
+
+
+def transform_data(items: list[dict]) -> list[dict]:
+    filtered = list(filter(lambda x: x["score"] > 0.5, items))
+    mapped = list(map(lambda x: {"id": x["id"], "score": x["score"] * 2}, filtered))
+    return mapped
+
+
+def extract_errors(log_lines: list[str]) -> list[str]:
+    errors = list(filter(lambda l: "ERROR" in l, log_lines))
+    messages = list(map(lambda l: l.split("ERROR:")[1].strip(), errors))
+    return messages

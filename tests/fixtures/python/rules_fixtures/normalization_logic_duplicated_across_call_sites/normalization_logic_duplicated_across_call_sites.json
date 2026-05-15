@@ -1,0 +1,14 @@
+{
+  "id": "normalization_logic_duplicated_across_call_sites",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag the same value-cleaning or canonicalization logic repeated in several places.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

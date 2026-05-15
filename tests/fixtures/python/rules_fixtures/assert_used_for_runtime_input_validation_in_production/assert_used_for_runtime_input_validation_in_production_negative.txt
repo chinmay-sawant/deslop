@@ -1,0 +1,33 @@
+from flask import Flask, request
+from pydantic import BaseModel, validator
+
+app = Flask(__name__)
+
+
+class TransferRequest(BaseModel):
+    sender_id: int
+    recipient_id: int
+    amount: float
+    reference: str = ""
+
+    @validator("amount")
+    def amount_must_be_positive(cls, v):
+        if v <= 0:
+            raise ValueError("Amount must be positive")
+        return v
+
+    @validator("recipient_id")
+    def cannot_transfer_to_self(cls, v, values):
+        if v == values.get("sender_id"):
+            raise ValueError("Cannot transfer to self")
+        return v
+
+
+@app.route("/transfer", methods=["POST"])
+def transfer_funds():
+    req = TransferRequest(**request.json)
+    sender = get_account(req.sender_id)
+    if sender.balance < req.amount:
+        return {"error": "Insufficient funds"}, 400
+    execute_transfer(req.sender_id, req.recipient_id, req.amount)
+    return {"status": "completed"}

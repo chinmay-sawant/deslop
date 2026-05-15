@@ -1,0 +1,14 @@
+{
+  "id": "rust_static_mut_global",
+  "language": "rust",
+  "family": "security_footguns",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "static mut global state that bypasses the safer shared-state models already in the scanner.",
+  "binding_location": "src/heuristics/rust/security_footguns.rs"
+}

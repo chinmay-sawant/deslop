@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_framework_performance_sqlx_select_slice_unbounded",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag sqlx Select into slices without LIMIT or streaming for large tables.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

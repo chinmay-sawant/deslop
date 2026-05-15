@@ -1,0 +1,16 @@
+fn parse_document_release(input: &str) -> Document {
+    let mut parser = Parser::new(input);
+    parser.parse_release_mode()
+}
+
+#[cfg(test)]
+mod benches {
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn bench_parse_small_release(b: &mut Bencher) {
+        let input = "sample document content";
+        b.iter(|| parse_document_release(input));
+    }
+}

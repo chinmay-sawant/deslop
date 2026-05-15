@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_logging_overhead_per_item_info_span_in_batch",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Logging overhead. Flag tracing spans or info logs emitted per record in large batch loops.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

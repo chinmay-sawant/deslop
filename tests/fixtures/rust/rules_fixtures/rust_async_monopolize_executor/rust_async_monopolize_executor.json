@@ -1,0 +1,15 @@
+{
+  "id": "rust_async_monopolize_executor",
+  "language": "rust",
+  "family": "async_patterns",
+  "default_severity": "contextual",
+  "status": "experimental",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override",
+    "rust_async_experimental"
+  ],
+  "description": "An async function may monopolize the executor with blocking work and no await.",
+  "binding_location": "src/heuristics/rust/async_patterns.rs"
+}

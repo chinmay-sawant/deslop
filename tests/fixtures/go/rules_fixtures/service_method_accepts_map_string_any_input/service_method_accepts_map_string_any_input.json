@@ -1,0 +1,14 @@
+{
+  "id": "service_method_accepts_map_string_any_input",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Services that use map-shaped dynamic input instead of typed request contracts.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "http_client_allocated_per_call_without_reuse",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "http.Client literals allocated on regular call paths instead of being reused as shared client state.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

@@ -1,0 +1,28 @@
+use rayon::prelude::*;
+use std::sync::Arc;
+
+struct RuleCatalog {
+    rules: Vec<Rule>,
+    patterns: Vec<Pattern>,
+    config: Config,
+}
+
+// BAD: heavy clone per item in parallel closure
+fn lint_files(files: &[PathBuf], catalog: &RuleCatalog) -> Vec<LintResult> {
+    files.par_iter()
+        .map(|file| {
+            let catalog_clone = catalog.clone(); // expensive clone
+            let content = std::fs::read_to_string(file).unwrap();
+            lint_with_catalog(&content, &catalog_clone)
+        })
+        .collect()
+}
+
+fn process_with_context(items: &[Item], ctx: &Context) -> Vec<Output> {
+    items.par_iter()
+        .map(|item| {
+            let ctx_clone = ctx.clone(); // clones large state
+            process_item(item, &ctx_clone)
+        })
+        .collect()
+}

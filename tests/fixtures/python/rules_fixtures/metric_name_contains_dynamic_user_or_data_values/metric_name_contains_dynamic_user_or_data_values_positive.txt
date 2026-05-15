@@ -1,0 +1,16 @@
+from prometheus_client import Counter
+
+REQUEST_COUNT = Counter("http_requests_total", "Total requests", ["method", "endpoint"])
+
+
+def track_user_action(user_id: str, action: str) -> None:
+    REQUEST_COUNT.labels(method="POST", endpoint=f"/users/{user_id}/actions/{action}").inc()
+
+
+def record_api_call(path: str, status: int) -> None:
+    REQUEST_COUNT.labels(method="GET", endpoint=f"/api{path}/{status}").inc()
+
+
+def log_metric(metric_name: str, value: float) -> None:
+    counter = Counter(f"custom_{metric_name}_total", f"Counter for {metric_name}")
+    counter.inc(value)

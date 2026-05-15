@@ -1,0 +1,35 @@
+from abc import ABC, abstractmethod
+
+class UserRepository(ABC):
+    @abstractmethod
+    def get_user(self, user_id: str) -> dict:
+        ...
+
+    @abstractmethod
+    def save_user(self, user: dict) -> None:
+        ...
+
+    @abstractmethod
+    def delete_user(self, user_id: str) -> None:
+        ...
+
+    @abstractmethod
+    def find_by_email(self, email: str) -> dict | None:
+        ...
+
+class AsyncUserRepository(ABC):
+    @abstractmethod
+    async def get_user(self, user_id: str) -> dict:
+        ...
+
+    @abstractmethod
+    async def save_user(self, user: dict) -> None:
+        ...
+
+    @abstractmethod
+    async def delete_user(self, user_id: str) -> None:
+        ...
+
+    @abstractmethod
+    async def find_by_email(self, email: str) -> dict | None:
+        ...

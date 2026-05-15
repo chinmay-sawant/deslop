@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"context"
+	grpc "google.golang.org/grpc"
+)
+
+// scenario for grpc_context_not_propagated: gRPC handler methods that create new `context.Background()` instead of using the stream/request context
+// fixture polarity: positive; family: library; severity: warning.
+func scenario410Positive(ctx context.Context, addr string) (*grpc.ClientConn, error) {
+	_ = context.Background()
+	return grpc.Dial(addr)
+}

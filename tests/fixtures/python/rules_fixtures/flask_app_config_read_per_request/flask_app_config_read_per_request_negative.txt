@@ -1,0 +1,49 @@
+from dataclasses import dataclass
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+app.config["MAX_PAGE_SIZE"] = 100
+app.config["FEATURE_V2"] = True
+app.config["API_TIMEOUT"] = 30
+
+
+@dataclass(frozen=True)
+class AppSettings:
+    max_page_size: int
+    feature_v2: bool
+    api_timeout: int
+
+
+def load_settings() -> AppSettings:
+    return AppSettings(
+        max_page_size=app.config["MAX_PAGE_SIZE"],
+        feature_v2=app.config["FEATURE_V2"],
+        api_timeout=app.config["API_TIMEOUT"],
+    )
+
+
+settings = load_settings()
+
+
+@app.route("/users")
+def list_users():
+    users = db.fetch_users(limit=settings.max_page_size)
+    return jsonify(users)
+
+
+@app.route("/products")
+def list_products():
+    products = catalog.fetch(limit=settings.max_page_size, timeout=settings.api_timeout)
+    return jsonify(products)
+
+
+@app.route("/dashboard")
+def dashboard():
+    if settings.feature_v2:
+        return render_v2_dashboard()
+    return render_v1_dashboard()
+
+
+@app.route("/reports")
+def reports():
+    return generate_report(settings.max_page_size, settings.feature_v2, settings.api_timeout)

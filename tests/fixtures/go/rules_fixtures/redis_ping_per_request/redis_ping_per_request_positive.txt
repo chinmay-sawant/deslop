@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"context"
+	redis "github.com/redis/go-redis/v9"
+)
+
+// scenario for redis_ping_per_request: Per-request Redis ping checks instead of startup or explicit health-probe validation.
+// fixture polarity: positive; family: data_access; severity: info.
+func scenario290Positive(ctx context.Context, client *redis.Client, keys []string) error {
+	for _, key := range keys {
+		if err := client.Get(ctx, key).Err(); err != nil {
+			return err
+		}
+	}
+	return client.Ping(ctx).Err()
+}

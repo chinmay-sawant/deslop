@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for go_perf_layer_network_calls_tls_config_built_per_request: Layer: Network calls. Flag TLS configuration construction per request instead of reusing immutable configs.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario572Positive(urls []string) int {
+	total := 0
+	for _, url := range urls {
+		client := &http.Client{}
+		resp, err := client.Get(url)
+		if err == nil { total += resp.StatusCode }
+	}
+	return total
+}

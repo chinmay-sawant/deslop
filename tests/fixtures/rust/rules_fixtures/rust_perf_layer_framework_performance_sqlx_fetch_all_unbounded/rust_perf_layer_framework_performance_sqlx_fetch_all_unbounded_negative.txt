@@ -1,0 +1,25 @@
+use sqlx::PgPool;
+use futures::TryStreamExt;
+
+async fn get_all_users(pool: &PgPool) -> Result<Vec<User>, sqlx::Error> {
+    // GOOD: streaming fetch with chunked processing
+    let mut stream = sqlx::query_as::<_, User>(
+        "SELECT id, name, email FROM users"
+    )
+    .fetch(pool);
+
+    let mut results = Vec::new();
+    while let Some(row) = stream.try_next().await? {
+        results.push(row);
+        if results.len() >= 10000 {
+            break;
+        }
+    }
+    Ok(results)
+}
+
+struct User {
+    id: i64,
+    name: String,
+    email: String,
+}

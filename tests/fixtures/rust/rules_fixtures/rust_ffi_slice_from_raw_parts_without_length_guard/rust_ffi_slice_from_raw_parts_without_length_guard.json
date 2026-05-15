@@ -1,0 +1,14 @@
+{
+  "id": "rust_ffi_slice_from_raw_parts_without_length_guard",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag safe wrappers around raw pointer and length pairs that do not validate null pointers, maximum length, or alignment before slice construction.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

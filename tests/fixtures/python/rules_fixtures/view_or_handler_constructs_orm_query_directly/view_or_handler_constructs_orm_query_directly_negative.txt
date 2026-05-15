@@ -1,0 +1,41 @@
+from fastapi import FastAPI, Request, Depends
+from sqlalchemy.orm import Session
+
+app = FastAPI()
+
+class UserRepository:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def list_active(self, role: str | None = None, limit: int = 100):
+        query = self.db.query(User).filter(User.is_active == True)
+        if role:
+            query = query.filter(User.role == role)
+        return query.order_by(User.created_at.desc()).limit(limit).all()
+
+class OrderRepository:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def get_by_user(self, user_id: int):
+        return (
+            self.db.query(Order)
+            .filter(Order.user_id == user_id)
+            .join(OrderItem)
+            .filter(OrderItem.quantity > 0)
+            .order_by(Order.created_at.desc())
+            .all()
+        )
+
+@app.get("/api/users")
+async def list_users(request: Request, db: Session = Depends(get_db)):
+    repo = UserRepository(db)
+    role = request.query_params.get("role")
+    users = repo.list_active(role=role)
+    return [{"id": u.id, "name": u.name} for u in users]
+
+@app.get("/api/orders/{user_id}")
+async def get_user_orders(user_id: int, db: Session = Depends(get_db)):
+    repo = OrderRepository(db)
+    orders = repo.get_by_user(user_id)
+    return [{"id": o.id, "total": o.total} for o in orders]

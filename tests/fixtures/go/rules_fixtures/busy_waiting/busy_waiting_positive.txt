@@ -1,0 +1,34 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"time"
+)
+
+// scenario for busy_waiting: select { default: ... } inside loops, which often spins instead of blocking.
+// fixture polarity: positive; family: context; severity: contextual.
+
+func waitForReady(done <-chan struct{}) bool {
+	deadline := time.Now().Add(3 * time.Second)
+	for time.Now().Before(deadline) {
+		select {
+		case <-done:
+			return true
+		default:
+			time.Sleep(time.Millisecond)
+		}
+	}
+	return false
+}
+
+func pollChannel(ch <-chan int) int {
+	for {
+		select {
+		case v := <-ch:
+			return v
+		default:
+			fmt.Println("still waiting...")
+			time.Sleep(10 * time.Millisecond)
+		}
+	}
+}

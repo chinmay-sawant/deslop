@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"maps"
+)
+
+// scenario for repeated_map_clone_in_loop: maps.Clone or equivalent map-copy calls observed inside loops.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario361Positive(source map[string]int, keys []string) []map[string]int {
+	var results []map[string]int
+	for _, k := range keys {
+		clone := maps.Clone(source)
+		clone[k] = clone[k] + 1
+		results = append(results, clone)
+	}
+	return results
+}

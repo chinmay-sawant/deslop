@@ -1,0 +1,16 @@
+from importlib.metadata import version, PackageNotFoundError
+
+try:
+    __version__ = version("myapp")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
+
+import pkg_resources
+
+_dist = pkg_resources.get_distribution("myapp")
+__version__ = _dist.version
+__build__ = _dist.parsed_version
+
+from myapp.core import engine
+from myapp.api import router
+from myapp.db import session

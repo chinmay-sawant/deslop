@@ -1,0 +1,21 @@
+// src/handler.rs - 3000 lines, handles auth, routing, parsing, db, caching, metrics...
+fn authenticate_user() {}
+fn authorize_request() {}
+fn route_request() {}
+fn parse_body() {}
+fn validate_input() {}
+fn query_database() {}
+fn cache_result() {}
+fn emit_metrics() {}
+fn serialize_response() {}
+fn handle_error() {}
+fn log_request() {}
+fn rate_limit() {}
+fn cors_headers() {}
+fn compress_response() {}
+fn decompress_request() {}
+fn parse_cookies() {}
+fn set_session() {}
+fn clear_session() {}
+fn refresh_token() {}
+fn revoke_token() {}

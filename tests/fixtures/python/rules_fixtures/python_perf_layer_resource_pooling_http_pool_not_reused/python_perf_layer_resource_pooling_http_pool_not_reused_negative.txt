@@ -1,0 +1,17 @@
+import requests
+
+session = requests.Session()
+adapter = requests.adapters.HTTPAdapter(pool_connections=10, pool_maxsize=20)
+session.mount("https://", adapter)
+
+
+def fetch_user(url: str) -> dict:
+    return session.get(url).json()
+
+
+def fetch_orders(url: str) -> list:
+    return session.get(url).json()
+
+
+def fetch_products(url: str) -> list:
+    return session.get(url).json()

@@ -1,0 +1,14 @@
+{
+  "id": "rust_builder_without_validate",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Builders that expose build() without an obvious validation step.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

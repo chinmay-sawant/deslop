@@ -1,0 +1,14 @@
+use tracing::{debug_span, trace};
+
+fn find_matches(data: &[u32], target: u32) -> Vec<usize> {
+    let mut results = Vec::new();
+    // BAD: span constructed in tight loop
+    for (i, &val) in data.iter().enumerate() {
+        let span = debug_span!("check", index = i);
+        let _enter = span.enter();
+        if val == target {
+            results.push(i);
+        }
+    }
+    results
+}

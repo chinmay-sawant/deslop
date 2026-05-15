@@ -1,0 +1,14 @@
+{
+  "id": "gorm_model_hook_contains_external_io",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Hooks that call HTTP clients, queues, file I/O, or external side effects.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,12 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+def handle_request(request):
+    logger.info("Request %s started", request.request_id)
+    result = process(request)
+    logger.info("Request %s completed", request.request_id)
+    return result
+
+def process(request):
+    return {"status": "ok"}

@@ -1,0 +1,32 @@
+class Order:
+    def __init__(self, order_id: int, items: list[dict]):
+        self.order_id = order_id
+        self.items = items
+        self.status = "pending"
+        self.total = 0.0
+
+
+class InventoryManager:
+    def __init__(self, stock: dict[str, int]):
+        self.stock = stock
+
+    def process_order(self, order: Order) -> None:
+        for item in order.items:
+            sku = item["sku"]
+            qty = item["quantity"]
+            self.stock[sku] -= qty
+            order.total += item["price"] * qty
+        order.status = "confirmed"
+
+
+class UserAccount:
+    def __init__(self, username: str, balance: float):
+        self.username = username
+        self.balance = balance
+        self.friend_balances: dict[str, float] = {}
+
+    def transfer_to_friend(self, friend: "UserAccount", amount: float) -> None:
+        self.balance -= amount
+        friend.balance += amount
+        self.friend_balances[friend.username] = self.friend_balances.get(friend.username, 0) + amount
+        friend.friend_balances[self.username] = friend.friend_balances.get(self.username, 0) - amount

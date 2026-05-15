@@ -1,0 +1,18 @@
+use rayon::prelude::*;
+
+// GOOD: use flat_map_iter to avoid intermediate nested allocations
+fn expand_chunks(chunks: &[Chunk]) -> Vec<Item> {
+    chunks.par_iter()
+        .flat_map_iter(|chunk| {
+            chunk.entries.iter().map(|entry| Item::from(entry))
+        })
+        .collect()
+}
+
+fn process_and_split(records: &[Record]) -> Vec<Output> {
+    records.par_iter()
+        .flat_map_iter(|record| {
+            record.sub_records.iter().map(|sub| process_single(sub))
+        })
+        .collect()
+}

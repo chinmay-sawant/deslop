@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"encoding/xml"
+	"io"
+)
+
+// scenario for xml_decoder_without_entity_limit: `xml.NewDecoder(r)` processing untrusted XML without setting `d.Entity = nil` and without input size limits
+// fixture polarity: positive; family: security; severity: warning.
+func scenario749Positive(reader io.Reader, target any) error {
+	decoder := xml.NewDecoder(reader)
+	return decoder.Decode(target)
+}

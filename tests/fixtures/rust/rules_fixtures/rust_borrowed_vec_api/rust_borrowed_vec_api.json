@@ -1,0 +1,14 @@
+{
+  "id": "rust_borrowed_vec_api",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public signatures that borrow &Vec<T> instead of &[T].",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "string_concatenation_for_path_join",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`dir + \"/\" + file` or manual path assembly via `+` concatenation",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

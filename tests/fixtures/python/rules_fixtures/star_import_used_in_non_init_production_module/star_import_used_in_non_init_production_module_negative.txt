@@ -1,0 +1,26 @@
+from myapp.models import Order, Product, User
+from myapp.utils import validate_order, calculate_totals, apply_discounts
+from myapp.utils import fetch_report_data, format_report, export_to_pdf
+from myapp.utils import get_warehouse_items, update_stock_levels, notify_low_stock
+
+
+def process_order(order_data: dict) -> dict:
+    order = Order(**order_data)
+    validate_order(order)
+    calculate_totals(order)
+    apply_discounts(order)
+    return order.to_dict()
+
+
+def generate_report(report_type: str) -> dict:
+    data = fetch_report_data(report_type)
+    formatted = format_report(data)
+    export_to_pdf(formatted)
+    return formatted
+
+
+def sync_inventory(warehouse_id: int) -> None:
+    items = get_warehouse_items(warehouse_id)
+    for item in items:
+        update_stock_levels(item)
+        notify_low_stock(item)

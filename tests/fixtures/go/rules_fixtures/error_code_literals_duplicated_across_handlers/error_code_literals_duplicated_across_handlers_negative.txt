@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for error_code_literals_duplicated_across_handlers: Repeated string error codes without a centralized catalog.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule030NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule030NegativeService interface {
+	Run(context.Context, Rule030NegativeRecord) error
+}
+
+func scenario030Negative(ctx context.Context, service Rule030NegativeService, input Rule030NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

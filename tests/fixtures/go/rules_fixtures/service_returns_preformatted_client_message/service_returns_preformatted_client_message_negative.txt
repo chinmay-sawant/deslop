@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_returns_preformatted_client_message: Services that return final client-facing message strings instead of typed domain errors.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule179NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule179NegativeService interface {
+	Run(context.Context, Rule179NegativeRecord) error
+}
+
+func scenario179Negative(ctx context.Context, service Rule179NegativeService, input Rule179NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

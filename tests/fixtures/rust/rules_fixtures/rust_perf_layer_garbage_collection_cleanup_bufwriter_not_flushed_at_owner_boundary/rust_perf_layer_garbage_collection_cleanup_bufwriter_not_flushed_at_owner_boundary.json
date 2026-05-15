@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_garbage_collection_cleanup_bufwriter_not_flushed_at_owner_boundary",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag buffered writers whose flush ownership is unclear at the boundary.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

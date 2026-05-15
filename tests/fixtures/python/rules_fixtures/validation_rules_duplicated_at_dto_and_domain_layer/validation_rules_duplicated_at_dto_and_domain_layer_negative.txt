@@ -1,0 +1,34 @@
+from pydantic import BaseModel, field_validator
+
+class CreateOrderDTO(BaseModel):
+    customer_name: str
+    email: str
+    items: list[dict]
+
+    @field_validator("customer_name")
+    @classmethod
+    def name_must_not_be_empty(cls, v):
+        if not v.strip():
+            raise ValueError("name must not be empty")
+        if len(v) > 100:
+            raise ValueError("name too long")
+        return v
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v):
+        if "@" not in v:
+            raise ValueError("invalid email")
+        return v
+
+class OrderDomain:
+    def __init__(self, customer_name: str, email: str, items: list):
+        self.customer_name = customer_name
+        self.email = email
+        self.items = items
+        self.status = "pending"
+
+    def confirm(self):
+        if not self.items:
+            raise ValueError("cannot confirm order with no items")
+        self.status = "confirmed"

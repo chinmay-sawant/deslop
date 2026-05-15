@@ -1,0 +1,15 @@
+use std::fs::File;
+use std::os::unix::io::{FromRawFd, OwnedFd};
+
+fn pass_to_child(file: File) {
+    let owned: OwnedFd = file.into();
+    let fd = owned.as_raw_fd();
+    unsafe {
+        libc::dup2(fd, libc::STDIN_FILENO);
+    }
+    drop(owned);
+}
+
+fn take_fd_ownership(file: File) -> OwnedFd {
+    file.into()
+}

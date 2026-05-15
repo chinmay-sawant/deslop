@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"runtime"
+)
+
+// scenario for runtime_gomaxprocs_per_request: `runtime.GOMAXPROCS(...)` on request paths.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario633Positive(w http.ResponseWriter, r *http.Request) {
+	prev := runtime.GOMAXPROCS(0)
+	runtime.GOMAXPROCS(prev * 2)
+	w.WriteHeader(http.StatusOK)
+}

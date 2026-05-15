@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_io_operations_readall_on_known_large_file",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag os.ReadFile or io.ReadAll on files that are processed sequentially.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

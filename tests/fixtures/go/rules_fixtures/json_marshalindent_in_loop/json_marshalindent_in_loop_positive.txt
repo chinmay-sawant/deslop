@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+)
+
+// scenario for json_marshalindent_in_loop: `json.MarshalIndent(...)` inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+type Entry struct {
+	Name  string `json:"name"`
+	Count int    `json:"count"`
+}
+
+func indentEntries(entries []Entry) ([]string, error) {
+	var results []string
+	for _, e := range entries {
+		data, err := json.MarshalIndent(e, "", "  ")
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, string(data))
+	}
+	return results, nil
+}

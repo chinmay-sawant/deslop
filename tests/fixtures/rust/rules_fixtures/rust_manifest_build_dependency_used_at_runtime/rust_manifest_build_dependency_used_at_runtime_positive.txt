@@ -1,0 +1,18 @@
+pub fn manifest_with_runtime_build_dependency() -> &'static str {
+    r#"[package]
+name = \"my-app\"
+version = \"0.1.0\"
+
+[build-dependencies]
+cc = \"1.0\"
+
+[dependencies]
+cc = \"1.0\"
+serde = \"1.0\"
+"#
+}
+
+pub fn build_dependency_is_used_at_runtime() -> bool {
+    let manifest = manifest_with_runtime_build_dependency();
+    manifest.contains("[build-dependencies]") && manifest.contains("[dependencies]\ncc =")
+}

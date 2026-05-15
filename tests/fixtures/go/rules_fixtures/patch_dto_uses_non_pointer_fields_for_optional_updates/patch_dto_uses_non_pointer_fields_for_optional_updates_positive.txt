@@ -1,0 +1,33 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for patch_dto_uses_non_pointer_fields_for_optional_updates: PATCH-like DTOs that cannot distinguish omitted fields from zero values.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type PatchUserRequest struct {
+	Name     string `json:"name"`
+	Age      int    `json:"age"`
+	IsActive bool   `json:"is_active"`
+	Bio      string `json:"bio"`
+}
+
+func PatchUserHandler(w http.ResponseWriter, r *http.Request) {
+	var req PatchUserRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	updates := map[string]interface{}{}
+	if req.Name != "" {
+		updates["name"] = req.Name
+	}
+	if req.Age != 0 {
+		updates["age"] = req.Age
+	}
+	updates["is_active"] = req.IsActive
+	updates["bio"] = req.Bio
+
+	json.NewEncoder(w).Encode(updates)
+}

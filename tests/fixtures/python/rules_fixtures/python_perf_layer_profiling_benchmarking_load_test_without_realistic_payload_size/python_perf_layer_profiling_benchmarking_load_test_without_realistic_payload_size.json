@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_profiling_benchmarking_load_test_without_realistic_payload_size",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag performance tests that use tiny payloads despite rules targeting large-input behavior.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

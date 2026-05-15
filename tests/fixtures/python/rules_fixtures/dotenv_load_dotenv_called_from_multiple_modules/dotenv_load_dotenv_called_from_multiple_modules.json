@@ -1,0 +1,14 @@
+{
+  "id": "dotenv_load_dotenv_called_from_multiple_modules",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "dotenv.load_dotenv() called from more than one module, risking silent config override.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

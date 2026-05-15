@@ -1,0 +1,46 @@
+import logging
+from fastapi import FastAPI, BackgroundTasks
+
+app = FastAPI()
+logger = logging.getLogger(__name__)
+
+
+async def send_welcome_email(user_email: str):
+    try:
+        await email_client.send(user_email, "Welcome!", "Thanks for signing up")
+    except Exception:
+        logger.exception("Failed to send welcome email to %s", user_email)
+        raise
+
+
+async def sync_to_crm(user_data: dict):
+    try:
+        await crm_client.create_contact(user_data)
+    except Exception:
+        logger.exception("CRM sync failed for user %s", user_data.get("id"))
+        raise
+
+
+async def generate_invoice(order_id: str):
+    try:
+        order = await db.get_order(order_id)
+        pdf = render_invoice(order)
+        await storage.upload(f"invoices/{order_id}.pdf", pdf)
+    except Exception:
+        logger.exception("Invoice generation failed for order %s", order_id)
+        raise
+
+
+@app.post("/register")
+async def register(user: UserCreate, background_tasks: BackgroundTasks):
+    created = await db.create_user(user)
+    background_tasks.add_task(send_welcome_email, user.email)
+    background_tasks.add_task(sync_to_crm, created.dict())
+    return {"id": created.id}
+
+
+@app.post("/orders")
+async def create_order(order: OrderCreate, background_tasks: BackgroundTasks):
+    result = await db.create_order(order)
+    background_tasks.add_task(generate_invoice, result.id)
+    return result

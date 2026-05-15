@@ -1,0 +1,32 @@
+import logging
+
+logger = logging.getLogger(__name__)
+_cache = {}
+_registry = {}
+
+
+def clear_cache():
+    global _cache
+    _cache = {}
+
+
+def register_service(name, service):
+    _registry[name] = service
+
+
+def handle_reset_command():
+    global _cache
+    _cache = {}
+    logger.info("Cache cleared")
+
+
+def handle_bulk_import(records):
+    for record in records:
+        _cache[record["id"]] = record
+    logger.info(f"Imported {len(records)} records")
+
+
+def handle_cleanup_command():
+    _registry.clear()
+    _cache.clear()
+    logger.info("All state cleared")

@@ -1,0 +1,14 @@
+{
+  "id": "repeated_string_literal",
+  "language": "python",
+  "family": "duplication",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Project repeats the same long string literal multiple times in one file.",
+  "binding_location": "src/heuristics/python/duplication.rs"
+}

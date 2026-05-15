@@ -1,0 +1,14 @@
+{
+  "id": "map_of_slices_prealloc",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`m[k] = append(m[k], v)` in loops without pre-allocating inner slices",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

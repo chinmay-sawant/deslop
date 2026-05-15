@@ -1,0 +1,14 @@
+{
+  "id": "rust_ffi_extern_block_without_abi_comment",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag FFI declarations without a nearby note about ABI, ownership, nullability, or lifetime expectations.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

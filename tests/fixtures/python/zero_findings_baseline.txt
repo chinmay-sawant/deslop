@@ -1,6 +1,0 @@
-def perimeter(sides: int, length: float) -> float:
-    return sides * length
-
-
-def area(width: float, height: float) -> float:
-    return width * height

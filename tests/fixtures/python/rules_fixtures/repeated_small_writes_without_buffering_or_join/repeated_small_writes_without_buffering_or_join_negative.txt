@@ -1,0 +1,13 @@
+def write_report(path, rows):
+    lines = []
+    for row in rows:
+        lines.append(f"{row['id']},{row['name']},{row['score']}")
+    with open(path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+
+
+def build_csv_string(records):
+    lines = []
+    for rec in records:
+        lines.append(f"{rec['id']},{rec['name']},{rec['value']}")
+    return "\n".join(lines) + "\n"

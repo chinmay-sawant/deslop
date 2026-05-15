@@ -1,0 +1,14 @@
+{
+  "id": "cache_invalidation_before_transaction_commit",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Cache mutation or eviction that happens before a write transaction commits.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

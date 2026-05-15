@@ -1,0 +1,24 @@
+def find_first_match(items, target):
+    index = 0
+    while True:
+        try:
+            if items[index] == target:
+                return index
+            index += 1
+        except IndexError:
+            return -1
+
+def process_until_sentinel(data_stream):
+    results = []
+    while True:
+        try:
+            item = next(data_stream)
+            if item is None:
+                break
+            results.append(transform(item))
+        except StopIteration:
+            break
+    return results
+
+def transform(item):
+    return item * 2

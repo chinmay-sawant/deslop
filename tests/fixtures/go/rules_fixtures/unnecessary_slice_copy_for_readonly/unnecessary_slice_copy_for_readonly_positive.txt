@@ -1,0 +1,12 @@
+package rulefixtures
+
+// scenario for unnecessary_slice_copy_for_readonly: `copy := append([]T(nil), original...)` when `copy` is only read, never mutated
+// fixture polarity: positive; family: performance; severity: info.
+func scenario692Positive(items []string) int {
+	copied := append([]string{}, items...)
+	total := 0
+	for _, item := range copied {
+		total += len(item)
+	}
+	return total
+}

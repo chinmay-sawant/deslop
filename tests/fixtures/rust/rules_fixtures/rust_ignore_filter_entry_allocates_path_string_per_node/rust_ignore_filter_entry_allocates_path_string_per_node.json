@@ -1,0 +1,14 @@
+{
+  "id": "rust_ignore_filter_entry_allocates_path_string_per_node",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `filter_entry` closures that allocate `String` or call `to_string_lossy()` for every node when path component checks would work.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

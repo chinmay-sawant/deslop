@@ -1,0 +1,6 @@
+from django.shortcuts import render
+from .models import Category, Product
+
+def dashboard(request):
+    categories = Category.objects.all()
+    return render(request, "dashboard.html", {"categories": categories})

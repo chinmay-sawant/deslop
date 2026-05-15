@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_flat_map_allocates_nested_vectors",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag parallel map stages that return `Vec<Vec<T>>` and later flatten, where `flat_map_iter`, `reduce`, or direct collection can reduce allocation churn.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

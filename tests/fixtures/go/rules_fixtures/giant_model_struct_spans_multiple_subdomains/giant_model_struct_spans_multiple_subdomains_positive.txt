@@ -1,0 +1,24 @@
+package rulefixtures
+
+import "time"
+
+// scenario for giant_model_struct_spans_multiple_subdomains: Oversized model structs that appear to merge multiple bounded contexts into one persistence shape.
+// fixture polarity: positive; family: architecture; severity: info.
+type GiantRecord struct {
+	ID            uint      `gorm:"primaryKey"`
+	UserName      string    `gorm:"column:user_name"`
+	UserEmail     string    `gorm:"column:user_email"`
+	UserPhone     string    `gorm:"column:user_phone"`
+	OrderTotal    float64   `gorm:"column:order_total"`
+	OrderStatus   string    `gorm:"column:order_status"`
+	OrderDate     time.Time `gorm:"column:order_date"`
+	PaymentRef    string    `gorm:"column:payment_ref"`
+	PaymentMethod string    `gorm:"column:payment_method"`
+	PaymentAmount float64   `gorm:"column:payment_amount"`
+	ShipAddress   string    `gorm:"column:ship_address"`
+	ShipCity      string    `gorm:"column:ship_city"`
+	ShipZip       string    `gorm:"column:ship_zip"`
+	ShipStatus    string    `gorm:"column:ship_status"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+}

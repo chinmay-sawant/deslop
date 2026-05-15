@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+)
+
+// scenario for json_unmarshal_same_payload_multiple_times: The same local JSON payload binding is unmarshaled into multiple targets in one function.
+// fixture polarity: positive; family: mod; severity: contextual.
+type Rule432PositiveRecordFirst struct { Name string }
+type Rule432PositiveRecordSecond struct { Count int }
+
+func scenario432Positive(payload []byte) error {
+	var first Rule432PositiveRecordFirst
+	if err := json.Unmarshal(payload, &first); err != nil {
+		return err
+	}
+	var second Rule432PositiveRecordSecond
+	return json.Unmarshal(payload, &second)
+}

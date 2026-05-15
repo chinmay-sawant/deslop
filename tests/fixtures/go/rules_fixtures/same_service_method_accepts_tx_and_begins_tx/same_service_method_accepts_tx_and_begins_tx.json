@@ -1,0 +1,14 @@
+{
+  "id": "same_service_method_accepts_tx_and_begins_tx",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Service methods that sometimes reuse a transaction and sometimes open one themselves.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

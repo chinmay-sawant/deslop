@@ -1,0 +1,14 @@
+{
+  "id": "gzip_open_per_chunk",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "gzip open/create calls are repeated per chunk instead of per stream.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

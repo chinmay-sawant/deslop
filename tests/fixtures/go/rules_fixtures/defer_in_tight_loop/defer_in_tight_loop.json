@@ -1,0 +1,14 @@
+{
+  "id": "defer_in_tight_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`defer` statements inside loops with > 100 iterations or visible hot-path markers",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

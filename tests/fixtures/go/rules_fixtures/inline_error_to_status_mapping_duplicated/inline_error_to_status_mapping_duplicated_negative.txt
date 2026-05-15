@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for inline_error_to_status_mapping_duplicated: Repeated error-to-status translation switches across handlers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule078NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule078NegativeService interface {
+	Run(context.Context, Rule078NegativeRecord) error
+}
+
+func scenario078Negative(ctx context.Context, service Rule078NegativeService, input Rule078NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

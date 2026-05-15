@@ -1,0 +1,21 @@
+import secrets
+import string
+
+def generate_api_key() -> str:
+    return secrets.token_urlsafe(32)
+
+def generate_reset_token() -> str:
+    return secrets.token_hex(16)
+
+def generate_session_id() -> str:
+    return secrets.token_urlsafe(24)
+
+def generate_csrf_token() -> str:
+    return secrets.token_urlsafe(32)
+
+def generate_invite_code() -> str:
+    alphabet = string.ascii_uppercase + string.digits
+    return "".join(secrets.choice(alphabet) for _ in range(8))
+
+def generate_nonce() -> str:
+    return secrets.token_bytes(16).hex()

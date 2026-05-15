@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_network_calls_large_response_downloaded_before_status_check",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Network calls. Flag response bodies read before checking status, headers, or content length guards.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

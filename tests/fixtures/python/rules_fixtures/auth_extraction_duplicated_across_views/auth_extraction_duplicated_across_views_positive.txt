@@ -1,0 +1,43 @@
+from flask import Flask, request, g
+
+app = Flask(__name__)
+
+
+@app.route("/api/orders", methods=["GET"])
+def list_orders():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    user = decode_jwt(token)
+    if not user:
+        return {"error": "Unauthorized"}, 401
+    orders = get_orders_for_user(user["id"])
+    return {"orders": orders}
+
+
+@app.route("/api/orders", methods=["POST"])
+def create_order():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    user = decode_jwt(token)
+    if not user:
+        return {"error": "Unauthorized"}, 401
+    order = create_order_for_user(user["id"], request.json)
+    return {"order": order}
+
+
+@app.route("/api/profile", methods=["GET"])
+def get_profile():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    user = decode_jwt(token)
+    if not user:
+        return {"error": "Unauthorized"}, 401
+    profile = get_user_profile(user["id"])
+    return {"profile": profile}
+
+
+@app.route("/api/profile", methods=["PUT"])
+def update_profile():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    user = decode_jwt(token)
+    if not user:
+        return {"error": "Unauthorized"}, 401
+    profile = update_user_profile(user["id"], request.json)
+    return {"profile": profile}

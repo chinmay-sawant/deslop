@@ -1,0 +1,27 @@
+import re
+
+EMAIL_PATTERN = re.compile(r"^[^@]+@[^@]+\.[^@]+$")
+PHONE_PATTERN = re.compile(r"^\+?1?\d{9,15}$")
+DATE_PATTERN = re.compile(r"\d{4}-\d{2}-\d{2}")
+TIME_PATTERN = re.compile(r"\d{2}:\d{2}:\d{2}")
+
+
+def validate_forms(forms: list[dict]) -> list[dict]:
+    errors = []
+    for form in forms:
+        email = form.get("email", "")
+        if not EMAIL_PATTERN.match(email):
+            errors.append({"field": "email", "error": "invalid"})
+        phone = form.get("phone", "")
+        if not PHONE_PATTERN.match(phone):
+            errors.append({"field": "phone", "error": "invalid"})
+    return errors
+
+
+def extract_metadata(text: str) -> dict:
+    date_match = DATE_PATTERN.search(text)
+    time_match = TIME_PATTERN.search(text)
+    return {
+        "date": date_match.group() if date_match else None,
+        "time": time_match.group() if time_match else None,
+    }

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_garbage_collection_cleanup_finalizer_used_for_regular_cleanup: Layer: Garbage collection and cleanup. Flag runtime.SetFinalizer use for ordinary resource cleanup instead of explicit Close ownership.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule539NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario539Negative(records []Rule539NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

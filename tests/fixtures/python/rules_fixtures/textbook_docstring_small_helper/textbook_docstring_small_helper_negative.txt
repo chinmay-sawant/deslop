@@ -1,0 +1,8 @@
+def clamp(value: float, low: float, high: float) -> float:
+    return max(low, min(value, high))
+
+def is_blank(s: str) -> bool:
+    return s.strip() == ""
+
+def first_or_none(items: list) -> object | None:
+    return items[0] if items else None

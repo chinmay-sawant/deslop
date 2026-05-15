@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary: Codebases that bootstrap persistence with GORM but run repository queries through raw SQL without a clear adapter boundary.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule056NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule056NegativeService interface {
+	Run(context.Context, Rule056NegativeRecord) error
+}
+
+func scenario056Negative(ctx context.Context, service Rule056NegativeService, input Rule056NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

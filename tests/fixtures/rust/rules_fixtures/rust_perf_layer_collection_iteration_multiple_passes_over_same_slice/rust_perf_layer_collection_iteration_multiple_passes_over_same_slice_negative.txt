@@ -1,0 +1,25 @@
+struct SensorReading {
+    timestamp: u64,
+    value: f64,
+    is_anomaly: bool,
+}
+
+fn analyze_readings(readings: &[SensorReading]) -> (f64, f64, usize) {
+    // GOOD: single fused pass
+    let mut sum = 0.0f64;
+    let mut max_val = f64::NEG_INFINITY;
+    let mut anomaly_count = 0usize;
+
+    for r in readings {
+        sum += r.value;
+        if r.value > max_val {
+            max_val = r.value;
+        }
+        if r.is_anomaly {
+            anomaly_count += 1;
+        }
+    }
+
+    let mean = sum / readings.len() as f64;
+    (mean, max_val, anomaly_count)
+}

@@ -1,0 +1,14 @@
+{
+  "id": "auth_extraction_duplicated_across_views",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Multiple view functions repeat identical auth or principal-extraction logic instead of sharing via middleware or dependency.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

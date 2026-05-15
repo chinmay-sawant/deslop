@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_io_operations_read_to_string_for_line_processing",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag read_to_string/read_to_end before sequential line or chunk processing.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

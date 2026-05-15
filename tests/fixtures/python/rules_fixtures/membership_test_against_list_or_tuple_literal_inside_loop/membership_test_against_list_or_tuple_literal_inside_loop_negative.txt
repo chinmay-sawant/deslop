@@ -1,0 +1,21 @@
+BLOCKED_TERMS = frozenset({"spam", "junk", "trash", "garbage", "waste"})
+VALID_ROLES = frozenset({"read", "write", "admin", "delete"})
+HANDLED_EVENT_TYPES = frozenset({"click", "submit", "hover", "focus", "blur"})
+SENSITIVE_KEYS = frozenset({"password", "token", "secret", "api_key", "credential"})
+
+
+def filter_items(items: list[str]) -> list[str]:
+    return [item for item in items if item not in BLOCKED_TERMS]
+
+
+def check_permissions(user: dict) -> bool:
+    role = user.get("role", "")
+    return role in VALID_ROLES
+
+
+def process_events(events: list[dict]) -> list[dict]:
+    return [event for event in events if event["type"] in HANDLED_EVENT_TYPES]
+
+
+def validate_input(data: dict) -> bool:
+    return not any(key in SENSITIVE_KEYS for key in data)

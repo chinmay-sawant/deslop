@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_split_two_index_zero_cut: `bytes.Split(...)[0]` when only the first segment is needed.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario459Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return len(bytes.SplitN(haystack, needle, 2)[0]) >= 0
+}

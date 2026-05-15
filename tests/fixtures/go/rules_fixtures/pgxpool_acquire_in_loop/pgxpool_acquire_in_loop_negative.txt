@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for pgxpool_acquire_in_loop: Repeated pgxpool acquire calls inside loops that may churn pooled resources.
+// fixture polarity: negative; family: data_access; severity: info.
+type Rule280NegativeRecord struct { ID int }
+
+func scenario280Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule280NegativeRecord{}).Error
+}

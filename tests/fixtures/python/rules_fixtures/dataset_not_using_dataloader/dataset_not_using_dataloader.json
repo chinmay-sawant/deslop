@@ -1,0 +1,14 @@
+{
+  "id": "dataset_not_using_dataloader",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Manual dataset batching loops that bypass torch.utils.data.DataLoader.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

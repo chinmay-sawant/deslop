@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_accepts_http_request_dto: Repositories that accept transport DTOs instead of repository inputs or domain values.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule123NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule123NegativeService interface {
+	Run(context.Context, Rule123NegativeRecord) error
+}
+
+func scenario123Negative(ctx context.Context, service Rule123NegativeService, input Rule123NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

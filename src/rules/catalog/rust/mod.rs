@@ -10,6 +10,7 @@ pub(crate) mod domain_modeling;
 pub(crate) mod hygiene;
 pub(crate) mod module_surface;
 pub(crate) mod performance;
+pub(crate) mod performance_layers;
 pub(crate) mod runtime_boundary;
 pub(crate) mod runtime_ownership;
 pub(crate) mod security_footguns;
@@ -23,6 +24,7 @@ pub(crate) const FAMILY_RULES: &[&[RuleDefinition]] = &[
     hygiene::RULE_DEFINITIONS,
     module_surface::RULE_DEFINITIONS,
     performance::RULE_DEFINITIONS,
+    performance_layers::RULE_DEFINITIONS,
     runtime_boundary::RULE_DEFINITIONS,
     runtime_ownership::RULE_DEFINITIONS,
     security_footguns::RULE_DEFINITIONS,

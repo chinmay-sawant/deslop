@@ -1,0 +1,37 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+	redis "github.com/redis/go-redis/v9"
+)
+
+type scenario426Report struct {
+	ID      int      `json:"id"`
+	Title   string   `json:"title"`
+	Tags    []string `json:"tags"`
+	Content string   `json:"content"`
+}
+
+// scenario for redis_large_value_without_compression: `rdb.Set(ctx, key, largePayload, ...)` where `largePayload` is the result of `json.Marshal` on a large struct or slice, without visible compression
+// fixture polarity: positive; family: library; severity: info.
+func scenario426Positive(w http.ResponseWriter, r *http.Request) {
+	large := make([]scenario426Report, 50000)
+	for i := range large {
+		large[i] = scenario426Report{
+			ID:    i,
+			Title: "Report entry with detailed metadata and extensive textual content payload",
+			Tags:  []string{"analytics", "monthly", "summary", "detailed"},
+		}
+	}
+	payload, _ := json.Marshal(large)
+
+	rdb := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	defer rdb.Close()
+
+	if err := rdb.Set(r.Context(), "report:cache", payload, 0).Err(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

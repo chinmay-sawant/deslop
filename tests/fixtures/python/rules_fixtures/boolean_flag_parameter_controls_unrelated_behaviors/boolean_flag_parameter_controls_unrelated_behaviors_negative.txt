@@ -1,0 +1,37 @@
+def send_urgent_notification(user_id: int, message: str):
+    channel = get_sms_channel()
+    channel.send(user_id, message)
+    log_notification(user_id, "sms", message)
+    update_delivery_status(user_id, "sent")
+
+
+def send_standard_notification(user_id: int, message: str):
+    channel = get_email_channel()
+    channel.send(user_id, message)
+    log_notification(user_id, "email", message)
+
+
+def process_bulk_order(order_data: dict):
+    validate_bulk_order(order_data)
+    apply_bulk_discount(order_data)
+    reserve_inventory_batch(order_data["items"])
+    create_bulk_invoice(order_data)
+
+
+def process_single_order(order_data: dict):
+    validate_single_order(order_data)
+    reserve_inventory(order_data["item"])
+    create_single_invoice(order_data)
+
+
+def fetch_cached_data(url: str):
+    cached = get_from_cache(url)
+    if cached:
+        return cached
+    data = requests.get(url).json()
+    set_in_cache(url, data)
+    return data
+
+
+def fetch_fresh_data(url: str):
+    return requests.get(url).json()

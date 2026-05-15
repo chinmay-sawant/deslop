@@ -1,0 +1,31 @@
+package service
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for service_method_accepts_gin_context: Service methods that take `*gin.Context` instead of domain inputs plus `context.Context`.
+// fixture polarity: positive; family: architecture; severity: warning.
+type DashboardService struct {
+	stats StatsRepository
+}
+
+func (s *DashboardService) GetUser(c *gin.Context) {
+	userID := c.Param("userID")
+	if userID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userID required"})
+		return
+	}
+	data, err := s.stats.FetchMetrics(c.Request.Context(), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, data)
+}
+
+type StatsRepository interface {
+	FetchMetrics(ctx interface{ Context() }, userID string) (interface{}, error)
+}

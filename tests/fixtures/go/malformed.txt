@@ -1,6 +1,0 @@
-package sample
-
-func Broken(value string) string {
-	if value == "" {
-		return "empty"
-	}

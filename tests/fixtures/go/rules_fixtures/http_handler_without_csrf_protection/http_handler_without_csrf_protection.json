@@ -1,0 +1,14 @@
+{
+  "id": "http_handler_without_csrf_protection",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "POST/PUT/DELETE handler registration without evidence of CSRF token middleware",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

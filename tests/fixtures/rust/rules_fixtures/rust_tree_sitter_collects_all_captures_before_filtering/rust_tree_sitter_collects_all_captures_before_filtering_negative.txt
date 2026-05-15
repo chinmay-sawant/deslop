@@ -1,0 +1,34 @@
+use tree_sitter::{Parser, Query, QueryCursor};
+
+fn find_test_functions(query: &Query, cursor: &mut QueryCursor, tree: &tree_sitter::Tree, source: &str) -> Vec<String> {
+    let mut results = Vec::new();
+    for mat in cursor.matches(query, tree.root_node(), source.as_bytes()) {
+        for capture in mat.captures.iter() {
+            let node = capture.node;
+            let text = &source[node.start_byte()..node.end_byte()];
+            if text.starts_with("test_") {
+                results.push(text.to_string());
+            }
+        }
+    }
+    results
+}
+
+fn find_matching_nodes_filtered(
+    query: &Query,
+    cursor: &mut QueryCursor,
+    tree: &tree_sitter::Tree,
+    source: &str,
+    min_len: usize,
+) -> Vec<String> {
+    let mut names = Vec::new();
+    for mat in cursor.matches(query, tree.root_node(), source.as_bytes()) {
+        for capture in mat.captures.iter() {
+            let text = &source[capture.node.start_byte()..capture.node.end_byte()];
+            if text.len() > min_len {
+                names.push(text.to_string());
+            }
+        }
+    }
+    names
+}

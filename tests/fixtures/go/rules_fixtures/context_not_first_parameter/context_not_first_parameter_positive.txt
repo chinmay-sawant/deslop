@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for context_not_first_parameter: Functions that accept context.Context but not as the first non-receiver parameter on context-aware call paths.
+// fixture polarity: positive; family: context; severity: info.
+func scenario237Positive(name string, ctx context.Context, value int) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+	_ = name
+	_ = value
+	return nil
+}

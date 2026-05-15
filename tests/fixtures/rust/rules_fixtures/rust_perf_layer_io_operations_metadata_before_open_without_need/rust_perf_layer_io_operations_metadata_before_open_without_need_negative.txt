@@ -1,0 +1,10 @@
+use std::fs;
+use std::io::Read;
+
+fn read_file(path: &str) -> std::io::Result<String> {
+    // GOOD: open directly, let open fail if not a file
+    let mut file = fs::File::open(path)?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    Ok(contents)
+}

@@ -1,0 +1,24 @@
+enum Node {
+    Leaf(u64),
+    Branch(Box<BranchData>),
+}
+
+struct BranchData {
+    left: Box<Node>,
+    right: Box<Node>,
+    metadata: [u8; 4096],
+    label: String,
+    tags: Vec<String>,
+}
+
+enum Response {
+    Ok,
+    Error(String),
+    Data(Box<LargePayload>),
+}
+
+struct LargePayload {
+    body: Vec<u8>,
+    headers: Vec<String>,
+    ids: Vec<u64>,
+}

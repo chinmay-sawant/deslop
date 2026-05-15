@@ -1,0 +1,36 @@
+import time
+
+from prometheus_client import Counter, Histogram
+
+REQUEST_COUNT = Counter("http_requests_total", "Total requests", ["method", "endpoint"])
+REQUEST_LATENCY = Histogram("http_request_duration_seconds", "Request latency")
+
+
+def process_batch(items: list[dict]) -> list[dict]:
+    results = []
+    for batch in chunk(items, 100):
+        for item in batch:
+            REQUEST_COUNT.labels(method="POST", endpoint="/process").inc()
+            start = time.time()
+            result = transform(item)
+            REQUEST_LATENCY.observe(time.time() - start)
+            results.append(result)
+    return results
+
+
+def transform(item: dict) -> dict:
+    return item
+
+
+def chunk(lst, size):
+    for i in range(0, len(lst), size):
+        yield lst[i : i + size]
+
+
+def aggregate_metrics(records: list[dict]) -> dict:
+    totals = {}
+    for record in records:
+        for key, value in record.items():
+            REQUEST_COUNT.labels(method="GET", endpoint=f"/{key}").inc()
+            totals[key] = totals.get(key, 0) + value
+    return totals

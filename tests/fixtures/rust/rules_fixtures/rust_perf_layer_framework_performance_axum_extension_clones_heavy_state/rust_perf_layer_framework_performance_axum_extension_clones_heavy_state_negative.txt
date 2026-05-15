@@ -1,0 +1,18 @@
+use axum::{extract::State, Json};
+use std::sync::Arc;
+
+struct AppState {
+    db_pool: sqlx::PgPool,
+    cache: dashmap::DashMap<String, Vec<u8>>,
+    config: AppConfig,
+}
+
+struct AppConfig {
+    feature_flags: Vec<String>,
+    limits: Vec<(String, u64)>,
+}
+
+// GOOD: wrap in Arc so extraction only clones a pointer
+async fn handler(State(state): State<Arc<AppState>>) -> Json<serde_json::Value> {
+    Json(serde_json::json!({ "ok": true }))
+}

@@ -1,0 +1,14 @@
+{
+  "id": "test_fixture_calls_datetime_now_without_freezing",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test fixture or test body calls datetime.now() or datetime.today() without freezegun or similar.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

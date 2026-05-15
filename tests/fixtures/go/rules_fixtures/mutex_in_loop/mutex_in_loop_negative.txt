@@ -1,0 +1,28 @@
+package rulefixtures
+
+import (
+	"context"
+	"sync"
+)
+
+// scenario for mutex_in_loop: Repeated Lock or RLock acquisition inside loops.
+// fixture polarity: negative; family: concurrency; severity: contextual.
+func scenario226Negative(ctx context.Context, items []string) []int {
+	results := make([]int, len(items))
+	var wg sync.WaitGroup
+	wg.Add(len(items))
+	for index, item := range items {
+		index, item := index, item
+		go func() {
+			defer wg.Done()
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				results[index] = len(item)
+			}
+		}()
+	}
+	wg.Wait()
+	return results
+}

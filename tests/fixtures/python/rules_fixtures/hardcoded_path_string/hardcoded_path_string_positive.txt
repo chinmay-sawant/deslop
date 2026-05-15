@@ -1,0 +1,19 @@
+def load_user_data():
+    with open("/home/admin/users.json", "r") as f:
+        return json.load(f)
+
+def backup_database():
+    subprocess.run(["pg_dump", "-f", "/var/backups/db/latest.sql", "mydb"])
+
+def read_config():
+    with open("/etc/myapp/config.yaml", "r") as f:
+        return yaml.safe_load(f)
+
+def export_report(data):
+    with open("/tmp/reports/quarterly.csv", "w") as f:
+        writer = csv.writer(f)
+        writer.writerows(data)
+
+def load_model():
+    model = torch.load("/opt/models/classifier_v2.pt")
+    return model

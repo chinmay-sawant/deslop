@@ -1,0 +1,39 @@
+import click
+import httpx
+
+
+pass_client = click.make_pass_decorator(httpx.Client, ensure=True)
+
+
+@click.group()
+@click.pass_context
+def cli(ctx):
+    ctx.ensure_object(httpx.Client)
+    ctx.obj = httpx.Client(base_url="https://api.example.com", timeout=30)
+
+
+@cli.command()
+@click.option("--user-id", required=True)
+@pass_client
+def fetch_user(client, user_id):
+    response = client.get(f"/users/{user_id}")
+    click.echo(response.json())
+
+
+@cli.command()
+@click.option("--repo", required=True)
+@pass_client
+def check_repo(client, repo):
+    client.base_url = httpx.URL("https://api.github.com")
+    response = client.get(f"/repos/{repo}")
+    click.echo(response.status_code)
+
+
+@cli.command()
+@click.option("--query", required=True)
+@pass_client
+def search(client, query):
+    client.base_url = httpx.URL("https://search.example.com")
+    response = client.get("/search", params={"q": query})
+    for item in response.json()["hits"]:
+        click.echo(item["title"])

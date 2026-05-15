@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for error_detail_leaked_to_client: `c.JSON(500, gin.H{"error": err.Error()})` or `http.Error(w, err.Error(), 500)` returning internal error details to the client
+// fixture polarity: negative; family: security; severity: warning.
+func scenario709Negative(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("X-Scenario", "validated")
+}

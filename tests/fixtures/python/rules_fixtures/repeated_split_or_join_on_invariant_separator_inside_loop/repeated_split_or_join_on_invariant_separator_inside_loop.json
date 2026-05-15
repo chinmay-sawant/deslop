@@ -1,0 +1,14 @@
+{
+  "id": "repeated_split_or_join_on_invariant_separator_inside_loop",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag loops that repeatedly rebuild the same separator-driven string operations.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

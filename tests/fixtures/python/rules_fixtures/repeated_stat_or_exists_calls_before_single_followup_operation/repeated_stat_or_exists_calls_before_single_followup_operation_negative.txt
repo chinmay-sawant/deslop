@@ -1,0 +1,28 @@
+import os
+
+
+def safe_read(path):
+    try:
+        with open(path, "r") as f:
+            return f.read()
+    except (FileNotFoundError, IsADirectoryError):
+        return None
+
+
+def safe_delete(path):
+    try:
+        os.remove(path)
+        return True
+    except (FileNotFoundError, IsADirectoryError):
+        return False
+
+
+def safe_copy(src, dst):
+    try:
+        with open(src, "r") as f:
+            content = f.read()
+    except (FileNotFoundError, IsADirectoryError):
+        return False
+    with open(dst, "w") as f:
+        f.write(content)
+    return True

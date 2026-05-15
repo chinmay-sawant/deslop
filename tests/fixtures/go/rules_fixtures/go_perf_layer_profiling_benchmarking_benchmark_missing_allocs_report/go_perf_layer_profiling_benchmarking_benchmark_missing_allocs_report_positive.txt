@@ -1,0 +1,20 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"testing"
+)
+
+// scenario for go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report: Layer: Profiling and benchmarking. Flag benchmarks for allocation-sensitive code that omit b.ReportAllocs.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func BenchmarkBuildResponse(b *testing.B) {
+	data := []string{"alpha", "beta", "gamma", "delta"}
+	for i := 0; i < b.N; i++ {
+		result := make(map[string]string)
+		for _, key := range data {
+			result[key] = fmt.Sprintf("value-%s-%d", key, i)
+		}
+		_ = result
+	}
+}

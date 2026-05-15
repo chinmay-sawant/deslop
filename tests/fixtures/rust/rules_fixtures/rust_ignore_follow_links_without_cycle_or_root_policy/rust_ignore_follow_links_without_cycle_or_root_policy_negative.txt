@@ -1,0 +1,17 @@
+use std::path::PathBuf;
+use walkdir::WalkDir;
+
+fn scan_following_links_safe(root: &str) -> Vec<String> {
+    let root_path = PathBuf::from(root);
+    WalkDir::new(root)
+        .follow_links(true)
+        .same_file_system(true)
+        .max_depth(100)
+        .into_iter()
+        .filter_entry(|e| {
+            e.path().starts_with(&root_path)
+        })
+        .filter_map(|e| e.ok())
+        .map(|e| e.path().to_string_lossy().to_string())
+        .collect()
+}

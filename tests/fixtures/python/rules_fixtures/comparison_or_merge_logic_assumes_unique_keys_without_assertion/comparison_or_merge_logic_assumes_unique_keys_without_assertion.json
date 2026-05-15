@@ -1,0 +1,14 @@
+{
+  "id": "comparison_or_merge_logic_assumes_unique_keys_without_assertion",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag merge logic that silently assumes uniqueness of keys or identifiers.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

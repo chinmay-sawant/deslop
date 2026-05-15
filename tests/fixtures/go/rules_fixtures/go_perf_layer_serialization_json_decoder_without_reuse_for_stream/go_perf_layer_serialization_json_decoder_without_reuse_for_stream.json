@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_serialization_json_decoder_without_reuse_for_stream",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag JSON decoders created for each element of a stream instead of decoding the stream once.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "redis_command_loop_without_pipeline",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Redis command loops that issue round-trips without pipeline or batch usage.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

@@ -1,0 +1,38 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+	"os"
+)
+
+// scenario for migration_runner_and_api_server_bootstrap_coupled: One startup path that always runs migrations and serves traffic together.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func applyMigrations(dsn string) error {
+	fmt.Printf("running migrations on %s\n", dsn)
+	return nil
+}
+
+func main() {
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		dsn = "postgres://localhost:5432/mydb"
+	}
+
+	if err := applyMigrations(dsn); err != nil {
+		panic(fmt.Sprintf("migration failure: %v", err))
+	}
+
+	fmt.Println("migrations complete, starting server")
+
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("healthy"))
+	})
+
+	fmt.Println("listening on :8080")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		panic(err)
+	}
+}

@@ -1,0 +1,20 @@
+def process_settings(config):
+    results = []
+    settings = config.get("settings", {})
+    timeout = settings.get("timeout", 30)
+    for key in config["keys"]:
+        if timeout > 0:
+            results.append((key, timeout))
+        max_retries = timeout * 2
+        results.append((key, max_retries))
+    return results
+
+
+def build_headers(request):
+    input_data = request.environ.get("wsgi.input", {})
+    token = input_data.get("token", "")
+    headers = {
+        "Authorization": token,
+        "X-Trace": token,
+    }
+    return headers

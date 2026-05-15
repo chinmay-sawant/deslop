@@ -1,0 +1,28 @@
+from celery import shared_task
+from myapp.tasks import fetch_user_data, compute_metrics
+
+
+@shared_task
+def aggregate_user_report(user_id):
+    user_result = fetch_user_data.delay(user_id)
+    user = user_result.get(timeout=30)
+
+    metrics_result = compute_metrics.delay(user_id)
+    metrics = metrics_result.get(timeout=60)
+
+    return {"user": user, "metrics": metrics}
+
+
+@shared_task
+def sync_order_processing(order_id):
+    from myapp.tasks import validate_payment, update_inventory
+
+    payment_result = validate_payment.delay(order_id)
+    payment = payment_result.get()
+
+    if payment["status"] == "success":
+        inventory_result = update_inventory.delay(order_id)
+        inventory = inventory_result.get(timeout=15)
+        return {"order_id": order_id, "inventory": inventory}
+
+    return {"order_id": order_id, "error": "payment failed"}

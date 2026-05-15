@@ -1,0 +1,36 @@
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class RecordSummary:
+    id: int
+    name: str
+
+@dataclass
+class RecordDetail:
+    id: int
+    name: str
+    details: str
+    history: list
+    permissions: list
+
+def fetch_record(record_id: int) -> Optional[RecordSummary]:
+    record = db.get(record_id)
+    if record is None:
+        return None
+    return RecordSummary(id=record.id, name=record.name)
+
+def fetch_record_detail(record_id: int) -> Optional[RecordDetail]:
+    record = db.get(record_id)
+    if record is None:
+        return None
+    return RecordDetail(
+        id=record.id,
+        name=record.name,
+        details=record.details,
+        history=record.history,
+        permissions=record.permissions,
+    )
+
+def get_config(key: str) -> str:
+    return config_store.read(key)

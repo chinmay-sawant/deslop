@@ -1,0 +1,10 @@
+PYPROJECT = """
+[project.scripts]
+mycli = \"my_package.cli:main\"
+analyze = \"my_package.tools.analyze:main\"
+serve = \"my_package.server:start\"
+"""
+
+
+def all_entrypoints_resolve(targets: list[str]) -> bool:
+    return all(":" in target and target.endswith("main") or target.endswith("start") for target in targets)

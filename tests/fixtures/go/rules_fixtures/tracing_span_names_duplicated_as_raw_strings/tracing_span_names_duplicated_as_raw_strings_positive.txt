@@ -1,0 +1,46 @@
+package rulefixtures
+
+import (
+	"context"
+	"fmt"
+)
+
+// scenario for tracing_span_names_duplicated_as_raw_strings: Repeated raw span-name literals across handlers and services.
+// fixture polarity: positive; family: architecture; severity: info.
+type Span struct {
+	Name string
+}
+
+func StartSpan(ctx context.Context, name string) *Span {
+	return &Span{Name: name}
+}
+
+func (*Span) Finish() {}
+
+func GetUser(ctx context.Context, id int) error {
+	span := StartSpan(ctx, "user.get_by_id")
+	defer span.Finish()
+	_ = id
+	return nil
+}
+
+func UpdateUser(ctx context.Context, id int) error {
+	span := StartSpan(ctx, "user.get_by_id")
+	defer span.Finish()
+	_ = id
+	return nil
+}
+
+func GetOrder(ctx context.Context, id int) error {
+	span := StartSpan(ctx, "user.get_by_id")
+	defer span.Finish()
+	_ = id
+	return nil
+}
+
+func DeleteUser(ctx context.Context, id int) error {
+	span := StartSpan(ctx, "user.get_by_id")
+	defer span.Finish()
+	fmt.Printf("deleting user %d\n", id)
+	return nil
+}

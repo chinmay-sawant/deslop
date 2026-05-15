@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for exec_inside_loop_without_batch: Exec(...) or ExecContext(...) used for row-by-row SQL writes inside loops.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule260NegativeRecord struct { ID int }
+
+func scenario260Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule260NegativeRecord{}).Error
+}

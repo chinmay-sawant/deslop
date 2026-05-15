@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"strconv"
+)
+
+// scenario for fmt_sprintf_single_string_passthrough: `fmt.Sprintf("%s", s)` instead of returning or writing the string directly.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario497Negative(values []int) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, strconv.Itoa(value))
+	}
+	return out
+}

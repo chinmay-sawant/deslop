@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_calls_handler_helper: Service packages that reach upward into handler helpers for parsing, rendering, or Gin-specific utilities.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule161NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule161NegativeService interface {
+	Run(context.Context, Rule161NegativeRecord) error
+}
+
+func scenario161Negative(ctx context.Context, service Rule161NegativeService, input Rule161NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

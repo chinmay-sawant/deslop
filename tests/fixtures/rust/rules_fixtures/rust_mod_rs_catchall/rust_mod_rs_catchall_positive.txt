@@ -1,0 +1,13 @@
+// src/handler/mod.rs
+pub mod auth;
+pub mod cache;
+pub mod config;
+pub mod db;
+pub mod error;
+pub mod logging;
+pub mod middleware;
+pub mod metrics;
+pub mod routing;
+pub mod serialization;
+pub mod validation;
+pub mod websocket;

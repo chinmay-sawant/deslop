@@ -1,0 +1,33 @@
+static mut COUNTER: u64 = 0;
+static mut GLOBAL_BUFFER: Vec<u8> = Vec::new();
+
+fn increment_counter() {
+    unsafe {
+        COUNTER += 1;
+    }
+}
+
+fn get_counter() -> u64 {
+    unsafe { COUNTER }
+}
+
+fn append_to_buffer(data: &[u8]) {
+    unsafe {
+        GLOBAL_BUFFER.extend_from_slice(data);
+    }
+}
+
+fn process_batch(items: &[u64]) {
+    for item in items {
+        unsafe {
+            COUNTER += item;
+        }
+    }
+}
+
+fn main() {
+    increment_counter();
+    append_to_buffer(b"hello");
+    process_batch(&[1, 2, 3]);
+    println!("counter: {}", get_counter());
+}

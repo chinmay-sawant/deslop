@@ -1,0 +1,29 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+)
+
+// scenario for env_or_config_lookup_per_request: Environment variable reads observed on request paths instead of cached configuration.
+// fixture polarity: positive; family: gin; severity: contextual.
+type Rule311PositiveHandler struct {
+	secret string
+}
+
+func (h *Rule311PositiveHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		http.Error(w, "DB_URL not set", http.StatusInternalServerError)
+		return
+	}
+	apiKey := os.Getenv("API_KEY")
+	if apiKey == "" {
+		http.Error(w, "API_KEY not set", http.StatusInternalServerError)
+		return
+	}
+	_ = dbURL
+	_ = apiKey
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(`{"status":"created"}`))
+}

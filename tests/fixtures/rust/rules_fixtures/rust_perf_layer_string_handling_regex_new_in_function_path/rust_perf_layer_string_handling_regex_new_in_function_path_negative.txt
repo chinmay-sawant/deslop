@@ -1,0 +1,29 @@
+use regex::Regex;
+use std::sync::LazyLock;
+
+// GOOD: regex compiled once with LazyLock
+static EMAIL_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").unwrap()
+});
+
+static PHONE_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^\+?[1-9]\d{1,14}$").unwrap()
+});
+
+fn validate_email(email: &str) -> bool {
+    EMAIL_RE.is_match(email)
+}
+
+fn validate_phone(phone: &str) -> bool {
+    PHONE_RE.is_match(phone)
+}
+
+fn process_form(form: &Form) -> Result<(), ValidationError> {
+    if !validate_email(&form.email) {
+        return Err(ValidationError::InvalidEmail);
+    }
+    if !validate_phone(&form.phone) {
+        return Err(ValidationError::InvalidPhone);
+    }
+    Ok(())
+}

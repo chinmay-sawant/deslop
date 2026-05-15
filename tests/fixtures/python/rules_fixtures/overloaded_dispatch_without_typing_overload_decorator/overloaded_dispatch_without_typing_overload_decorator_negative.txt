@@ -1,0 +1,40 @@
+from typing import Union, overload
+
+
+@overload
+def normalize(value: str) -> str: ...
+
+
+@overload
+def normalize(value: list) -> list: ...
+
+
+@overload
+def normalize(value: dict) -> dict: ...
+
+
+def normalize(value: Union[str, list, dict]) -> Union[str, list, dict]:
+    if isinstance(value, str):
+        return value.strip().lower()
+    elif isinstance(value, list):
+        return [normalize(item) for item in value]
+    elif isinstance(value, dict):
+        return {k: normalize(v) for k, v in value.items()}
+    return value
+
+
+@overload
+def format_output(data: str, as_json: bool = False) -> str: ...
+
+
+@overload
+def format_output(data: list, as_json: bool = False) -> str: ...
+
+
+def format_output(data: Union[str, list], as_json: bool = False) -> str:
+    if isinstance(data, str):
+        return f'{{"text": "{data}"}}' if as_json else data
+    if as_json:
+        import json
+        return json.dumps(data)
+    return "\n".join(str(item) for item in data)

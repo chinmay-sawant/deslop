@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for redis_no_ttl_on_cache_keys: `rdb.Set(ctx, key, val, 0)` or `rdb.Set(ctx, key, val, redis.KeepTTL)` for cache-like keys without TTL
+// fixture polarity: negative; family: library; severity: info.
+type Rule427NegativeRecord struct {
+	client *http.Client
+}
+
+func scenario427Negative(ctx context.Context, holder Rule427NegativeRecord, url string) (*http.Response, error) {
+	client := holder.client
+	if client == nil {
+		client = &http.Client{Timeout: 2 * time.Second}
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

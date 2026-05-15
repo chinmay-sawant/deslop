@@ -1,0 +1,15 @@
+import pandas as pd
+
+def process_sales(df):
+    df["total"] = df.apply(lambda row: row["quantity"] * row["unit_price"], axis=1)
+    df["tax"] = df.apply(lambda row: row["total"] * 0.08, axis=1)
+    df["discount_pct"] = df.apply(lambda row: 0.1 if row["total"] > 100 else 0.0, axis=1)
+    df["final"] = df.apply(lambda row: row["total"] - row["total"] * row["discount_pct"], axis=1)
+    return df
+
+def categorize_age(df):
+    df["age_group"] = df.apply(
+        lambda row: "senior" if row["age"] >= 65 else "adult" if row["age"] >= 18 else "minor",
+        axis=1,
+    )
+    return df

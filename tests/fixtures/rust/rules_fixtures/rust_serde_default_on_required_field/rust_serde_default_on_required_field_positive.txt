@@ -1,0 +1,25 @@
+use serde::Deserialize;
+
+// BAD: #[serde(default)] on required-looking fields
+#[derive(Deserialize)]
+struct DatabaseConfig {
+    host: String,
+    #[serde(default)]
+    port: u16,
+    #[serde(default)]
+    username: String,
+    #[serde(default)]
+    password: String,
+    #[serde(default)]
+    database_name: String,
+}
+
+#[derive(Deserialize)]
+struct AuthConfig {
+    #[serde(default)]
+    secret_key: String,
+    #[serde(default)]
+    token_expiry: u64,
+    #[serde(default)]
+    issuer: String,
+}

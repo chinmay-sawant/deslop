@@ -1,0 +1,14 @@
+{
+  "id": "middleware_allocates_http_client_per_request",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "HTTP client allocated inside Gin handlers or middleware instead of being shared.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

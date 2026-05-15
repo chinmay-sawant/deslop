@@ -1,0 +1,18 @@
+package rulefixtures
+
+// scenario for slice_membership_in_loop_map_candidate: slices.Contains(...) or slices.Index(...) used inside loops against a stable-looking slice binding.
+// fixture polarity: positive; family: hot_path; severity: info.
+
+func scenario364Positive(targets []string, candidates []string) []string {
+	allowed := []string{"admin", "editor", "viewer"}
+	var found []string
+	for _, t := range targets {
+		for _, a := range allowed {
+			if t == a {
+				found = append(found, t)
+				break
+			}
+		}
+	}
+	return found
+}

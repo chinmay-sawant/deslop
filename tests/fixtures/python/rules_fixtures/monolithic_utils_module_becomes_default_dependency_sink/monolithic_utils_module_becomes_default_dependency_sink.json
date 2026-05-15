@@ -1,0 +1,14 @@
+{
+  "id": "monolithic_utils_module_becomes_default_dependency_sink",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag utility modules that attract unrelated dependencies and spread coupling.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

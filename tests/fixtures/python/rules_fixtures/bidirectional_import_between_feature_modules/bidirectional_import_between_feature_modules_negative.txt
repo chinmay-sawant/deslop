@@ -1,0 +1,44 @@
+# shared/models.py
+from dataclasses import dataclass
+
+
+@dataclass
+class OrderItem:
+    product_id: int
+    quantity: int
+    price: float
+
+
+@dataclass
+class Order:
+    id: int
+    user_id: int
+    items: list
+    total: float
+
+
+# orders/module.py
+from shared.models import Order, OrderItem
+
+
+def create_order(user_id: int, items: list, total: float) -> Order:
+    return Order(id=generate_id(), user_id=user_id, items=items, total=total)
+
+
+# payments/service.py
+from shared.models import Order
+
+
+def process_payment(order: Order):
+    charge(order.user_id, order.total)
+
+
+# inventory/check.py
+from shared.models import OrderItem
+
+
+def validate_stock(items: list[OrderItem]):
+    for item in items:
+        product = get_product(item.product_id)
+        if product.stock < item.quantity:
+            raise ValueError(f"Insufficient stock for {item.product_id}")

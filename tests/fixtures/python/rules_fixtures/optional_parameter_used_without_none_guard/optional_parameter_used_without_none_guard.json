@@ -1,0 +1,14 @@
+{
+  "id": "optional_parameter_used_without_none_guard",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Optional[T] parameter accessed via attribute or subscript without a preceding None guard.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

@@ -1,0 +1,15 @@
+pub fn workspace_manifest() -> &'static str {
+    r#"[workspace]
+members = [
+    \"core\",
+    \"cli\",
+    \"fuzz\",
+    \"bench\",
+]
+"#
+}
+
+pub fn default_members_include_bench_or_fuzz() -> bool {
+    let manifest = workspace_manifest();
+    manifest.contains("\"fuzz\"") || manifest.contains("\"bench\"")
+}

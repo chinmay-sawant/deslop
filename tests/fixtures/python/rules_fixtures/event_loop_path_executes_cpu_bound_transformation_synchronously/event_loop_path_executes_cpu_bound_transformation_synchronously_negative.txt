@@ -1,0 +1,41 @@
+import asyncio
+import json
+from concurrent.futures import ProcessPoolExecutor
+
+executor = ProcessPoolExecutor()
+
+
+async def handle_request(data: bytes) -> dict:
+    parsed = json.loads(data)
+    
+    loop = asyncio.get_event_loop()
+    enriched = await loop.run_in_executor(
+        executor, lambda: [heavy_computation(item) for item in parsed["items"]]
+    )
+    
+    return {"results": enriched}
+
+
+async def process_batch(items: list[dict]) -> list[dict]:
+    loop = asyncio.get_event_loop()
+    
+    def _process():
+        results = []
+        for item in items:
+            embedding = compute_embedding(item["text"])
+            score = compute_similarity(embedding, item["target"])
+            results.append({**item, "score": score})
+        return results
+    
+    return await loop.run_in_executor(executor, _process)
+
+
+async def transform_payload(payload: dict) -> bytes:
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, _encrypt_payload, payload)
+
+
+def _encrypt_payload(payload: dict) -> bytes:
+    validated = validate_schema(payload)
+    compressed = compress_data(validated)
+    return encrypt(compressed)

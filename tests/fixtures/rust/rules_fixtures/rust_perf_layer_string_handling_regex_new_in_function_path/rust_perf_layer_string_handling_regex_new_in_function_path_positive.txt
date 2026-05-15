@@ -1,0 +1,22 @@
+use regex::Regex;
+
+// BAD: Regex::new called in a function that runs per request
+fn validate_email(email: &str) -> bool {
+    let re = Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").unwrap();
+    re.is_match(email)
+}
+
+fn validate_phone(phone: &str) -> bool {
+    let re = Regex::new(r"^\+?[1-9]\d{1,14}$").unwrap();
+    re.is_match(phone)
+}
+
+fn process_form(form: &Form) -> Result<(), ValidationError> {
+    if !validate_email(&form.email) {
+        return Err(ValidationError::InvalidEmail);
+    }
+    if !validate_phone(&form.phone) {
+        return Err(ValidationError::InvalidPhone);
+    }
+    Ok(())
+}

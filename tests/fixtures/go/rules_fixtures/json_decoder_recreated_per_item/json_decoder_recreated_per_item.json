@@ -1,0 +1,14 @@
+{
+  "id": "json_decoder_recreated_per_item",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "json.NewDecoder(...) constructed repeatedly inside loops instead of reusing a stable decoder per stream.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

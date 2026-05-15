@@ -1,0 +1,34 @@
+import time
+import tracemalloc
+
+
+def benchmark_serializer(data: list[dict]) -> tuple[float, int]:
+    tracemalloc.start()
+    start = time.perf_counter()
+    for _ in range(1000):
+        result = [serialize(item) for item in data]
+    elapsed = time.perf_counter() - start
+    _, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    print(f"Serializer: {elapsed:.4f}s, peak: {peak / 1024:.1f}KB")
+    return elapsed, peak
+
+
+def serialize(item: dict) -> str:
+    return "|".join(f"{k}={v}" for k, v in item.items())
+
+
+def benchmark_parser(payload: str) -> tuple[float, int]:
+    tracemalloc.start()
+    start = time.perf_counter()
+    for _ in range(500):
+        parsed = [parse_line(line) for line in payload.splitlines()]
+    elapsed = time.perf_counter() - start
+    _, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    print(f"Parser: {elapsed:.4f}s, peak: {peak / 1024:.1f}KB")
+    return elapsed, peak
+
+
+def parse_line(line: str) -> dict:
+    return dict(kv.split("=") for kv in line.split("|"))

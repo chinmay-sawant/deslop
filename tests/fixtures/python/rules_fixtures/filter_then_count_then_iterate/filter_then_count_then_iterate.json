@@ -1,0 +1,14 @@
+{
+  "id": "filter_then_count_then_iterate",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same collection is traversed repeatedly for filtering, counting, and later iteration.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

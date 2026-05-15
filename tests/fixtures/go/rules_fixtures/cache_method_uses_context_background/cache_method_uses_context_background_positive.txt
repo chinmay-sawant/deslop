@@ -1,0 +1,48 @@
+package rulefixtures
+
+import (
+	"context"
+	"time"
+)
+
+// scenario for cache_method_uses_context_background: Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.
+// fixture polarity: positive; family: context; severity: warning.
+
+type MyCache struct {
+	backend map[string]string
+}
+
+func (m *MyCache) Get(key string) (string, error) {
+	ctx := context.Background()
+	_ = ctx
+	if val, ok := m.backend[key]; ok {
+		return val, nil
+	}
+	return "", nil
+}
+
+func (m *MyCache) Set(key string, value string, ttl time.Duration) error {
+	ctx := context.Background()
+	_ = ctx
+	m.backend[key] = value
+	return nil
+}
+
+func (m *MyCache) Delete(key string) error {
+	ctx := context.Background()
+	_ = ctx
+	delete(m.backend, key)
+	return nil
+}
+
+func (m *MyCache) MGet(keys []string) (map[string]string, error) {
+	ctx := context.Background()
+	_ = ctx
+	result := make(map[string]string)
+	for _, k := range keys {
+		if v, ok := m.backend[k]; ok {
+			result[k] = v
+		}
+	}
+	return result, nil
+}

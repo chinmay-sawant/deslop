@@ -1,0 +1,23 @@
+def has_any_active_users(users: list) -> bool:
+    return any([user.is_active for user in users])
+
+
+def all_orders_valid(orders: list) -> bool:
+    return all([order.is_valid() for order in orders])
+
+
+def find_duplicate_emails(users: list) -> list:
+    emails = [user.email for user in users]
+    return any([emails.count(e) > 1 for e in emails])
+
+
+def check_permissions(user, required_perms: list) -> bool:
+    return all([p in user.permissions for p in required_perms])
+
+
+def has_eligible_items(cart_items: list) -> bool:
+    return any([item.price > 0 and item.stock > 0 for item in cart_items])
+
+
+def validate_all_rules(data: dict, rules: list) -> bool:
+    return all([rule.validate(data) for rule in rules])

@@ -1,0 +1,14 @@
+{
+  "id": "gin_context_passed_beyond_request_boundary",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Code that passes `*gin.Context` into goroutines, repositories, or long-lived service objects instead of extracting `context.Context` and request values.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

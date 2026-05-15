@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_newbufferstring_on_string_conversion: `bytes.NewBufferString(string(b))` instead of using the byte slice directly.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario455Positive(b []byte) *bytes.Buffer {
+	return bytes.NewBufferString(string(b))
+}

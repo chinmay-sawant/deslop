@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for duplicate_upstream_calls_same_url_same_handler: Same upstream URL called multiple times in one handler.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule310NegativeRecord struct {
+	Name string
+}
+
+type Rule310NegativeService interface {
+	Handle(context.Context, Rule310NegativeRecord) (Rule310NegativeRecord, error)
+}
+
+func scenario310Negative(ctx context.Context, service Rule310NegativeService, input Rule310NegativeRecord) (Rule310NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule310NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

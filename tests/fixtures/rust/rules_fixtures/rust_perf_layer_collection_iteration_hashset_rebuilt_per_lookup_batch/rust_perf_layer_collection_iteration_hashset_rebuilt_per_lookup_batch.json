@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_collection_iteration_hashset_rebuilt_per_lookup_batch",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag HashSet rebuilt inside loops instead of once per batch.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

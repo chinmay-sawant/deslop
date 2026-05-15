@@ -1,0 +1,24 @@
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
+
+def process_order(order_id: int, user_email: str, user_phone: str, ip_address: str) -> dict:
+    with tracer.start_as_current_span("process_order") as span:
+        span.set_attribute("order_id", order_id)
+        span.set_attribute("user_email", user_email)
+        span.set_attribute("user_phone", user_phone)
+        span.set_attribute("ip_address", ip_address)
+        return {"status": "processed"}
+
+def handle_login(email: str, password: str, ip: str) -> dict:
+    with tracer.start_as_current_span("login") as span:
+        span.set_attribute("email", email)
+        span.set_attribute("ip_address", ip)
+        return {"token": "abc123"}
+
+def create_profile(name: str, ssn: str, credit_card: str) -> dict:
+    with tracer.start_as_current_span("create_profile") as span:
+        span.set_attribute("name", name)
+        span.set_attribute("ssn", ssn)
+        span.set_attribute("credit_card", credit_card)
+        return {"profile_id": 1}

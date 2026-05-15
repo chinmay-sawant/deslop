@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"crypto/aes"
+	"crypto/cipher"
+)
+
+// scenario for constant_iv_or_nonce: constant or zero-valued byte slices used as IV/nonce arguments to `cipher.NewCBCEncrypter`, `gcm.Seal`, or similar
+// fixture polarity: positive; family: security; severity: error.
+func scenario700Positive(key []byte, payload []byte) ([]byte, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil { return nil, err }
+	gcm, err := cipher.NewGCM(block)
+	if err != nil { return nil, err }
+	nonce := []byte("fixed-nonce!")
+	return gcm.Seal(nil, nonce, payload, nil), nil
+}

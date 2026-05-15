@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	"bytes"
+	"compress/gzip"
+	"net/http"
+)
+
+// scenario for gzip_or_zip_writer_created_per_chunk: Gzip or zip writers recreated per chunk inside handler loops instead of reusing per stream.
+// fixture polarity: positive; family: gin; severity: contextual.
+func scenario318Positive(w http.ResponseWriter) {
+	chunks := []string{"hello", "world", "from", "gzip"}
+
+	for _, chunk := range chunks {
+		var buf bytes.Buffer
+		gw := gzip.NewWriter(&buf)
+		gw.Write([]byte(chunk))
+		gw.Close()
+		w.Write(buf.Bytes())
+	}
+}

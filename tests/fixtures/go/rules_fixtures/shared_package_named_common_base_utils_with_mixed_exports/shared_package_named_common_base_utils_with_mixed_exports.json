@@ -1,0 +1,14 @@
+{
+  "id": "shared_package_named_common_base_utils_with_mixed_exports",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Generic packages that mix services, models, DTOs, validators, and queries behind one broad shared namespace.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

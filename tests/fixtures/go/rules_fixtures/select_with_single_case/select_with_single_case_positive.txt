@@ -1,0 +1,12 @@
+package rulefixtures
+
+// scenario for select_with_single_case: `select { case v := <-ch: ... }` with only one case and no default
+// fixture polarity: positive; family: performance; severity: info.
+func scenario635Positive(ch <-chan int) {
+	for i := 0; i < 10; i++ {
+		select {
+		case v := <-ch:
+			_ = v
+		}
+	}
+}

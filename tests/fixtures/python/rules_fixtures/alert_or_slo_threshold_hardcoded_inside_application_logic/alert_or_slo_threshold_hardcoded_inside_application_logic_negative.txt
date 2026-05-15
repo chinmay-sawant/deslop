@@ -1,0 +1,32 @@
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class SLOConfig:
+    latency_threshold_ms: float
+    error_rate_threshold: float
+    satisfaction_threshold: float
+
+
+def load_slo_config() -> SLOConfig:
+    return SLOConfig(
+        latency_threshold_ms=float(os.environ.get("SLO_LATENCY_THRESHOLD_MS", "500")),
+        error_rate_threshold=float(os.environ.get("SLO_ERROR_RATE_THRESHOLD", "0.05")),
+        satisfaction_threshold=float(os.environ.get("SLO_SATISFACTION_THRESHOLD", "0.95")),
+    )
+
+
+def check_api_health(metrics_collector, slo_config: SLOConfig):
+    p99_latency = metrics_collector.get_p99_latency("api")
+    if p99_latency > slo_config.latency_threshold_ms:
+        trigger_alert("API latency exceeded threshold")
+
+    error_rate = metrics_collector.get_error_rate("api")
+    if error_rate > slo_config.error_rate_threshold:
+        trigger_alert("API error rate exceeded threshold")
+
+
+def check_order_slo(metrics_collector, slo_config: SLOConfig):
+    success_rate = metrics_collector.get_success_rate("orders")
+    if success_rate < slo_config.satisfaction_threshold:
+        trigger_alert("Order SLO breached")

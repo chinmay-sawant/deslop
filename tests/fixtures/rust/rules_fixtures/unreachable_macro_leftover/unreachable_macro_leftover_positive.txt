@@ -1,0 +1,30 @@
+fn parse_command(input: &str) -> Command {
+    match input {
+        "start" => Command::Start,
+        "stop" => Command::Stop,
+        "restart" => Command::Restart,
+        _ => unreachable!(),
+    }
+}
+
+fn get_priority(level: &str) -> u8 {
+    match level {
+        "low" => 1,
+        "medium" => 2,
+        "high" => 3,
+        "critical" => 4,
+        _ => unreachable!("invalid priority level"),
+    }
+}
+
+fn process_response(resp: &Response) -> String {
+    match resp.status {
+        200 => "ok".to_string(),
+        404 => "not found".to_string(),
+        500 => "server error".to_string(),
+        _ => unreachable!(),
+    }
+}
+
+enum Command { Start, Stop, Restart }
+struct Response { status: u16 }

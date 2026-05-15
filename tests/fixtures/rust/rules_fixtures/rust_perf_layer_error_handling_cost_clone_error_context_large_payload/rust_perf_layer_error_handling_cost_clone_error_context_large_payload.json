@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_error_handling_cost_clone_error_context_large_payload",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag error context cloning large payloads only for diagnostic strings.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

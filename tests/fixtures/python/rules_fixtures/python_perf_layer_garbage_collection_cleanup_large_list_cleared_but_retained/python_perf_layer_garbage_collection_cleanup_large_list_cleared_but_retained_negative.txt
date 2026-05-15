@@ -1,0 +1,22 @@
+class BatchProcessor:
+    def __init__(self):
+        self.results = []
+
+    def process_batch(self, items):
+        results = []
+        for item in items:
+            results.append(transform(item))
+        self.send_results(results)
+        del results
+
+    def send_results(self, data):
+        pass
+
+def transform(item):
+    return item["value"] * 2
+
+def process_events():
+    entries = []
+    for event in get_events():
+        entries.append(event)
+    persist(entries)

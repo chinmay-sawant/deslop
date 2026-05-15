@@ -1,0 +1,50 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	gin "github.com/gin-gonic/gin"
+)
+
+// scenario for sql_query_text_asserted_in_handler_tests: SQL-shape assertions written at handler level instead of repository tests.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type mockDB struct {
+	lastQuery string
+}
+
+func (m *mockDB) Query(query string, args ...interface{}) []map[string]interface{} {
+	m.lastQuery = query
+	return []map[string]interface{}{
+		{"id": 1, "name": "alice"},
+	}
+}
+
+func TestListUsersHandlerSQL(t *testing.T) {
+	db := &mockDB{}
+
+	router := gin.Default()
+	router.GET("/users", func(c *gin.Context) {
+		users := db.Query("SELECT id, name FROM users WHERE tenant_id = $1", 42)
+		c.JSON(http.StatusOK, users)
+	})
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/users", nil)
+	router.ServeHTTP(w, req)
+
+	expectedSQL := "SELECT id, name FROM users WHERE tenant_id"
+	if !strings.Contains(db.lastQuery, expectedSQL) {
+		t.Fatalf("expected query containing %q, got %q", expectedSQL, db.lastQuery)
+	}
+
+	var users []map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &users)
+	if len(users) != 1 {
+		t.Fatalf("expected 1 user, got %d", len(users))
+	}
+}

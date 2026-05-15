@@ -1,0 +1,14 @@
+{
+  "id": "response_dto_uses_omitempty_on_required_contract_fields",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Response shapes that silently drop fields that should be stable parts of the API contract.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

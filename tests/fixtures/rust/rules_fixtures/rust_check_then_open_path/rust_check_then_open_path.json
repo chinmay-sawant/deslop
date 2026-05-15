@@ -1,0 +1,14 @@
+{
+  "id": "rust_check_then_open_path",
+  "language": "rust",
+  "family": "boundary",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Filesystem code that checks metadata or existence before opening a path.",
+  "binding_location": "src/heuristics/rust/boundary.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "random_seed_not_set",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Training or evaluation entrypoints use randomness without an obvious seed.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_resource_pooling_db_pool_created_per_repository",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Resource pooling. Flag database pools constructed per repository instance instead of shared process ownership.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,17 @@
+fn cast_slice<T, U>(data: &[T]) -> &[U] {
+    let ptr = data.as_ptr() as *const U;
+    let len = data.len() * std::mem::size_of::<T>() / std::mem::size_of::<U>();
+    unsafe { std::slice::from_raw_parts(ptr, len) }
+}
+
+fn cast_to_bytes<T>(data: &[T]) -> &[u8] {
+    let ptr = data.as_ptr() as *const u8;
+    let len = data.len() * std::mem::size_of::<T>();
+    unsafe { std::slice::from_raw_parts(ptr, len) }
+}
+
+fn reinterpret_as_u64(data: &[u8]) -> &[u64] {
+    let ptr = data.as_ptr() as *const u64;
+    let len = data.len() / 8;
+    unsafe { std::slice::from_raw_parts(ptr, len) }
+}

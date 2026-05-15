@@ -1,0 +1,29 @@
+import json
+
+
+def process_log_file(filepath: str) -> list[dict]:
+    with open(filepath) as f:
+        lines = f.readlines()
+    parsed = [json.loads(line) for line in lines]
+    filtered = [entry for entry in parsed if entry["level"] == "ERROR"]
+    enriched = [{"host": "server1", **entry} for entry in filtered]
+    return enriched
+
+
+def load_and_transform_csv(filepath: str) -> list[dict]:
+    import csv
+    with open(filepath) as f:
+        reader = csv.DictReader(f)
+        all_rows = list(reader)
+    processed = []
+    for row in all_rows:
+        row["amount"] = float(row["amount"])
+        row["tax"] = float(row["amount"]) * 0.1
+        processed.append(row)
+    return processed
+
+
+def export_report(data: list[dict]) -> bytes:
+    all_json = [json.dumps(record) for record in data]
+    combined = "\n".join(all_json)
+    return combined.encode()

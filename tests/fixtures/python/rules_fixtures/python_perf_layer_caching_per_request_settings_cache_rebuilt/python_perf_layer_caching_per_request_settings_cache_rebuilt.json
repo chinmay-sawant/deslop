@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_caching_per_request_settings_cache_rebuilt",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Caching. Flag settings or feature-flag caches rebuilt for each request.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

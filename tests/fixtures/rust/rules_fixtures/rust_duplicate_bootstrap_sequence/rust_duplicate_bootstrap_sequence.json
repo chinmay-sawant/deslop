@@ -1,0 +1,14 @@
+{
+  "id": "rust_duplicate_bootstrap_sequence",
+  "language": "rust",
+  "family": "module_surface",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated startup or bootstrap wiring in multiple functions within the same file.",
+  "binding_location": "src/heuristics/rust/module_surface.rs"
+}

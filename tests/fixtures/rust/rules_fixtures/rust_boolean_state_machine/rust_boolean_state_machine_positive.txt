@@ -1,0 +1,49 @@
+struct Connection {
+    is_connected: bool,
+    is_authenticated: bool,
+    is_encrypted: bool,
+    is_compressed: bool,
+}
+
+impl Connection {
+    fn new() -> Self {
+        Self {
+            is_connected: false,
+            is_authenticated: false,
+            is_encrypted: false,
+            is_compressed: false,
+        }
+    }
+
+    fn connect(&mut self) {
+        self.is_connected = true;
+    }
+
+    fn authenticate(&mut self) {
+        if !self.is_connected {
+            return;
+        }
+        self.is_authenticated = true;
+    }
+
+    fn enable_encryption(&mut self) {
+        if !self.is_connected {
+            return;
+        }
+        self.is_encrypted = true;
+    }
+
+    fn enable_compression(&mut self) {
+        if !self.is_connected {
+            return;
+        }
+        self.is_compressed = true;
+    }
+
+    fn status(&self) -> String {
+        format!(
+            "connected={} auth={} encrypted={} compressed={}",
+            self.is_connected, self.is_authenticated, self.is_encrypted, self.is_compressed
+        )
+    }
+}

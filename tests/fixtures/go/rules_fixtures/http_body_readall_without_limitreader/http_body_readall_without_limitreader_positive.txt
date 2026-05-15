@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"io"
+	"net/http"
+)
+
+// scenario for http_body_readall_without_limitreader: `io.ReadAll(req.Body)` in HTTP handlers without `io.LimitReader`
+// fixture polarity: positive; family: performance; severity: warning.
+func uploadHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+func importHandler(w http.ResponseWriter, r *http.Request) {
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "read error", http.StatusInternalServerError)
+		return
+	}
+	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	w.Write(data)
+}

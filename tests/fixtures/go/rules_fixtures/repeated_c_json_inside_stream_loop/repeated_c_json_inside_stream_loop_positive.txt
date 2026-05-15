@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	gin "github.com/gin-gonic/gin"
+)
+
+// scenario for repeated_c_json_inside_stream_loop: Gin handlers that call c.JSON(...) or c.PureJSON(...) from inside loops.
+// fixture polarity: positive; family: gin; severity: contextual.
+type Rule334PositiveRecord struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+func scenario334Positive(c *gin.Context) {
+	items := []Rule334PositiveRecord{
+		{ID: 1, Name: "alpha"},
+		{ID: 2, Name: "beta"},
+		{ID: 3, Name: "gamma"},
+	}
+	for _, item := range items {
+		c.JSON(200, item)
+	}
+}

@@ -1,0 +1,14 @@
+{
+  "id": "async_retry_sleep_without_backoff",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Retry-style async loops that sleep a fixed interval without visible backoff, jitter, or bounded retry policy.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "external_input_without_validation",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request or CLI entry points that trust external input without obvious validation or guard checks.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for scan_into_map_string_any_hot_path: Rows scanned into map[string]any instead of typed structs on hot paths.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule296NegativeRecord struct { ID int }
+
+func scenario296Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule296NegativeRecord{}).Error
+}

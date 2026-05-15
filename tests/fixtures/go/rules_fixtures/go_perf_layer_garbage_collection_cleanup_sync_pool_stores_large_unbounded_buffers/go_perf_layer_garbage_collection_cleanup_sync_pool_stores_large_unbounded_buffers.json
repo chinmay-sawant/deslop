@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag sync.Pool usage that stores large buffers without a cap before putting them back.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

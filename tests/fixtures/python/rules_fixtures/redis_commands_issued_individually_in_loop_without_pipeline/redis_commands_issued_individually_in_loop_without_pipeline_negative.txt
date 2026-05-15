@@ -1,0 +1,24 @@
+import redis
+
+
+def cache_users(r: redis.Redis, users: list[dict]) -> None:
+    with r.pipeline(transaction=False) as pipe:
+        for user in users:
+            pipe.hset(f"user:{user['id']}", mapping=user)
+            pipe.expire(f"user:{user['id']}", 3600)
+        pipe.execute()
+
+
+def invalidate_sessions(r: redis.Redis, session_ids: list[str]) -> None:
+    with r.pipeline(transaction=False) as pipe:
+        for sid in session_ids:
+            pipe.delete(f"session:{sid}")
+        pipe.execute()
+
+
+def update_counters(r: redis.Redis, event_names: list[str]) -> None:
+    with r.pipeline(transaction=False) as pipe:
+        for name in event_names:
+            pipe.incr(f"counter:{name}")
+            pipe.expire(f"counter:{name}", 86400)
+        pipe.execute()

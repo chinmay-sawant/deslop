@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_runtime_configuration_rayon_threads_set_in_library",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Build and runtime configuration. Flag library code configuring global Rayon thread pools and overriding host policy.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

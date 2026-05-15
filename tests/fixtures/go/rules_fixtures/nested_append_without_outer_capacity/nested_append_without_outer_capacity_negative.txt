@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for nested_append_without_outer_capacity: Append calls inside nested loops without visible preallocation on the outer slice.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule357NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario357Negative(records []Rule357NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

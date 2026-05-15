@@ -1,0 +1,14 @@
+{
+  "id": "distinct_wide_row_request_path",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Distinct on wide rows without Select projection \u2014 a key-only subquery is usually cheaper.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

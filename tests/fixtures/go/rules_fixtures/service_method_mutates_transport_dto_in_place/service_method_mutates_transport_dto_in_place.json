@@ -1,0 +1,14 @@
+{
+  "id": "service_method_mutates_transport_dto_in_place",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Services that rewrite handler DTOs instead of mapping to service-layer inputs.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

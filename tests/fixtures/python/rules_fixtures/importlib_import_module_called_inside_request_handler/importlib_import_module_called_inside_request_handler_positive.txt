@@ -1,0 +1,17 @@
+from fastapi import FastAPI
+import importlib
+
+app = FastAPI()
+
+
+@app.get("/plugins/{plugin_name}")
+async def run_plugin(plugin_name: str):
+    module = importlib.import_module(f"plugins.{plugin_name}")
+    return module.execute()
+
+
+@app.get("/reports/{report_type}")
+async def generate_report(report_type: str):
+    mod = importlib.import_module(f"reports.{report_type}")
+    data = mod.generate()
+    return {"report": report_type, "data": data}

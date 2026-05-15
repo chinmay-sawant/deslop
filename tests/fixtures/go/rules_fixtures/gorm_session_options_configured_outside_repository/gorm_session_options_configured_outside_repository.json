@@ -1,0 +1,14 @@
+{
+  "id": "gorm_session_options_configured_outside_repository",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Code above the repository layer that changes `Session`, `Clauses`, or transaction options directly.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

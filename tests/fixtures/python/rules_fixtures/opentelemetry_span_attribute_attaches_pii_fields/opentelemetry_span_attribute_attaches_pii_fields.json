@@ -1,0 +1,14 @@
+{
+  "id": "opentelemetry_span_attribute_attaches_pii_fields",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "OpenTelemetry span attribute set to a key that likely carries PII such as email, phone, or IP address.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

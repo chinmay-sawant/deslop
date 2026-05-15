@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for string_format_for_error_wrap: `fmt.Errorf("failed: %s", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`
+// fixture polarity: negative; family: performance; severity: warning.
+func scenario647Negative(haystack string, needle string, left string, right string) bool {
+	return strings.Contains(haystack, needle)
+}

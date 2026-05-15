@@ -1,0 +1,14 @@
+{
+  "id": "rust_partial_init_escape",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Constructor-like functions that return or store partially initialized structs.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

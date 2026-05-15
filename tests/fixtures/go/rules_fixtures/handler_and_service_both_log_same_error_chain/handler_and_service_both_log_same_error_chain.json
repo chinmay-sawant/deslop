@@ -1,0 +1,14 @@
+{
+  "id": "handler_and_service_both_log_same_error_chain",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Duplicated logging ownership where both service and handler log the same failure.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

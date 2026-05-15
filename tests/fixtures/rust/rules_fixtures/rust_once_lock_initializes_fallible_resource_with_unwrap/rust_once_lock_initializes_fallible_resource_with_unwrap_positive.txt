@@ -1,0 +1,9 @@
+use std::sync::OnceLock;
+
+static DB: OnceLock<Database> = OnceLock::new();
+
+fn get_db() -> &'static Database {
+    DB.get_or_init(|| {
+        Database::connect("postgres://localhost/mydb").unwrap()
+    })
+}

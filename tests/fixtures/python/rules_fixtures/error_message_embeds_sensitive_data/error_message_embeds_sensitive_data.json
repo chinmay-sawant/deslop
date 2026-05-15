@@ -1,0 +1,14 @@
+{
+  "id": "error_message_embeds_sensitive_data",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Exception message or error response string interpolated with credentials, keys, or PII.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

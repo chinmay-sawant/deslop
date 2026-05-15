@@ -1,0 +1,37 @@
+import logging
+from typing import Any, Dict
+from dataclasses import dataclass, field
+
+logger = logging.getLogger(__name__)
+
+@dataclass
+class AppState:
+    cache: Dict[str, Any] = field(default_factory=dict)
+    request_count: int = 0
+    active_connections: list = field(default_factory=list)
+    last_error: str = ""
+
+    def get_cached(self, key: str) -> Any:
+        self.request_count += 1
+        return self.cache.get(key)
+
+    def set_cached(self, key: str, value: Any) -> None:
+        self.cache[key] = value
+
+    def add_connection(self, conn_id: str) -> None:
+        self.active_connections.append(conn_id)
+
+    def remove_connection(self, conn_id: str) -> None:
+        self.active_connections.remove(conn_id)
+
+    def record_error(self, error: Exception) -> None:
+        self.last_error = str(error)
+        logger.error(f"Error recorded: {self.last_error}")
+
+    def get_stats(self) -> dict:
+        return {
+            "request_count": self.request_count,
+            "active_connections": len(self.active_connections),
+            "cache_size": len(self.cache),
+            "last_error": self.last_error,
+        }

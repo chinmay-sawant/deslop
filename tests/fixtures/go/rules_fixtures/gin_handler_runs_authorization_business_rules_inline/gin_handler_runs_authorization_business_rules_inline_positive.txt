@@ -1,0 +1,36 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for gin_handler_runs_authorization_business_rules_inline: Handlers that contain complex permission matrices instead of delegating to policy or service logic.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func DeleteResourceHandler(c *gin.Context) {
+	role := c.GetString("user_role")
+	resourceOwner := c.GetString("resource_owner")
+	currentUser := c.GetString("user_id")
+	isAdmin := role == "admin"
+	isOwner := resourceOwner == currentUser
+	isModerator := role == "moderator"
+
+	if isAdmin {
+		c.JSON(http.StatusOK, gin.H{"status": "deleted by admin"})
+		return
+	}
+
+	if isOwner {
+		c.JSON(http.StatusOK, gin.H{"status": "deleted by owner"})
+		return
+	}
+
+	if isModerator && c.Query("scope") == "limited" {
+		c.JSON(http.StatusOK, gin.H{"status": "deleted by moderator"})
+		return
+	}
+
+	c.JSON(http.StatusForbidden, gin.H{"error": "unauthorized"})
+}

@@ -1,0 +1,21 @@
+package rulefixtures
+
+import "github.com/gin-gonic/gin"
+
+// scenario for go_perf_layer_framework_performance_gin_context_copied_for_sync_path: Layer: Framework-specific performance. Flag Gin context Copy calls where work remains synchronous and request-scoped.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func GetUserHandler(c *gin.Context) {
+	ctx := c.Copy()
+	userID := ctx.Param("id")
+	name, err := fetchUserName(userID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"id": userID, "name": name})
+}
+
+func fetchUserName(id string) (string, error) {
+	return "Alice", nil
+}

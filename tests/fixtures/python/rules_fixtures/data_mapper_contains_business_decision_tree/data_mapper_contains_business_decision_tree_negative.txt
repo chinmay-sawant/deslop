@@ -1,0 +1,40 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class OrderRecord:
+    order_id: int
+    customer_tier: str
+    total_amount: float
+    is_first_order: bool
+
+
+@dataclass
+class OrderDTO:
+    order_id: int
+    amount: float
+    discount_pct: float
+
+
+class DiscountPolicy:
+    def calculate(self, record: OrderRecord) -> float:
+        if record.customer_tier == "gold" and record.total_amount > 500:
+            return 0.15
+        if record.customer_tier == "silver" and record.is_first_order:
+            return 0.10
+        if record.total_amount > 1000:
+            return 0.05
+        return 0.0
+
+
+class OrderMapper:
+    def __init__(self, discount_policy: DiscountPolicy):
+        self._discount_policy = discount_policy
+
+    def to_dto(self, record: OrderRecord) -> OrderDTO:
+        discount = self._discount_policy.calculate(record)
+        return OrderDTO(
+            order_id=record.order_id,
+            amount=record.total_amount,
+            discount_pct=discount,
+        )

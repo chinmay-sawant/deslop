@@ -1,0 +1,61 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"log"
+	"net/http"
+)
+
+// scenario for middleware_starts_db_transaction: Middleware that opens database transactions for the whole request path by default.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+var appDB *sql.DB
+
+func TxWrapMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tx, err := appDB.Begin()
+		if err != nil {
+			http.Error(w, "could not begin tx", http.StatusInternalServerError)
+			return
+		}
+
+		arw := &txResponseWriter{ResponseWriter: w, tx: tx}
+
+		defer func() {
+			if p := recover(); p != nil {
+				if rbErr := tx.Rollback(); rbErr != nil {
+					log.Printf("rollback panic: %v", rbErr)
+				}
+				panic(p)
+			}
+		}()
+
+		next.ServeHTTP(arw, r)
+
+		if arw.failed {
+			if rbErr := tx.Rollback(); rbErr != nil {
+				log.Printf("rollback failed: %v", rbErr)
+			}
+			return
+		}
+		if cmErr := tx.Commit(); cmErr != nil {
+			log.Printf("commit failed: %v", cmErr)
+			tx.Rollback()
+		}
+	})
+}
+
+type txResponseWriter struct {
+	http.ResponseWriter
+	tx     *sql.Tx
+	failed bool
+}
+
+func (w *txResponseWriter) WriteHeader(code int) {
+	if code >= 400 {
+		w.failed = true
+	}
+	w.ResponseWriter.WriteHeader(code)
+}
+
+var _ = log.Println

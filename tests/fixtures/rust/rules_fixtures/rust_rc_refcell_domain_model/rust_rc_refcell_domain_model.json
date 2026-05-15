@@ -1,0 +1,14 @@
+{
+  "id": "rust_rc_refcell_domain_model",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

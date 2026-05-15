@@ -1,0 +1,19 @@
+import pandas as pd
+
+
+def process_partitions(df, groups):
+    results = []
+    for group in groups:
+        mask = df["group"] == group
+        subset = df.loc[mask].copy()
+        subset["score"] = subset["value"] * 2
+        subset["rank"] = subset["score"].rank(ascending=False)
+        results.append(subset)
+    return pd.concat(results)
+
+
+def clean_all(df):
+    df = df.copy()
+    df["name"] = df["name"].str.strip()
+    df["email"] = df["email"].str.lower()
+    return df

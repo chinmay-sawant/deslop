@@ -1,0 +1,14 @@
+{
+  "id": "django_queryset_count_then_exists",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Django querysets use count() for existence checks instead of exists().",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

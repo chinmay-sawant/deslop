@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for query_path_and_body_merge_performed_in_handler: Handlers that merge several request sources inline instead of normalizing inputs before service calls.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule116NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule116NegativeService interface {
+	Run(context.Context, Rule116NegativeRecord) error
+}
+
+func scenario116Negative(ctx context.Context, service Rule116NegativeService, input Rule116NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

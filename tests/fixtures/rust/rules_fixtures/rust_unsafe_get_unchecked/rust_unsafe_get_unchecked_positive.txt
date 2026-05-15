@@ -1,0 +1,17 @@
+fn get_unchecked(slice: &[u8], idx: usize) -> u8 {
+    unsafe { *slice.get_unchecked(idx) }
+}
+
+fn get_unchecked_mut(slice: &mut [u8], idx: usize) -> &mut u8 {
+    unsafe { slice.get_unchecked_mut(idx) }
+}
+
+fn access_matrix(data: &[i32], row: usize, col: usize, cols: usize) -> i32 {
+    let idx = row * cols + col;
+    unsafe { *data.get_unchecked(idx) }
+}
+
+fn unchecked_string_chars(s: &str, idx: usize) -> char {
+    let bytes = s.as_bytes();
+    unsafe { *bytes.get_unchecked(idx) as char }
+}

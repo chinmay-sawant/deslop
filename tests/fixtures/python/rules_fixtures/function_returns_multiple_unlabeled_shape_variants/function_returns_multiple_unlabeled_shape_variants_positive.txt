@@ -1,0 +1,25 @@
+def fetch_record(record_id, include_details=False):
+    record = db.get(record_id)
+    if record is None:
+        return {"error": "not found"}
+    if include_details:
+        return {
+            "id": record.id,
+            "name": record.name,
+            "details": record.details,
+            "history": record.history,
+            "permissions": record.permissions,
+        }
+    return {"id": record.id, "name": record.name}
+
+def get_config(key, as_dict=False):
+    raw = config_store.read(key)
+    if as_dict:
+        return {"key": key, "value": raw, "source": "env", "overrides": []}
+    return raw
+
+def load_user_profile(user_id, full=False):
+    user = db.query(User).get(user_id)
+    if full:
+        return {"user": user, "settings": user.settings, "audit_log": user.audit_log}
+    return user.name

@@ -1,0 +1,33 @@
+use std::io::Read;
+use std::net::TcpStream;
+
+const MAX_REQUEST_SIZE: usize = 1024 * 1024; // 1MB
+
+// GOOD: size-limited read before parsing
+fn handle_connection(mut stream: TcpStream) -> Result<(), Error> {
+    let mut buf = vec![0u8; MAX_REQUEST_SIZE];
+    let bytes_read = stream.read(&mut buf)?;
+    buf.truncate(bytes_read);
+
+    let request: Request = serde_json::from_slice(&buf)?;
+    process_request(request);
+    Ok(())
+}
+
+fn load_and_parse(path: &str) -> Result<Data, Error> {
+    let metadata = std::fs::metadata(path)?;
+    if metadata.len() > MAX_REQUEST_SIZE as u64 {
+        return Err(Error::FileTooLarge);
+    }
+    let content = std::fs::read(path)?;
+    let data: Data = serde_json::from_slice(&content)?;
+    Ok(data)
+}
+
+fn read_request(body: &mut dyn Read) -> Result<Request, Error> {
+    let mut buf = Vec::with_capacity(MAX_REQUEST_SIZE);
+    let mut limited = body.take(MAX_REQUEST_SIZE as u64);
+    limited.read_to_end(&mut buf)?;
+    let request: Request = serde_json::from_slice(&buf)?;
+    Ok(request)
+}

@@ -1,0 +1,16 @@
+package rulefixtures
+
+// scenario for malformed_struct_tag: Struct field tags that do not parse as valid Go tag key/value pairs.
+// fixture polarity: positive; family: consistency; severity: contextual.
+
+type AppConfig struct {
+	Host     string `json:"host" xml:id`
+	Port     int    `json:port`
+	Database string `"json:database"`
+	Debug    bool   `json:"debug" xml:"debug" db`
+}
+
+type RequestMeta struct {
+	TraceID string `json:trace_id`
+	UserID  int    `json:"user_id" :db`
+}

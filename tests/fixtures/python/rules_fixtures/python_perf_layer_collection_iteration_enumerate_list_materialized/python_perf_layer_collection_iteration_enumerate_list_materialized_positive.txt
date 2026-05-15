@@ -1,0 +1,21 @@
+def process_items(items: list[str]) -> list[dict]:
+    indexed = list(enumerate(items))
+    results = []
+    for i, item in indexed:
+        results.append({"index": i, "value": item})
+    return results
+
+
+def transform_data(data: list[float]) -> list[tuple]:
+    pairs = list(enumerate(data))
+    output = []
+    for idx, val in pairs:
+        output.append((idx, val * 2))
+    return output
+
+
+def build_report(entries: list[dict]) -> str:
+    lines = []
+    for i, entry in list(enumerate(entries)):
+        lines.append(f"{i}: {entry['name']}")
+    return "\n".join(lines)

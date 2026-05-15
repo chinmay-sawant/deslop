@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for context_withvalue_used_for_dependencies_or_large_payloads: context.WithValue used for dependency-like objects or payload-like data instead of lightweight request metadata.
+// fixture polarity: negative; family: context; severity: warning.
+func scenario239Negative(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+	child, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(child, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

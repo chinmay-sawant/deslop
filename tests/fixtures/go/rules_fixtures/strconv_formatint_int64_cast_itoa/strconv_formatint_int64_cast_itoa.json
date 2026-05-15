@@ -1,0 +1,14 @@
+{
+  "id": "strconv_formatint_int64_cast_itoa",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`strconv.FormatInt(int64(v), 10)` instead of `strconv.Itoa(v)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

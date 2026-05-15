@@ -1,0 +1,14 @@
+{
+  "id": "success_and_failure_paths_use_inconsistent_structured_log_keys",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag logging paths that use different keys for the same concept.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

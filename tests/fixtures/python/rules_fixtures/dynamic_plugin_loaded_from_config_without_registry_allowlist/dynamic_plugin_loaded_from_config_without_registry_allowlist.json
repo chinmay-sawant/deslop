@@ -1,0 +1,14 @@
+{
+  "id": "dynamic_plugin_loaded_from_config_without_registry_allowlist",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Plugin loaded via importlib.import_module from config without validating against an allowlist.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

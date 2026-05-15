@@ -1,0 +1,35 @@
+import torch
+import torch.nn as nn
+
+
+class SentimentModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc = nn.Linear(768, 3)
+
+    def forward(self, x):
+        return self.fc(x)
+
+
+def evaluate_samples(model: nn.Module, samples: list[torch.Tensor]) -> list[int]:
+    results = []
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    for sample in samples:
+        model = model.to(device)
+        sample = sample.to(device)
+        output = model(sample)
+        results.append(output.argmax().item())
+    return results
+
+
+def train_epoch(model: nn.Module, data: list[tuple[torch.Tensor, torch.Tensor]]) -> float:
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    total_loss = 0.0
+    for inputs, targets in data:
+        model = model.to(device)
+        inputs = inputs.to(device)
+        targets = targets.to(device)
+        output = model(inputs)
+        loss = nn.functional.cross_entropy(output, targets)
+        total_loss += loss.item()
+    return total_loss

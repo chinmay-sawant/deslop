@@ -1,0 +1,14 @@
+{
+  "id": "function_body_contains_setup_validation_execution_and_formatting_all_at_once",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions that pack too many lifecycle phases into one body.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

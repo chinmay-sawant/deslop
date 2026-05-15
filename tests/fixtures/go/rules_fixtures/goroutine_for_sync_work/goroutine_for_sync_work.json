@@ -1,0 +1,14 @@
+{
+  "id": "goroutine_for_sync_work",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

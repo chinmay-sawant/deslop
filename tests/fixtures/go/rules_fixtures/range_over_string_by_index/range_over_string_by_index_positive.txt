@@ -1,0 +1,12 @@
+package rulefixtures
+
+// scenario for range_over_string_by_index: `for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes
+// fixture polarity: positive; family: performance; severity: info.
+func scenario629Positive(s string) []byte {
+	var chars []byte
+	for i := 0; i < len(s); i++ {
+		ch := s[i]
+		chars = append(chars, ch)
+	}
+	return chars
+}

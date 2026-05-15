@@ -1,0 +1,45 @@
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+
+struct FeatureStore {
+    enable_search: AtomicBool,
+}
+
+impl FeatureStore {
+    fn new() -> Self {
+        Self {
+            enable_search: AtomicBool::new(false),
+        }
+    }
+
+    fn set(&self, key: &str, value: bool) {
+        match key {
+            "enable_search" => self.enable_search.store(value, Ordering::Relaxed),
+            _ => {}
+        }
+    }
+
+    fn is_enabled(&self, key: &str) -> bool {
+        match key {
+            "enable_search" => self.enable_search.load(Ordering::Relaxed),
+            _ => false,
+        }
+    }
+}
+
+struct AppState {
+    features: Arc<FeatureStore>,
+}
+
+fn handle_request(request: &Request, state: &AppState) -> Response {
+    if request.path == "/admin/enable-search" {
+        state.features.set("enable_search", true);
+        return Response::ok();
+    }
+
+    if state.features.is_enabled("enable_search") {
+        return search_handler(request);
+    }
+
+    legacy_handler(request)
+}

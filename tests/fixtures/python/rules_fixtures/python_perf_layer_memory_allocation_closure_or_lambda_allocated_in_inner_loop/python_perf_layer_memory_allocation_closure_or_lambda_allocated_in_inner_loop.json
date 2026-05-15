@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_memory_allocation_closure_or_lambda_allocated_in_inner_loop",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag lambdas or closures allocated inside tight loops when a named function or hoisted callable works.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

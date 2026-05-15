@@ -1,0 +1,14 @@
+{
+  "id": "god_class",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Python classes that concentrate unusually high method count, public surface area, and mutable instance state.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

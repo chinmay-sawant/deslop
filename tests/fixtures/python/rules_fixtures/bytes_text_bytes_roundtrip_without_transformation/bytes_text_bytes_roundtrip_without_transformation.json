@@ -1,0 +1,14 @@
+{
+  "id": "bytes_text_bytes_roundtrip_without_transformation",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that decodes and re-encodes data without changing it.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

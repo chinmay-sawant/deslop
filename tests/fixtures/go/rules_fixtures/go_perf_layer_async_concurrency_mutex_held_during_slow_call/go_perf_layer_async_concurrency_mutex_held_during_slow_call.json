@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_async_concurrency_mutex_held_during_slow_call",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag mutex-protected regions that include network, disk, or database calls.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

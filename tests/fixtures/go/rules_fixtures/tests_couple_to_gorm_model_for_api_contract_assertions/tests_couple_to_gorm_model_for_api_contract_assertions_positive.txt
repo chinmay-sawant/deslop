@@ -1,0 +1,34 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+// scenario for tests_couple_to_gorm_model_for_api_contract_assertions: API tests that assert persistence model shapes instead of response contracts.
+// fixture polarity: positive; family: architecture; severity: info.
+type GormUser struct {
+	ID        int    `gorm:"primaryKey" json:"id"`
+	Name      string `gorm:"size:256" json:"name"`
+	Password  string `gorm:"-" json:"-"`
+	DeletedAt *int64 `gorm:"index" json:"-"`
+}
+
+func TestGetUserByID(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = json.NewEncoder(w).Encode(GormUser{ID: 1, Name: "Alice"})
+	}))
+	defer srv.Close()
+
+	resp, _ := http.Get(srv.URL + "/users/1")
+	defer resp.Body.Close()
+
+	var got GormUser
+	_ = json.NewDecoder(resp.Body).Decode(&got)
+
+	if got.ID != 1 || got.Name != "Alice" {
+		t.Errorf("unexpected user: %+v", got)
+	}
+}

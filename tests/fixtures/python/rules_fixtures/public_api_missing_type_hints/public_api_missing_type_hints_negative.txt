@@ -1,0 +1,28 @@
+from typing import Optional
+
+
+def calculate_total(items: list[dict[str, float]]) -> float:
+    return sum(item["price"] for item in items)
+
+
+def find_user(users: list[dict], name: str) -> Optional[dict]:
+    for user in users:
+        if user["name"] == name:
+            return user
+    return None
+
+
+def process_batch(records: list[dict], batch_size: int) -> list[dict]:
+    results = []
+    for i in range(0, len(records), batch_size):
+        batch = records[i:i + batch_size]
+        results.extend(batch)
+    return results
+
+
+class UserService:
+    def get_by_id(self, user_id: int) -> Optional[dict]:
+        return {}
+
+    def create(self, data: dict) -> dict:
+        return data

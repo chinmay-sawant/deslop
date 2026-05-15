@@ -1,0 +1,13 @@
+struct Record {
+    name: String,
+    score: f64,
+}
+
+fn sort_records(records: &mut [Record]) {
+    // BAD: allocates String inside sort comparator
+    records.sort_by(|a, b| {
+        let key_a = format!("{}_{:.2}", a.name, a.score);
+        let key_b = format!("{}_{:.2}", b.name, b.score);
+        key_a.cmp(&key_b)
+    });
+}

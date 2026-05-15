@@ -1,0 +1,14 @@
+{
+  "id": "service_method_returns_gorm_db_or_sql_rows",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Services that leak ORM or driver primitives upward instead of returning business results.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

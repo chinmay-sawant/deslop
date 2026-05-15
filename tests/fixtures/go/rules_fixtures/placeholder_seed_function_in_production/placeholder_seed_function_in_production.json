@@ -1,0 +1,14 @@
+{
+  "id": "placeholder_seed_function_in_production",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Seed entrypoints in production code that are still TODO-shaped or effectively no-ops.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

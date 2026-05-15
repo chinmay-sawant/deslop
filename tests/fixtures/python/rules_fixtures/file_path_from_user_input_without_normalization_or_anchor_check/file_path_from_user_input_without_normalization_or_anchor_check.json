@@ -1,0 +1,14 @@
+{
+  "id": "file_path_from_user_input_without_normalization_or_anchor_check",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "File path derived from user input without Path.resolve() or anchor containment check.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

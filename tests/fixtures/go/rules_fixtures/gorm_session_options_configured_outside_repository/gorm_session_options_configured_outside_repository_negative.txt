@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_session_options_configured_outside_repository: Code above the repository layer that changes `Session`, `Clauses`, or transaction options directly.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule067NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule067NegativeService interface {
+	Run(context.Context, Rule067NegativeRecord) error
+}
+
+func scenario067Negative(ctx context.Context, service Rule067NegativeService, input Rule067NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

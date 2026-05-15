@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// scenario for gin_handler_returns_persistence_model_directly: Handlers that serialize database models directly to the client instead of mapping to response DTOs.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type Product struct {
+	gorm.Model
+	SKU       string  `json:"sku" gorm:"column:sku"`
+	Name      string  `json:"name" gorm:"column:name"`
+	Price     float64 `json:"price" gorm:"column:price"`
+	CostPrice float64 `json:"cost_price" gorm:"column:cost_price"`
+	StockQty  int     `json:"stock_qty" gorm:"column:stock_qty"`
+}
+
+func GetProductHandler(c *gin.Context) {
+	product := Product{
+		SKU:       "ABC-123",
+		Name:      "Widget",
+		Price:     29.99,
+		CostPrice: 15.00,
+		StockQty:  100,
+	}
+	c.JSON(http.StatusOK, product)
+}

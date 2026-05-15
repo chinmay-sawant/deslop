@@ -1,0 +1,17 @@
+from contextlib import contextmanager
+import threading
+
+
+@contextmanager
+def managed_lock(lock):
+    lock.acquire()
+    try:
+        yield
+    finally:
+        lock.release()
+
+
+def do_work():
+    lock = threading.Lock()
+    with managed_lock(lock):
+        process_items()

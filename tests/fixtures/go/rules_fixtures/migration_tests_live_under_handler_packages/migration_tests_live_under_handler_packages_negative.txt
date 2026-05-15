@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for migration_tests_live_under_handler_packages: Migration-specific tests located in transport packages.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule096NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule096NegativeService interface {
+	Run(context.Context, Rule096NegativeRecord) error
+}
+
+func scenario096Negative(ctx context.Context, service Rule096NegativeService, input Rule096NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

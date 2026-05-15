@@ -1,0 +1,17 @@
+def apply_defaults(config, defaults):
+    merged = {**defaults, **config}
+    return merged
+
+
+def normalize_records(records):
+    return [
+        {**r, "name": r["name"].strip().lower(), "email": r["email"].strip()}
+        for r in records
+    ]
+
+
+def enrich_items(items, metadata):
+    return [
+        {**item, "source": metadata["source"], "timestamp": metadata["timestamp"]}
+        for item in items
+    ]

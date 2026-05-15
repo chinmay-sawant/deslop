@@ -1,0 +1,25 @@
+import ldap3
+
+
+def search_user(username: str) -> list:
+    server = ldap3.Server("ldap://directory.example.com")
+    conn = ldap3.Connection(server, user="cn=admin", password="secret", auto_bind=True)
+    search_filter = f"(uid={username})"
+    conn.search("dc=example,dc=com", search_filter)
+    return conn.entries
+
+
+def find_group_members(group_name: str) -> list:
+    server = ldap3.Server("ldap://directory.example.com")
+    conn = ldap3.Connection(server, user="cn=admin", password="secret", auto_bind=True)
+    filt = f"(&(objectClass=group)(cn={group_name}))"
+    conn.search("ou=groups,dc=example,dc=com", filt)
+    return conn.entries
+
+
+def search_by_email(email: str) -> list:
+    server = ldap3.Server("ldap://directory.example.com")
+    conn = ldap3.Connection(server, user="cn=admin", password="secret", auto_bind=True)
+    search_filter = f"(mail={email})"
+    conn.search("dc=example,dc=com", search_filter)
+    return conn.entries

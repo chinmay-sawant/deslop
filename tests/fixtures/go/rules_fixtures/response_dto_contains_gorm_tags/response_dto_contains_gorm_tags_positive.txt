@@ -1,0 +1,28 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for response_dto_contains_gorm_tags: Response payload structs that carry persistence-only `gorm` tags.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type InvoiceResponse struct {
+	ID         int     `json:"id" gorm:"primaryKey"`
+	CustomerID int     `json:"customer_id" gorm:"column:customer_id"`
+	Amount     float64 `json:"amount" gorm:"column:amount_due"`
+	Status     string  `json:"status" gorm:"column:invoice_status"`
+}
+
+func GetInvoiceHandler(w http.ResponseWriter, r *http.Request) {
+	resp := InvoiceResponse{
+		ID:         1001,
+		CustomerID: 42,
+		Amount:     299.99,
+		Status:     "pending",
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}

@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+)
+
+// scenario for hmac_new_in_loop: `hmac.New(...)` inside loops.
+// fixture polarity: positive; family: performance; severity: info.
+func signMessages(msgs []string, key []byte) []string {
+	sigs := make([]string, 0, len(msgs))
+	for _, msg := range msgs {
+		mac := hmac.New(sha256.New, key)
+		mac.Write([]byte(msg))
+		sigs = append(sigs, hex.EncodeToString(mac.Sum(nil)))
+	}
+	return sigs
+}

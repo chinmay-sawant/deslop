@@ -1,0 +1,36 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for sql_rows_scan_logic_outside_repository: Code outside repositories that manually scans rows into structs.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type Invoice struct {
+	ID     int
+	Amount float64
+	Status string
+}
+
+func ListInvoicesHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	rows, err := db.QueryContext(r.Context(), "SELECT id, amount, status FROM invoices")
+	if err != nil {
+		http.Error(w, "query failed", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var invoices []Invoice
+	for rows.Next() {
+		var inv Invoice
+		if err := rows.Scan(&inv.ID, &inv.Amount, &inv.Status); err != nil {
+			http.Error(w, "scan failed", http.StatusInternalServerError)
+			return
+		}
+		invoices = append(invoices, inv)
+	}
+	fmt.Fprintf(w, `{"count":%d}`, len(invoices))
+}

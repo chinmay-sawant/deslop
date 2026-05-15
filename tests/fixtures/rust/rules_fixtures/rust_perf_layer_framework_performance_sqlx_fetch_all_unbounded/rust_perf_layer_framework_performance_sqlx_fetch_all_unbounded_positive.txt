@@ -1,0 +1,14 @@
+use sqlx::PgPool;
+
+async fn get_all_users(pool: &PgPool) -> Result<Vec<User>, sqlx::Error> {
+    // BAD: fetch_all with no LIMIT — unbounded memory for large tables
+    sqlx::query_as::<_, User>("SELECT id, name, email FROM users")
+        .fetch_all(pool)
+        .await
+}
+
+struct User {
+    id: i64,
+    name: String,
+    email: String,
+}

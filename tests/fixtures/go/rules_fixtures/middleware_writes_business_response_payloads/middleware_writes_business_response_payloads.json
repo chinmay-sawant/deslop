@@ -1,0 +1,14 @@
+{
+  "id": "middleware_writes_business_response_payloads",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Middleware that emits domain success payloads instead of leaving response bodies to handlers or render helpers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

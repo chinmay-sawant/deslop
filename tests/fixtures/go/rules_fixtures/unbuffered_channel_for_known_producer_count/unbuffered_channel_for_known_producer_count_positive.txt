@@ -1,0 +1,20 @@
+package rulefixtures
+
+// scenario for unbuffered_channel_for_known_producer_count: unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time
+// fixture polarity: positive; family: performance; severity: info.
+type Result struct{ Value int }
+
+func scenario690Positive(ids []int) []Result {
+	const numWorkers = 8
+	ch := make(chan Result)
+	for i := 0; i < numWorkers; i++ {
+		go func(id int) {
+			ch <- Result{Value: id * 2}
+		}(ids[i])
+	}
+	var results []Result
+	for i := 0; i < numWorkers; i++ {
+		results = append(results, <-ch)
+	}
+	return results
+}

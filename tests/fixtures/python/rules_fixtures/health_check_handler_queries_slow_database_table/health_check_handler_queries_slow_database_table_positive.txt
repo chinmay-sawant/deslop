@@ -1,0 +1,25 @@
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route("/health")
+def health_check():
+    users = db.query(User).all()
+    orders = db.query(Order).filter(Order.status == "pending").all()
+    recent_logs = db.query(AuditLog).order_by(AuditLog.created_at.desc()).limit(100).all()
+    return jsonify({
+        "status": "healthy",
+        "user_count": len(users),
+        "pending_orders": len(orders),
+        "recent_activity": len(recent_logs),
+    })
+
+@app.route("/ready")
+def readiness_check():
+    products = db.query(Product).filter(Product.stock > 0).all()
+    sessions = db.query(Session).filter(Session.active == True).all()
+    return jsonify({
+        "ready": True,
+        "available_products": len(products),
+        "active_sessions": len(sessions),
+    })

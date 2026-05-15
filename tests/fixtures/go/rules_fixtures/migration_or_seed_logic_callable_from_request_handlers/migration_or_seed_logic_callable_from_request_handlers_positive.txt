@@ -1,0 +1,29 @@
+package rulefixtures
+
+import "fmt"
+
+// scenario for migration_or_seed_logic_callable_from_request_handlers: Request handlers that can trigger migration or seed workflows.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+func RunMigrations(dsn string) error {
+	fmt.Printf("applying migrations to %s\n", dsn)
+	return nil
+}
+
+func SeedDatabase(dsn string, fixtures []string) error {
+	for _, f := range fixtures {
+		fmt.Printf("seeding fixture: %s\n", f)
+	}
+	return nil
+}
+
+func AdminHandler(dsn string, action string) error {
+	switch action {
+	case "migrate":
+		return RunMigrations(dsn)
+	case "seed":
+		return SeedDatabase(dsn, []string{"users", "products"})
+	default:
+		return fmt.Errorf("unknown action: %s", action)
+	}
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_lazy_loading_eager_template_parse_for_unused_routes: Layer: Lazy loading. Flag parsing templates for routes that may never be served in the current process mode.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule557NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario557Negative(records []Rule557NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

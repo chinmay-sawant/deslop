@@ -1,0 +1,24 @@
+struct Customer {
+    id: u64,
+    name: String,
+    email: String,
+    discount_rate: f64,
+    credit_limit: f64,
+}
+
+impl Customer {
+    fn apply_discount(&self, amount: f64) -> f64 {
+        amount * (1.0 - self.discount_rate)
+    }
+}
+
+struct Order {
+    customer_id: u64,
+    product_id: u64,
+    quantity: u32,
+    total: f64,
+}
+
+fn calculate_shipping(weight: f64, distance: f64) -> f64 {
+    weight * distance * 0.01
+}

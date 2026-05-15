@@ -1,0 +1,26 @@
+def process_orders(orders: list[dict]) -> list[dict]:
+    return [
+        {"amount": o["total"], "tax": o["total"] * 0.1}
+        for o in orders
+        if o["status"] == "pending"
+    ]
+
+
+def get_active_user_emails(users: list[dict]) -> list[str]:
+    return [u["email"] for u in users if u["is_active"]]
+
+
+def transform_data(items: list[dict]) -> list[dict]:
+    return [
+        {"id": x["id"], "score": x["score"] * 2}
+        for x in items
+        if x["score"] > 0.5
+    ]
+
+
+def extract_errors(log_lines: list[str]) -> list[str]:
+    return [
+        l.split("ERROR:")[1].strip()
+        for l in log_lines
+        if "ERROR" in l
+    ]

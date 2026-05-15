@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_default_on_required_field",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Required-looking contract fields that opt into #[serde(default)].",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

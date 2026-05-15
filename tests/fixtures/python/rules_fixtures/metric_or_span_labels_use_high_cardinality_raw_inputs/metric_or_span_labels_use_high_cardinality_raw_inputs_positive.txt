@@ -1,0 +1,23 @@
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
+
+
+def process_request(user_id: str, request_path: str, ip_address: str) -> None:
+    with tracer.start_as_current_span("process_request") as span:
+        span.set_attribute("user.id", user_id)
+        span.set_attribute("http.path", request_path)
+        span.set_attribute("client.ip", ip_address)
+        span.set_attribute("session.id", f"sess_{user_id}_{ip_address}")
+        do_work()
+
+
+def do_work() -> None:
+    pass
+
+
+def track_event(event_type: str, payload: dict) -> None:
+    with tracer.start_as_current_span("track_event") as span:
+        span.set_attribute("event.type", event_type)
+        for key, value in payload.items():
+            span.set_attribute(f"payload.{key}", str(value))

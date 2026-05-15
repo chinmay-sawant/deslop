@@ -1,0 +1,36 @@
+import logging
+import uuid
+from flask import Flask, request, g
+
+app = Flask(__name__)
+logger = logging.getLogger(__name__)
+
+@app.route("/orders", methods=["POST"])
+def create_order():
+    trace_id = request.headers.get("X-Trace-Id", str(uuid.uuid4()))
+    g.trace_id = trace_id
+    data = request.get_json()
+    order = process_order(data, trace_id)
+    logger.info("order_created", extra={
+        "trace_id": trace_id,
+        "order_id": order["id"],
+        "customer": data["customer"],
+        "total": order["total"],
+    })
+    return order, 201
+
+def process_order(data, trace_id):
+    logger.info("processing_order", extra={
+        "trace_id": trace_id,
+        "customer": data["customer"],
+    })
+    return {"id": "ORD-9001", "total": 59.99}
+
+@app.route("/orders/<order_id>")
+def get_order(order_id):
+    trace_id = g.get("trace_id", "unknown")
+    logger.info("order_fetched", extra={
+        "trace_id": trace_id,
+        "order_id": order_id,
+    })
+    return {"id": order_id, "status": "shipped"}

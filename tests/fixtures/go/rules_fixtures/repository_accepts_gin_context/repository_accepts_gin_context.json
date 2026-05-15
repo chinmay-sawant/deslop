@@ -1,0 +1,14 @@
+{
+  "id": "repository_accepts_gin_context",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repositories that accept `*gin.Context` rather than `context.Context`.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

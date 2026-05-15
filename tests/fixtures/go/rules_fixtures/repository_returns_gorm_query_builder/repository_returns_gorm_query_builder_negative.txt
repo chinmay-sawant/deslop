@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_returns_gorm_query_builder: Repositories that return partially built `*gorm.DB` chains for callers to finish.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule133NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule133NegativeService interface {
+	Run(context.Context, Rule133NegativeRecord) error
+}
+
+func scenario133Negative(ctx context.Context, service Rule133NegativeService, input Rule133NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

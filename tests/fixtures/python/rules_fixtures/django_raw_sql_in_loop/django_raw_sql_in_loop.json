@@ -1,0 +1,14 @@
+{
+  "id": "django_raw_sql_in_loop",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Django request or service code executes raw SQL inside loops instead of batching.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

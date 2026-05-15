@@ -1,0 +1,21 @@
+from functools import lru_cache
+from fastapi import Request
+
+
+@lru_cache(maxsize=1)
+def get_settings() -> dict:
+    settings = {}
+    settings["database_url"] = os.environ.get("DATABASE_URL", "sqlite:///db.sqlite")
+    settings["redis_url"] = os.environ.get("REDIS_URL", "redis://localhost")
+    settings["debug"] = os.environ.get("DEBUG", "false").lower() == "true"
+    settings["log_level"] = os.environ.get("LOG_LEVEL", "INFO")
+    settings["api_key"] = os.environ.get("API_KEY", "")
+    settings["secret"] = os.environ.get("SECRET", "")
+    return settings
+
+
+@app.get("/users")
+async def list_users(request: Request):
+    settings = get_settings()
+    db = connect(settings["database_url"])
+    return db.query("SELECT * FROM users")

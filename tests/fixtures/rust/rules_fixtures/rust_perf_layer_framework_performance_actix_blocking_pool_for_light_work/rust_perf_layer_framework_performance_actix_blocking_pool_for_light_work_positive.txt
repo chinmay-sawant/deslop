@@ -1,0 +1,28 @@
+use actix_web::{web, App, HttpServer, HttpResponse};
+
+async fn compute_handler(path: web::Path<u64>) -> HttpResponse {
+    let id = path.into_inner();
+    // BAD: blocking pool for trivial arithmetic
+    let result = web::block(move || {
+        id * 2 + 1
+    })
+    .await
+    .unwrap();
+
+    HttpResponse::Ok().body(result.to_string())
+}
+
+async fn hash_handler(input: String) -> HttpResponse {
+    // BAD: blocking pool for tiny hash
+    let hash = web::block(move || {
+        let mut h: u64 = 0;
+        for b in input.bytes() {
+            h = h.wrapping_mul(31).wrapping_add(b as u64);
+        }
+        h
+    })
+    .await
+    .unwrap();
+
+    HttpResponse::Ok().body(hash.to_string())
+}

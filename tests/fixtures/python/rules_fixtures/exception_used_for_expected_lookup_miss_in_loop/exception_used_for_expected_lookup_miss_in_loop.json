@@ -1,0 +1,14 @@
+{
+  "id": "exception_used_for_expected_lookup_miss_in_loop",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag loops that rely on exceptions for common cache or dict misses.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

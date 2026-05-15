@@ -1,0 +1,14 @@
+{
+  "id": "pandas_full_dataframe_print_in_production",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Full DataFrames are printed or displayed in production-oriented code paths.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

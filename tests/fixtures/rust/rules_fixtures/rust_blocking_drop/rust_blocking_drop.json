@@ -1,0 +1,14 @@
+{
+  "id": "rust_blocking_drop",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "A Drop implementation performs blocking work.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

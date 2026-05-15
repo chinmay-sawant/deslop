@@ -1,0 +1,31 @@
+/// # Safety
+///
+/// `ptr` must be valid for reads and properly aligned.
+pub fn read_ptr(ptr: *const u8) -> u8 {
+    // SAFETY: caller guarantees ptr is valid and aligned.
+    unsafe { *ptr }
+}
+
+/// # Safety
+///
+/// `ptr` must be valid for writes and properly aligned.
+pub fn write_ptr(ptr: *mut u8, val: u8) {
+    // SAFETY: caller guarantees ptr is valid and aligned for writes.
+    unsafe { *ptr = val; }
+}
+
+/// # Safety
+///
+/// `slice` must have at least `idx + 1` elements.
+pub fn get_unchecked(slice: &[u8], idx: usize) -> u8 {
+    // SAFETY: caller guarantees idx is within bounds.
+    unsafe { *slice.get_unchecked(idx) }
+}
+
+/// # Safety
+///
+/// `bytes` must contain valid UTF-8.
+pub fn from_utf8_unchecked(bytes: &[u8]) -> &str {
+    // SAFETY: caller guarantees bytes are valid UTF-8.
+    unsafe { std::str::from_utf8_unchecked(bytes) }
+}

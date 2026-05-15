@@ -1,0 +1,17 @@
+import pandas as pd
+import numpy as np
+
+def process_sales(df):
+    df["total"] = df["quantity"] * df["unit_price"]
+    df["tax"] = df["total"] * 0.08
+    df["discount_pct"] = np.where(df["total"] > 100, 0.1, 0.0)
+    df["final"] = df["total"] - df["total"] * df["discount_pct"]
+    return df
+
+def categorize_age(df):
+    df["age_group"] = np.select(
+        [df["age"] >= 65, df["age"] >= 18],
+        ["senior", "adult"],
+        default="minor",
+    )
+    return df

@@ -1,0 +1,14 @@
+{
+  "id": "sync_api_accepts_coroutine_object_as_regular_value",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag synchronous interfaces that can accidentally receive coroutine objects and treat them as plain values.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

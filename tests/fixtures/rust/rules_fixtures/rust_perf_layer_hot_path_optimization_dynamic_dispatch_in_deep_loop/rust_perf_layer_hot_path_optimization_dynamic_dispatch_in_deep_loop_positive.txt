@@ -1,0 +1,26 @@
+trait Processor {
+    fn process(&self, value: f64) -> f64;
+}
+
+struct DoublingProcessor;
+impl Processor for DoublingProcessor {
+    fn process(&self, value: f64) -> f64 {
+        value * 2.0
+    }
+}
+
+struct ClampingProcessor;
+impl Processor for ClampingProcessor {
+    fn process(&self, value: f64) -> f64 {
+        value.clamp(0.0, 100.0)
+    }
+}
+
+fn apply_pipeline(data: &mut [f64], processors: &[Box<dyn Processor>]) {
+    // BAD: dynamic dispatch in deep loop
+    for value in data.iter_mut() {
+        for proc in processors {
+            *value = proc.process(*value);
+        }
+    }
+}

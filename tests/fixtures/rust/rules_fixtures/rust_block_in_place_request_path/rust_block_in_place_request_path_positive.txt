@@ -1,0 +1,28 @@
+use axum::{routing::post, Json, Router};
+use serde::Deserialize;
+
+async fn process_handler(Json(payload): Json<ProcessRequest>) -> String {
+    let result = tokio::runtime::Handle::current()
+        .block_on(async { heavy_computation(&payload.data).await });
+    format!("processed: {result}")
+}
+
+async fn sync_handler(Json(payload): Json<ProcessRequest>) -> String {
+    tokio::task::block_in_place(|| {
+        std::fs::write("/tmp/output.txt", &payload.data).unwrap();
+    });
+    "done".to_string()
+}
+
+fn build_router() -> Router {
+    Router::new()
+        .route("/process", post(process_handler))
+        .route("/sync", post(sync_handler))
+}
+
+async fn heavy_computation(_data: &str) -> String { todo!() }
+
+#[derive(Deserialize)]
+struct ProcessRequest {
+    data: String,
+}

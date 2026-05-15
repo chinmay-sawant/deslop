@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for dumprequest_or_dumpresponse_in_hot_path: Request-path handlers that dump full HTTP requests or responses with httputil.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule309NegativeRecord struct {
+	Name string
+}
+
+type Rule309NegativeService interface {
+	Handle(context.Context, Rule309NegativeRecord) (Rule309NegativeRecord, error)
+}
+
+func scenario309Negative(ctx context.Context, service Rule309NegativeService, input Rule309NegativeRecord) (Rule309NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule309NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

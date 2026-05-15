@@ -1,0 +1,14 @@
+{
+  "id": "module_singleton_client_side_effect",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Eagerly constructed network, database, or cloud clients bound at module scope.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

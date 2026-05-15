@@ -1,0 +1,14 @@
+{
+  "id": "handler_calls_repository_directly_without_service",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that bypass a visible service layer and call repositories or query helpers directly for business orchestration.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

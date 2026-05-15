@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for http_server_bootstrap_without_graceful_shutdown_flow: HTTP server startup paths that lack visible signal handling and Shutdown ownership for graceful shutdown.
+// fixture polarity: negative; family: idioms; severity: warning.
+func scenario383Negative(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+	if client == nil { client = &http.Client{Timeout: time.Second} }
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil { return nil, err }
+	return client.Do(req)
+}

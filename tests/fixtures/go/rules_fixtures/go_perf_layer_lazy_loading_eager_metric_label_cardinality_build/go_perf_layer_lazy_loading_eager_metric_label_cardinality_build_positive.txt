@@ -1,0 +1,19 @@
+package rulefixtures
+
+import "fmt"
+
+// scenario for go_perf_layer_lazy_loading_eager_metric_label_cardinality_build: Layer: Lazy loading. Flag eager construction of high-cardinality metric labels before the metric is emitted.
+// fixture polarity: positive; family: performance; severity: contextual.
+var metricLabels []string
+
+func scenario556Positive(hosts []string, endpoints []string) {
+	// All host×endpoint label combinations are pre-built eagerly.
+	// For 1000 hosts × 500 endpoints = 500,000 labels, this is
+	// wasteful when only a small subset will ever be observed.
+	for _, host := range hosts {
+		for _, ep := range endpoints {
+			label := fmt.Sprintf("host=%s,endpoint=%s,method=GET", host, ep)
+			metricLabels = append(metricLabels, label)
+		}
+	}
+}

@@ -1,0 +1,14 @@
+{
+  "id": "test_support_helpers_located_inside_production_package",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test helper or factory file with _test_helpers.py or _factories.py suffix is inside the production package.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

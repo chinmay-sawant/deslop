@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for upstream_http_call_per_item_in_handler_loop: Upstream HTTP calls made per item inside handler loops.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule339NegativeRecord struct {
+	Name string
+}
+
+type Rule339NegativeService interface {
+	Handle(context.Context, Rule339NegativeRecord) (Rule339NegativeRecord, error)
+}
+
+func scenario339Negative(ctx context.Context, service Rule339NegativeService, input Rule339NegativeRecord) (Rule339NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule339NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

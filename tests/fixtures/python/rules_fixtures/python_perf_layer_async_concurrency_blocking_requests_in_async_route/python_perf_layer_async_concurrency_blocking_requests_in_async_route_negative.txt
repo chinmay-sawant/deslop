@@ -1,0 +1,24 @@
+import httpx
+from fastapi import FastAPI
+
+app = FastAPI()
+
+client = httpx.AsyncClient()
+
+
+@app.get("/users/{user_id}")
+async def get_user(user_id: int):
+    response = await client.get(f"https://api.example.com/users/{user_id}")
+    return response.json()
+
+
+@app.post("/webhook")
+async def handle_webhook(payload: dict):
+    response = await client.post("https://external.service/hook", json=payload)
+    return {"status": response.status_code}
+
+
+@app.get("/data")
+async def get_data():
+    resp = await client.get("https://data.provider.com/api/query", timeout=30)
+    return resp.json()

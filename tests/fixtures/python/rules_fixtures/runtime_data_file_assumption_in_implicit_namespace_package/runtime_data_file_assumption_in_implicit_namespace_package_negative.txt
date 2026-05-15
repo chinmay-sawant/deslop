@@ -1,0 +1,14 @@
+import importlib.resources as pkg_resources
+
+
+def load_default_config():
+    return pkg_resources.read_text("mypackage.config", "defaults.json")
+
+
+def get_template():
+    return pkg_resources.read_text("mypackage.templates", "report.html")
+
+
+def load_seed_data():
+    ref = pkg_resources.files("mypackage.data").joinpath("seeds.csv")
+    return ref.read_text().splitlines()

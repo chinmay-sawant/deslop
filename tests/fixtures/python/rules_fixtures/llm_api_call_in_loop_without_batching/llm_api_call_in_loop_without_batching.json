@@ -1,0 +1,14 @@
+{
+  "id": "llm_api_call_in_loop_without_batching",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "LLM API calls are made inside loops without batching or aggregation.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

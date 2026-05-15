@@ -1,0 +1,14 @@
+{
+  "id": "in_check_on_list_literal",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Membership tests against list literals where a tuple or set would be clearer or cheaper.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

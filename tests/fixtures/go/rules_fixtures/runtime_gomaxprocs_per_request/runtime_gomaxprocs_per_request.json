@@ -1,0 +1,14 @@
+{
+  "id": "runtime_gomaxprocs_per_request",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`runtime.GOMAXPROCS(...)` on request paths.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

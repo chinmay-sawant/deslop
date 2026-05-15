@@ -1,0 +1,14 @@
+{
+  "id": "gin_handler_contains_retry_or_backoff_orchestration",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that implement retry loops or backoff decisions inline instead of delegating to service or client layers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

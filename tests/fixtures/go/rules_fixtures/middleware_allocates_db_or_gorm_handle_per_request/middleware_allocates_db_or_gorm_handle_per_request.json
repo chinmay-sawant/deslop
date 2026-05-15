@@ -1,0 +1,14 @@
+{
+  "id": "middleware_allocates_db_or_gorm_handle_per_request",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Database or GORM connections opened inside handlers or middleware instead of process-level setup.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

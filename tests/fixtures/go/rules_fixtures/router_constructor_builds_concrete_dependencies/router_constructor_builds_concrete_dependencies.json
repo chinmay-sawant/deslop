@@ -1,0 +1,14 @@
+{
+  "id": "router_constructor_builds_concrete_dependencies",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Router setup that creates DB clients, external clients, or repositories directly instead of receiving prebuilt dependencies.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

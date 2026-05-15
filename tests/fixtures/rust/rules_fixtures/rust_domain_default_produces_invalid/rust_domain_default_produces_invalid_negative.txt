@@ -1,0 +1,49 @@
+struct EmailAddress(String);
+
+impl EmailAddress {
+    fn new(s: String) -> Result<Self, String> {
+        if s.contains('@') {
+            Ok(Self(s))
+        } else {
+            Err(format!("invalid email: {s}"))
+        }
+    }
+}
+
+struct Port(u16);
+
+impl Port {
+    fn new(v: u16) -> Result<Self, String> {
+        if v == 0 {
+            Err("port must be non-zero".into())
+        } else {
+            Ok(Self(v))
+        }
+    }
+}
+
+struct Username(String);
+
+impl Username {
+    fn new(s: String) -> Result<Self, String> {
+        if s.is_empty() {
+            Err("username cannot be empty".into())
+        } else {
+            Ok(Self(s))
+        }
+    }
+}
+
+struct Config {
+    email: EmailAddress,
+    port: Port,
+    username: Username,
+}
+
+fn make_config(email: &str, port: u16, username: &str) -> Result<Config, String> {
+    Ok(Config {
+        email: EmailAddress::new(email.into())?,
+        port: Port::new(port)?,
+        username: Username::new(username.into())?,
+    })
+}

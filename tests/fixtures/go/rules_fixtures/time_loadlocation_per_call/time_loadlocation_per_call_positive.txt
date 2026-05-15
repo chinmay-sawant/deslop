@@ -1,0 +1,20 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_loadlocation_per_call: `time.LoadLocation(...)` inside request or loop paths instead of reusing the location.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario681Positive(items []string) []time.Time {
+	var results []time.Time
+	for _, item := range items {
+		loc, err := time.LoadLocation("America/New_York")
+		if err != nil {
+			loc = time.UTC
+		}
+		_ = item
+		results = append(results, time.Now().In(loc))
+	}
+	return results
+}

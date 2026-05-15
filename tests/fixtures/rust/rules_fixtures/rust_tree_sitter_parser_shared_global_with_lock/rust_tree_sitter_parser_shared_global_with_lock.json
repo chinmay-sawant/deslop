@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_parser_shared_global_with_lock",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag global `Mutex<Parser>` or `RwLock<Parser>` shared across threads where per-thread parser ownership would avoid lock contention and parser state coupling.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

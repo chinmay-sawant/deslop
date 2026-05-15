@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_data_structure_choice_vec_remove_zero_queue",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag Vec::remove(0) queue behavior where VecDeque fits front removal.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

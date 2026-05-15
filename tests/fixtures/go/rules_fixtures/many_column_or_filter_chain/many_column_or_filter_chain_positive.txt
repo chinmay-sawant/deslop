@@ -1,0 +1,27 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for many_column_or_filter_chain: Query chains with many OR filter conditions that often scale poorly.
+// fixture polarity: positive; family: data_access; severity: contextual.
+
+type Document struct {
+	ID     int
+	Status string
+	Owner  string
+	Type   string
+	Region string
+	Tag    string
+}
+
+func FindDocuments(db *gorm.DB, filters map[string]string) ([]Document, error) {
+	var docs []Document
+	q := db.Model(&Document{})
+	for k, v := range filters {
+		q = q.Or(k+" = ?", v)
+	}
+	err := q.Find(&docs).Error
+	return docs, err
+}

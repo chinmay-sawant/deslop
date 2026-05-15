@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_memory_allocation_dataclass_asdict_in_hot_path",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag dataclasses.asdict calls in hot paths when shallow field access would suffice.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

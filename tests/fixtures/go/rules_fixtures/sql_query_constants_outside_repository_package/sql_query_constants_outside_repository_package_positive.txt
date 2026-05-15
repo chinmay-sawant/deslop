@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for sql_query_constants_outside_repository_package: Raw query templates stored in handlers, services, or DTO packages instead of repository-adjacent files.
+// fixture polarity: positive; family: architecture; severity: info.
+
+const getUsersSQL = "SELECT id, name, email, role FROM users WHERE active = $1"
+const insertUserSQL = "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id"
+const deleteUserSQL = "DELETE FROM users WHERE id = $1"
+const searchUsersSQL = "SELECT id, name FROM users WHERE name ILIKE $1"
+
+func UserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	rows, err := db.QueryContext(r.Context(), getUsersSQL, true)
+	if err != nil {
+		http.Error(w, "failed", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+	fmt.Fprint(w, `{"users":[]}`)
+}

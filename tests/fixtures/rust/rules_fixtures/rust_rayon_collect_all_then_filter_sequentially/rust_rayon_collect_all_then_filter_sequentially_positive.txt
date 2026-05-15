@@ -1,0 +1,32 @@
+use rayon::prelude::*;
+
+// BAD: collect all results then filter sequentially
+fn find_large_files(paths: &[PathBuf]) -> Vec<PathBuf> {
+    let all_files: Vec<(PathBuf, u64)> = paths.par_iter()
+        .map(|path| {
+            let metadata = std::fs::metadata(path).unwrap();
+            (path.clone(), metadata.len())
+        })
+        .collect();
+
+    // Sequential filtering after parallel collection
+    all_files.into_iter()
+        .filter(|(_, size)| *size > 1_000_000)
+        .map(|(path, _)| path)
+        .collect()
+}
+
+fn process_valid_items(items: &[Item]) -> Vec<Output> {
+    let all_outputs: Vec<Option<Output>> = items.par_iter()
+        .map(|item| {
+            if item.is_valid() {
+                Some(process(item))
+            } else {
+                None
+            }
+        })
+        .collect();
+
+    // Sequential filter after parallel map
+    all_outputs.into_iter().flatten().collect()
+}

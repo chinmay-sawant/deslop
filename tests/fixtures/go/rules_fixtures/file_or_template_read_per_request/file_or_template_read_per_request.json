@@ -1,0 +1,14 @@
+{
+  "id": "file_or_template_read_per_request",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request-path handlers that read files directly instead of using startup caching or dedicated file-serving paths.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "ci_missing_go_test_race",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repository automation that does not visibly run `go test -race` for Go code.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

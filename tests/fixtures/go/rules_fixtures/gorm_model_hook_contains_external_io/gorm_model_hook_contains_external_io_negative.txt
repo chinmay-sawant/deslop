@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_model_hook_contains_external_io: Hooks that call HTTP clients, queues, file I/O, or external side effects.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule064NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule064NegativeService interface {
+	Run(context.Context, Rule064NegativeRecord) error
+}
+
+func scenario064Negative(ctx context.Context, service Rule064NegativeService, input Rule064NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -22,6 +22,7 @@ use self::literals::{
     function_is_test_only,
 };
 use self::metrics::{build_function_fingerprint, enclosing_impl_type, function_kind};
+use crate::analysis::LanguageFunctionData;
 
 pub(crate) use evidence::is_inside_function;
 pub(crate) use literals::{leading_attributes, string_literal_value};
@@ -119,9 +120,7 @@ fn parse_function_node(
         body_text,
         local_strings: local_string_literals,
         test_summary: None,
-        go: None,
-        python: None,
-        rust: Some(crate::analysis::RustFunctionEvidence {
+        lang: LanguageFunctionData::Rust(crate::analysis::RustFunctionEvidence {
             safety_comment_lines,
             unsafe_lines,
             is_async,

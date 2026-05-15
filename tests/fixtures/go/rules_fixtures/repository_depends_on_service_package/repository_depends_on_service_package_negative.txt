@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_depends_on_service_package: Repositories that import service packages, which inverts the expected dependency flow.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule127NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule127NegativeService interface {
+	Run(context.Context, Rule127NegativeRecord) error
+}
+
+func scenario127Negative(ctx context.Context, service Rule127NegativeService, input Rule127NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for error_string_comparison: `if err.Error() == "some error"` string comparison for error checking
+// fixture polarity: negative; family: performance; severity: warning.
+type Rule479NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario479Negative(records []Rule479NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

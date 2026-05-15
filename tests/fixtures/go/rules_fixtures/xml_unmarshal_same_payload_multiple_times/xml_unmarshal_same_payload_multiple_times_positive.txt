@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"encoding/xml"
+)
+
+// scenario for xml_unmarshal_same_payload_multiple_times: The same local XML payload binding is unmarshaled into multiple targets in one function.
+// fixture polarity: positive; family: mod; severity: contextual.
+type Rule434PositiveRecordFirst struct { Name string }
+type Rule434PositiveRecordSecond struct { Count int }
+
+func scenario434Positive(payload []byte) error {
+	var first Rule434PositiveRecordFirst
+	if err := xml.Unmarshal(payload, &first); err != nil {
+		return err
+	}
+	var second Rule434PositiveRecordSecond
+	return xml.Unmarshal(payload, &second)
+}

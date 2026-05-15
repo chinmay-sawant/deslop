@@ -1,0 +1,35 @@
+use std::thread;
+
+fn fetch_data_async(url: &str) -> Result<String, Box<dyn std::error::Error>> {
+    let rt = tokio::runtime::Runtime::new()?;
+    let response = rt.block_on(async {
+        let resp = reqwest::get(url).await?;
+        let body = resp.text().await?;
+        Ok::<String, Box<dyn std::error::Error>>(body)
+    })?;
+    Ok(response)
+}
+
+fn process_in_background() {
+    thread::spawn(|| {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            let data = fetch_remote_data().await.unwrap();
+            process_data(&data);
+        });
+    });
+}
+
+fn background_task(url: String) {
+    thread::spawn(move || {
+        let result = reqwest::blocking::get(&url).unwrap();
+        let body = result.text().unwrap();
+        let _ = tokio::runtime::Runtime::new().unwrap().block_on(async {
+            save_to_db(&body).await
+        });
+    });
+}
+
+async fn fetch_remote_data() -> Result<String, Box<dyn std::error::Error>> { Ok("data".into()) }
+fn process_data(_data: &str) {}
+async fn save_to_db(_data: &str) -> Result<(), Box<dyn std::error::Error>> { Ok(()) }

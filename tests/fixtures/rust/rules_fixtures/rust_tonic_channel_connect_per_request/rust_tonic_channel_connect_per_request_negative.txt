@@ -1,0 +1,42 @@
+use tonic::transport::Channel;
+use tonic::Request;
+
+struct ServiceClient {
+    client: my_service::MyServiceClient<Channel>,
+}
+
+impl ServiceClient {
+    async fn connect(addr: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        let channel = Channel::from_shared(addr.to_string())?
+            .connect()
+            .await?;
+        let client = my_service::MyServiceClient::new(channel);
+        Ok(Self { client })
+    }
+
+    async fn say_hello(&mut self, name: &str) -> Result<String, Box<dyn std::error::Error>> {
+        let request = Request::new(my_service::HelloRequest { name: name.to_string() });
+        let response = self.client.say_hello(request).await?;
+        Ok(response.into_inner().message)
+    }
+}
+
+async fn batch_call(client: &mut ServiceClient, names: &[&str]) -> Vec<String> {
+    let mut results = Vec::new();
+    for name in names {
+        let result = client.say_hello(name).await.unwrap();
+        results.push(result);
+    }
+    results
+}
+
+mod my_service {
+    tonic::include_proto!("my_service");
+    pub struct HelloRequest { pub name: String }
+    pub struct HelloResponse { pub message: String }
+    pub struct MyServiceClient<T>(T);
+    impl<T> MyServiceClient<T> {
+        pub fn new(_t: T) -> Self { Self(_t) }
+        pub async fn say_hello(&mut self, _req: tonic::Request<HelloRequest>) -> Result<tonic::Response<HelloResponse>, tonic::Status> { todo!() }
+    }
+}

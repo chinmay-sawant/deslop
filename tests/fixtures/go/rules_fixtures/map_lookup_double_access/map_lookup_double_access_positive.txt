@@ -1,0 +1,12 @@
+package rulefixtures
+
+// scenario for map_lookup_double_access: `if _, ok := m[k]; ok { v := m[k] }` - two map lookups for the same key
+// fixture polarity: positive; family: performance; severity: warning.
+
+func scenario616Positive(m map[string]int, key string) (int, bool) {
+	if _, ok := m[key]; ok {
+		val := m[key]
+		return val, true
+	}
+	return 0, false
+}

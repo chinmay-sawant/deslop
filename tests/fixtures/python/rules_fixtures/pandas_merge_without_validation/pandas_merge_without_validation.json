@@ -1,0 +1,14 @@
+{
+  "id": "pandas_merge_without_validation",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "DataFrame merges omit validate= safeguards against multiplicative joins.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

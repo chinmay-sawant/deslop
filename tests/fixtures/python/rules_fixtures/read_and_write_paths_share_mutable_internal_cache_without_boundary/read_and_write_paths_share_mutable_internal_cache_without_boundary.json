@@ -1,0 +1,14 @@
+{
+  "id": "read_and_write_paths_share_mutable_internal_cache_without_boundary",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag read and write paths that couple through one mutable cache object.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

@@ -1,0 +1,27 @@
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct UserRecord {
+    name: String,
+    email: String,
+    password_hash: String,
+    api_secret: String,
+    session_token: String,
+}
+
+#[derive(Serialize)]
+struct AuditLog {
+    user_id: u64,
+    action: String,
+    auth_cookie: String,
+    bearer_token: String,
+}
+
+fn serialize_user(user: &UserRecord) -> String {
+    serde_json::to_string(user).unwrap()
+}
+
+fn log_event(log: &AuditLog) {
+    let json = serde_json::to_string(log).unwrap();
+    std::fs::write("audit.log", json).unwrap();
+}

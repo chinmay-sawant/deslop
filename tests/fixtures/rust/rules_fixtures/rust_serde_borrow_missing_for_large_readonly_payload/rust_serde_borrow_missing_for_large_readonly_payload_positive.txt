@@ -1,0 +1,26 @@
+use serde::Deserialize;
+
+// BAD: owned String fields for large readonly payload
+#[derive(Deserialize)]
+struct ApiResponse {
+    id: String,
+    name: String,
+    description: String,
+    tags: Vec<String>,
+    metadata: String,
+}
+
+#[derive(Deserialize)]
+struct EventPayload {
+    event_type: String,
+    source: String,
+    data: String,
+    timestamp: String,
+}
+
+fn process_response(json: &str) -> Result<ApiResponse, Error> {
+    let response: ApiResponse = serde_json::from_str(json)?;
+    // Only reads the data, never modifies
+    println!("{}: {}", response.name, response.description);
+    Ok(response)
+}

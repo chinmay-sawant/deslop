@@ -1,0 +1,14 @@
+{
+  "id": "rust_redundant_path_attribute",
+  "language": "rust",
+  "family": "module_surface",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
+  "binding_location": "src/heuristics/rust/module_surface.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_io_operations_command_spawn_per_item",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag process spawning inside item loops where batching or long-lived workers may fit.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

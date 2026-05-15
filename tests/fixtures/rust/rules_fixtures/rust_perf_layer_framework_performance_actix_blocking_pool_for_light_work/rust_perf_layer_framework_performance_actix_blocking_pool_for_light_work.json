@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_framework_performance_actix_blocking_pool_for_light_work",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag actix web::block for light synchronous work where scheduling overhead can dominate.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

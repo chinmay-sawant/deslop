@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for gin_handler_uses_global_singletons: Handlers that reach for global DB, logger, cache, or config variables instead of injected dependencies.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule053PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario053Positive(w http.ResponseWriter, r *http.Request, repo Rule053PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

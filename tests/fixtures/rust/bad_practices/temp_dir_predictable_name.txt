@@ -1,8 +1,0 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn writes_predictable_shared_temp_file() {
-        let path = std::env::temp_dir().join("deslop-test-output.txt");
-        std::fs::write(path, "ok").unwrap();
-    }
-}

@@ -1,0 +1,18 @@
+def normalize_config(config):
+    result = dict(config)
+    result["timeout"] = result.get("timeout", 30)
+    result["retries"] = result.get("retries", 3)
+    result["debug"] = result.get("debug", False)
+    return result
+
+def enrich_record(record, defaults):
+    enriched = {**defaults, **record}
+    enriched["processed"] = True
+    return enriched
+
+def apply_filters(query_params, valid_keys):
+    return {k: v for k, v in query_params.items() if k in valid_keys}
+
+def merge_settings(base, overrides):
+    merged = {**base, **overrides, "merged": True}
+    return merged

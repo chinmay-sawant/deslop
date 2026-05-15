@@ -1,0 +1,26 @@
+package rulefixtures
+
+// scenario for nested_linear_join_map_candidate: Nested-loop lookups or joins that could use a map index for O(1) access.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Product struct {
+	ID    int
+	Name  string
+	Price float64
+}
+
+type OrderLine struct {
+	ProductID int
+	Quantity  int
+}
+
+func scenario358Positive(products []Product, lines []OrderLine) []string {
+	var result []string
+	for _, line := range lines {
+		for _, p := range products {
+			if p.ID == line.ProductID {
+				result = append(result, p.Name)
+			}
+		}
+	}
+	return result
+}

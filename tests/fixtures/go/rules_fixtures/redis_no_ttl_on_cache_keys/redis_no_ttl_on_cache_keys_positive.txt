@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"context"
+	redis "github.com/redis/go-redis/v9"
+)
+
+// scenario for redis_no_ttl_on_cache_keys: `rdb.Set(ctx, key, val, 0)` or `rdb.Set(ctx, key, val, redis.KeepTTL)` for cache-like keys without TTL
+// fixture polarity: positive; family: library; severity: info.
+func scenario427Positive(ctx context.Context, client *redis.Client, key string) error {
+	if err := client.Get(ctx, key).Err(); err != nil {
+		return err
+	}
+	return client.Set(ctx, key, "value", 0).Err()
+}

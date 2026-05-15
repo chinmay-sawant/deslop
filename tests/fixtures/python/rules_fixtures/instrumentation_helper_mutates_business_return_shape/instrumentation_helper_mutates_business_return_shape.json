@@ -1,0 +1,14 @@
+{
+  "id": "instrumentation_helper_mutates_business_return_shape",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag instrumentation wrappers that alter the shape of business return values.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

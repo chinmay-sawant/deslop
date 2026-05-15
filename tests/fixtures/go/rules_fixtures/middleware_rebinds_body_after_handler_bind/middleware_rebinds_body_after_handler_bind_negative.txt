@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for middleware_rebinds_body_after_handler_bind: Middleware or helper chains that parse the request body after the main handler has already bound it.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule327NegativeRecord struct {
+	Name string
+}
+
+type Rule327NegativeService interface {
+	Handle(context.Context, Rule327NegativeRecord) (Rule327NegativeRecord, error)
+}
+
+func scenario327Negative(ctx context.Context, service Rule327NegativeService, input Rule327NegativeRecord) (Rule327NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule327NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

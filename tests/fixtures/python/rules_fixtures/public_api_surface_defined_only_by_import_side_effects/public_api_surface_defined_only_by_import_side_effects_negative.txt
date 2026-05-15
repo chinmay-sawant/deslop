@@ -1,0 +1,24 @@
+__all__ = ["create_app", "get_version", "configure_logging"]
+
+import os
+import logging
+
+from . import models
+from . import views
+from . import serializers
+
+
+def create_app():
+    os.environ.setdefault("APP_ENV", "production")
+    logging.basicConfig(level=logging.INFO)
+    app = App()
+    app.register(models, views, serializers)
+    return app
+
+
+def get_version():
+    return "1.0.0"
+
+
+def configure_logging(level: int = logging.INFO):
+    logging.basicConfig(level=level)

@@ -1,0 +1,14 @@
+{
+  "id": "sensitive_data_in_log",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`log.Printf`, `slog.Info`, `zap.String`, `logrus.WithField` calls that include variables named `password`, `secret`, `token`, `apiKey`, `creditCard`, `ssn`, or similar",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

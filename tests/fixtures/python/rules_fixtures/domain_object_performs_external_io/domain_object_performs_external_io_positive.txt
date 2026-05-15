@@ -1,0 +1,31 @@
+import json
+import subprocess
+from dataclasses import dataclass
+from typing import Optional
+
+import requests
+
+
+@dataclass
+class UserPreference:
+    user_id: int
+    theme: str = "light"
+    language: str = "en"
+
+    def sync_to_remote(self):
+        response = requests.post(
+            "https://sync.example.com/preferences",
+            json={"user_id": self.user_id, "theme": self.theme, "lang": self.language},
+            timeout=5,
+        )
+        return response.status_code == 200
+
+    def export_to_file(self, path: str):
+        with open(path, "w") as f:
+            json.dump({"user_id": self.user_id, "theme": self.theme}, f)
+
+    def notify_change(self):
+        subprocess.run(
+            ["notify-send", f"Preference changed for user {self.user_id}"],
+            check=False,
+        )

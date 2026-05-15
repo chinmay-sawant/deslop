@@ -1,0 +1,29 @@
+# file: myapp/shared/validators.py
+def validate_amount(amount: float) -> bool:
+    return amount > 0 and amount < 1_000_000
+
+
+def format_id(prefix: str, id_value: int) -> str:
+    return f"{prefix}-{id_value:06d}"
+
+
+# file: myapp/orders/service.py
+from myapp.shared.validators import validate_amount, format_id
+
+
+def create_order(user_id: int, amount: float) -> dict:
+    if not validate_amount(amount):
+        raise ValueError("Invalid amount")
+    order_id = format_id("ORD", user_id)
+    return {"order_id": order_id, "amount": amount}
+
+
+# file: myapp/payments/service.py
+from myapp.shared.validators import validate_amount, format_id
+
+
+def process_payment(order_id: int, amount: float) -> dict:
+    if not validate_amount(amount):
+        raise ValueError("Invalid amount")
+    payment_id = format_id("PAY", order_id)
+    return {"payment_id": payment_id, "amount": amount}

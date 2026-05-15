@@ -1,0 +1,14 @@
+{
+  "id": "rust_ignore_walk_error_silently_discarded",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag walk result handling that uses `filter_map(Result::ok)` or `ok()?` without recording ignored traversal errors.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

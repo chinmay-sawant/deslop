@@ -1,0 +1,35 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+
+	"gorm.io/gorm"
+)
+
+// scenario for order_by_clause_literals_scattered_across_layers: Raw sort expressions duplicated in handlers and services instead of query helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+type Order struct {
+	ID        int    `gorm:"primaryKey"`
+	Status    string `gorm:"column:status"`
+	CreatedAt int64  `gorm:"column:created_at"`
+}
+
+type OrderHandler struct {
+	db *gorm.DB
+}
+
+func (h *OrderHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
+	var orders []Order
+	h.db.Order("created_at DESC").Find(&orders)
+}
+
+type OrderRepo struct {
+	db *gorm.DB
+}
+
+func (repo *OrderRepo) FindAll(ctx context.Context) ([]Order, error) {
+	var orders []Order
+	err := repo.db.WithContext(ctx).Order("created_at DESC").Find(&orders).Error
+	return orders, err
+}

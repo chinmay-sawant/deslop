@@ -1,0 +1,14 @@
+{
+  "id": "repeated_large_map_literal_response_construction",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Large map-literal response assembly on hot routes where a stable typed response would be cheaper.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

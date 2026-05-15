@@ -1,0 +1,14 @@
+{
+  "id": "response_dto_outside_transport_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Response envelope structs that live in persistence or repository packages instead of transport or API contract packages.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_error_handling_cost_exception_used_for_loop_control",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag exceptions used for ordinary loop control in hot paths.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for table_name_override_or_scope_logic_duplicated_across_models: Repeated table-name or model-scope customization across many model files without a shared convention.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule198NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule198NegativeService interface {
+	Run(context.Context, Rule198NegativeRecord) error
+}
+
+func scenario198Negative(ctx context.Context, service Rule198NegativeService, input Rule198NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

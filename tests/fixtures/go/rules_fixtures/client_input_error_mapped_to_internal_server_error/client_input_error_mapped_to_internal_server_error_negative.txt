@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for client_input_error_mapped_to_internal_server_error: Request parsing or binding errors that are translated into `500` responses instead of client-error status codes.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule013NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule013NegativeService interface {
+	Run(context.Context, Rule013NegativeRecord) error
+}
+
+func scenario013Negative(ctx context.Context, service Rule013NegativeService, input Rule013NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,22 @@
+import csv
+
+def write_results_to_csv(path: str, results: list[dict]):
+    with open(path, "w", newline="") as f:
+        for row in results:
+            f.write(",".join(str(v) for v in row.values()) + "\n")
+
+def append_log_entries(path: str, entries: list[str]):
+    with open(path, "a") as f:
+        for entry in entries:
+            f.write(entry + "\n")
+
+def export_report(path: str, records: list[dict]):
+    with open(path, "w") as f:
+        for record in records:
+            line = f"{record['id']},{record['name']},{record['value']}\n"
+            f.write(line)
+
+def flush_metrics(path: str, metrics: dict):
+    with open(path, "a") as f:
+        for key, value in metrics.items():
+            f.write(f"{key}={value}\n")

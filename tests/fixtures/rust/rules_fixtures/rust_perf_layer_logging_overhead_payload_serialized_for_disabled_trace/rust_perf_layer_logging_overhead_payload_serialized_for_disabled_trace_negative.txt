@@ -1,0 +1,29 @@
+use tracing::{trace, Level};
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct Payload {
+    records: Vec<Record>,
+    metadata: Metadata,
+}
+
+#[derive(Serialize)]
+struct Record {
+    id: u64,
+    values: Vec<f64>,
+}
+
+#[derive(Serialize)]
+struct Metadata {
+    source: String,
+    timestamp: u64,
+}
+
+fn process_event(payload: &Payload) {
+    // GOOD: use tracing's lazy evaluation — serialize only if enabled
+    trace!(
+        records = payload.records.len(),
+        source = %payload.metadata.source,
+        "processing event"
+    );
+}

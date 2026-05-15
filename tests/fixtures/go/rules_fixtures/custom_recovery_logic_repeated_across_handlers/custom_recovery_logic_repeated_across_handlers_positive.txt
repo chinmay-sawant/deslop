@@ -1,0 +1,30 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
+
+// scenario for custom_recovery_logic_repeated_across_handlers: Repeated recover or panic-to-response logic inside handlers instead of centralized recovery middleware.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func OrderHandler(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			log.Printf("panic recovered in OrderHandler: %v", rec)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+	}()
+	fmt.Fprint(w, "order processed")
+}
+
+func PaymentHandler(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			log.Printf("panic recovered in PaymentHandler: %v", rec)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+	}()
+	fmt.Fprint(w, "payment processed")
+}

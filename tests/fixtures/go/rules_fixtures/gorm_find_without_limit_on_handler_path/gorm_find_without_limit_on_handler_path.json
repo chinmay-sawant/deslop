@@ -1,0 +1,14 @@
+{
+  "id": "gorm_find_without_limit_on_handler_path",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request-path GORM Find(...) chains with no visible Limit(...) step.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

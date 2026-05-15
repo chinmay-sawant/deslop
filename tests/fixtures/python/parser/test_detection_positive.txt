@@ -1,3 +1,0 @@
-class TestClient:
-    def test_fetch(self):
-        self.assertEqual(fetch(), 1)

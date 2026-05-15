@@ -1,0 +1,27 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for date_or_cast_wrapped_indexed_column: DATE/CAST wrapping indexed columns in WHERE clauses, preventing index usage.
+// fixture polarity: positive; family: data_access; severity: contextual.
+
+type Order struct {
+	ID        int
+	CreatedAt string
+	Amount    string
+}
+
+func FindOrdersToday(db *gorm.DB) ([]Order, error) {
+	var orders []Order
+	err := db.Where("DATE(created_at) = ?", "2026-05-09").
+		Order("id").Find(&orders).Error
+	return orders, err
+}
+
+func FindOrdersByAmount(db *gorm.DB, threshold int) ([]Order, error) {
+	var orders []Order
+	err := db.Where("CAST(amount AS INT) > ?", threshold).Find(&orders).Error
+	return orders, err
+}

@@ -1,0 +1,11 @@
+fn truncate_to_u32(value: u64) -> u32 {
+    value as u32
+}
+
+fn f64_to_f32(value: f64) -> f32 {
+    value as f32
+}
+
+fn i64_to_i16(value: i64) -> i16 {
+    value as i16
+}

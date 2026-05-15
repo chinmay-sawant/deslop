@@ -1,0 +1,20 @@
+fn process_items(items: &[Item]) -> Vec<Output> {
+    let mut results = Vec::with_capacity(items.len());
+    for item in items {
+        results.push(transform(item));
+    }
+    results
+}
+
+fn fast_lookup(table: &[Entry], key: u64) -> Option<&Entry> {
+    let idx = (key % table.len() as u64) as usize;
+    table.get(idx)
+}
+
+fn build_index(records: &[Record]) -> HashMap<u64, usize> {
+    records
+        .iter()
+        .enumerate()
+        .map(|(i, r)| (r.id, i))
+        .collect::<HashMap<_, _>>()
+}

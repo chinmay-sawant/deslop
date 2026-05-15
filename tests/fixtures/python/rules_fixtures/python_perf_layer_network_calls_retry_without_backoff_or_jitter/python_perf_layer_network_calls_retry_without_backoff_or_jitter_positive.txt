@@ -1,0 +1,28 @@
+import time
+import random
+import requests
+
+
+def fetch_with_retry(url: str, max_retries: int = 5) -> dict:
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException:
+            time.sleep(1)
+    raise RuntimeError(f"Failed after {max_retries} retries")
+
+
+def post_with_retry(url: str, payload: dict, max_retries: int = 3) -> dict:
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(url, json=payload, timeout=10)
+            if response.status_code == 429:
+                time.sleep(2)
+                continue
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException:
+            time.sleep(1)
+    raise RuntimeError("Failed after retries")

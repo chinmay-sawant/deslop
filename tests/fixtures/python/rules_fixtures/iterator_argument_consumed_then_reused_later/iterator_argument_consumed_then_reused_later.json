@@ -1,0 +1,14 @@
+{
+  "id": "iterator_argument_consumed_then_reused_later",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions that exhaust an iterator and later treat it as if it were reusable data.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

@@ -1,0 +1,14 @@
+use std::collections::HashMap;
+
+struct UserStore {
+    users: HashMap<String, User>,
+}
+
+struct SessionStore {
+    sessions: HashMap<String, Session>,
+}
+
+struct AppState {
+    users: tokio::sync::RwLock<UserStore>,
+    sessions: tokio::sync::RwLock<SessionStore>,
+}

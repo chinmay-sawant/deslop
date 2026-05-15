@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for unnecessary_map_for_set_of_ints: `map[int]bool` or `map[int]struct{}` used as a set for small dense integer ranges
+// fixture polarity: negative; family: performance; severity: info.
+type Rule691NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario691Negative(records []Rule691NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

@@ -1,0 +1,43 @@
+from dataclasses import dataclass, asdict
+from datetime import datetime
+from typing import Optional
+
+
+@dataclass(frozen=True)
+class UserResponse:
+    id: int
+    name: str
+    email: str
+    role: str
+    created_at: datetime
+
+    def to_dict(self) -> dict:
+        return {**asdict(self), "created_at": self.created_at.isoformat()}
+
+
+@dataclass(frozen=True)
+class AdminUserResponse(UserResponse):
+    last_login: Optional[datetime] = None
+
+    def to_dict(self) -> dict:
+        base = super().to_dict()
+        if self.last_login:
+            base["last_login"] = self.last_login.isoformat()
+        return base
+
+
+def create_user_response(user) -> UserResponse:
+    return UserResponse(
+        id=user.id, name=user.name, email=user.email, role=user.role, created_at=user.created_at
+    )
+
+
+def create_admin_user_response(user) -> AdminUserResponse:
+    return AdminUserResponse(
+        id=user.id,
+        name=user.name,
+        email=user.email,
+        role=user.role,
+        created_at=user.created_at,
+        last_login=user.last_login,
+    )

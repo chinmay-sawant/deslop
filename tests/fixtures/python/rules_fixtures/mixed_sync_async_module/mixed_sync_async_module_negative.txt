@@ -1,0 +1,27 @@
+import aiohttp
+import asyncio
+
+
+async def fetch_user(user_id: int) -> dict:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://api.example.com/users/{user_id}") as resp:
+            return await resp.json()
+
+
+async def process_batch(items: list) -> list:
+    tasks = [fetch_user(item["id"]) for item in items]
+    return await asyncio.gather(*tasks)
+
+
+async def save_result(data: dict) -> None:
+    import aiofiles
+    import json
+
+    async with aiofiles.open("output.json", "w") as f:
+        await f.write(json.dumps(data))
+
+
+def main():
+    items = [{"id": 1}, {"id": 2}, {"id": 3}]
+    results = asyncio.run(process_batch(items))
+    asyncio.run(save_result(results))

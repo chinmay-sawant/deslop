@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_executes_raw_sql_inline: Handlers that execute literal SQL or repository-unaware raw queries.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule044NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule044NegativeService interface {
+	Run(context.Context, Rule044NegativeRecord) error
+}
+
+func scenario044Negative(ctx context.Context, service Rule044NegativeService, input Rule044NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

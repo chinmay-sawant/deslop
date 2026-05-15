@@ -1,0 +1,33 @@
+use std::fs;
+use std::path::PathBuf;
+
+// BAD: collect and sort before filtering by type/extension
+fn find_rust_files(dir: &Path) -> Vec<PathBuf> {
+    let mut entries: Vec<PathBuf> = fs::read_dir(dir)
+        .unwrap()
+        .filter_map(|e| e.ok())
+        .map(|e| e.path())
+        .collect();
+
+    entries.sort();
+
+    entries.into_iter()
+        .filter(|p| p.extension().map_or(false, |ext| ext == "rs"))
+        .collect()
+}
+
+fn list_images(dir: &Path) -> Vec<PathBuf> {
+    let mut all_files: Vec<PathBuf> = fs::read_dir(dir)
+        .unwrap()
+        .filter_map(|e| e.ok())
+        .map(|e| e.path())
+        .collect();
+
+    all_files.sort_by(|a, b| a.file_name().cmp(&b.file_name()));
+
+    all_files.into_iter()
+        .filter(|p| {
+            matches!(p.extension().and_then(|e| e.to_str()), Some("png" | "jpg" | "gif"))
+        })
+        .collect()
+}

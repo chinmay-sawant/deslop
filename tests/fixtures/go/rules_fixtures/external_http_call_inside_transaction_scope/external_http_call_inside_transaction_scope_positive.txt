@@ -1,0 +1,33 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"net/http"
+)
+
+// scenario for external_http_call_inside_transaction_scope: Network calls performed while a DB transaction is open.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule032PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario032Positive(ctx context.Context, repo Rule032PositiveRecord, paymentID int) error {
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	resp, err := http.Get("https://api.payment-gateway.com/verify?id=" + http.StatusText(paymentID))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil
+	}
+
+	return tx.Commit()
+}

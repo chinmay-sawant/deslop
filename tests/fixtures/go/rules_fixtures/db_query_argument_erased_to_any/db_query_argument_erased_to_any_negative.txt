@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for db_query_argument_erased_to_any: Concrete DB arguments erased to `any` or `interface{}` immediately before query execution.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule023NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule023NegativeService interface {
+	Run(context.Context, Rule023NegativeRecord) error
+}
+
+func scenario023Negative(ctx context.Context, service Rule023NegativeService, input Rule023NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

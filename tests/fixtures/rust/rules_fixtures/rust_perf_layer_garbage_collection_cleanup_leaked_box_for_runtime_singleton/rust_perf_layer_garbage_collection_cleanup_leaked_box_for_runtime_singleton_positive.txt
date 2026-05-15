@@ -1,0 +1,18 @@
+struct RuntimeConfig {
+    db_url: String,
+    pool_size: u32,
+}
+
+static mut GLOBAL_CONFIG: Option<&'static RuntimeConfig> = None;
+
+fn init_runtime(config: RuntimeConfig) {
+    // BAD: Box::leak to create a 'static singleton
+    let leaked: &'static RuntimeConfig = Box::leak(Box::new(config));
+    unsafe {
+        GLOBAL_CONFIG = Some(leaked);
+    }
+}
+
+fn get_config() -> &'static RuntimeConfig {
+    unsafe { GLOBAL_CONFIG.unwrap() }
+}

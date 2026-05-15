@@ -1,0 +1,23 @@
+from datetime import datetime, timezone
+
+def build_audit_record(event):
+    now = datetime.now(timezone.utc).isoformat()
+    return {
+        "event_id": event["id"],
+        "type": event["type"],
+        "created_at": now,
+        "updated_at": now,
+        "processed_at": now,
+        "data": event["payload"],
+    }
+
+def create_batch_records(items):
+    now = datetime.now(timezone.utc).isoformat()
+    records = []
+    for item in items:
+        records.append({
+            "name": item["name"],
+            "created_at": now,
+            "expires_at": now,
+        })
+    return records

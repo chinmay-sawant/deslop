@@ -1,0 +1,14 @@
+{
+  "id": "over_abstracted_wrapper",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Ceremonial wrapper-style or tiny data-container classes that add little beyond storing constructor state.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

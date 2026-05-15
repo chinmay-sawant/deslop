@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus"
+)
+
+// scenario for prometheus_counter_created_per_request: `prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions
+// fixture polarity: positive; family: library; severity: warning.
+func MetricsHandler(w http.ResponseWriter, r *http.Request) {
+	requestCounter := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "http_requests_total",
+		Help: "Total number of HTTP requests handled",
+	})
+	requestCounter.Inc()
+
+	errorCounter := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "http_errors_total",
+		Help: "Total number of HTTP errors",
+	})
+	errorCounter.Inc()
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("ok"))
+}

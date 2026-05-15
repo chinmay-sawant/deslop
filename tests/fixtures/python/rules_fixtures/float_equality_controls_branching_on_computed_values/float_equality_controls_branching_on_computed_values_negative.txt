@@ -1,0 +1,24 @@
+import math
+
+def compute_discount(price, rate):
+    discounted = price * (1.0 - rate)
+    if math.isclose(discounted, 0.0, abs_tol=1e-9):
+        return "free"
+    elif math.isclose(discounted, 9.99, abs_tol=1e-9):
+        return "special"
+    return "normal"
+
+def check_balance(account):
+    interest = account["balance"] * 0.05
+    new_balance = account["balance"] + interest
+    if math.isclose(new_balance, 10000.0, rel_tol=1e-9):
+        send_congratulations(account["owner"])
+    return new_balance
+
+def classify_measurement(raw_value):
+    adjusted = raw_value * 2.54 + 0.001
+    if abs(adjusted - 100.0) < 1e-6:
+        return "metric"
+    elif abs(adjusted - 50.0) < 1e-6:
+        return "half"
+    return "other"

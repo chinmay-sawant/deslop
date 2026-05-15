@@ -1,0 +1,14 @@
+{
+  "id": "rust_toml_manifest_parse_without_size_limit",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag manifest/config parsing helpers that read and parse TOML without a byte limit.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

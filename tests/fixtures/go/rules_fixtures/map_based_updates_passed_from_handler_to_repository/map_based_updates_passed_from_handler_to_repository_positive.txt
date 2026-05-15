@@ -1,0 +1,42 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for map_based_updates_passed_from_handler_to_repository: Update maps built from request payloads and passed through layers without typed ownership.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type UserRepository struct{}
+
+func (r *UserRepository) UpdateFields(id int, fields map[string]interface{}) error {
+	return nil
+}
+
+type UpdateUserRequest struct {
+	Name  *string `json:"name"`
+	Email *string `json:"email"`
+	Age   *int    `json:"age"`
+}
+
+func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
+	var req UpdateUserRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	updates := map[string]interface{}{}
+	if req.Name != nil {
+		updates["name"] = *req.Name
+	}
+	if req.Email != nil {
+		updates["email"] = *req.Email
+	}
+	if req.Age != nil {
+		updates["age"] = *req.Age
+	}
+
+	repo := &UserRepository{}
+	repo.UpdateFields(42, updates)
+
+	json.NewEncoder(w).Encode(map[string]string{"status": "updated"})
+}

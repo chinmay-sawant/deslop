@@ -1,0 +1,24 @@
+from typing import Tuple
+
+
+def get_user_profile(user_id: int) -> Tuple[str, str, int, bool]:
+    user = fetch_user(user_id)
+    return user.name, user.email, user.age, user.is_active
+
+
+def process_order(order_id: int):
+    name, email, age, active = get_user_profile(order_id)
+    if not active:
+        return
+    send_email(email, name)
+
+
+def fetch_metrics() -> Tuple[float, float, float, float, float]:
+    return 0.95, 120.5, 45.2, 300, 0.02
+
+
+def analyze_performance():
+    p50, p95, p99, throughput, error_rate = fetch_metrics()
+    if error_rate > 0.01:
+        alert(f"High error rate: {error_rate}")
+    report_latency(p50, p95, p99)

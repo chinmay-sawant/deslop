@@ -1,0 +1,14 @@
+{
+  "id": "append_then_sort_each_iteration",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "A collection is appended to and then sorted on each iteration instead of sorting once after accumulation.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

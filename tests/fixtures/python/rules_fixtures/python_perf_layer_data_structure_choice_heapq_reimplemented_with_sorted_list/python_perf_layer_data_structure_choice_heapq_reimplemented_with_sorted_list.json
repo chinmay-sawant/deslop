@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_data_structure_choice_heapq_reimplemented_with_sorted_list",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag sorted-list priority queues where heapq avoids repeated full ordering.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

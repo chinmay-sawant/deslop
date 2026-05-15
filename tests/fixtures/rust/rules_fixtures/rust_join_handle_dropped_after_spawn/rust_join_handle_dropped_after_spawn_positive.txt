@@ -1,0 +1,11 @@
+use std::thread;
+
+fn fire_and_forget(tasks: Vec<String>) {
+    for task in tasks {
+        thread::spawn(move || {
+            process(task);
+        });
+    }
+}
+
+fn process(_s: String) {}

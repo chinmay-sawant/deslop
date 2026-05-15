@@ -1,0 +1,14 @@
+{
+  "id": "rust_unsafe_get_unchecked",
+  "language": "rust",
+  "family": "unsafe_soundness",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Unsafe use of get_unchecked without proof of bounds invariants.",
+  "binding_location": "src/heuristics/rust/unsafe_soundness.rs"
+}

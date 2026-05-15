@@ -1,0 +1,49 @@
+use std::collections::HashMap;
+
+struct AppState {
+    cache: HashMap<String, CachedEntry>,
+    config: Config,
+    metrics: Metrics,
+}
+
+struct CachedEntry {
+    data: Vec<u8>,
+    timestamp: u64,
+}
+
+struct Config {
+    timeout: u64,
+    max_retries: u32,
+}
+
+struct Metrics {
+    hits: u64,
+    misses: u64,
+}
+
+fn process_batch(state: &AppState, keys: &[String]) -> Vec<Vec<u8>> {
+    let mut results = Vec::new();
+    for key in keys {
+        let cloned = state.clone();
+        if let Some(entry) = cloned.cache.get(key) {
+            results.push(entry.data.clone());
+        }
+    }
+    results
+}
+
+impl Clone for AppState {
+    fn clone(&self) -> Self {
+        Self {
+            cache: self.cache.clone(),
+            config: Config {
+                timeout: self.config.timeout,
+                max_retries: self.config.max_retries,
+            },
+            metrics: Metrics {
+                hits: self.metrics.hits,
+                misses: self.metrics.misses,
+            },
+        }
+    }
+}

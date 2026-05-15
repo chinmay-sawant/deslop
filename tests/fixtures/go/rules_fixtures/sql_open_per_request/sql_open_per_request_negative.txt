@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+)
+
+// scenario for sql_open_per_request: database/sql pools opened on request paths instead of process-level setup.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule298NegativeRecord struct { ID int }
+
+func scenario298Negative(ctx context.Context, db *sql.DB, ids []int) (*sql.Rows, error) {
+	return db.QueryContext(ctx, "select id from orders where account_id = any($1) limit 100", ids)
+}

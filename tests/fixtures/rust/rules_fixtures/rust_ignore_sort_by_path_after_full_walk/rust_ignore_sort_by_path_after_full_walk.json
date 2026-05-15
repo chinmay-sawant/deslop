@@ -1,0 +1,14 @@
+{
+  "id": "rust_ignore_sort_by_path_after_full_walk",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag full repository path collection followed by sort before processing where deterministic output could be produced after finding collection instead.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

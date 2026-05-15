@@ -1,0 +1,27 @@
+def process_int(value: int, mode: str) -> int:
+    multipliers = {"fast": 2, "slow": 3, "verbose": 4}
+    multiplier = multipliers.get(mode, 1)
+    if mode == "verbose":
+        print(f"Processing int: {value}")
+    return value * multiplier
+
+def process_string(value: str, mode: str) -> str:
+    transforms = {"fast": str.upper, "slow": str.lower, "verbose": str.title}
+    transform = transforms.get(mode, str)
+    if mode == "verbose":
+        print(f"Processing str: {value}")
+    return transform(value)
+
+def process_list(value: list, mode: str):
+    if mode == "verbose":
+        print(f"Processing list: {value}")
+    ops = {"fast": len, "slow": sum, "verbose": sorted}
+    op = ops.get(mode, lambda x: x)
+    return op(value)
+
+def process_value(value, mode: str):
+    handlers = {int: process_int, str: process_string, list: process_list}
+    handler = handlers.get(type(value))
+    if handler is not None:
+        return handler(value, mode)
+    return value

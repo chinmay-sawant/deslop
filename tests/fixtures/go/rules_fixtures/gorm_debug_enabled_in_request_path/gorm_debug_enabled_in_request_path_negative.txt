@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_debug_enabled_in_request_path: GORM debug logging enabled on request paths.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule265NegativeRecord struct { ID int }
+
+func scenario265Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule265NegativeRecord{}).Error
+}

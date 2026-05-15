@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for logger_created_per_request: `zap.NewProduction()` or `logrus.New()` inside handler functions
+// fixture polarity: negative; family: library; severity: warning.
+type Rule417NegativeRecord struct {
+	client *http.Client
+}
+
+func scenario417Negative(ctx context.Context, holder Rule417NegativeRecord, url string) (*http.Response, error) {
+	client := holder.client
+	if client == nil {
+		client = &http.Client{Timeout: 2 * time.Second}
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return client.Do(req)
+}

@@ -1,0 +1,14 @@
+{
+  "id": "gin_logger_debug_body_logging_on_hot_routes",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Verbose body or payload logging observed on likely high-volume Gin routes.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "commit_or_rollback_split_across_functions_without_owner",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Transaction end-state logic spread across helper functions with unclear ownership.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

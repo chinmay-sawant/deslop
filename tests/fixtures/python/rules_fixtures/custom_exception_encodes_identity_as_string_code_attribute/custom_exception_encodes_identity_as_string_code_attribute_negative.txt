@@ -1,0 +1,36 @@
+class PaymentError(Exception):
+    pass
+
+
+class InsufficientFundsError(PaymentError):
+    pass
+
+
+class CardExpiredError(PaymentError):
+    pass
+
+
+class ValidationError(Exception):
+    def __init__(self, field: str, message: str):
+        self.field = field
+        super().__init__(message)
+
+
+class APIError(Exception):
+    pass
+
+
+class NotFoundError(APIError):
+    pass
+
+
+class UnauthorizedError(APIError):
+    pass
+
+
+try:
+    process_payment(order)
+except InsufficientFundsError:
+    notify_user(user, "Payment failed")
+except CardExpiredError:
+    prompt_update_card(user)

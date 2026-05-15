@@ -1,0 +1,24 @@
+struct DatabaseConnection {
+    path: String,
+}
+
+impl DatabaseConnection {
+    fn close(self) -> std::io::Result<()> {
+        // GOOD: explicit async-friendly close method instead of Drop I/O
+        let mut file = std::fs::File::create(format!("{}.shutdown", self.path))?;
+        std::io::Write::write_all(&mut file, b"connection closed")?;
+        file.sync_all()?;
+        Ok(())
+    }
+}
+
+impl Drop for DatabaseConnection {
+    fn drop(&mut self) {
+        // GOOD: Drop only releases memory, no I/O
+    }
+}
+
+struct Session {
+    conn: DatabaseConnection,
+    data: Vec<u8>,
+}

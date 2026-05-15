@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+)
+
+// scenario for go_perf_layer_serialization_json_marshal_for_deep_equal: Layer: Serialization and deserialization. Flag json.Marshal used only to compare structures or build equality keys.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule592NegativeRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario592Negative(writer io.Writer, value Rule592NegativeRecord) error {
+	return json.NewEncoder(writer).Encode(value)
+}

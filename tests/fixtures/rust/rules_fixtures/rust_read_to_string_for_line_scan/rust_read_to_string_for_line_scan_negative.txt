@@ -1,0 +1,28 @@
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
+// GOOD: stream lines with BufReader
+fn count_matching_lines(path: &str, pattern: &str) -> usize {
+    let file = File::open(path).unwrap();
+    let reader = BufReader::new(file);
+    reader.lines()
+        .filter_map(|line| line.ok())
+        .filter(|line| line.contains(pattern))
+        .count()
+}
+
+fn find_first_error(path: &str) -> Option<String> {
+    let file = File::open(path).unwrap();
+    let reader = BufReader::new(file);
+    reader.lines()
+        .filter_map(|line| line.ok())
+        .find(|line| line.contains("ERROR"))
+}
+
+fn check_config_valid(path: &str) -> bool {
+    let file = File::open(path).unwrap();
+    let reader = BufReader::new(file);
+    reader.lines()
+        .filter_map(|line| line.ok())
+        .any(|line| line.starts_with("version ="))
+}

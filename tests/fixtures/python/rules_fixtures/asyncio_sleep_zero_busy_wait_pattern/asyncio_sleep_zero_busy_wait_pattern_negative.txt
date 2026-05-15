@@ -1,0 +1,43 @@
+import asyncio
+
+
+async def poll_for_result(check_fn, timeout: float = 30.0):
+    event = asyncio.Event()
+
+    async def _watcher():
+        while True:
+            result = check_fn()
+            if result is not None:
+                event.set()
+                return
+            await asyncio.sleep(0.5)
+
+    watcher_task = asyncio.create_task(_watcher())
+    try:
+        await asyncio.wait_for(event.wait(), timeout=timeout)
+        return check_fn()
+    except asyncio.TimeoutError:
+        return None
+    finally:
+        watcher_task.cancel()
+
+
+async def wait_for_connection(connector):
+    event = asyncio.Event()
+
+    def on_connect():
+        event.set()
+
+    connector.on_connect(on_connect)
+    await event.wait()
+
+
+async def drain_queue(queue: asyncio.Queue):
+    items = []
+    while True:
+        try:
+            item = queue.get_nowait()
+            items.append(item)
+        except asyncio.QueueEmpty:
+            break
+    return items

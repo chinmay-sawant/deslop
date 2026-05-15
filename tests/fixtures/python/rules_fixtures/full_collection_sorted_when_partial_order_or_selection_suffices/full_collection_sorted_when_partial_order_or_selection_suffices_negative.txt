@@ -1,0 +1,16 @@
+import heapq
+
+def get_top_scorer(students):
+    return max(students, key=lambda s: s["score"])
+
+def get_cheapest_product(products):
+    return min(products, key=lambda p: p["price"])
+
+def find_latest_order(orders):
+    return max(orders, key=lambda o: o["created_at"])
+
+def get_worst_performer(employees):
+    return min(employees, key=lambda e: e["rating"])
+
+def get_five_recent_logs(logs):
+    return heapq.nsmallest(5, logs, key=lambda l: l["timestamp"])

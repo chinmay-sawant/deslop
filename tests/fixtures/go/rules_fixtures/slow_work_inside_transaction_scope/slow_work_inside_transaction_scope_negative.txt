@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for slow_work_inside_transaction_scope: Loop-heavy or slow work performed while a transaction appears open.
+// fixture polarity: negative; family: idioms; severity: warning.
+func scenario397Negative(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+	if client == nil { client = &http.Client{Timeout: time.Second} }
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil { return nil, err }
+	return client.Do(req)
+}

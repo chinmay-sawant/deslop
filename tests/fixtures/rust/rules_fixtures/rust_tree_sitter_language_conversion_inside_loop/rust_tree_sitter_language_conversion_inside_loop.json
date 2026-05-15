@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_language_conversion_inside_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated `tree_sitter_rust::LANGUAGE.into()` or equivalent grammar conversion in inner loops instead of caching the converted language.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

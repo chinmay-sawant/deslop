@@ -1,0 +1,29 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	gin "github.com/gin-gonic/gin"
+)
+
+// scenario for get_raw_data_then_should_bindjson_duplicate_body: Gin handlers that read GetRawData() and later bind JSON from the same request body.
+// fixture polarity: positive; family: gin; severity: contextual.
+type Rule315PositiveInput struct {
+	Name string `json:"name"`
+}
+
+func scenario315Positive(c *gin.Context) {
+	raw, err := c.GetRawData()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	_ = raw
+
+	var input Rule315PositiveInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, input)
+}

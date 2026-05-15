@@ -1,0 +1,14 @@
+{
+  "id": "rust_result_ignored_with_let_underscore",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `let _ = fallible_call()` outside cleanup, telemetry, or best-effort contexts.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

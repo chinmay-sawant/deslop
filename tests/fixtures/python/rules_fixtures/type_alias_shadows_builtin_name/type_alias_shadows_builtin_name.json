@@ -1,0 +1,14 @@
+{
+  "id": "type_alias_shadows_builtin_name",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Type alias variable assigned a name that shadows a Python builtin such as list, dict, or type.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

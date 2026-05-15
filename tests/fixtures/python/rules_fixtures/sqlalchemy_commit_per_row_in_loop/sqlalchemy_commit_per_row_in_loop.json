@@ -1,0 +1,14 @@
+{
+  "id": "sqlalchemy_commit_per_row_in_loop",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "SQLAlchemy sessions commit inside loops instead of batching changes and committing once.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

@@ -1,0 +1,31 @@
+use serde::Deserialize;
+use std::fs;
+
+#[derive(Deserialize)]
+struct Manifest {
+    package: Package,
+}
+
+#[derive(Deserialize)]
+struct Package {
+    name: String,
+    version: String,
+}
+
+fn parse_manifest(path: &str) -> Result<Manifest, Box<dyn std::error::Error>> {
+    let data = fs::read_to_string(path)?;
+    let manifest: Manifest = toml::from_str(&data)?;
+    Ok(manifest)
+}
+
+fn load_cargo_toml(path: &str) -> Result<toml::Value, Box<dyn std::error::Error>> {
+    let data = fs::read_to_string(path)?;
+    let value: tol::Value = toml::from_str(&data)?;
+    Ok(value)
+}
+
+fn read_and_parse_toml(path: &str) -> Result<Manifest, Box<dyn std::error::Error>> {
+    let content = std::fs::read_to_string(path)?;
+    let manifest: Manifest = toml::from_str(&content)?;
+    Ok(manifest)
+}

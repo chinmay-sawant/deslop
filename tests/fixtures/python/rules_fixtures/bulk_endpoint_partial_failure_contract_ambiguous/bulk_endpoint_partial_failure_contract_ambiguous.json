@@ -1,0 +1,14 @@
+{
+  "id": "bulk_endpoint_partial_failure_contract_ambiguous",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Bulk endpoint processes items in a loop without a documented all-or-nothing or partial-failure contract.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

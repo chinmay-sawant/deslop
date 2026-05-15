@@ -1,0 +1,14 @@
+{
+  "id": "importlib_metadata_version_queried_inside_request_loop",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "importlib.metadata.version() called inside a request handler; cache the result at startup.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

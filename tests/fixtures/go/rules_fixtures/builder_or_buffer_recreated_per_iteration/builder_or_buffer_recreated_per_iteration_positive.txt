@@ -1,0 +1,16 @@
+package rulefixtures
+
+import "strings"
+
+// scenario for builder_or_buffer_recreated_per_iteration: strings.Builder, bytes.Buffer, or bytes.NewBuffer(...) constructions observed inside loops instead of being reset or reused.
+// fixture polarity: positive; family: hot_path; severity: info.
+
+func scenario345Positive(items []string) string {
+	var result string
+	for _, item := range items {
+		b := new(strings.Builder)
+		b.WriteString(item)
+		result += b.String()
+	}
+	return result
+}

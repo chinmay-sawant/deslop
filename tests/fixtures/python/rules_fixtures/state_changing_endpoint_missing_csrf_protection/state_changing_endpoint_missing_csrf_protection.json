@@ -1,0 +1,14 @@
+{
+  "id": "state_changing_endpoint_missing_csrf_protection",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "State-changing POST/PUT/DELETE endpoint lacks CSRF token validation or SameSite enforcement.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

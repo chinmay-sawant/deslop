@@ -1,0 +1,27 @@
+import httpx
+from typing import AsyncIterator
+
+
+async def iter_all_users(client: httpx.AsyncClient) -> AsyncIterator[dict]:
+    page = 1
+    while True:
+        resp = await client.get(f"/api/users?page={page}")
+        data = resp.json()
+        if not data["users"]:
+            break
+        for user in data["users"]:
+            yield user
+        page += 1
+
+
+async def fetch_user_batch(client: httpx.AsyncClient, user_ids: list) -> list:
+    async def _fetch_one(uid: int):
+        resp = await client.get(f"/api/users/{uid}")
+        return resp.json()
+
+    return await asyncio.gather(*[_fetch_one(uid) for uid in user_ids])
+
+
+async def process_users(client: httpx.AsyncClient):
+    async for user in iter_all_users(client):
+        await handle_user(user)

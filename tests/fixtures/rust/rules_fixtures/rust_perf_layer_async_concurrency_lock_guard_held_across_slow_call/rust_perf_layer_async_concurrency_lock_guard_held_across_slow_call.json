@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_async_concurrency_lock_guard_held_across_slow_call",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag lock guards held during network, disk, database, or expensive compute work.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

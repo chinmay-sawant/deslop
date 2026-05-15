@@ -1,0 +1,22 @@
+import asyncio
+
+
+async def poll_for_result(check_fn, interval=0):
+    while True:
+        result = check_fn()
+        if result is not None:
+            return result
+        await asyncio.sleep(0)
+
+
+async def wait_for_ready(ready_fn):
+    while not ready_fn():
+        await asyncio.sleep(0)
+
+
+async def spin_until_done(task_id: str):
+    while True:
+        status = get_task_status(task_id)
+        if status == "done":
+            break
+        await asyncio.sleep(0)

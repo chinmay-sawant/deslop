@@ -1,0 +1,36 @@
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::sync::{Arc, RwLock};
+
+#[derive(Serialize, Deserialize, Clone)]
+struct UserProfile {
+    name: String,
+    email: String,
+    preferences: HashMap<String, String>,
+}
+
+struct Cache {
+    // GOOD: stores deserialized struct, deserialize once on insert
+    store: RwLock<HashMap<String, UserProfile>>,
+}
+
+impl Cache {
+    fn new() -> Self {
+        Self {
+            store: RwLock::new(HashMap::new()),
+        }
+    }
+
+    fn insert(&self, key: &str, value: &UserProfile) {
+        self.store.write().unwrap().insert(key.to_string(), value.clone());
+    }
+
+    fn get(&self, key: &str) -> Option<UserProfile> {
+        let guard = self.store.read().unwrap();
+        guard.get(key).cloned()
+    }
+}
+
+async fn handle_request(cache: Arc<Cache>, user_id: &str) -> UserProfile {
+    cache.get(user_id).expect("user not found")
+}

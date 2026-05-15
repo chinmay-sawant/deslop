@@ -1,0 +1,9 @@
+package rulefixtures
+
+// scenario for smtp_plaintext_auth: `smtp.PlainAuth` used without TLS (`smtp.SendMail` to non-TLS endpoints)
+// fixture polarity: negative; family: security; severity: warning.
+type Rule733NegativeRecord struct { Username string }
+
+func scenario733Negative(account Rule733NegativeRecord) string {
+	return account.Username
+}

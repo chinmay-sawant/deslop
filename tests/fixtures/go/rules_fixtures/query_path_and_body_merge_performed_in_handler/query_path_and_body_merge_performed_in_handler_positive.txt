@@ -1,0 +1,39 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"github.com/gorilla/mux"
+	"net/http"
+	"strconv"
+)
+
+// scenario for query_path_and_body_merge_performed_in_handler: Handlers that merge several request sources inline instead of normalizing inputs before service calls.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type UpdateTaskRequest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Priority    string `json:"priority"`
+}
+
+func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	taskID, _ := strconv.Atoi(vars["id"])
+
+	var req UpdateTaskRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	status := r.URL.Query().Get("status")
+	if status != "" {
+		req.Priority = status
+	}
+
+	merged := map[string]interface{}{
+		"id":          taskID,
+		"title":       req.Title,
+		"description": req.Description,
+		"priority":    req.Priority,
+	}
+
+	json.NewEncoder(w).Encode(merged)
+}

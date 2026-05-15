@@ -1,0 +1,14 @@
+{
+  "id": "same_contextmanager_pattern_copied_across_modules",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag duplicate context manager behavior implemented in several modules.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

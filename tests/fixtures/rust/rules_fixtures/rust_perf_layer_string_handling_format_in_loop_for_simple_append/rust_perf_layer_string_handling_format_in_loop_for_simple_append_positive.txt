@@ -1,0 +1,17 @@
+fn build_csv(rows: &[Row]) -> String {
+    let mut output = String::new();
+    for row in rows {
+        // BAD: format! in loop for simple string building
+        output = format!("{}\n{},{},{},{}", output, row.id, row.name, row.value, row.ts);
+    }
+    output
+}
+
+fn build_log_line(entries: &[LogEntry]) -> String {
+    let mut result = String::new();
+    for entry in entries {
+        // BAD: format! allocates a new string each iteration
+        result = format!("{} | {}: {}", result, entry.timestamp, entry.message);
+    }
+    result
+}

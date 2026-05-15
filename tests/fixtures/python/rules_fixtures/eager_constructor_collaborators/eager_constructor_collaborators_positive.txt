@@ -1,0 +1,27 @@
+class OrderService:
+    def __init__(self):
+        self.db = DatabaseConnection()
+        self.cache = RedisCache()
+        self.logger = Logger("orders")
+        self.email_client = EmailClient()
+        self.metrics = MetricsCollector()
+        self.validator = OrderValidator()
+        self.pricing_engine = PricingEngine()
+
+    def create_order(self, order_data: dict) -> dict:
+        self.validator.validate(order_data)
+        return {"id": "order-123", "status": "created"}
+
+
+class ReportGenerator:
+    def __init__(self, config: dict):
+        self.db = DatabaseConnection(config["db_url"])
+        self.s3 = S3Client(config["bucket"])
+        self.pdf_engine = PdfEngine()
+        self.template_loader = TemplateLoader()
+        self.cache = CacheLayer()
+        self.notifier = SlackNotifier(config["webhook"])
+
+    def generate(self, report_type: str) -> bytes:
+        template = self.template_loader.load(report_type)
+        return self.pdf_engine.render(template)

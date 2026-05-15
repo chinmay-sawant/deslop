@@ -1,0 +1,35 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for manual_required_checks_after_validate_tags_available: Handlers that re-check required fields manually even though struct-tag validation already exists.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type CreateAccountRequest struct {
+	Name  string `json:"name" validate:"required"`
+	Email string `json:"email" validate:"required,email"`
+	Phone string `json:"phone"`
+}
+
+func CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
+	var req CreateAccountRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	if req.Name == "" {
+		http.Error(w, "name is required", http.StatusBadRequest)
+		return
+	}
+	if req.Email == "" {
+		http.Error(w, "email is required", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{
+		"name":  req.Name,
+		"email": req.Email,
+	})
+}

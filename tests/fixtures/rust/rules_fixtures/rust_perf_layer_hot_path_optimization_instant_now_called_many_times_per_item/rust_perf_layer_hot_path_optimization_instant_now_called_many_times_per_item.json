@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_hot_path_optimization_instant_now_called_many_times_per_item",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Hot path optimization. Flag repeated Instant::now calls per item where one timestamp or measurement scope would suffice.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,15 @@
+package rulefixtures
+
+// scenario for send_after_local_close_risk: A locally owned channel is closed and later used in a send expression.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario395Positive() {
+	ch := make(chan int)
+
+	go func() {
+		close(ch)
+	}()
+
+	go func() {
+		ch <- 42
+	}()
+}

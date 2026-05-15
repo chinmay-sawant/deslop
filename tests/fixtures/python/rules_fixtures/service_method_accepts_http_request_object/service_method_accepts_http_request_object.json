@@ -1,0 +1,14 @@
+{
+  "id": "service_method_accepts_http_request_object",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Service-layer method parameter list includes an HTTP request type from Flask, Django, or FastAPI.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

@@ -1,0 +1,50 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+	"strings"
+)
+
+// scenario for validation_logic_duplicated_across_handlers: Repeated required-field or enum-validation blocks across multiple handler files.
+// fixture polarity: positive; family: architecture; severity: info.
+func validateEmail(email string) string {
+	email = strings.TrimSpace(email)
+	if email == "" {
+		return "email is required"
+	}
+	if !strings.Contains(email, "@") {
+		return "invalid email format"
+	}
+	return ""
+}
+
+func scenario217CreateUser(w http.ResponseWriter, r *http.Request) {
+	var input struct{ Name, Email string }
+	json.NewDecoder(r.Body).Decode(&input)
+	input.Name = strings.TrimSpace(input.Name)
+	if input.Name == "" {
+		http.Error(w, `{"error":"name is required"}`, http.StatusBadRequest)
+		return
+	}
+	if errMsg := validateEmail(input.Email); errMsg != "" {
+		http.Error(w, `{"error":"`+errMsg+`"}`, http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+}
+
+func scenario217UpdateUser(w http.ResponseWriter, r *http.Request) {
+	var input struct{ Name, Email string }
+	json.NewDecoder(r.Body).Decode(&input)
+	input.Name = strings.TrimSpace(input.Name)
+	if input.Name == "" {
+		http.Error(w, `{"error":"name is required"}`, http.StatusBadRequest)
+		return
+	}
+	if errMsg := validateEmail(input.Email); errMsg != "" {
+		http.Error(w, `{"error":"`+errMsg+`"}`, http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

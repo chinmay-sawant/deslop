@@ -1,0 +1,30 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for route_setup_scattered_without_router_package: Route registration split across unrelated files without a clear `router`, `routes`, or `transport` home.
+// fixture polarity: positive; family: architecture; severity: info.
+func RegisterUserRoutes(r *gin.Engine) {
+	r.GET("/users", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"users": []string{"alice", "bob"}})
+	})
+	r.POST("/users", func(c *gin.Context) {
+		c.JSON(http.StatusCreated, gin.H{"id": 1})
+	})
+	r.DELETE("/users/:id", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"deleted": c.Param("id")})
+	})
+}
+
+func RegisterOrderRoutes(r *gin.Engine) {
+	r.GET("/orders", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"orders": []int{100, 101}})
+	})
+	r.POST("/orders", func(c *gin.Context) {
+		c.JSON(http.StatusCreated, gin.H{"id": 200})
+	})
+}

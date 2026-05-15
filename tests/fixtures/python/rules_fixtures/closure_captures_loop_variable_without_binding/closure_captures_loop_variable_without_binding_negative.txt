@@ -1,0 +1,38 @@
+handlers = []
+
+
+def register_handlers():
+    for i in range(5):
+        def handler(idx=i):
+            return idx
+        handlers.append(handler)
+
+
+callbacks = []
+
+
+def setup_callbacks(items):
+    for item in items:
+        def callback(_item=item):
+            return _item.process()
+        callbacks.append(callback)
+
+
+factories = []
+
+
+def build_factories(configs):
+    for cfg in configs:
+        def factory(_cfg=cfg):
+            return create_service(_cfg)
+        factories.append(factory)
+
+
+observers = []
+
+
+def attach_observers(emitters):
+    for emitter in emitters:
+        def observer(event, _emitter=emitter):
+            return _emitter.handle(event)
+        observers.append(observer)

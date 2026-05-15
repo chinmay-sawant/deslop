@@ -1,0 +1,29 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"net/http"
+)
+
+// scenario for handler_opens_transaction: Handlers that call `Begin`, `Transaction`, or unit-of-work start helpers directly.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule072PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario072Positive(w http.ResponseWriter, r *http.Request, repo Rule072PositiveRecord) error {
+	tx, err := repo.db.Begin()
+	if err != nil {
+		http.Error(w, "could not start transaction", http.StatusInternalServerError)
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(r.Context(), "INSERT INTO transfers (from_id, to_id, amount) VALUES (?, ?, ?)", 1, 2, 100)
+	if err != nil {
+		http.Error(w, "insert failed", http.StatusInternalServerError)
+		return err
+	}
+
+	return tx.Commit()
+}

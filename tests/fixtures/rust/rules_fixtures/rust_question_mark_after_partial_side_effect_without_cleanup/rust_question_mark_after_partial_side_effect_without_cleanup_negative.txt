@@ -1,0 +1,41 @@
+use std::fs::File;
+use std::io::Write;
+
+// GOOD: use transactions or cleanup on failure
+fn write_and_backup(data: &[u8], path: &str, backup_path: &str) -> Result<(), Error> {
+    // Write to temp file first, then rename
+    let temp_path = format!("{}.tmp", path);
+    let mut file = File::create(&temp_path)?;
+    file.write_all(data)?;
+    file.flush()?;
+    drop(file);
+
+    let mut backup = File::create(backup_path)?;
+    backup.write_all(data)?;
+    backup.flush()?;
+    drop(backup);
+
+    std::fs::rename(&temp_path, path)?;
+    Ok(())
+}
+
+fn transfer_funds(from: &mut Account, to: &mut Account, amount: u64) -> Result<(), Error> {
+    let original_from = from.balance;
+    let original_to = to.balance;
+
+    from.balance -= amount;
+    if let Err(e) = from.save() {
+        from.balance = original_from;
+        return Err(e);
+    }
+
+    to.balance += amount;
+    if let Err(e) = to.save() {
+        from.balance = original_from;
+        from.save()?;
+        to.balance = original_to;
+        return Err(e);
+    }
+
+    Ok(())
+}

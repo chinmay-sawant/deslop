@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for upstream_json_decode_same_response_multiple_times: One upstream HTTP response body decoded into multiple targets in the same handler.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule340NegativeRecord struct {
+	Name string
+}
+
+type Rule340NegativeService interface {
+	Handle(context.Context, Rule340NegativeRecord) (Rule340NegativeRecord, error)
+}
+
+func scenario340Negative(ctx context.Context, service Rule340NegativeService, input Rule340NegativeRecord) (Rule340NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule340NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

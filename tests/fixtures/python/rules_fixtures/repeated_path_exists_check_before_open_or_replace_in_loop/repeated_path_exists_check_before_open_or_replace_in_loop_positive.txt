@@ -1,0 +1,19 @@
+import os
+
+
+def load_all_configs(config_dir, filenames):
+    configs = []
+    for name in filenames:
+        path = os.path.join(config_dir, name)
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                configs.append(f.read())
+    return configs
+
+
+def backup_and_replace(file_pairs):
+    for src, dst in file_pairs:
+        if os.path.exists(src):
+            if os.path.exists(dst):
+                os.remove(dst)
+            os.rename(src, dst)

@@ -1,0 +1,34 @@
+from celery import shared_task
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class OrderParams:
+    user_id: int
+    timezone: str
+    locale: str
+
+
+@shared_task
+def process_order_background(params: OrderParams):
+    order = create_order(params)
+    send_confirmation_email(order)
+    return order.id
+
+
+def handle_order_request(order_data: dict):
+    timezone = get_user_timezone(order_data["user_id"])
+    locale = get_user_locale(order_data["user_id"])
+    params = OrderParams(
+        user_id=order_data["user_id"],
+        timezone=timezone,
+        locale=locale,
+    )
+    process_order_background.delay(params)
+
+
+@shared_task
+def generate_report_for_user(user_id: int, filters: dict):
+    permissions = get_user_permissions(user_id)
+    report = build_report(filters, permissions)
+    return report.id

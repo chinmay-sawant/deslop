@@ -1,0 +1,18 @@
+API_AUTH_URL = "https://api.production.internal/v2/data-service/authenticate"
+
+
+def connect_to_api():
+    return requests.get(API_AUTH_URL)
+
+
+def fetch_records():
+    response = requests.get(API_AUTH_URL)
+    return response.json()
+
+
+def send_report():
+    requests.post(API_AUTH_URL, json={"report": "data"})
+
+
+def validate_token():
+    return check_token(API_AUTH_URL)

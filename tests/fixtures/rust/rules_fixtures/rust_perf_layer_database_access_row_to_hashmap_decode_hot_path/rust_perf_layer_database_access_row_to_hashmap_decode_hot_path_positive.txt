@@ -1,0 +1,22 @@
+use sqlx::PgPool;
+use std::collections::HashMap;
+
+async fn fetch_user_map(pool: &PgPool, user_ids: &[i64]) -> Result<HashMap<String, serde_json::Value>, sqlx::Error> {
+    let rows = sqlx::query("SELECT * FROM users WHERE id = ANY($1)")
+        .bind(user_ids)
+        .fetch_all(pool)
+        .await?;
+
+    let mut map = HashMap::new();
+    // BAD: decoding each row into untyped HashMap<String, Value>
+    for row in rows {
+        let mut entry = HashMap::new();
+        for col in row.columns() {
+            let val: serde_json::Value = row.try_get(col.name())?;
+            entry.insert(col.name().to_string(), val);
+        }
+        let id: String = entry.get("id").unwrap().to_string();
+        map.insert(id, serde_json::to_value(entry).unwrap());
+    }
+    Ok(map)
+}

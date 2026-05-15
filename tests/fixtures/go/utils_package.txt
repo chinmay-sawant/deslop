@@ -1,5 +1,0 @@
-package utils
-
-func NormalizeEmail(address string) string {
-	return address
-}

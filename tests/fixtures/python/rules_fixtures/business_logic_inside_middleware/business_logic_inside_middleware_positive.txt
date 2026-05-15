@@ -1,0 +1,34 @@
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+
+class OrderValidationMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if request.url.path.startswith("/api/orders") and request.method == "POST":
+            body = await request.json()
+            if body.get("total", 0) > 10000:
+                if not body.get("approved_by"):
+                    return JSONResponse(
+                        status_code=400,
+                        content={"error": "Large orders require approval"},
+                    )
+            if body.get("items") and len(body["items"]) > 100:
+                return JSONResponse(
+                    status_code=400,
+                    content={"error": "Too many items in order"},
+                )
+        return await call_next(request)
+
+
+class PricingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if "/api/products" in request.url.path:
+            response = await call_next(request)
+            body = json.loads(response.body)
+            for product in body.get("products", []):
+                if product["category"] == "electronics":
+                    product["price"] *= 1.1
+                elif product["category"] == "clothing":
+                    product["price"] *= 0.9
+            return JSONResponse(content=body)
+        return await call_next(request)

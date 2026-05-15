@@ -1,0 +1,14 @@
+{
+  "id": "prometheus_high_cardinality_labels",
+  "language": "go",
+  "family": "library",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

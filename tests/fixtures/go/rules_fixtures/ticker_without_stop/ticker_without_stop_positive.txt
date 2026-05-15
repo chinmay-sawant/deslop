@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for ticker_without_stop: time.NewTicker(...) is created without an observed Stop() call.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario399Positive(stopCh <-chan struct{}) {
+	ticker := time.NewTicker(500 * time.Millisecond)
+	for {
+		select {
+		case <-ticker.C:
+			_ = len(stopCh)
+		case <-stopCh:
+			return
+		}
+	}
+}

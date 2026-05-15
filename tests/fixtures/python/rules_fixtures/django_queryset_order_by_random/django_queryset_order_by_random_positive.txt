@@ -1,0 +1,11 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Song
+
+
+class RandomSongView(View):
+    def get(self, request):
+        songs = Song.objects.order_by("?")[:5]
+        data = [{"id": s.id, "title": s.title, "artist": s.artist} for s in songs]
+        return JsonResponse({"songs": data})

@@ -1,0 +1,21 @@
+fn has_active_users(users: &[User]) -> bool {
+    // GOOD: use any() to short-circuit
+    users.iter().any(|u| u.is_active)
+}
+
+fn count_admins(users: &[User]) -> usize {
+    // GOOD: use count() directly on iterator
+    users.iter().filter(|u| u.role == Role::Admin).count()
+}
+
+struct User {
+    name: String,
+    role: Role,
+    is_active: bool,
+}
+
+enum Role {
+    Admin,
+    Member,
+    Guest,
+}

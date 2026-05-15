@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for middleware_mutates_domain_model_state: Middleware that writes business entities or persistence models as a side effect of request plumbing.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule088NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule088NegativeService interface {
+	Run(context.Context, Rule088NegativeRecord) error
+}
+
+func scenario088Negative(ctx context.Context, service Rule088NegativeService, input Rule088NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

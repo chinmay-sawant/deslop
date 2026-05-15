@@ -1,0 +1,14 @@
+{
+  "id": "rust_stdout_println_in_library_or_hot_path",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `println`, `eprintln`, or direct stdout/stderr writes inside library code, scan loops, or reusable components.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

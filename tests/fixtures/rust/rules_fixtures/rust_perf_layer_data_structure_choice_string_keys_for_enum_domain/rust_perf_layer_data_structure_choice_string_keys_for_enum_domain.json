@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_data_structure_choice_string_keys_for_enum_domain",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag String keys for finite domains where enums or interned IDs avoid allocation and hashing.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

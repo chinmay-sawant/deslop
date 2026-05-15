@@ -1,0 +1,32 @@
+use sqlx::PgPool;
+
+async fn enrich_orders(pool: &PgPool, order_ids: &[i64]) -> Result<Vec<EnrichedOrder>, sqlx::Error> {
+    let mut results = Vec::new();
+    for &order_id in order_ids {
+        // BAD: SQL query per iteration inside a loop
+        let order = sqlx::query_as::<_, OrderRow>(
+            "SELECT id, customer_id, total FROM orders WHERE id = $1"
+        )
+        .bind(order_id)
+        .fetch_one(pool)
+        .await?;
+
+        let customer = sqlx::query_as::<_, CustomerRow>(
+            "SELECT name, email FROM customers WHERE id = $1"
+        )
+        .bind(order.customer_id)
+        .fetch_one(pool)
+        .await?;
+
+        results.push(EnrichedOrder {
+            id: order.id,
+            customer_name: customer.name,
+            total: order.total,
+        });
+    }
+    Ok(results)
+}
+
+struct OrderRow { id: i64, customer_id: i64, total: f64 }
+struct CustomerRow { name: String, email: String }
+struct EnrichedOrder { id: i64, customer_name: String, total: f64 }

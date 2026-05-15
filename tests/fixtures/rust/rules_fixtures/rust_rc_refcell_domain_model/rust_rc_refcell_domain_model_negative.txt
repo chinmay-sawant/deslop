@@ -1,0 +1,43 @@
+// GOOD: domain model with clear ownership boundaries
+struct User {
+    name: String,
+    order_ids: Vec<u64>,
+}
+
+struct Order {
+    id: u64,
+    user_id: u64,
+    items: Vec<OrderItem>,
+}
+
+struct OrderItem {
+    product_id: u64,
+    quantity: u32,
+}
+
+struct Product {
+    id: u64,
+    name: String,
+    price: f64,
+}
+
+struct Store {
+    users: HashMap<u64, User>,
+    orders: HashMap<u64, Order>,
+    products: HashMap<u64, Product>,
+}
+
+impl Store {
+    fn create_order(&mut self, user_id: u64, product_id: u64) -> u64 {
+        let order_id = self.next_id();
+        let item = OrderItem { product_id, quantity: 1 };
+        let order = Order {
+            id: order_id,
+            user_id,
+            items: vec![item],
+        };
+        self.orders.insert(order_id, order);
+        self.users.get_mut(&user_id).unwrap().order_ids.push(order_id);
+        order_id
+    }
+}

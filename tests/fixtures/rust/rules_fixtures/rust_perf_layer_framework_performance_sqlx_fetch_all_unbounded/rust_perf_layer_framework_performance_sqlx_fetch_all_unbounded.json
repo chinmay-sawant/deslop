@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_framework_performance_sqlx_fetch_all_unbounded",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag sqlx fetch_all on unbounded queries where streaming or limits would control memory.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,40 @@
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct MetricsReport {
+    cpu_usage: f64,
+    memory_mb: u64,
+    request_count: u64,
+}
+
+fn emit_batch_reports(reports: &[MetricsReport]) {
+    for report in reports {
+        let json = serde_json::to_string_pretty(report).unwrap();
+        send_to_collector(&json);
+    }
+}
+
+fn process_api_response(data: &serde_json::Value) -> String {
+    serde_json::to_string_pretty(data).unwrap()
+}
+
+fn serialize_event(event: &Event) -> Vec<u8> {
+    let json = serde_json::to_string_pretty(event).unwrap();
+    json.into_bytes()
+}
+
+fn send_to_collector(_s: &str) {}
+struct Event;
+impl serde::Serialize for Event {
+    fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+        s.serialize_unit()
+    }
+}
+
+fn main() {
+    let reports = vec![
+        MetricsReport { cpu_usage: 0.5, memory_mb: 512, request_count: 1000 },
+        MetricsReport { cpu_usage: 0.7, memory_mb: 768, request_count: 2000 },
+    ];
+    emit_batch_reports(&reports);
+}

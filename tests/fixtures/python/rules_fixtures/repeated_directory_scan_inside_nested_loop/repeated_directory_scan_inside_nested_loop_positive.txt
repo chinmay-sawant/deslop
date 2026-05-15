@@ -1,0 +1,23 @@
+import os
+
+
+def find_matching_files(extensions, root_dir):
+    matches = []
+    for ext in extensions:
+        for dirpath, dirnames, filenames in os.walk(root_dir):
+            for fname in filenames:
+                if fname.endswith(ext):
+                    matches.append(os.path.join(dirpath, fname))
+    return matches
+
+
+def count_files_by_type(categories, search_dir):
+    counts = {}
+    for category in categories:
+        count = 0
+        for dirpath, dirnames, filenames in os.walk(search_dir):
+            for fname in filenames:
+                if fname.endswith(category):
+                    count += 1
+        counts[category] = count
+    return counts

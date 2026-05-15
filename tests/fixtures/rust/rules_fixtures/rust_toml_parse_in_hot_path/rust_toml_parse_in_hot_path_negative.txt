@@ -1,0 +1,39 @@
+use serde::Deserialize;
+use std::collections::HashMap;
+use std::sync::OnceLock;
+
+#[derive(Deserialize, Clone)]
+struct RequestConfig {
+    action: String,
+    target: String,
+    options: Options,
+}
+
+#[derive(Deserialize, Clone)]
+struct Options {
+    verbose: bool,
+    timeout: u64,
+}
+
+static CONFIG_CACHE: OnceLock<HashMap<String, RequestConfig>> = OnceLock::new();
+
+fn init_configs(raw_toml: &str) {
+    let configs: HashMap<String, RequestConfig> = raw_toml
+        .lines()
+        .filter_map(|line| {
+            let config: RequestConfig = toml::from_str(line).ok()?;
+            Some((config.target.clone(), config))
+        })
+        .collect();
+    let _ = CONFIG_CACHE.set(configs);
+}
+
+// GOOD: No TOML parsing in hot path - uses pre-parsed cached config
+fn handle_request(target: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let configs = CONFIG_CACHE.get().ok_or("configs not initialized")?;
+    let config = configs.get(target).ok_or("unknown target")?;
+    process_action(&config.action, &config.target);
+    Ok(())
+}
+
+fn process_action(_action: &str, _target: &str) {}

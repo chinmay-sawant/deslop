@@ -1,0 +1,14 @@
+{
+  "id": "create_single_in_loop_instead_of_batches",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "GORM .Create(...) used inside loops with no visible CreateInBatches(...) path in the same function.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

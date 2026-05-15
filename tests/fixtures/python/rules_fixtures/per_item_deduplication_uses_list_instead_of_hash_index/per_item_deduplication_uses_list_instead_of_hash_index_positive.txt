@@ -1,0 +1,23 @@
+def deduplicate_ids(records):
+    unique = []
+    for record in records:
+        if record["id"] not in unique:
+            unique.append(record["id"])
+    return unique
+
+
+def find_new_entries(existing, incoming):
+    new_items = []
+    for item in incoming:
+        if item not in existing:
+            new_items.append(item)
+    return new_items
+
+
+def filter_seen(events, seen_list):
+    result = []
+    for event in events:
+        if event["event_id"] not in seen_list:
+            seen_list.append(event["event_id"])
+            result.append(event)
+    return result

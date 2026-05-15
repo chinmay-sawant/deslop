@@ -1,0 +1,22 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for unscoped_query_without_explicit_danger_naming: `Unscoped()` usage in generic repository methods without a clearly dangerous or admin-only name.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type User struct {
+	ID   int
+	Name string
+	gorm.Model
+}
+
+func DeleteUser(db *gorm.DB, id int) error {
+	return db.Unscoped().Delete(&User{}, id).Error
+}
+
+func PurgeUserData(db *gorm.DB, userID int) error {
+	return db.Unscoped().Where("user_id = ?", userID).Delete(&User{}).Error
+}

@@ -1,0 +1,14 @@
+{
+  "id": "external_http_call_inside_transaction_scope",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Network calls performed while a DB transaction is open.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "pyproject_script_entrypoint_unresolved",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "pyproject script entrypoints that do not resolve to a locally indexed module callable.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

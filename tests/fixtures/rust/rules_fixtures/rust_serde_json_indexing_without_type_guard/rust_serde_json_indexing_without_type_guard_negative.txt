@@ -1,0 +1,36 @@
+use serde_json::Value;
+
+// GOOD: use .get() with type checks
+fn get_user_name(data: &Value) -> Option<String> {
+    data.get("user")?
+        .get("name")?
+        .as_str()
+        .map(|s| s.to_string())
+}
+
+fn get_nested_value(data: &Value) -> Option<String> {
+    data.get("response")?
+        .get("data")?
+        .get("items")?
+        .get(0)?
+        .get("value")?
+        .as_str()
+        .map(|s| s.to_string())
+}
+
+fn process_config(config: &Value) -> Result<Config, Error> {
+    let server = config.get("server")
+        .ok_or(Error::MissingField("server"))?;
+    let port = server.get("port")
+        .and_then(|v| v.as_u64())
+        .ok_or(Error::InvalidField("port"))? as u16;
+    let host = server.get("host")
+        .and_then(|v| v.as_str())
+        .ok_or(Error::InvalidField("host"))?;
+    let max_conn = config.get("database")
+        .and_then(|d| d.get("max_connections"))
+        .and_then(|v| v.as_u64())
+        .unwrap_or(10) as u32;
+
+    Ok(Config { port, host: host.to_string(), max_connections: max_conn })
+}

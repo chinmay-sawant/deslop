@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"sync"
+)
+
+// scenario for mutex_in_loop: Repeated Lock or RLock acquisition inside loops.
+// fixture polarity: positive; family: concurrency; severity: contextual.
+type Rule226PositiveRecord struct {
+	mu sync.Mutex
+}
+
+func scenario226Positive(rec *Rule226PositiveRecord, updates []string) {
+	for _, u := range updates {
+		rec.mu.Lock()
+		_ = u
+		rec.mu.Unlock()
+	}
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+)
+
+// scenario for request_context_value_extraction_duplicated_across_handlers: Repeated current-user, tenant, locale, or auth extraction logic.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func GetOrdersHandler(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("user_id").(string)
+	tenant := r.Context().Value("tenant").(string)
+	locale := r.Context().Value("locale").(string)
+	fmt.Fprintf(w, "orders for user=%s tenant=%s locale=%s", userID, tenant, locale)
+}
+
+func GetProfileHandler(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("user_id").(string)
+	tenant := r.Context().Value("tenant").(string)
+	locale := r.Context().Value("locale").(string)
+	fmt.Fprintf(w, "profile for user=%s tenant=%s locale=%s", userID, tenant, locale)
+}

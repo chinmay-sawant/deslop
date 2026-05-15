@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for request_dto_outside_transport_package: Request binding structs that live in repositories or service packages instead of transport-facing packages.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule141NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule141NegativeService interface {
+	Run(context.Context, Rule141NegativeRecord) error
+}
+
+func scenario141Negative(ctx context.Context, service Rule141NegativeService, input Rule141NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

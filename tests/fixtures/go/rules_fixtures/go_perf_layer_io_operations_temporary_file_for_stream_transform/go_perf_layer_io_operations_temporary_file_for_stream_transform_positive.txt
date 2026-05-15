@@ -1,0 +1,22 @@
+package rulefixtures
+
+import (
+	"io"
+	"os"
+)
+
+// scenario for go_perf_layer_io_operations_temporary_file_for_stream_transform: Layer: I/O operations. Flag temporary files used only to bridge streaming transformations.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario553Positive(r io.Reader) ([]byte, error) {
+	// Writes all input to a temp file, then reads it back for
+	// transformation. Uses disk I/O when an in-memory pipe or
+	// buffer would suffice for the stream transform.
+	tmp, _ := os.CreateTemp("", "stream-*")
+	defer os.Remove(tmp.Name())
+	defer tmp.Close()
+
+	io.Copy(tmp, r)
+	tmp.Seek(0, 0)
+
+	return io.ReadAll(tmp)
+}

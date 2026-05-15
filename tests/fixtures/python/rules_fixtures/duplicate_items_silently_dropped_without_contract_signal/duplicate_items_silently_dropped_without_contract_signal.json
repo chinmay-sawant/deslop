@@ -1,0 +1,14 @@
+{
+  "id": "duplicate_items_silently_dropped_without_contract_signal",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that deduplicates caller data without making that behavior explicit.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

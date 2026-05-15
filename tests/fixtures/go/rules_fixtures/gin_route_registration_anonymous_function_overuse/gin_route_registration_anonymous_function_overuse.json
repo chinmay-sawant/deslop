@@ -1,0 +1,14 @@
+{
+  "id": "gin_route_registration_anonymous_function_overuse",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Route registration that uses many inline anonymous handlers instead of named handler methods or functions.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

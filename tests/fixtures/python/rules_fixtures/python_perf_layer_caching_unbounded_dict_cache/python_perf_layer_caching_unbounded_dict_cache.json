@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_caching_unbounded_dict_cache",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Caching. Flag module-level dict caches without max size, TTL, or eviction.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

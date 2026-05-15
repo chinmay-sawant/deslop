@@ -1,0 +1,14 @@
+{
+  "id": "rust_ignore_reads_file_before_file_type_check",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag read/open operations on walker paths before checking `file_type().is_file()` or equivalent.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_framework_performance_fastapi_dependency_builds_client_per_request",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag FastAPI dependencies that build heavy clients for every request.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

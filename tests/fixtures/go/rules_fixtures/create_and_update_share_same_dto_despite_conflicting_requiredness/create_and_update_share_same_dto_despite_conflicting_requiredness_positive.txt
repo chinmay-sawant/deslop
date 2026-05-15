@@ -1,0 +1,25 @@
+package rulefixtures
+
+// scenario for create_and_update_share_same_dto_despite_conflicting_requiredness: A single DTO reused for create and update when validation rules clearly differ.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type UserDTO struct {
+	ID       string `json:"id,omitempty"`
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Password string `json:"password,omitempty"`
+}
+
+func CreateUser(dto UserDTO) error {
+	if dto.Email == "" || dto.Name == "" || dto.Password == "" {
+		return fmt.Errorf("create: email, name, and password are required")
+	}
+	return nil
+}
+
+func UpdateUser(dto UserDTO) error {
+	if dto.ID == "" {
+		return fmt.Errorf("update: id is required")
+	}
+	return nil
+}

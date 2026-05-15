@@ -1,0 +1,14 @@
+{
+  "id": "debug_or_admin_endpoint_registered_without_environment_guard",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Debug, admin, or diagnostics route registered without an environment variable guard.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

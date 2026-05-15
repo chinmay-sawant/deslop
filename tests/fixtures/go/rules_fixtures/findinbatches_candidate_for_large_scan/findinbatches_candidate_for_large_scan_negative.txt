@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for findinbatches_candidate_for_large_scan: Unbounded result sets that could use FindInBatches or cursor iteration.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule263NegativeRecord struct { ID int }
+
+func scenario263Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule263NegativeRecord{}).Error
+}

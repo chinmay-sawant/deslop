@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_lazy_loading_eager_template_parse_for_unused_routes",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Lazy loading. Flag parsing templates for routes that may never be served in the current process mode.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,12 @@
+use std::fs;
+use std::io::BufRead;
+
+fn count_lines_matching(path: &str, pattern: &str) -> std::io::Result<usize> {
+    // BAD: read entire file into String, then iterate lines
+    let contents = fs::read_to_string(path)?;
+    let count = contents
+        .lines()
+        .filter(|line| line.contains(pattern))
+        .count();
+    Ok(count)
+}

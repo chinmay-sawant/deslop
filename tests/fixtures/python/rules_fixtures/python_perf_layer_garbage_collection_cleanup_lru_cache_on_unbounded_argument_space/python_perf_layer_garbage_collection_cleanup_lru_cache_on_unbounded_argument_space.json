@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_garbage_collection_cleanup_lru_cache_on_unbounded_argument_space",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag lru_cache usage without maxsize on functions fed user-controlled or high-cardinality inputs.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

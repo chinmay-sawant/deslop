@@ -1,0 +1,40 @@
+struct Parser {
+    buffer: Vec<u8>,
+    position: usize,
+    input: String,
+}
+
+struct ParseResult {
+    items: Vec<ParsedItem>,
+    consumed: usize,
+}
+
+struct ParsedItem {
+    data: Vec<u8>,
+    position: usize,
+}
+
+impl Parser {
+    fn new(input: String) -> Self {
+        Parser {
+            buffer: Vec::new(),
+            position: 0,
+            input,
+        }
+    }
+
+    fn parse_all(&mut self) -> ParseResult {
+        let mut items = Vec::new();
+        while self.position < self.input.len() {
+            items.push(ParsedItem {
+                data: self.buffer.clone(),
+                position: self.position,
+            });
+            self.position += 1;
+        }
+        ParseResult {
+            items,
+            consumed: self.position,
+        }
+    }
+}

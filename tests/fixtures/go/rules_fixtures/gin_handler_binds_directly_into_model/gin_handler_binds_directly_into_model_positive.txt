@@ -1,0 +1,28 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// scenario for gin_handler_binds_directly_into_model: Handlers that bind request bodies directly into GORM or persistence structs.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type User struct {
+	gorm.Model
+	Name  string `json:"name" gorm:"column:name"`
+	Email string `json:"email" gorm:"column:email"`
+	Role  string `json:"role" gorm:"column:role"`
+	IsAdmin bool  `json:"is_admin" gorm:"column:is_admin"`
+}
+
+func CreateUserHandler(c *gin.Context) {
+	var user User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, user)
+}

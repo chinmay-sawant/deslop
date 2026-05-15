@@ -1,0 +1,14 @@
+{
+  "id": "constant_encryption_key",
+  "language": "go",
+  "family": "security",
+  "default_severity": "error",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`[]byte(\"...\")` used directly as arguments to `cipher.NewGCM`, `aes.NewCipher`, or similar encryption constructor calls",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

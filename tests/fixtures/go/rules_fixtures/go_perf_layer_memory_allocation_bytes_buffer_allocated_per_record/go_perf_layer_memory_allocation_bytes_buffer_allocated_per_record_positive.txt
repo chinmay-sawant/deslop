@@ -1,0 +1,19 @@
+package rulefixtures
+
+import "bytes"
+
+// scenario for go_perf_layer_memory_allocation_bytes_buffer_allocated_per_record: Layer: Memory allocation. Flag bytes.Buffer construction per record when a reusable buffer can be reset safely.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario565Positive(records []string) []byte {
+	var out []byte
+	for _, record := range records {
+		// A fresh bytes.Buffer is allocated for every record.
+		// A single Buffer allocated before the loop and Reset()
+		// between iterations would avoid per-record allocation.
+		buf := new(bytes.Buffer)
+		buf.WriteString(record)
+		buf.WriteByte('\n')
+		out = append(out, buf.Bytes()...)
+	}
+	return out
+}

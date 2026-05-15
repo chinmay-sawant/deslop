@@ -1,0 +1,47 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class OrderServiceDeps:
+    db: "DatabaseConnection"
+    cache: "RedisCache"
+    logger: "Logger"
+    email_client: "EmailClient"
+    metrics: "MetricsCollector"
+
+
+class OrderService:
+    def __init__(self, deps: OrderServiceDeps):
+        self._deps = deps
+
+    def create_order(self, order_data: dict) -> dict:
+        self._deps.logger.info("Creating order")
+        return {"id": "order-123", "status": "created"}
+
+
+@dataclass
+class ReportGeneratorDeps:
+    db: "DatabaseConnection"
+    s3: "S3Client"
+    pdf_engine: "PdfEngine"
+    template_loader: "TemplateLoader"
+
+
+class ReportGenerator:
+    def __init__(self, deps: ReportGeneratorDeps):
+        self._deps = deps
+
+    def generate(self, report_type: str) -> bytes:
+        template = self._deps.template_loader.load(report_type)
+        return self._deps.pdf_engine.render(template)
+
+
+def build_order_service(config: dict) -> OrderService:
+    deps = OrderServiceDeps(
+        db=DatabaseConnection(config["db_url"]),
+        cache=RedisCache(config["redis_url"]),
+        logger=Logger("orders"),
+        email_client=EmailClient(config["smtp"]),
+        metrics=MetricsCollector(),
+    )
+    return OrderService(deps)

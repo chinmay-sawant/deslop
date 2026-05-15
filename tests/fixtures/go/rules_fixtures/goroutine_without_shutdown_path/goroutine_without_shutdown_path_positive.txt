@@ -1,0 +1,20 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"time"
+)
+
+// scenario for goroutine_without_shutdown_path: Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path.
+// fixture polarity: positive; family: concurrency; severity: contextual.
+
+func startPrinter(prefix string) {
+	go func() {
+		counter := 0
+		for {
+			fmt.Printf("%s: %d\n", prefix, counter)
+			counter++
+			time.Sleep(500 * time.Millisecond)
+		}
+	}()
+}

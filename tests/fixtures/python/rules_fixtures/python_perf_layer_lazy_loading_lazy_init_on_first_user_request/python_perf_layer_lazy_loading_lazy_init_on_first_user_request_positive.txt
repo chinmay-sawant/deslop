@@ -1,0 +1,35 @@
+import json
+import hashlib
+
+_model = None
+_search_index = None
+
+def get_model():
+    global _model
+    if _model is None:
+        _model = load_ml_model()
+    return _model
+
+def get_search_index():
+    global _search_index
+    if _search_index is None:
+        _search_index = build_search_index()
+    return _search_index
+
+def load_ml_model():
+    import pickle
+    with open("model.pkl", "rb") as f:
+        return pickle.load(f)
+
+def build_search_index():
+    with open("documents.json") as f:
+        docs = json.load(f)
+    return {d["id"]: d for d in docs}
+
+def handle_predict(request):
+    model = get_model()
+    return model.predict(request.features)
+
+def handle_search(request):
+    index = get_search_index()
+    return index.get(request.query)

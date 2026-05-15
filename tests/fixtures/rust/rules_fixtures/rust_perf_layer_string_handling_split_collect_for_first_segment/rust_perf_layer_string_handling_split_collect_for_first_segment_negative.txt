@@ -1,0 +1,16 @@
+// GOOD: use split iterators directly without collecting
+fn get_domain(email: &str) -> &str {
+    email.split('@').next().unwrap_or(email)
+}
+
+fn parse_key_value(pair: &str) -> (&str, &str) {
+    match pair.splitn(2, '=').collect::<Vec<_>>().as_slice() {
+        [key, value] => (key, value),
+        [key] => (key, ""),
+        _ => ("", ""),
+    }
+}
+
+fn first_line(text: &str) -> &str {
+    text.lines().next().unwrap_or("")
+}

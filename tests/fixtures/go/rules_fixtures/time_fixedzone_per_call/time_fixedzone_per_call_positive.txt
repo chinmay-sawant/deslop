@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_fixedzone_per_call: `time.FixedZone(...)` inside request or loop paths instead of reusing the location.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario680Positive(items []string) []time.Time {
+	var results []time.Time
+	for _, item := range items {
+		loc := time.FixedZone(item, 3600)
+		results = append(results, time.Now().In(loc))
+	}
+	return results
+}

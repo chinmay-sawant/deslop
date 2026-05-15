@@ -1,0 +1,27 @@
+package rulefixtures
+
+import (
+	"errors"
+	"fmt"
+)
+
+// scenario for error_string_comparison: `if err.Error() == "some error"` string comparison for error checking
+// fixture polarity: positive; family: performance; severity: warning.
+
+var ErrNotFound = errors.New("not found")
+
+func lookupUser(id int) (string, error) {
+	if id <= 0 {
+		return "", fmt.Errorf("invalid id: %w", ErrNotFound)
+	}
+	return "user_" + fmt.Sprint(id), nil
+}
+
+func handleRequest(id int) error {
+	name, err := lookupUser(id)
+	if err != nil && err.Error() == "not found" {
+		return fmt.Errorf("skipping: %w", err)
+	}
+	fmt.Println(name)
+	return err
+}

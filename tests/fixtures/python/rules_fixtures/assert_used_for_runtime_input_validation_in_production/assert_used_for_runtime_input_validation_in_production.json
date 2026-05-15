@@ -1,0 +1,14 @@
+{
+  "id": "assert_used_for_runtime_input_validation_in_production",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "assert statement used to validate user-provided input or production logic, which is stripped by -O.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_contains_retry_or_backoff_orchestration: Handlers that implement retry loops or backoff decisions inline instead of delegating to service or client layers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule043NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule043NegativeService interface {
+	Run(context.Context, Rule043NegativeRecord) error
+}
+
+func scenario043Negative(ctx context.Context, service Rule043NegativeService, input Rule043NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"context"
+	redis "github.com/redis/go-redis/v9"
+)
+
+// scenario for redis_command_loop_without_pipeline: Redis command loops that issue round-trips without pipeline or batch usage.
+// fixture polarity: negative; family: data_access; severity: info.
+func scenario289Negative(ctx context.Context, client *redis.Client, values map[string]string) error {
+	pipe := client.Pipeline()
+	for key, value := range values {
+		pipe.Set(ctx, key, value, 15)
+	}
+	_, err := pipe.Exec(ctx)
+	return err
+}

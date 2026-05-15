@@ -1,0 +1,29 @@
+import pytest
+from unittest.mock import patch, MagicMock
+from myapp.service import OrderProcessor
+
+@pytest.fixture
+def mock_dependencies():
+    with patch("myapp.service.charge_payment") as mock_pay, \
+         patch("myapp.service.reserve_inventory") as mock_inv, \
+         patch("myapp.service.lookup_customer") as mock_cust:
+        mock_pay.return_value = {"txn_id": "TXN-1", "status": "ok"}
+        mock_inv.return_value = True
+        mock_cust.return_value = {"id": "C1", "name": "Alice"}
+        yield {
+            "payment": mock_pay,
+            "inventory": mock_inv,
+            "customer": mock_cust,
+        }
+
+def test_process_order_succeeds(mock_dependencies):
+    processor = OrderProcessor()
+    result = processor.process({"item": "widget", "qty": 1})
+    assert result["status"] == "completed"
+    mock_dependencies["payment"].assert_called_once()
+
+def test_process_order_payment_failure(mock_dependencies):
+    mock_dependencies["payment"].side_effect = Exception("declined")
+    processor = OrderProcessor()
+    result = processor.process({"item": "widget", "qty": 1})
+    assert result["status"] == "payment_failed"

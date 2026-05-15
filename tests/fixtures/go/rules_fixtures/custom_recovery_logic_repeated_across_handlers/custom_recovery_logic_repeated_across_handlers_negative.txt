@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for custom_recovery_logic_repeated_across_handlers: Repeated recover or panic-to-response logic inside handlers instead of centralized recovery middleware.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule021NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule021NegativeService interface {
+	Run(context.Context, Rule021NegativeRecord) error
+}
+
+func scenario021Negative(ctx context.Context, service Rule021NegativeService, input Rule021NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

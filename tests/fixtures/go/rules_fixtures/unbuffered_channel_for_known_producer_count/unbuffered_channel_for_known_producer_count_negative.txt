@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for unbuffered_channel_for_known_producer_count: unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time
+// fixture polarity: negative; family: performance; severity: info.
+type Rule690NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario690Negative(records []Rule690NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

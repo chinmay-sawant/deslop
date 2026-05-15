@@ -1,0 +1,19 @@
+import json
+
+
+def serialize_events(events: list[dict]) -> list[str]:
+    encoder = json.JSONEncoder(ensure_ascii=False, separators=(",", ":"))
+    return [encoder.encode(event) for event in events]
+
+
+def export_records(records: list[dict]) -> str:
+    encoder = json.JSONEncoder(sort_keys=True)
+    return "\n".join(encoder.encode(record) for record in records)
+
+
+def build_jsonl(items: list[dict]) -> bytes:
+    encoder = json.JSONEncoder()
+    lines = []
+    for item in items:
+        lines.append(encoder.encode(item))
+    return "\n".join(lines).encode()

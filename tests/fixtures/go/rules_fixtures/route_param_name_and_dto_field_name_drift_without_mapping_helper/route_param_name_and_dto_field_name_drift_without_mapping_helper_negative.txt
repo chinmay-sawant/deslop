@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for route_param_name_and_dto_field_name_drift_without_mapping_helper: Repeated manual renaming between route params and DTO fields that lacks a shared mapper.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule150NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule150NegativeService interface {
+	Run(context.Context, Rule150NegativeRecord) error
+}
+
+func scenario150Negative(ctx context.Context, service Rule150NegativeService, input Rule150NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_anyhow_downcast_without_fallback_context",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `downcast_ref`/`downcast` handling that drops the original context or returns a generic fallback.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

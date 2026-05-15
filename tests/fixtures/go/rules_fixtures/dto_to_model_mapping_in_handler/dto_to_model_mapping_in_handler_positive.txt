@@ -1,0 +1,36 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for dto_to_model_mapping_in_handler: Handlers that own transport-to-model mapping instead of dedicated mappers or services.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type CreateUserRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Age      int    `json:"age"`
+}
+
+type User struct {
+	Name  string
+	Email string
+	Age   int
+	Active bool
+}
+
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	var req CreateUserRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	user := User{
+		Name:   req.Username,
+		Email:  req.Email,
+		Age:    req.Age,
+		Active: true,
+	}
+
+	json.NewEncoder(w).Encode(user)
+}

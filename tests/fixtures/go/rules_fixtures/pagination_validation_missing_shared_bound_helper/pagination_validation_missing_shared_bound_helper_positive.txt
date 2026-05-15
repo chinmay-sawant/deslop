@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+)
+
+// scenario for pagination_validation_missing_shared_bound_helper: API modules that hand-roll page and page-size bounds in many handlers instead of a shared contract.
+// fixture polarity: positive; family: architecture; severity: info.
+func GetItemsHandler(w http.ResponseWriter, r *http.Request) {
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil || page <= 0 {
+		http.Error(w, "invalid page", http.StatusBadRequest)
+		return
+	}
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil || limit <= 0 || limit > 100 {
+		http.Error(w, "invalid limit", http.StatusBadRequest)
+		return
+	}
+	offset := (page - 1) * limit
+	fmt.Fprintf(w, "items: page=%d, limit=%d, offset=%d", page, limit, offset)
+}

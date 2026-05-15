@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_algorithmic_complexity_per_request_topk_full_sort",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag request paths that sort all candidates when heap-based top-k selection would bound work.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

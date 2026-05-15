@@ -1,0 +1,14 @@
+{
+  "id": "patch_dto_uses_non_pointer_fields_for_optional_updates",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "PATCH-like DTOs that cannot distinguish omitted fields from zero values.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

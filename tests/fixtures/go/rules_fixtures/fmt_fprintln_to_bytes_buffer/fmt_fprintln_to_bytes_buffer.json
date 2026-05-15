@@ -1,0 +1,14 @@
+{
+  "id": "fmt_fprintln_to_bytes_buffer",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`fmt.Fprintln(&buf, ...)` instead of direct buffer writes.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

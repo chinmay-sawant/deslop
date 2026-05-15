@@ -1,0 +1,27 @@
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy import create_engine
+from models import User
+
+engine = create_engine("postgresql://user:pass@localhost/mydb")
+SessionLocal = sessionmaker(bind=engine)
+
+
+def get_user(user_id: int) -> dict:
+    with SessionLocal() as session:
+        user = session.get(User, user_id)
+        return {"id": user.id, "name": user.name}
+
+
+def list_active_users() -> list[dict]:
+    with SessionLocal() as session:
+        users = session.query(User).filter(User.active == True).all()
+        return [{"id": u.id, "name": u.name} for u in users]
+
+
+def update_user(user_id: int, data: dict) -> dict:
+    with SessionLocal() as session:
+        user = session.get(User, user_id)
+        for key, value in data.items():
+            setattr(user, key, value)
+        session.commit()
+        return {"id": user.id, "name": user.name}

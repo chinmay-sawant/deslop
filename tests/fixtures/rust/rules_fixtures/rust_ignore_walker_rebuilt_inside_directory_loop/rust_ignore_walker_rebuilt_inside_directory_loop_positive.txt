@@ -1,0 +1,15 @@
+use std::path::Path;
+use walkdir::WalkDir;
+
+fn scan_roots(roots: &[&Path]) -> Vec<String> {
+    let mut results = Vec::new();
+    for root in roots {
+        let walker = WalkDir::new(root).max_depth(5);
+        for entry in walker.into_iter().filter_map(|e| e.ok()) {
+            if entry.file_type().is_file() {
+                results.push(entry.path().to_string_lossy().to_string());
+            }
+        }
+    }
+    results
+}

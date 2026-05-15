@@ -1,0 +1,14 @@
+{
+  "id": "sync_pool_ignored_for_frequent_small_allocs",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "repeated `make([]byte, size)` or `new(T)` in hot paths where the object is short-lived and could be pooled",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Codebases that bootstrap persistence with GORM but run repository queries through raw SQL without a clear adapter boundary.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

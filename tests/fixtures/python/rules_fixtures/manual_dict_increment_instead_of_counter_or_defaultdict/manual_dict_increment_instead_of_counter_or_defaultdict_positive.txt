@@ -1,0 +1,32 @@
+def count_words(text: str) -> dict[str, int]:
+    counts = {}
+    for word in text.lower().split():
+        if word in counts:
+            counts[word] += 1
+        else:
+            counts[word] = 1
+    return counts
+
+
+def tally_errors(log_lines: list[str]) -> dict[str, int]:
+    error_counts = {}
+    for line in log_lines:
+        if "ERROR" in line:
+            parts = line.split()
+            error_type = parts[-1] if parts else "unknown"
+            if error_type in error_counts:
+                error_counts[error_type] += 1
+            else:
+                error_counts[error_type] = 1
+    return error_counts
+
+
+def group_by_status(items: list[dict]) -> dict[str, list[dict]]:
+    grouped = {}
+    for item in items:
+        status = item.get("status", "unknown")
+        if status in grouped:
+            grouped[status].append(item)
+        else:
+            grouped[status] = [item]
+    return grouped

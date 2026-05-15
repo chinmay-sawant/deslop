@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for http_listen_non_tls: `http.ListenAndServe` (non-TLS) usage in production-like code (not test files, not localhost bindings)
+// fixture polarity: positive; family: security; severity: warning.
+func scenario720Positive(handler http.Handler) error {
+	return http.ListenAndServe(":8080", handler)
+}

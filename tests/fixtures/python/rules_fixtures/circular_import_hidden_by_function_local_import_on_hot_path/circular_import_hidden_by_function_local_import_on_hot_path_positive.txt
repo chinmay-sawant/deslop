@@ -1,0 +1,38 @@
+def process_order(order_id):
+    from myapp.services.payment import PaymentProcessor
+    from myapp.services.inventory import InventoryManager
+
+    processor = PaymentProcessor()
+    manager = InventoryManager()
+    processor.charge(order_id)
+    manager.reserve(order_id)
+
+
+def build_report(user_id):
+    from myapp.services.analytics import AnalyticsEngine
+    from myapp.services.export import ReportExporter
+
+    engine = AnalyticsEngine()
+    exporter = ReportExporter()
+    data = engine.compute(user_id)
+    return exporter.to_pdf(data)
+
+
+def handle_webhook(event):
+    from myapp.integrations.slack import SlackNotifier
+    from myapp.integrations.email import EmailService
+
+    slack = SlackNotifier()
+    email = EmailService()
+    slack.notify(event)
+    email.send_alert(event)
+
+
+def sync_user_data(user_id):
+    from myapp.adapters.crm import CRMAdapter
+    from myapp.adapters.caching import CacheAdapter
+
+    crm = CRMAdapter()
+    cache = CacheAdapter()
+    data = crm.fetch(user_id)
+    cache.set(f"user:{user_id}", data)

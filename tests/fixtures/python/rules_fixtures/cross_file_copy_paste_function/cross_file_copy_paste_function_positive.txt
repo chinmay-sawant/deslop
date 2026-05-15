@@ -1,0 +1,28 @@
+def validate_order_fields(fields, required):
+    missing = []
+    for field in required:
+        if field not in fields or not fields[field]:
+            missing.append(field)
+    if missing:
+        raise ValueError(f"Missing required fields: {missing}")
+    return fields
+
+
+def validate_user_fields(fields, required):
+    missing = []
+    for field in required:
+        if field not in fields or not fields[field]:
+            missing.append(field)
+    if missing:
+        raise ValueError(f"Missing required fields: {missing}")
+    return fields
+
+
+def validate_product_fields(fields, required):
+    missing = []
+    for field in required:
+        if field not in fields or not fields[field]:
+            missing.append(field)
+    if missing:
+        raise ValueError(f"Missing required fields: {missing}")
+    return fields

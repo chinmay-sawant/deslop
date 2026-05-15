@@ -1,0 +1,31 @@
+use serde::de::{self, Deserialize, Deserializer, Visitor};
+use std::fmt;
+
+// BAD: custom deserialize impl that panics
+struct Port(u16);
+
+impl<'de> Deserialize<'de> for Port {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = u16::deserialize(deserializer)?;
+        if value == 0 {
+            panic!("port cannot be zero");
+        }
+        Ok(Port(value))
+    }
+}
+
+struct NonEmpty(String);
+
+impl<'de> Deserialize<'de> for NonEmpty {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        assert!(!s.is_empty(), "string must not be empty");
+        Ok(NonEmpty(s))
+    }
+}

@@ -1,0 +1,28 @@
+package rulefixtures
+
+import (
+	"context"
+	"sync"
+)
+
+// scenario for goroutine_derived_context_unmanaged: Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.
+// fixture polarity: negative; family: concurrency; severity: contextual.
+func scenario222Negative(ctx context.Context, items []string) []int {
+	results := make([]int, len(items))
+	var wg sync.WaitGroup
+	wg.Add(len(items))
+	for index, item := range items {
+		index, item := index, item
+		go func() {
+			defer wg.Done()
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				results[index] = len(item)
+			}
+		}()
+	}
+	wg.Wait()
+	return results
+}

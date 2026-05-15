@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for persistence_model_contains_http_form_or_uri_tags: Persistence models that are tied to form or URI binding tags.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule113NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule113NegativeService interface {
+	Run(context.Context, Rule113NegativeRecord) error
+}
+
+func scenario113Negative(ctx context.Context, service Rule113NegativeService, input Rule113NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

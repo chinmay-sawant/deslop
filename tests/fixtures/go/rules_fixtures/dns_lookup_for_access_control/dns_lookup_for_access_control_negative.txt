@@ -1,0 +1,7 @@
+package rulefixtures
+
+// scenario for dns_lookup_for_access_control: `net.LookupHost` or `net.LookupAddr` results used in access control decisions
+// fixture polarity: negative; family: security; severity: warning.
+func scenario706Negative(principal string, allowed map[string]bool) bool {
+	return allowed[principal]
+}

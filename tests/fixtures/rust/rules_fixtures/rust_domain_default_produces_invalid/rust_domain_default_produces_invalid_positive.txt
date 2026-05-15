@@ -1,0 +1,34 @@
+#[derive(Default)]
+struct EmailAddress(String);
+
+impl EmailAddress {
+    fn new(s: String) -> Self {
+        Self(s)
+    }
+}
+
+#[derive(Default)]
+struct Port(u16);
+
+#[derive(Default)]
+struct Username(String);
+
+fn make_config() -> Config {
+    Config::default()
+}
+
+struct Config {
+    email: EmailAddress,
+    port: Port,
+    username: Username,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            email: EmailAddress::default(),
+            port: Port::default(),
+            username: Username::default(),
+        }
+    }
+}

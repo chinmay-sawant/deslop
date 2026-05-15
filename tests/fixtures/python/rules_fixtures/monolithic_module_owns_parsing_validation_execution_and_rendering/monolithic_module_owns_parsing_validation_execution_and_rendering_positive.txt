@@ -1,0 +1,67 @@
+import json
+import csv
+import io
+from typing import Any, Dict, List
+from datetime import datetime
+from jinja2 import Template
+
+def process_report(source: str, output_format: str = "html") -> str:
+    with open(source, "r") as f:
+        raw_data = f.read()
+
+    if source.endswith(".json"):
+        data = json.loads(raw_data)
+    elif source.endswith(".csv"):
+        reader = csv.DictReader(io.StringIO(raw_data))
+        data = list(reader)
+    else:
+        raise ValueError(f"Unsupported format: {source}")
+
+    errors = []
+    for i, row in enumerate(data):
+        if "amount" not in row:
+            errors.append(f"Row {i}: missing amount")
+        elif not isinstance(row["amount"], (int, float)):
+            errors.append(f"Row {i}: invalid amount type")
+        elif row["amount"] < 0:
+            errors.append(f"Row {i}: negative amount")
+        if "date" not in row:
+            errors.append(f"Row {i}: missing date")
+        else:
+            try:
+                datetime.strptime(row["date"], "%Y-%m-%d")
+            except ValueError:
+                errors.append(f"Row {i}: invalid date format")
+    if errors:
+        raise ValueError(f"Validation failed:\n" + "\n".join(errors))
+
+    total = sum(row["amount"] for row in data)
+    average = total / len(data) if data else 0
+    by_month: Dict[str, float] = {}
+    for row in data:
+        month = row["date"][:7]
+        by_month[month] = by_month.get(month, 0) + row["amount"]
+
+    summary = {
+        "total": round(total, 2),
+        "average": round(average, 2),
+        "count": len(data),
+        "by_month": by_month,
+        "generated_at": datetime.utcnow().isoformat(),
+    }
+
+    if output_format == "json":
+        return json.dumps(summary, indent=2)
+
+    template = Template("""
+    <html><body>
+    <h1>Report</h1>
+    <p>Total: {{ total }}</p>
+    <p>Average: {{ average }}</p>
+    <p>Count: {{ count }}</p>
+    <ul>{% for month, amount in by_month.items() %}
+    <li>{{ month }}: {{ amount }}</li>
+    {% endfor %}</ul>
+    </body></html>
+    """)
+    return template.render(**summary)

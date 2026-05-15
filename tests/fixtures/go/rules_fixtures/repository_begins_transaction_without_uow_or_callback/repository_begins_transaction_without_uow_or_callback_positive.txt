@@ -1,0 +1,51 @@
+package rulefixtures
+
+import (
+	"context"
+
+	"gorm.io/gorm"
+)
+
+// scenario for repository_begins_transaction_without_uow_or_callback: Repositories that quietly start transactions inside generic CRUD methods.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type Product struct {
+	ID    uint    `gorm:"primaryKey"`
+	Name  string  `gorm:"size:128"`
+	Price float64
+	Stock int
+}
+
+type ProductRepo struct {
+	db *gorm.DB
+}
+
+func NewProductRepo(db *gorm.DB) *ProductRepo {
+	return &ProductRepo{db: db}
+}
+
+func (r *ProductRepo) ReserveStock(ctx context.Context, productID uint, quantity int) error {
+	tx := r.db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	var product Product
+	if err := tx.First(&product, productID).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if product.Stock < quantity {
+		tx.Rollback()
+		return gorm.ErrRecordNotFound
+	}
+
+	product.Stock -= quantity
+	if err := tx.Save(&product).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
+}
+
+var _ = context.Background

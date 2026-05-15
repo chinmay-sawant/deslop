@@ -1,0 +1,14 @@
+use walkdir::WalkDir;
+
+fn count_files(root: &str) -> (usize, Vec<String>) {
+    let mut count = 0;
+    let mut errors = Vec::new();
+    for entry in WalkDir::new(root) {
+        match entry {
+            Ok(e) if e.file_type().is_file() => count += 1,
+            Ok(_) => {}
+            Err(e) => errors.push(format!("walk error: {}", e)),
+        }
+    }
+    (count, errors)
+}

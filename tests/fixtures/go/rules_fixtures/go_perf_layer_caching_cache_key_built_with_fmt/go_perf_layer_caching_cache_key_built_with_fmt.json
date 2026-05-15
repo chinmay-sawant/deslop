@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_caching_cache_key_built_with_fmt",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Caching. Flag cache keys built with fmt.Sprintf in hot paths where append/Builder or structured keys are cheaper.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,7 @@
+pub fn release_lto_enabled() -> bool {
+    let release_profile = "[profile.release]\nopt-level = 3\nlto = true";
+    if release_profile.contains("lto = true") {
+        return true;
+    }
+    false
+}

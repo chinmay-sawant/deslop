@@ -1,0 +1,14 @@
+{
+  "id": "unclosed_tempfile_or_tmp_directory_from_tempfile_module",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "tempfile.NamedTemporaryFile or TemporaryDirectory created without delete=False or a context manager.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

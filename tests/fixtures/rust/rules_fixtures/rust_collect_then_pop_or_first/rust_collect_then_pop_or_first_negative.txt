@@ -1,0 +1,13 @@
+fn get_first_and_last(input: &str) -> (&str, &str) {
+    let first = input.split(',').next().unwrap();
+    let last = input.split(',').next_back().unwrap();
+    (first, last)
+}
+
+fn extract_filename(path: &str) -> &str {
+    path.split('/').next_back().unwrap()
+}
+
+fn get_domain(email: &str) -> &str {
+    email.split('@').next_back().unwrap()
+}

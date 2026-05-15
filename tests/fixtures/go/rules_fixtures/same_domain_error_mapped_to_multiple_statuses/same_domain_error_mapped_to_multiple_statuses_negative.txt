@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for same_domain_error_mapped_to_multiple_statuses: The same error type being converted to different HTTP status codes in the same module.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule157NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule157NegativeService interface {
+	Run(context.Context, Rule157NegativeRecord) error
+}
+
+func scenario157Negative(ctx context.Context, service Rule157NegativeService, input Rule157NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

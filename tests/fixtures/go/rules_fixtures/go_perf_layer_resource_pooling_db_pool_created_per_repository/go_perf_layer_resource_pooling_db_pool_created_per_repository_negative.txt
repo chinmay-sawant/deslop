@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_resource_pooling_db_pool_created_per_repository: Layer: Resource pooling. Flag database pools constructed per repository instance instead of shared process ownership.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule580NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario580Negative(records []Rule580NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

@@ -1,0 +1,34 @@
+use sqlx::PgPool;
+
+async fn enrich_orders(pool: &PgPool, order_ids: &[i64]) -> Result<Vec<EnrichedOrder>, sqlx::Error> {
+    // GOOD: batch queries with JOIN and IN clause
+    let orders = sqlx::query_as::<_, OrderRow>(
+        "SELECT id, customer_id, total FROM orders WHERE id = ANY($1)"
+    )
+    .bind(order_ids)
+    .fetch_all(pool)
+    .await?;
+
+    let customer_ids: Vec<i64> = orders.iter().map(|o| o.customer_id).collect();
+    let customers = sqlx::query_as::<_, CustomerRow>(
+        "SELECT id, name, email FROM customers WHERE id = ANY($1)"
+    )
+    .bind(&customer_ids)
+    .fetch_all(pool)
+    .await?;
+
+    let customer_map: std::collections::HashMap<i64, CustomerRow> =
+        customers.into_iter().map(|c| (c.id, c)).collect();
+
+    Ok(orders.into_iter().filter_map(|o| {
+        customer_map.get(&o.customer_id).map(|c| EnrichedOrder {
+            id: o.id,
+            customer_name: c.name.clone(),
+            total: o.total,
+        })
+    }).collect())
+}
+
+struct OrderRow { id: i64, customer_id: i64, total: f64 }
+struct CustomerRow { id: i64, name: String, email: String }
+struct EnrichedOrder { id: i64, customer_name: String, total: f64 }

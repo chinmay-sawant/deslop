@@ -1,0 +1,33 @@
+package service
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for service_method_returns_transport_writer_or_gin_h: Services that return `gin.H`, `http.ResponseWriter`, or response-writing helpers.
+// fixture polarity: positive; family: architecture; severity: warning.
+type HealthService struct{}
+
+func (s *HealthService) CheckStatus() gin.H {
+	return gin.H{
+		"status":  "ok",
+		"version": "1.0.0",
+		"uptime":  "72h",
+	}
+}
+
+func (s *HealthService) GetMetrics() gin.H {
+	return gin.H{
+		"cpu":    45.2,
+		"memory": 62.1,
+		"disk":   78.3,
+	}
+}
+
+func (s *HealthService) WriteReport(w http.ResponseWriter, data map[string]string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"generated": true}`))
+}

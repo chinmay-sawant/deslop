@@ -1,0 +1,28 @@
+/// Process the request and return a response.
+///
+/// TODO: Add support for binary payloads.
+/// TODO: Implement request validation.
+pub fn handle_request(req: &Request) -> Response {
+    Response::ok()
+}
+
+/// Calculate the checksum of the data.
+///
+/// TODO: Use a proper CRC32 implementation.
+pub fn checksum(data: &[u8]) -> u32 {
+    data.iter().map(|b| *b as u32).sum()
+}
+
+/// Parse the configuration file.
+///
+/// TODO: Support YAML and JSON formats.
+/// TODO: Add schema validation.
+pub fn parse_config(path: &str) -> Config {
+    Config::default()
+}
+
+struct Request;
+struct Response;
+impl Response { fn ok() -> Self { Self } }
+struct Config;
+impl Config { fn default() -> Self { Self } }

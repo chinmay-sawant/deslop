@@ -1,0 +1,14 @@
+{
+  "id": "partial_update_mutates_input_before_validation_succeeds",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag update helpers that mutate caller data before all validation passes.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

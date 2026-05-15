@@ -1,0 +1,21 @@
+use std::collections::HashMap;
+
+struct Cache {
+    store: HashMap<String, Vec<u8>>,
+}
+
+impl Cache {
+    fn get(&self, key: &str) -> Option<&Vec<u8>> {
+        self.store.get(key)
+    }
+
+    fn insert(&mut self, key: String, value: Vec<u8>) {
+        self.store.insert(key, value);
+    }
+}
+
+fn lookup_user(cache: &mut Cache, tenant_id: u64, user_id: u64) -> Option<Vec<u8>> {
+    // BAD: allocates a String key on every hot lookup
+    let key = format!("tenant:{}:user:{}", tenant_id, user_id);
+    cache.get(&key).cloned()
+}

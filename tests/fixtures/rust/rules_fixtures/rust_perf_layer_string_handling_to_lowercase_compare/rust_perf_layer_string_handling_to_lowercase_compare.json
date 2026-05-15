@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_string_handling_to_lowercase_compare",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: String handling. Flag to_lowercase/to_uppercase comparisons where eq_ignore_ascii_case or normalized keys avoid allocation.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

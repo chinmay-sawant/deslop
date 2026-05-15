@@ -1,0 +1,14 @@
+{
+  "id": "rust_root_reexport_wall",
+  "language": "rust",
+  "family": "module_surface",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Crate roots that expose too many public re-exports at once.",
+  "binding_location": "src/heuristics/rust/module_surface.rs"
+}

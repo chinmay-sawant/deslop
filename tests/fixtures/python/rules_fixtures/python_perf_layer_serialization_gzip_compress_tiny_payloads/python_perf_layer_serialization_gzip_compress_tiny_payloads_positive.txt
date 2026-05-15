@@ -1,0 +1,17 @@
+import gzip
+import json
+
+
+def compress_metrics(metrics: dict) -> bytes:
+    payload = json.dumps(metrics).encode("utf-8")
+    return gzip.compress(payload)
+
+
+def compress_status(status: dict) -> bytes:
+    data = json.dumps(status).encode()
+    return gzip.compress(data)
+
+
+def send_heartbeat() -> bytes:
+    heartbeat = {"ts": 1234567890, "status": "alive"}
+    return gzip.compress(json.dumps(heartbeat).encode())

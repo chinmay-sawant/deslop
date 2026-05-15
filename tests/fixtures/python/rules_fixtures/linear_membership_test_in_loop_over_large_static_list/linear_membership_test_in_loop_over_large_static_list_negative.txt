@@ -1,0 +1,19 @@
+VALID_COUNTRIES = {
+    "US", "CA", "GB", "DE", "FR", "IT", "ES", "NL", "BE", "AT",
+    "CH", "SE", "NO", "DK", "FI", "IE", "PT", "GR", "PL", "CZ",
+    "HU", "RO", "BG", "HR", "SK", "SI", "LT", "LV", "EE", "LU",
+    "MT", "CY", "AU", "NZ", "JP", "KR", "SG", "HK", "TW", "IN",
+    "BR", "MX", "AR", "CL", "CO", "PE", "ZA", "EG", "NG", "KE",
+}
+
+
+def filter_valid_orders(orders: list[dict]) -> list[dict]:
+    return [order for order in orders if order["country"] in VALID_COUNTRIES]
+
+
+def validate_users(users: list[dict]) -> list[dict]:
+    return [user for user in users if user["country_code"] in VALID_COUNTRIES]
+
+
+def check_shipments(shipments: list[dict]) -> list[dict]:
+    return [s for s in shipments if s["destination"] in VALID_COUNTRIES]

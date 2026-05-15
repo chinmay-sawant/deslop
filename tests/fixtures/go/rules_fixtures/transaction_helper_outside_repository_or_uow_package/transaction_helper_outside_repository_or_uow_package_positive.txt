@@ -1,0 +1,40 @@
+package rulefixtures
+
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
+
+// scenario for transaction_helper_outside_repository_or_uow_package: Transaction helpers buried in handlers or services instead of a repository or unit-of-work package.
+// fixture polarity: positive; family: architecture; severity: info.
+func WithTransaction(db *gorm.DB, fn func(*gorm.DB) error) error {
+	tx := db.Begin()
+	if tx.Error != nil {
+		return fmt.Errorf("begin tx: %w", tx.Error)
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		}
+	}()
+	if err := fn(tx); err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
+}
+
+type UserService struct {
+	db *gorm.DB
+}
+
+func (s *UserService) CreateUser(name string) error {
+	return WithTransaction(s.db, func(tx *gorm.DB) error {
+		if err := tx.Exec("INSERT INTO users (name) VALUES (?)", name).Error; err != nil {
+			return fmt.Errorf("insert user: %w", err)
+		}
+		return tx.Exec("INSERT INTO audit_log (action) VALUES (?)", "user_created").Error
+	})
+}

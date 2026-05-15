@@ -1,0 +1,14 @@
+{
+  "id": "rust_rayon_sequential_collect_then_par_iter",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag collecting an intermediate `Vec` only to immediately call `par_iter` or `into_par_iter` when the producer could feed the parallel stage directly.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

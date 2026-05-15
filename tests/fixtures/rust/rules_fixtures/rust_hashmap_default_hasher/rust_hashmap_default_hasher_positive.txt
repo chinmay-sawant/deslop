@@ -1,0 +1,18 @@
+use std::collections::HashMap;
+
+fn count_words(text: &str) -> HashMap<String, usize> {
+    let mut map = HashMap::new();
+    for word in text.split_whitespace() {
+        let count = map.entry(word.to_string()).or_insert(0);
+        *count += 1;
+    }
+    map
+}
+
+fn build_index(files: &[&str]) -> HashMap<String, Vec<usize>> {
+    let mut index: HashMap<String, Vec<usize>> = HashMap::new();
+    for (i, file) in files.iter().enumerate() {
+        index.entry(file.to_string()).or_default().push(i);
+    }
+    index
+}

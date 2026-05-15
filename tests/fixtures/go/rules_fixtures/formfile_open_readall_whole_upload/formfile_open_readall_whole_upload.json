@@ -1,0 +1,14 @@
+{
+  "id": "formfile_open_readall_whole_upload",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...).",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_network_calls_dns_or_url_parse_repeated_per_request",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Network calls. Flag repeated DNS, URL parsing, or endpoint normalization for stable upstreams.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

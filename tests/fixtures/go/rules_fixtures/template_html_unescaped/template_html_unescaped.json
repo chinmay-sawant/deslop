@@ -1,0 +1,14 @@
+{
+  "id": "template_html_unescaped",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`template.HTML(userInput)` or `template.JS(userInput)` type conversions on data from request parameters",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

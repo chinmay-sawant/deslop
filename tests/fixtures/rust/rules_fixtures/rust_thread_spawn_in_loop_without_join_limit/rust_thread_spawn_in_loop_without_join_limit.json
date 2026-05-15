@@ -1,0 +1,14 @@
+{
+  "id": "rust_thread_spawn_in_loop_without_join_limit",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,22 @@
+import pytest
+
+
+def test_division_by_zero():
+    with pytest.raises(ZeroDivisionError):
+        1 / 0
+
+
+def test_file_not_found():
+    with pytest.raises(FileNotFoundError):
+        open("/nonexistent/path")
+
+
+def test_key_error():
+    with pytest.raises(KeyError):
+        d = {"a": 1}
+        _ = d["b"]
+
+
+def test_value_error():
+    with pytest.raises(ValueError):
+        int("not_a_number")

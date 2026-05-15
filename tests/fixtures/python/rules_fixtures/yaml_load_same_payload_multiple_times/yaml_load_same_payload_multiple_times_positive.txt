@@ -1,0 +1,36 @@
+import yaml
+
+APP_CONFIG = """
+server:
+  host: 0.0.0.0
+  port: 8080
+database:
+  name: myapp
+  pool_size: 10
+"""
+
+
+def get_server_host() -> str:
+    config = yaml.safe_load(APP_CONFIG)
+    return config["server"]["host"]
+
+
+def get_server_port() -> int:
+    config = yaml.safe_load(APP_CONFIG)
+    return config["server"]["port"]
+
+
+def get_database_config() -> dict:
+    config = yaml.safe_load(APP_CONFIG)
+    return config["database"]
+
+
+def load_and_validate(path: str) -> dict:
+    with open(path) as f:
+        content = f.read()
+    parsed = yaml.safe_load(content)
+    schema = yaml.safe_load(content)
+    for key in schema:
+        if key not in parsed:
+            raise KeyError(f"Missing key: {key}")
+    return parsed

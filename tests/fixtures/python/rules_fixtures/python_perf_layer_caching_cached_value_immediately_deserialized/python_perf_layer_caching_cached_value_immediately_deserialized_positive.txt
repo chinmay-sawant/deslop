@@ -1,0 +1,19 @@
+import json
+
+cache = {}
+
+
+def get_user_config(user_id: str) -> dict:
+    raw = cache.get(f"config:{user_id}")
+    if raw is None:
+        raw = json.dumps(fetch_config(user_id))
+        cache[f"config:{user_id}"] = raw
+    return json.loads(raw)
+
+
+def get_settings(app_id: str) -> dict:
+    cached = cache.get(f"settings:{app_id}")
+    if cached is None:
+        cached = json.dumps(load_settings(app_id))
+        cache[f"settings:{app_id}"] = cached
+    return json.loads(cached)

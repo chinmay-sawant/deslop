@@ -1,0 +1,48 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+class TransferService:
+    def __init__(self, db):
+        self.db = db
+
+    def execute(self, from_account, to_account, amount):
+        with self.db.transaction():
+            self.db.execute("UPDATE accounts SET balance = balance - ? WHERE id = ?",
+                          (amount, from_account))
+            self.db.execute("UPDATE accounts SET balance = balance + ? WHERE id = ?",
+                          (amount, to_account))
+            self.db.execute("INSERT INTO transfers (from_id, to_id, amount) VALUES (?, ?, ?)",
+                          (from_account, to_account, amount))
+
+class OrderService:
+    def __init__(self, db):
+        self.db = db
+
+    def create(self, user_id, total, product_id):
+        with self.db.transaction():
+            self.db.execute("INSERT INTO orders (user_id, total) VALUES (?, ?)",
+                          (user_id, total))
+            self.db.execute("UPDATE inventory SET qty = qty - 1 WHERE product_id = ?",
+                          (product_id,))
+
+transfer_service = TransferService(get_db())
+order_service = OrderService(get_db())
+
+@app.route("/transfer", methods=["POST"])
+def transfer_funds():
+    data = request.get_json()
+    try:
+        transfer_service.execute(data["from"], data["to"], data["amount"])
+    except Exception:
+        return jsonify({"error": "transfer failed"}), 500
+    return jsonify({"status": "completed"})
+
+@app.route("/orders", methods=["POST"])
+def create_order():
+    data = request.get_json()
+    try:
+        order_service.create(data["user_id"], data["total"], data["product_id"])
+    except Exception:
+        return jsonify({"error": "order failed"}), 500
+    return jsonify({"status": "created"})

@@ -1,0 +1,14 @@
+{
+  "id": "test_function_covers_multiple_unrelated_scenarios",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Integration or unit test body covers multiple unrelated scenarios without parameterization.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

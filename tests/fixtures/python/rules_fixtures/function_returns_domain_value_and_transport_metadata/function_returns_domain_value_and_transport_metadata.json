@@ -1,0 +1,14 @@
+{
+  "id": "function_returns_domain_value_and_transport_metadata",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag APIs that mix domain results with transport metadata such as status-like fields or side-channel details in one return shape.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

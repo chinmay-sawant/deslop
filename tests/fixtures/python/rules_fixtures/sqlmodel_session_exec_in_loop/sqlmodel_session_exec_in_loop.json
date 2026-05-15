@@ -1,0 +1,14 @@
+{
+  "id": "sqlmodel_session_exec_in_loop",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "SQLModel Session.exec(...) is called inside loops instead of combining the query shape.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

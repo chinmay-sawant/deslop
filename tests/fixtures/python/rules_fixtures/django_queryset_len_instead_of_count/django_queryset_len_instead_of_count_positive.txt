@@ -1,0 +1,11 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Ticket
+
+
+class TicketStatsView(View):
+    def get(self, request):
+        open_tickets = Ticket.objects.filter(status="open")
+        open_count = len(open_tickets)
+        return JsonResponse({"open_count": open_count})

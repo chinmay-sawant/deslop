@@ -1,0 +1,14 @@
+{
+  "id": "pydantic_validation_error_detail_forwarded_with_internal_field_aliases",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Raw Pydantic .errors() detail forwarded to the API client, potentially exposing internal field aliases.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

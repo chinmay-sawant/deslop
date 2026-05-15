@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	htmltemplate "html/template"
+)
+
+// scenario for text_template_for_html: `text/template` used to generate HTML content (check for HTML tags in template literals or `.html` file extensions in `ParseFiles`)
+// fixture polarity: negative; family: security; severity: warning.
+func scenario740Negative(name string) (*htmltemplate.Template, error) {
+	return htmltemplate.New("page").Parse("<html><body>{.}</body></html>")
+}

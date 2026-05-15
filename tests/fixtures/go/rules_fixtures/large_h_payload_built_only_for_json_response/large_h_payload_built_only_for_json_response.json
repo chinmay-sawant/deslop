@@ -1,0 +1,14 @@
+{
+  "id": "large_h_payload_built_only_for_json_response",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Large gin.H payloads built as transient dynamic maps right before JSON rendering.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

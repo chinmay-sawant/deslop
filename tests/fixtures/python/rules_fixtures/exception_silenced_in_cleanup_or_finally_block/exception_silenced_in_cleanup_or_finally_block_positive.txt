@@ -1,0 +1,47 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_with_cleanup(resource_id: str) -> dict:
+    conn = None
+    try:
+        conn = acquire_connection(resource_id)
+        return conn.execute("SELECT * FROM data")
+    finally:
+        if conn:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+
+def transfer_funds(source: str, dest: str, amount: float) -> dict:
+    tx = begin_transaction()
+    try:
+        tx.debit(source, amount)
+        tx.credit(dest, amount)
+        tx.commit()
+        return {"status": "ok"}
+    except Exception:
+        tx.rollback()
+        return {"status": "failed"}
+    finally:
+        try:
+            release_transaction(tx)
+        except Exception:
+            pass
+
+
+def read_and_process(path: str) -> dict:
+    f = None
+    try:
+        f = open(path)
+        data = json.load(f)
+        return process(data)
+    finally:
+        if f:
+            try:
+                f.close()
+            except Exception:
+                pass

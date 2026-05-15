@@ -1,0 +1,22 @@
+use std::collections::HashMap;
+use std::hash::BuildHasherDefault;
+use ahash::AHasher;
+
+type FastHashMap<K, V> = HashMap<K, V, BuildHasherDefault<AHasher>>;
+
+fn count_words(text: &str) -> FastHashMap<String, usize> {
+    let mut map = FastHashMap::default();
+    for word in text.split_whitespace() {
+        let count = map.entry(word.to_string()).or_insert(0);
+        *count += 1;
+    }
+    map
+}
+
+fn build_index(files: &[&str]) -> FastHashMap<String, Vec<usize>> {
+    let mut index = FastHashMap::default();
+    for (i, file) in files.iter().enumerate() {
+        index.entry(file.to_string()).or_default().push(i);
+    }
+    index
+}

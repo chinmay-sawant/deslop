@@ -1,0 +1,39 @@
+package rulefixtures
+
+import (
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+)
+
+// scenario for go_perf_layer_framework_performance_gorm_preload_all_associations: Layer: Framework-specific performance. Flag GORM Preload of broad association sets on list endpoints.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+type Article struct {
+	ID       uint
+	Title    string
+	Author   Author
+	Comments []Comment
+	Tags     []Tag
+}
+
+type Author struct {
+	ID   uint
+	Name string
+}
+
+type Comment struct {
+	ID      uint
+	Body    string
+	ArticleID uint
+}
+
+type Tag struct {
+	ID   uint
+	Name string
+}
+
+func ListArticles(db *gorm.DB) ([]Article, error) {
+	var articles []Article
+	err := db.Preload(clause.Associations).Find(&articles).Error
+	return articles, err
+}

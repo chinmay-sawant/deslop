@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for empty_interface_parameter_overuse: exported functions with `any` or `interface{}` parameters when concrete types would suffice
+// fixture polarity: negative; family: performance; severity: info.
+type Rule478NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario478Negative(records []Rule478NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

@@ -1,0 +1,18 @@
+use std::io::Write;
+
+fn build_report(records: &[Record]) -> String {
+    let mut output = Vec::new();
+    for record in records {
+        // BAD: format! allocates a temporary String, then writes to output
+        let line = format!("{}: {} ({})", record.id, record.name, record.value);
+        output.write_all(line.as_bytes()).unwrap();
+        output.write_all(b"\n").unwrap();
+    }
+    String::from_utf8(output).unwrap()
+}
+
+struct Record {
+    id: u64,
+    name: String,
+    value: f64,
+}

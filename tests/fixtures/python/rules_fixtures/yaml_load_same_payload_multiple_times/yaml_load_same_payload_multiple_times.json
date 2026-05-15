@@ -1,0 +1,14 @@
+{
+  "id": "yaml_load_same_payload_multiple_times",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same YAML payload is parsed repeatedly within one function.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

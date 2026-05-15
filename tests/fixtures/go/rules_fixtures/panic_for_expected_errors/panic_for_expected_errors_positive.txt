@@ -1,0 +1,32 @@
+package rulefixtures
+
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
+
+// scenario for panic_for_expected_errors: `panic()` used for expected error conditions like invalid input or missing config
+// fixture polarity: positive; family: performance; severity: warning.
+type User struct {
+	ID   int    `gorm:"primaryKey"`
+	Name string `gorm:"column:name"`
+}
+
+func FindUserByID(db *gorm.DB, id int) *User {
+	var user User
+	err := db.First(&user, id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		panic("user not found")
+	}
+	return &user
+}
+
+func GetConfigValue(key string) string {
+	config := map[string]string{"db_host": "localhost"}
+	val, ok := config[key]
+	if !ok {
+		panic("missing required config: " + key)
+	}
+	return val
+}

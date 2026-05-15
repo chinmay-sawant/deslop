@@ -1,0 +1,17 @@
+import json
+import socket
+from typing import Any
+
+
+def load_user_session(data: bytes) -> dict:
+    return json.loads(data)
+
+
+def handle_client_request(conn: socket.socket) -> dict:
+    raw = conn.recv(65536)
+    session_data = json.loads(raw)
+    return session_data
+
+
+def read_uploaded_object(upload_bytes: bytes) -> Any:
+    return json.loads(upload_bytes)

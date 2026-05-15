@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_count_gt_zero_contains: `strings.Count(...) > 0` instead of `strings.Contains(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario653Positive(haystack string, needle string, left string, right string) bool {
+	return strings.Count(haystack, needle) > 0
+}

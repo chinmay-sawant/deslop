@@ -1,0 +1,14 @@
+{
+  "id": "repeated_len_in_loop",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated len(...) checks inside loops when the receiver appears unchanged locally.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

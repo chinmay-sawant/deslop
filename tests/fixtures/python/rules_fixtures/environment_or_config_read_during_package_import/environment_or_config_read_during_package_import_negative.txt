@@ -1,0 +1,31 @@
+import os
+import json
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1)
+def get_database_url() -> str:
+    return os.environ["DATABASE_URL"]
+
+
+@lru_cache(maxsize=1)
+def get_api_key() -> str:
+    return os.environ.get("API_KEY", "")
+
+
+@lru_cache(maxsize=1)
+def get_config() -> dict:
+    with open("config.json") as f:
+        return json.load(f)
+
+
+@lru_cache(maxsize=1)
+def get_feature_flags() -> dict:
+    return {
+        "new_ui": os.environ.get("FEATURE_NEW_UI", "false") == "true",
+        "dark_mode": os.environ.get("FEATURE_DARK_MODE", "false") == "true",
+    }
+
+
+def get_connection():
+    return connect(get_database_url())

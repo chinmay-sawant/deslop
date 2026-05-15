@@ -1,0 +1,14 @@
+{
+  "id": "pagination_binding_duplicated_outside_boundary_helper",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated pagination DTO binding and defaulting logic across handler files.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

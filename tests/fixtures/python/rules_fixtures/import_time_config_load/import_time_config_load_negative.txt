@@ -1,0 +1,28 @@
+import os
+import yaml
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1)
+def load_config() -> dict:
+    with open("config.yaml") as f:
+        return yaml.safe_load(f)
+
+
+@lru_cache(maxsize=1)
+def get_database_url() -> str:
+    return os.environ["DATABASE_URL"]
+
+
+@lru_cache(maxsize=1)
+def get_secret_key() -> str:
+    return os.environ["SECRET_KEY"]
+
+
+def is_feature_enabled(flag: str) -> bool:
+    flags = load_config().get("feature_flags", {})
+    return flags.get(flag, False)
+
+
+def get_config(key: str):
+    return load_config().get(key)

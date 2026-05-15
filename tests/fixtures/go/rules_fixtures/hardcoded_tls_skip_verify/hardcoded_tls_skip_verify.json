@@ -1,0 +1,14 @@
+{
+  "id": "hardcoded_tls_skip_verify",
+  "language": "go",
+  "family": "security",
+  "default_severity": "error",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`tls.Config{InsecureSkipVerify: true}` in non-test code",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

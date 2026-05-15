@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_parse_layout_in_loop: time.Parse(...) or ParseInLocation(...) observed inside loops with a stable layout.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario371Positive(items []string) []time.Time {
+	var results []time.Time
+	for _, s := range items {
+		t, err := time.Parse("2006-01-02", s)
+		if err != nil {
+			continue
+		}
+		results = append(results, t)
+	}
+	return results
+}

@@ -1,0 +1,25 @@
+use serde::Deserialize;
+use std::io::Read;
+
+#[derive(Debug, Deserialize)]
+struct Record {
+    id: u64,
+    value: String,
+}
+
+fn load_all_records(reader: impl Read) -> Result<Vec<Record>, Box<dyn std::error::Error>> {
+    let records: Vec<Record> = serde_json::from_reader(reader)?;
+    Ok(records)
+}
+
+fn process_large_file(path: &str) -> Result<u64, Box<dyn std::error::Error>> {
+    let file = std::fs::File::open(path)?;
+    let records: Vec<Record> = serde_json::from_reader(file)?;
+    let total: u64 = records.iter().map(|r| r.id).sum();
+    Ok(total)
+}
+
+fn count_entries(reader: impl Read) -> Result<usize, Box<dyn std::error::Error>> {
+    let data: Vec<serde_json::Value> = serde_json::from_reader(reader)?;
+    Ok(data.len())
+}

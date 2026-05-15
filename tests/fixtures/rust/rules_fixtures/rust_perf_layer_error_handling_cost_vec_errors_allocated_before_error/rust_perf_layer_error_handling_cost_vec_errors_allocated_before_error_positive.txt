@@ -1,0 +1,23 @@
+fn validate_batch(items: &[Item]) -> Result<(), Vec<String>> {
+    // BAD: error Vec allocated before any error exists
+    let mut errors: Vec<String> = Vec::new();
+    for item in items {
+        if item.quantity == 0 {
+            errors.push(format!("item {} has zero quantity", item.id));
+        }
+        if item.price < 0.0 {
+            errors.push(format!("item {} has negative price", item.id));
+        }
+    }
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(errors)
+    }
+}
+
+struct Item {
+    id: u64,
+    quantity: u32,
+    price: f64,
+}

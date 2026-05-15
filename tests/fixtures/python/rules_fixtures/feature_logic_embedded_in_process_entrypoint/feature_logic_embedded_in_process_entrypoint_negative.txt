@@ -1,0 +1,46 @@
+import sys
+import argparse
+
+
+def sync_users(users: list[dict]):
+    for user in users:
+        if user["status"] == "active":
+            if user["tier"] == "premium":
+                sync_premium_user(user)
+            else:
+                sync_basic_user(user)
+        elif user["status"] == "suspended":
+            handle_suspended(user)
+
+
+def export_data(data: list[dict], format: str):
+    writers = {"csv": write_csv, "json": write_json, "parquet": write_parquet}
+    writer = writers.get(format)
+    if not writer:
+        raise ValueError(f"Unsupported format: {format}")
+    writer(data)
+
+
+def import_records(records: list[dict]):
+    handlers = {"user": import_user, "order": import_order}
+    for record in records:
+        handler = handlers.get(record["type"], import_generic)
+        handler(record)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices=["sync", "export", "import"])
+    parser.add_argument("--format", default="json")
+    args = parser.parse_args()
+
+    if args.mode == "sync":
+        sync_users(fetch_all_users())
+    elif args.mode == "export":
+        export_data(load_export_data(), args.format)
+    elif args.mode == "import":
+        import_records(read_import_file())
+
+
+if __name__ == "__main__":
+    main()

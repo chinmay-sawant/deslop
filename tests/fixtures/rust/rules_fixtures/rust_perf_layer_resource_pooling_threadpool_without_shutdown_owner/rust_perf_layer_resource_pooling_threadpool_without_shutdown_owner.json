@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_resource_pooling_threadpool_without_shutdown_owner",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Resource pooling. Flag custom thread pools without explicit shutdown/drain ownership.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_hasprefix_manual_slice_after_len: Manual `len` and slice prefix checks instead of `bytes.HasPrefix(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario451Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return len(haystack) >= len(needle) && bytes.Equal(haystack[:len(needle)], needle)
+}

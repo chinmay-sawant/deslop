@@ -1,0 +1,26 @@
+from typing import List, Set
+
+def get_unique_tags(posts: List[dict]) -> List[str]:
+    tags: Set[str] = set()
+    for post in posts:
+        for tag in post.get("tags", []):
+            tags.add(tag)
+    return list(tags)
+
+def find_common_categories(items_a: List[dict], items_b: List[dict]) -> List[str]:
+    cats_a = {item["category"] for item in items_a}
+    cats_b = {item["category"] for item in items_b}
+    common = cats_a & cats_b
+    return list(common)
+
+def get_all_permissions(users: List[dict]) -> List[str]:
+    perms: Set[str] = set()
+    for user in users:
+        perms.update(user.get("permissions", []))
+    return list(perms)
+
+def collect_unique_emails(orders: List[dict]) -> List[str]:
+    emails = set()
+    for order in orders:
+        emails.add(order["customer_email"])
+    return list(emails)

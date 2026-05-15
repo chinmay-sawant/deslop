@@ -1,0 +1,40 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Status {
+    Active,
+    Inactive,
+    Pending,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "UPPERCASE")]
+pub enum HttpMethod {
+    Get,
+    Post,
+    Put,
+    Delete,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum LogLevel {
+    Debug,
+    Info,
+    Warn,
+    Error,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct WebhookEvent {
+    #[serde(rename = "type")]
+    pub event_type: String,
+    pub status: Status,
+    pub method: HttpMethod,
+    pub log_level: LogLevel,
+}
+
+fn serialize_event(event: &WebhookEvent) -> String {
+    serde_json::to_string(event).unwrap()
+}

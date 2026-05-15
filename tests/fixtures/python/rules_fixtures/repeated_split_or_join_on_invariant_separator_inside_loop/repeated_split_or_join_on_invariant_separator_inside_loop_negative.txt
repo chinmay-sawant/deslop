@@ -1,0 +1,23 @@
+SEPARATOR = " | "
+
+
+def parse_log_lines(lines):
+    entries = []
+    for line in lines:
+        ts_end = line.index(SEPARATOR)
+        timestamp = line[:ts_end]
+        rest = line[ts_end + len(SEPARATOR):]
+        lvl_end = rest.index(SEPARATOR)
+        level = rest[:lvl_end]
+        message = rest[lvl_end + len(SEPARATOR):]
+        entries.append({"ts": timestamp, "level": level, "msg": message})
+    return entries
+
+
+def normalize_paths(raw_paths):
+    results = []
+    for raw in raw_paths:
+        segments = raw.split("/")
+        normalized = "/".join(s.lower().strip() for s in segments if s)
+        results.append(normalized)
+    return results

@@ -1,0 +1,22 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for event_publish_before_transaction_commit: Event or message publication before durable commit is confirmed.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type EventPublisher interface {
+	PublishUserCreated(ctx context.Context, userID int) error
+}
+
+func CreateUserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, pub EventPublisher) {
+	tx, _ := db.Begin()
+	tx.ExecContext(r.Context(), "INSERT INTO users (name) VALUES ($1)", "alice")
+	pub.PublishUserCreated(r.Context(), 42)
+	tx.Commit()
+	fmt.Fprintf(w, `{"status":"ok"}`)
+}

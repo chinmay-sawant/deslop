@@ -1,0 +1,14 @@
+{
+  "id": "http_listen_non_tls",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`http.ListenAndServe` (non-TLS) usage in production-like code (not test files, not localhost bindings)",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

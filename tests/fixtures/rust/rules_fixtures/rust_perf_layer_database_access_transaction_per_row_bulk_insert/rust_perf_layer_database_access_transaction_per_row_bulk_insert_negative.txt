@@ -1,0 +1,20 @@
+use sqlx::PgPool;
+
+struct NewUser {
+    name: String,
+    email: String,
+}
+
+async fn bulk_insert_users(pool: &PgPool, users: &[NewUser]) -> Result<(), sqlx::Error> {
+    // GOOD: single transaction for entire batch
+    let mut tx = pool.begin().await?;
+    for user in users {
+        sqlx::query("INSERT INTO users (name, email) VALUES ($1, $2)")
+            .bind(&user.name)
+            .bind(&user.email)
+            .execute(&mut *tx)
+            .await?;
+    }
+    tx.commit().await?;
+    Ok(())
+}

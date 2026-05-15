@@ -1,0 +1,14 @@
+{
+  "id": "rust_regex_compiled_in_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `Regex::new(...)` inside loops or hot functions when the `regex` crate is imported.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

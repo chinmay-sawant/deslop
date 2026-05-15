@@ -1,0 +1,26 @@
+import pytest
+from myapp.validation import validate_email, validate_password, validate_username
+
+def test_validation():
+    assert validate_email("user@example.com") is True
+    assert validate_email("invalid") is False
+    assert validate_email("") is False
+    assert validate_password("Str0ng!Pass") is True
+    assert validate_password("weak") is False
+    assert validate_password("") is False
+    assert validate_username("alice") is True
+    assert validate_username("a") is False
+    assert validate_username("user@name") is False
+
+def test_order_processing():
+    from myapp.orders import Order
+    order = Order({"item": "widget", "qty": 3, "price": 10.0})
+    assert order.subtotal() == 30.0
+    order.apply_discount(0.1)
+    assert order.subtotal() == 27.0
+    order.add_shipping("express")
+    assert order.shipping_cost() == 15.0
+    order.cancel()
+    assert order.status == "cancelled"
+    order.set_notes("Changed mind")
+    assert order.notes == "Changed mind"

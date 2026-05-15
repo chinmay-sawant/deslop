@@ -1,0 +1,20 @@
+import redis
+import psycopg2
+
+
+def get_user(user_id):
+    try:
+        conn = psycopg2.connect("dbname=myapp")
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+        return cur.fetchone()
+    except psycopg2.OperationalError as e:
+        raise ConnectionError(str(e))
+
+
+def cache_set(key, value):
+    try:
+        r = redis.Redis()
+        r.set(key, value)
+    except redis.ConnectionError as e:
+        raise RuntimeError(str(e))

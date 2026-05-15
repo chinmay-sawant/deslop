@@ -1,0 +1,20 @@
+package rulefixtures
+
+import (
+	"encoding/csv"
+	"io"
+)
+
+// scenario for csv_writer_flush_per_row: csv.Writer.Flush() called inside per-row loops, reducing buffering effectiveness.
+// fixture polarity: positive; family: hot_path; severity: info.
+
+func scenario349Positive(w io.Writer, rows [][]string) error {
+	cw := csv.NewWriter(w)
+	for _, row := range rows {
+		if err := cw.Write(row); err != nil {
+			return err
+		}
+		cw.Flush()
+	}
+	return cw.Error()
+}

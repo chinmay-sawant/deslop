@@ -1,0 +1,23 @@
+from dataclasses import dataclass
+from sqlalchemy.orm import Session
+
+
+@dataclass
+class UserDTO:
+    email: str
+    name: str
+    role: str
+
+
+class UserRepository:
+    def __init__(self, session: Session):
+        self.session = session
+
+    def create_user(self, user_dto: UserDTO):
+        user = User(email=user_dto.email, name=user_dto.name, role=user_dto.role)
+        self.session.add(user)
+        self.session.commit()
+        return user
+
+    def find_by_email(self, email: str):
+        return self.session.query(User).filter_by(email=email).first()

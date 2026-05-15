@@ -1,0 +1,46 @@
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum ParseError {
+    #[error("invalid JSON: {0}")]
+    Json(#[from] serde_json::Error),
+    #[error("validation failed: {0}")]
+    Validation(String),
+}
+
+#[derive(Error, Debug)]
+pub enum PluginError {
+    #[error("library load failed: {0}")]
+    LoadFailed(String),
+    #[error("entry point not found")]
+    EntryNotFound,
+}
+
+#[derive(Error, Debug)]
+pub enum FetchError {
+    #[error("network error: {0}")]
+    Network(#[from] reqwest::Error),
+    #[error("invalid response")]
+    InvalidResponse,
+}
+
+// GOOD: public API with concrete error types
+pub fn parse_input(input: &str) -> Result<ParsedData, ParseError> {
+    let data = serde_json::from_str(input)?;
+    validate_data(&data).map_err(|e| ParseError::Validation(e.to_string()))?;
+    Ok(data)
+}
+
+pub fn load_plugin(path: &str) -> Result<Plugin, PluginError> {
+    let lib = unsafe { libloading::Library::new(path) }
+        .map_err(|e| PluginError::LoadFailed(e.to_string()))?;
+    let entry: libloading::Symbol<fn() -> Plugin> = unsafe { lib.get(b"create") }
+        .map_err(|_| PluginError::EntryNotFound)?;
+    Ok(entry())
+}
+
+pub fn fetch_url(url: &str) -> Result<Vec<u8>, FetchError> {
+    let response = reqwest::blocking::get(url)?;
+    let bytes = response.bytes()?;
+    Ok(bytes.to_vec())
+}

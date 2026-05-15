@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_accepts_more_than_one_body_contract: Handlers that try to bind or manually parse multiple body DTOs in one request path.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule040NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule040NegativeService interface {
+	Run(context.Context, Rule040NegativeRecord) error
+}
+
+func scenario040Negative(ctx context.Context, service Rule040NegativeService, input Rule040NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

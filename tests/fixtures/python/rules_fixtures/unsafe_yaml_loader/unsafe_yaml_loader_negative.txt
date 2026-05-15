@@ -1,0 +1,17 @@
+import yaml
+
+def load_config(path: str) -> dict:
+    with open(path, "r") as f:
+        return yaml.safe_load(f)
+
+def load_user_preferences(path: str) -> dict:
+    with open(path, "r") as f:
+        data = yaml.load(f, Loader=yaml.SafeLoader)
+    return data
+
+def parse_pipeline_spec(yaml_text: str) -> dict:
+    return yaml.safe_load(yaml_text)
+
+def load_deployment_config(path: str) -> dict:
+    with open(path, "r") as f:
+        return yaml.safe_load(f)

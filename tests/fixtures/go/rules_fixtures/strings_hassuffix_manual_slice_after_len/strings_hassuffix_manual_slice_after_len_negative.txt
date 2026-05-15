@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_hassuffix_manual_slice_after_len: Manual `len` and slice suffix checks instead of `strings.HasSuffix(...)`.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario656Negative(haystack string, needle string, left string, right string) bool {
+	return strings.HasSuffix(haystack, needle)
+}

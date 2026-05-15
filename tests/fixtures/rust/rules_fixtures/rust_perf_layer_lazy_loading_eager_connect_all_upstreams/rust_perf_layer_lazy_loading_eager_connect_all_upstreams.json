@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_lazy_loading_eager_connect_all_upstreams",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Lazy loading. Flag connecting to every optional upstream during startup instead of lazy or feature-gated initialization.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

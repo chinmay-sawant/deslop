@@ -1,0 +1,14 @@
+{
+  "id": "test_helpers_shipped_inside_production_package_path",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag test-only helpers living under the production import path.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

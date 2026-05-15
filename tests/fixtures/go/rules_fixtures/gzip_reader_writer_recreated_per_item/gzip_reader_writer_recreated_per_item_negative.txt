@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for gzip_reader_writer_recreated_per_item: gzip.NewReader(...) or gzip.NewWriter(...) recreated inside iterative paths instead of per stream.
+// fixture polarity: negative; family: hot_path; severity: info.
+type Rule351NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario351Negative(records []Rule351NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

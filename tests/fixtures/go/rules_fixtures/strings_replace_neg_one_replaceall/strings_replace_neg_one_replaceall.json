@@ -1,0 +1,14 @@
+{
+  "id": "strings_replace_neg_one_replaceall",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`strings.Replace(..., -1)` instead of `strings.ReplaceAll(...)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

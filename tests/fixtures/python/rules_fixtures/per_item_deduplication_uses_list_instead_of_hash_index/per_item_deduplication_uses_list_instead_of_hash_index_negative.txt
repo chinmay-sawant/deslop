@@ -1,0 +1,24 @@
+def deduplicate_ids(records):
+    seen = set()
+    unique = []
+    for record in records:
+        rid = record["id"]
+        if rid not in seen:
+            seen.add(rid)
+            unique.append(rid)
+    return unique
+
+
+def find_new_entries(existing, incoming):
+    existing_set = set(existing)
+    return [item for item in incoming if item not in existing_set]
+
+
+def filter_seen(events, seen_set):
+    result = []
+    for event in events:
+        eid = event["event_id"]
+        if eid not in seen_set:
+            seen_set.add(eid)
+            result.append(event)
+    return result

@@ -1,0 +1,9 @@
+// src/lib.rs
+use tempfile::NamedTempFile;
+
+fn write_temp_config(data: &str) -> NamedTempFile {
+    let mut tmp = NamedTempFile::new().unwrap();
+    use std::io::Write;
+    tmp.write_all(data.as_bytes()).unwrap();
+    tmp
+}

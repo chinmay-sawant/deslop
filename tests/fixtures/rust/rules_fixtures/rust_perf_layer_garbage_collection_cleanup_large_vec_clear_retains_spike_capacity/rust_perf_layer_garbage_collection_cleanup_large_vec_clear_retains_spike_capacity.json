@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_garbage_collection_cleanup_large_vec_clear_retains_spike_capacity",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag long-lived Vec buffers cleared after spikes without capacity trimming or replacement policy.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,20 @@
+import pandas as pd
+
+
+def normalize_prices(df: pd.DataFrame) -> pd.DataFrame:
+    copy = df.copy()
+    copy["price"] = copy["price"] / copy["price"].max()
+    return copy
+
+
+def add_full_name(df: pd.DataFrame) -> pd.DataFrame:
+    new_df = df.copy()
+    new_df["full_name"] = new_df["first_name"] + " " + new_df["last_name"]
+    return new_df
+
+
+def filter_and_label(df: pd.DataFrame) -> pd.DataFrame:
+    result = df.copy()
+    result["is_premium"] = result["total_spent"] > 1000
+    result["discount"] = result["total_spent"] * 0.1
+    return result[result["is_premium"]]

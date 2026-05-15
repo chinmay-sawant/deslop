@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_serialization_pydantic_model_recreated_for_internal_dict",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag Pydantic model construction around trusted internal dicts in tight loops.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

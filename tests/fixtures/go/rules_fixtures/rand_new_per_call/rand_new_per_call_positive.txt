@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"math/rand"
+)
+
+// scenario for rand_new_per_call: `rand.New(...)` inside regular call paths instead of reusing a generator.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario624Positive() int {
+	r := rand.New(rand.NewSource(42))
+	return r.Intn(100)
+}

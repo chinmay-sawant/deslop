@@ -1,0 +1,35 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for model_to_dto_mapping_in_handler: Handlers that manually shape every response from persistence structs rather than using dedicated mapping helpers.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type UserModel struct {
+	ID        int
+	FirstName string
+	LastName  string
+	EmailAddr string
+	CreatedAt string
+}
+
+type UserResponse struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+func GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	user := UserModel{ID: 1, FirstName: "Alice", LastName: "Smith", EmailAddr: "alice@example.com", CreatedAt: "2024-01-15"}
+
+	resp := UserResponse{
+		ID:    user.ID,
+		Name:  user.FirstName + " " + user.LastName,
+		Email: user.EmailAddr,
+	}
+
+	json.NewEncoder(w).Encode(resp)
+}

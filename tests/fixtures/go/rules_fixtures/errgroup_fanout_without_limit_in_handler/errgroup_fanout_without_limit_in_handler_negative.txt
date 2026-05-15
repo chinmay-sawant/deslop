@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for errgroup_fanout_without_limit_in_handler: errgroup goroutine fanout without a visible concurrency limit in handlers.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule312NegativeRecord struct {
+	Name string
+}
+
+type Rule312NegativeService interface {
+	Handle(context.Context, Rule312NegativeRecord) (Rule312NegativeRecord, error)
+}
+
+func scenario312Negative(ctx context.Context, service Rule312NegativeService, input Rule312NegativeRecord) (Rule312NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule312NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

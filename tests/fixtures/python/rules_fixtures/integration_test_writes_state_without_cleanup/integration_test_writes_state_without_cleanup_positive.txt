@@ -1,0 +1,29 @@
+import pytest
+from myapp.db import get_session
+from myapp.models import User
+
+
+def test_create_user():
+    session = get_session()
+    user = User(name="testuser", email="test@example.com")
+    session.add(user)
+    session.commit()
+    assert user.id is not None
+
+
+def test_update_user_role():
+    session = get_session()
+    user = session.query(User).filter_by(name="testuser").first()
+    user.role = "admin"
+    session.commit()
+    assert user.role == "admin"
+
+
+def test_create_bulk_orders():
+    session = get_session()
+    for i in range(100):
+        order = Order(user_id=1, amount=i * 10.0)
+        session.add(order)
+    session.commit()
+    count = session.query(Order).count()
+    assert count >= 100

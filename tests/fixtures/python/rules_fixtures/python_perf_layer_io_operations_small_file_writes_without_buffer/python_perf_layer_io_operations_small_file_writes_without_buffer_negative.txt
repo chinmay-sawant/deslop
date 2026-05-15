@@ -1,0 +1,10 @@
+def write_csv_report(data, filepath):
+    lines = ["id,name,value\n"]
+    lines.extend(f"{row['id']},{row['name']},{row['value']}\n" for row in data)
+    with open(filepath, "w") as f:
+        f.writelines(lines)
+
+def generate_config(pairs, filepath):
+    lines = [f"{key}={value}\n" for key, value in pairs]
+    with open(filepath, "w") as f:
+        f.writelines(lines)

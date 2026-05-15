@@ -1,0 +1,17 @@
+import httpx
+
+client = httpx.AsyncClient(base_url="https://api.example.com", timeout=30)
+
+
+async def get_user(user_id: int) -> dict:
+    resp = await client.get(f"/users/{user_id}")
+    return resp.json()
+
+
+async def create_user(data: dict) -> dict:
+    resp = await client.post("/users", json=data)
+    return resp.json()
+
+
+async def delete_user(user_id: int) -> None:
+    await client.delete(f"/users/{user_id}")

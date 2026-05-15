@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"time"
+)
+
+// scenario for request_body_read_without_size_limit: HTTP request bodies read or decoded without an observed size limit such as io.LimitReader or http.MaxBytesReader.
+// fixture polarity: negative; family: idioms; severity: warning.
+func scenario392Negative(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+	if client == nil { client = &http.Client{Timeout: time.Second} }
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil { return nil, err }
+	return client.Do(req)
+}

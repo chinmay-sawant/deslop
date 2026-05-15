@@ -1,0 +1,32 @@
+use serde::{Deserialize, Serialize};
+
+// GOOD: explicit fields, deny unknown fields
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct UserConfig {
+    name: String,
+    email: String,
+    #[serde(default)]
+    timezone: String,
+    #[serde(default)]
+    locale: String,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct ApiRequest {
+    action: String,
+    #[serde(default)]
+    timeout_ms: Option<u64>,
+    #[serde(default)]
+    retry_count: Option<u32>,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(tag = "event_type")]
+enum Event {
+    #[serde(rename = "user_created")]
+    UserCreated { user_id: String, timestamp: u64 },
+    #[serde(rename = "order_placed")]
+    OrderPlaced { order_id: String, amount: f64 },
+}

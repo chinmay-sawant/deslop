@@ -1,0 +1,22 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"os"
+)
+
+// scenario for go_perf_layer_caching_per_request_config_cache_rebuild: Layer: Caching. Flag request-scoped caches rebuilt from config or environment on every call.
+// fixture polarity: positive; family: performance; severity: contextual.
+type featureConfig struct {
+	Enabled bool
+	Limit   int
+}
+
+func scenario512Positive() *featureConfig {
+	// Re-reads and parses the config file on every call — even when
+	// the file has not changed between requests.
+	data, _ := os.ReadFile("/etc/app/features.json")
+	cfg := &featureConfig{}
+	json.Unmarshal(data, cfg)
+	return cfg
+}

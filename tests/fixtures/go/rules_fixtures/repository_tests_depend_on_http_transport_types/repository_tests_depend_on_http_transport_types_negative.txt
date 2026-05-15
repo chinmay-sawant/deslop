@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_tests_depend_on_http_transport_types: Repository tests that assert HTTP DTOs or handler-layer types.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule137NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule137NegativeService interface {
+	Run(context.Context, Rule137NegativeRecord) error
+}
+
+func scenario137Negative(ctx context.Context, service Rule137NegativeService, input Rule137NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

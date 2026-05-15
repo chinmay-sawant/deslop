@@ -1,0 +1,15 @@
+import subprocess
+
+def convert_images(image_paths):
+    cmd = ["mogrify", "-format", "webp"] + image_paths
+    subprocess.run(cmd, check=True)
+    return [p.replace(".png", ".webp") for p in image_paths]
+
+def check_hosts(hostnames):
+    hosts_str = " ".join(hostnames)
+    result = subprocess.run(
+        ["fping", "-q"] + hostnames,
+        capture_output=True, text=True,
+    )
+    reachable = set(result.stdout.strip().splitlines())
+    return {h: h in reachable for h in hostnames}

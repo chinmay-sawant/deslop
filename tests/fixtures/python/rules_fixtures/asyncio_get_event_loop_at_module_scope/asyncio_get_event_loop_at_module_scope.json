@@ -1,0 +1,14 @@
+{
+  "id": "asyncio_get_event_loop_at_module_scope",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "asyncio.get_event_loop() or get_running_loop() called at module import scope outside any function.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

@@ -1,0 +1,33 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"fmt"
+)
+
+// scenario for likely_unindexed_query: Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+type Product struct {
+	ID          int
+	Description string
+}
+
+func SearchProducts(db *sql.DB, keyword string) ([]Product, error) {
+	rows, err := db.Query(
+		"SELECT id, description FROM products WHERE description LIKE $1",
+		"%"+keyword+"%",
+	)
+	if err != nil {
+		return nil, fmt.Errorf("search: %w", err)
+	}
+	defer rows.Close()
+
+	var products []Product
+	for rows.Next() {
+		var p Product
+		rows.Scan(&p.ID, &p.Description)
+		products = append(products, p)
+	}
+	return products, rows.Err()
+}

@@ -1,0 +1,13 @@
+fn find_long_names(items: &[&str]) -> Vec<String> {
+    items.iter()
+        .filter(|s| s.len() > 10)
+        .map(|s| s.to_uppercase())
+        .collect()
+}
+
+fn extract_domains(urls: &[&str]) -> Vec<&str> {
+    urls.iter()
+        .filter(|u| u.starts_with("https"))
+        .filter_map(|u| u.strip_prefix("https://"))
+        .collect()
+}

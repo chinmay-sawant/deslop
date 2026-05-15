@@ -1,0 +1,14 @@
+{
+  "id": "rust_manifest_dependency_default_features_unreviewed",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag heavy dependencies with default features enabled when only a narrow feature set appears to be used.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

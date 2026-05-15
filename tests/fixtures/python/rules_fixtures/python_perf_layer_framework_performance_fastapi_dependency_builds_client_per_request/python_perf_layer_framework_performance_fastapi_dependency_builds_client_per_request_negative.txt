@@ -1,0 +1,17 @@
+from fastapi import FastAPI, Depends
+import httpx
+
+app = FastAPI()
+
+_payment_client = None
+
+def get_payment_client():
+    global _payment_client
+    if _payment_client is None:
+        _payment_client = httpx.Client(base_url="https://api.payments.example.com", timeout=10)
+    return _payment_client
+
+@app.post("/charge")
+async def create_charge(amount: float, client: httpx.Client = Depends(get_payment_client)):
+    response = client.post("/charges", json={"amount": amount})
+    return response.json()

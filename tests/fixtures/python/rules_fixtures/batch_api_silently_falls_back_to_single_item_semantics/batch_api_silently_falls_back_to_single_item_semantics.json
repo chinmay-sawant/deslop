@@ -1,0 +1,14 @@
+{
+  "id": "batch_api_silently_falls_back_to_single_item_semantics",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag APIs that claim batch behavior but quietly process items one by one with different semantics.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_child_lookup_by_field_name_in_hot_walk",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated `child_by_field_name(\"...\")` string lookups in hot recursive walkers where field ids, cursors, or one-pass extraction would avoid repeated lookup work.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

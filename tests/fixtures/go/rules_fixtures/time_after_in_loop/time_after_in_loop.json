@@ -1,0 +1,14 @@
+{
+  "id": "time_after_in_loop",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "time.After(...) is allocated inside loops instead of reusing a timer or deadline.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

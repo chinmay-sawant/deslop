@@ -1,0 +1,12 @@
+use walkdir::WalkDir;
+
+fn walk_no_filters(root: &str) -> Vec<String> {
+    WalkDir::new(root)
+        .hidden(false)
+        .git_ignore(false)
+        .git_exclude(false)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .map(|e| e.path().to_string_lossy().to_string())
+        .collect()
+}

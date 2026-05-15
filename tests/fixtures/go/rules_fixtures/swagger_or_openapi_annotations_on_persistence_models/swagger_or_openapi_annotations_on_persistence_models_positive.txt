@@ -1,0 +1,21 @@
+package rulefixtures
+
+// scenario for swagger_or_openapi_annotations_on_persistence_models: Persistence structs used as the public docs contract instead of transport DTOs.
+// fixture polarity: positive; family: architecture; severity: info.
+
+// @Description User account information
+// @Model User
+// @Schema
+type UserModel struct {
+	// @Description Unique identifier for the user
+	// @Example 1
+	ID int64 `json:"id" gorm:"primaryKey" swagger:"description:Unique identifier for the user,example:1"`
+
+	// @Description Full name of the user
+	// @Example "Alice Smith"
+	Name string `json:"name" gorm:"not null" swagger:"description:Full name of the user,example:Alice Smith"`
+
+	// @Description Email address
+	// @Example "alice@example.com"
+	Email string `json:"email" gorm:"uniqueIndex" swagger:"description:Email address,example:alice@example.com"`
+}

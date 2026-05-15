@@ -1,0 +1,14 @@
+{
+  "id": "thread_local_storage_read_from_async_function",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Async function reads from threading.local() storage, which is per-thread not per-coroutine.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

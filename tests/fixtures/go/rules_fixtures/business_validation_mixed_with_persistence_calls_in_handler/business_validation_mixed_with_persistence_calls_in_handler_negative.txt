@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for business_validation_mixed_with_persistence_calls_in_handler: Handlers that start querying or writing before finishing request validation.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule011NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule011NegativeService interface {
+	Run(context.Context, Rule011NegativeRecord) error
+}
+
+func scenario011Negative(ctx context.Context, service Rule011NegativeService, input Rule011NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,27 @@
+import torch
+import torch.nn as nn
+
+
+class Classifier(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(784, 128)
+        self.fc2 = nn.Linear(128, 10)
+
+    def forward(self, x):
+        x = torch.relu(self.fc1(x))
+        return self.fc2(x)
+
+
+def predict(model: nn.Module, input_tensor: torch.Tensor) -> torch.Tensor:
+    with torch.no_grad():
+        output = model(input_tensor)
+    return output
+
+
+def batch_predict(model: nn.Module, inputs: list[torch.Tensor]) -> list[torch.Tensor]:
+    results = []
+    for inp in inputs:
+        output = model(inp)
+        results.append(output.argmax(dim=-1))
+    return results

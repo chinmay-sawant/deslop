@@ -1,0 +1,22 @@
+import base64
+import json
+
+
+def encode_config(config: dict) -> str:
+    payload = json.dumps(config).encode("utf-8")
+    return base64.b64encode(payload).decode("ascii")
+
+
+def decode_config(encoded: str) -> dict:
+    raw = base64.b64decode(encoded.encode("ascii"))
+    return json.loads(raw.decode("utf-8"))
+
+
+def process_request(config_b64: str) -> dict:
+    config = decode_config(config_b64)
+    result = run_computation(config)
+    return {"result": result, "config": encode_config(config)}
+
+
+def run_computation(config: dict) -> int:
+    return sum(v for v in config.values() if isinstance(v, (int, float)))

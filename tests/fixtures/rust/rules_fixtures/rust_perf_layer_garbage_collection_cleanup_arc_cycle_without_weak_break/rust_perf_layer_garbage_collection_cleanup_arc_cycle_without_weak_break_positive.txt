@@ -1,0 +1,26 @@
+use std::sync::{Arc, Mutex};
+
+struct Node {
+    value: i64,
+    // BAD: Arc cycle — parent holds Arc to child, child holds Arc to parent
+    parent: Option<Arc<Mutex<Node>>>,
+    children: Vec<Arc<Mutex<Node>>>,
+}
+
+fn build_tree() -> Arc<Mutex<Node>> {
+    let root = Arc::new(Mutex::new(Node {
+        value: 0,
+        parent: None,
+        children: Vec::new(),
+    }));
+
+    let child = Arc::new(Mutex::new(Node {
+        value: 1,
+        parent: Some(Arc::clone(&root)),
+        children: Vec::new(),
+    }));
+
+    root.lock().unwrap().children.push(Arc::clone(&child));
+    // child also holds Arc to root — cycle!
+    root
+}

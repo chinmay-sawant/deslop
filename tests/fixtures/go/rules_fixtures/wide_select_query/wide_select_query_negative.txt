@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for wide_select_query: Literal SELECT * query shapes.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule694NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario694Negative(records []Rule694NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

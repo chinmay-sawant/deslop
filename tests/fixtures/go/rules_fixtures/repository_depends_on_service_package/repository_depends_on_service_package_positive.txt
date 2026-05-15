@@ -1,0 +1,44 @@
+package rulefixtures
+
+import (
+	"gorm.io/gorm"
+)
+
+// scenario for repository_depends_on_service_package: Repositories that import service packages, which inverts the expected dependency flow.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type Subscription struct {
+	ID     uint   `gorm:"primaryKey"`
+	Plan   string `gorm:"size:64"`
+	Active bool   `gorm:"default:true"`
+}
+
+type SubscriptionService struct {
+	discountRate float64
+}
+
+func (s *SubscriptionService) CalculatePrice(plan string) float64 {
+	base := map[string]float64{"basic": 9.99, "pro": 29.99, "enterprise": 99.99}
+	price := base[plan]
+	return price * (1 - s.discountRate)
+}
+
+type SubscriptionRepo struct {
+	db             *gorm.DB
+	pricingService *SubscriptionService
+}
+
+func NewSubscriptionRepo(db *gorm.DB, pricingService *SubscriptionService) *SubscriptionRepo {
+	return &SubscriptionRepo{db: db, pricingService: pricingService}
+}
+
+func (r *SubscriptionRepo) Create(plan string) (*Subscription, error) {
+	price := r.pricingService.CalculatePrice(plan)
+	_ = price
+
+	sub := &Subscription{Plan: plan, Active: true}
+	err := r.db.Create(sub).Error
+	return sub, err
+}
+
+var _ = gorm.ErrRecordNotFound

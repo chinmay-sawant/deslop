@@ -1,0 +1,22 @@
+package rulefixtures
+
+import (
+	"io"
+	"net/http"
+)
+
+// scenario for http_response_body_not_closed: HTTP responses acquired locally without an observed resp.Body.Close() call.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario381Positive(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}

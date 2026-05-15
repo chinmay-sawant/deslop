@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for fmt_print_of_sensitive_struct: `fmt.Sprintf("%+v", user)` or `fmt.Printf("%v", config)` on structs that contain password/secret/token fields
+// fixture polarity: positive; family: security; severity: warning.
+type Rule711PositiveRecord struct { Password string; Token string }
+
+func scenario711Positive(user Rule711PositiveRecord) string {
+	return fmt.Sprintf("%+v", user)
+}

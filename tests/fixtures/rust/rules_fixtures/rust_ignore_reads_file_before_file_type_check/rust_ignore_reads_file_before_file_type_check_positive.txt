@@ -1,0 +1,11 @@
+use walkdir::WalkDir;
+
+fn read_all_files(root: &str) -> Vec<String> {
+    let mut results = Vec::new();
+    for entry in WalkDir::new(root) {
+        let entry = entry.unwrap();
+        let content = std::fs::read_to_string(entry.path()).unwrap_or_default();
+        results.push(content);
+    }
+    results
+}

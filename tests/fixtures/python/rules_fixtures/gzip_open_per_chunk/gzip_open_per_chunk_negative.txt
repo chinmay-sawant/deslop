@@ -1,0 +1,15 @@
+import gzip
+
+def compress_all(data_chunks):
+    with gzip.open("output.gz", "wb") as f:
+        for chunk in data_chunks:
+            f.write(chunk.encode())
+
+def decompress_file(filepath):
+    with gzip.open(filepath, "rb") as f:
+        return f.read()
+
+def write_log_entries(entries):
+    with gzip.open("logs.gz", "wb") as f:
+        for entry in entries:
+            f.write((entry + "\n").encode())

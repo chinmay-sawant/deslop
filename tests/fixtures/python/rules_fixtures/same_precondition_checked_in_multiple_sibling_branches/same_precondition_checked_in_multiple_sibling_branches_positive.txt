@@ -1,0 +1,21 @@
+def process_request(request, action):
+    if action == "create":
+        if not request.user.is_authenticated:
+            raise PermissionError("Not authenticated")
+        if not request.user.has_perm("create"):
+            raise PermissionError("No create permission")
+        return create_resource(request)
+
+    elif action == "update":
+        if not request.user.is_authenticated:
+            raise PermissionError("Not authenticated")
+        if not request.user.has_perm("update"):
+            raise PermissionError("No update permission")
+        return update_resource(request)
+
+    elif action == "delete":
+        if not request.user.is_authenticated:
+            raise PermissionError("Not authenticated")
+        if not request.user.has_perm("delete"):
+            raise PermissionError("No delete permission")
+        return delete_resource(request)

@@ -1,0 +1,14 @@
+{
+  "id": "threading_thread_without_daemon_true_in_server_code",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "threading.Thread created in server-side code without daemon=True, which can block graceful shutdown.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

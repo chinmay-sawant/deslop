@@ -1,0 +1,14 @@
+{
+  "id": "bytes_splitaftern_two_index_zero_cut",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.SplitAfterN(..., 2)[0]` instead of a two-part `bytes.Cut(...)` flow.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

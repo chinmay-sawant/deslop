@@ -1,0 +1,27 @@
+use anyhow::{Context, Result};
+use std::path::Path;
+
+pub fn load_dataset(path: &Path, name: &str) -> Result<DataFrame> {
+    let bytes = std::fs::read(path)
+        .context(format!("failed to read dataset '{}' from {}", name, path.display()))?;
+    let df = parse_csv(&bytes)
+        .context(format!("failed to parse CSV for dataset '{}'", name))?;
+    Ok(df)
+}
+
+pub fn connect_to_shard(host: &str, port: u16, shard_id: u32) -> Result<Connection> {
+    let conn = tcp_connect(host, port)
+        .context(format!("connecting to shard {shard_id} at {host}:{port}"))?;
+    Ok(conn)
+}
+
+fn parse_csv(_bytes: &[u8]) -> Result<DataFrame> {
+    todo!()
+}
+
+fn tcp_connect(_host: &str, _port: u16) -> Result<Connection> {
+    todo!()
+}
+
+struct DataFrame;
+struct Connection;

@@ -1,0 +1,47 @@
+package rulefixtures
+
+import (
+	"errors"
+	"net/http"
+)
+
+// scenario for middleware_and_handler_translate_same_error_domain: Double translation layers where middleware and handlers both map the same error family to responses.
+// fixture polarity: positive; family: architecture; severity: info.
+
+var (
+	ErrNotFound = errors.New("not found")
+	ErrConflict = errors.New("conflict")
+)
+
+func errorToStatus(err error) int {
+	switch {
+	case errors.Is(err, ErrNotFound):
+		return http.StatusNotFound
+	case errors.Is(err, ErrConflict):
+		return http.StatusConflict
+	default:
+		return http.StatusInternalServerError
+	}
+}
+
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("Authorization")
+		if token == "" {
+			status := errorToStatus(ErrNotFound)
+			http.Error(w, "auth required", status)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func UserHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		status := errorToStatus(ErrNotFound)
+		http.Error(w, "user not found", status)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

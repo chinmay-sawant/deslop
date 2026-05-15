@@ -1,0 +1,17 @@
+from typing import List, Dict
+
+def find_matching_users(users: List[dict], permissions: List[dict]) -> List[dict]:
+    perm_user_ids = {p["user_id"] for p in permissions}
+    return [u for u in users if u["id"] in perm_user_ids]
+
+def get_product_categories(products: List[dict], categories: List[dict]) -> List[str]:
+    cat_map = {c["id"]: c["name"] for c in categories}
+    return [cat_map[p["category_id"]] for p in products if p["category_id"] in cat_map]
+
+def match_orders_to_customers(orders: List[dict], customers: List[dict]) -> List[dict]:
+    customer_map = {c["id"]: c["name"] for c in customers}
+    return [{**order, "customer_name": customer_map[order["customer_id"]]} for order in orders]
+
+def find_employees_in_departments(employees: List[dict], departments: List[dict]) -> List[dict]:
+    dept_map = {d["id"]: d["name"] for d in departments}
+    return [{**emp, "department_name": dept_map[emp["department_id"]]} for emp in employees]

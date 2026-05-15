@@ -1,0 +1,14 @@
+{
+  "id": "rust_pub_interior_mutability_field",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Public structs that expose Mutex, RwLock, RefCell, Cell, or similar fields directly.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

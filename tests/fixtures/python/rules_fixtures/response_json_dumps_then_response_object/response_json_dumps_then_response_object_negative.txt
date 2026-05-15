@@ -1,0 +1,22 @@
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
+
+router = APIRouter()
+
+
+@router.get("/users/{user_id}")
+def get_user_profile(user_id: int):
+    user = fetch_user(user_id)
+    return JSONResponse({"user": user, "status": "ok"})
+
+
+@router.get("/orders/{order_id}")
+def get_order_details(order_id: int):
+    order = fetch_order(order_id)
+    return JSONResponse({"order": order, "status": "ok"})
+
+
+@router.get("/products")
+def list_products():
+    products = fetch_products()
+    return JSONResponse({"products": products, "count": len(products)})

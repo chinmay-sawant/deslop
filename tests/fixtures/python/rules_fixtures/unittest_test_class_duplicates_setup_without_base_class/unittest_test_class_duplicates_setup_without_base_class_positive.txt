@@ -1,0 +1,33 @@
+import unittest
+
+class TestUserService(unittest.TestCase):
+    def setUp(self):
+        self.db = create_test_database()
+        self.user_repo = UserRepository(self.db)
+        self.test_user = self.user_repo.create({"name": "Alice", "email": "alice@test.com"})
+
+    def test_get_user(self):
+        user = self.user_repo.get(self.test_user.id)
+        self.assertEqual(user.name, "Alice")
+
+    def test_update_user(self):
+        self.user_repo.update(self.test_user.id, {"name": "Bob"})
+        user = self.user_repo.get(self.test_user.id)
+        self.assertEqual(user.name, "Bob")
+
+class TestOrderService(unittest.TestCase):
+    def setUp(self):
+        self.db = create_test_database()
+        self.user_repo = UserRepository(self.db)
+        self.order_repo = OrderRepository(self.db)
+        self.test_user = self.user_repo.create({"name": "Alice", "email": "alice@test.com"})
+
+    def test_create_order(self):
+        order = self.order_repo.create({"user_id": self.test_user.id, "total": 99.99})
+        self.assertIsNotNone(order.id)
+
+    def test_get_user_orders(self):
+        self.order_repo.create({"user_id": self.test_user.id, "total": 50.0})
+        self.order_repo.create({"user_id": self.test_user.id, "total": 75.0})
+        orders = self.order_repo.get_by_user(self.test_user.id)
+        self.assertEqual(len(orders), 2)

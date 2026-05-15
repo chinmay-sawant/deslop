@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for table_name_literals_duplicated_outside_repository: Repeated table-name strings across handlers, services, and jobs.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule197NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule197NegativeService interface {
+	Run(context.Context, Rule197NegativeRecord) error
+}
+
+func scenario197Negative(ctx context.Context, service Rule197NegativeService, input Rule197NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

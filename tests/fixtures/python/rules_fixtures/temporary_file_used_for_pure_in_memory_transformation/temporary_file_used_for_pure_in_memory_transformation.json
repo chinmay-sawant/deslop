@@ -1,0 +1,14 @@
+{
+  "id": "temporary_file_used_for_pure_in_memory_transformation",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag workflows that spill to disk despite an in-memory transform being sufficient.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

@@ -1,0 +1,9 @@
+use libc;
+
+fn get_pid() -> libc::pid_t {
+    unsafe { libc::getpid() }
+}
+
+fn set_nonblocking(fd: libc::c_int) -> i32 {
+    unsafe { libc::fcntl(fd, libc::F_SETFL, libc::O_NONBLOCK) }
+}

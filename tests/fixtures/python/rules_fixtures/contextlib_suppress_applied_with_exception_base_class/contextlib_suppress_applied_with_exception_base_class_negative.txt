@@ -1,0 +1,27 @@
+import contextlib
+import json
+
+
+def safe_read(path):
+    with contextlib.suppress(FileNotFoundError, PermissionError):
+        with open(path) as f:
+            return f.read()
+    return None
+
+
+def try_parse(data):
+    with contextlib.suppress(json.JSONDecodeError, TypeError):
+        return json.loads(data)
+    return {}
+
+
+def safe_import(module_name):
+    with contextlib.suppress(ImportError):
+        return __import__(module_name)
+    return None
+
+
+def try_connect(url):
+    with contextlib.suppress(ConnectionError, TimeoutError):
+        return create_connection(url)
+    return None

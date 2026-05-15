@@ -1,0 +1,29 @@
+use std::fs;
+use std::path::PathBuf;
+
+// GOOD: filter before sorting
+fn find_rust_files(dir: &Path) -> Vec<PathBuf> {
+    let mut entries: Vec<PathBuf> = fs::read_dir(dir)
+        .unwrap()
+        .filter_map(|e| e.ok())
+        .map(|e| e.path())
+        .filter(|p| p.extension().map_or(false, |ext| ext == "rs"))
+        .collect();
+
+    entries.sort();
+    entries
+}
+
+fn list_images(dir: &Path) -> Vec<PathBuf> {
+    let mut images: Vec<PathBuf> = fs::read_dir(dir)
+        .unwrap()
+        .filter_map(|e| e.ok())
+        .map(|e| e.path())
+        .filter(|p| {
+            matches!(p.extension().and_then(|e| e.to_str()), Some("png" | "jpg" | "gif"))
+        })
+        .collect();
+
+    images.sort_by(|a, b| a.file_name().cmp(&b.file_name()));
+    images
+}

@@ -1,0 +1,18 @@
+def process_items(data_source):
+    raw = data_source.fetch()
+    items = [transform(x) for x in raw]
+    total = sum(items)
+    average = sum(items) / len(items)
+    return total, average
+
+def find_matches(records):
+    candidates = [r for r in records if r["score"] > 50]
+    count = len(candidates)
+    top = candidates[:10]
+    return count, top
+
+def aggregate_metrics(logs):
+    entries = [parse_line(line) for line in logs]
+    valid = [e for e in entries if e is not None]
+    total_count = len(entries)
+    return valid, total_count

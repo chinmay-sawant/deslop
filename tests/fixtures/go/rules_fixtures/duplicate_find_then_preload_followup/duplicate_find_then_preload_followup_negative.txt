@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for duplicate_find_then_preload_followup: Initial Find followed by a separate Preload query that could be folded into one.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule258NegativeRecord struct { ID int }
+
+func scenario258Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule258NegativeRecord{}).Error
+}

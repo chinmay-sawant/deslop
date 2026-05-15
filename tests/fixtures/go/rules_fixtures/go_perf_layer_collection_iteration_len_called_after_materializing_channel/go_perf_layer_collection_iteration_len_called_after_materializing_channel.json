@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_collection_iteration_len_called_after_materializing_channel",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag channel streams collected into slices only to measure length or emptiness.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,29 @@
+package rulefixtures
+
+import (
+	"net"
+	"net/http"
+)
+
+// scenario for go_perf_layer_network_calls_dns_lookup_per_request_path: Layer: Network calls. Flag net.Lookup* calls in request paths without caching or resolver ownership.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func FetchRemoteData(w http.ResponseWriter, r *http.Request) {
+	host := r.URL.Query().Get("host")
+	if host == "" {
+		host = "api.example.com"
+	}
+	ips, err := net.LookupHost(host)
+	if err != nil || len(ips) == 0 {
+		http.Error(w, "dns resolution failed", 500)
+		return
+	}
+	target := ips[0] + ":8080"
+	conn, err := net.Dial("tcp", target)
+	if err != nil {
+		http.Error(w, "connection failed", 500)
+		return
+	}
+	defer conn.Close()
+	w.Write([]byte("ok"))
+}

@@ -1,0 +1,14 @@
+{
+  "id": "sync_once_do_inside_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`sync.Once.Do(...)` inside loops.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

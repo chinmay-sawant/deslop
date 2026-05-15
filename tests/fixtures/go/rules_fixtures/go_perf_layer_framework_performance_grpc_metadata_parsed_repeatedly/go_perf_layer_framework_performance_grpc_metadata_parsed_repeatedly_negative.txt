@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_framework_performance_grpc_metadata_parsed_repeatedly: Layer: Framework-specific performance. Flag repeated metadata extraction/parsing in gRPC interceptors and handlers.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule536NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario536Negative(records []Rule536NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

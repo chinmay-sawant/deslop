@@ -1,0 +1,24 @@
+import locale
+import datetime
+
+locale.setlocale(locale.LC_ALL, "")
+_TZ = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
+
+
+def format_currency(amount: float) -> str:
+    return locale.currency(amount, grouping=True)
+
+
+def format_datetime(dt: datetime.datetime) -> str:
+    local_dt = dt.astimezone(_TZ)
+    return local_dt.strftime("%Y-%m-%d %H:%M:%S %Z")
+
+
+def get_current_tz() -> datetime.timezone:
+    return _TZ
+
+
+def process_order(order: dict) -> dict:
+    price = format_currency(order["amount"])
+    created = format_datetime(order["created_at"])
+    return {"price": price, "created": created}

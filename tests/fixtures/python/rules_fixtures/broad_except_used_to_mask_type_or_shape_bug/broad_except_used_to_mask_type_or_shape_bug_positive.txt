@@ -1,0 +1,34 @@
+def parse_user_response(data: dict) -> dict:
+    try:
+        return {
+            "id": data["id"],
+            "name": data["name"],
+            "email": data["email"],
+            "role": data.get("role", "user"),
+        }
+    except Exception:
+        return {"id": 0, "name": "Unknown", "email": "", "role": "user"}
+
+
+def calculate_discount(price: float, user_type: str) -> float:
+    try:
+        if user_type == "premium":
+            return price * 0.8
+        elif user_type == "vip":
+            return price * 0.7
+        else:
+            return price
+    except Exception:
+        return price
+
+
+def load_user_preferences(user_id: int) -> dict:
+    try:
+        raw = fetch_from_db(user_id)
+        return {
+            "theme": raw["settings"]["theme"],
+            "language": raw["settings"]["language"],
+            "notifications": raw["settings"]["notifications"],
+        }
+    except Exception:
+        return {"theme": "light", "language": "en", "notifications": True}

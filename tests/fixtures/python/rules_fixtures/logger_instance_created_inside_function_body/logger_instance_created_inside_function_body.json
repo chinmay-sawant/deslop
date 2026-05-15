@@ -1,0 +1,14 @@
+{
+  "id": "logger_instance_created_inside_function_body",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag functions that create loggers repeatedly instead of reusing module-level logger references.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

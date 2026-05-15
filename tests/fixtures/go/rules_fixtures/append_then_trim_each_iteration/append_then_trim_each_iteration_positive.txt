@@ -1,0 +1,18 @@
+package rulefixtures
+
+import "bytes"
+
+// scenario for append_then_trim_each_iteration: Slice append followed by reslice each iteration instead of batching.
+// fixture polarity: positive; family: hot_path; severity: info.
+
+func scenario342Positive(items []string) string {
+	var buf bytes.Buffer
+	for _, item := range items {
+		oldLen := buf.Len()
+		buf.WriteString(item)
+		result := buf.String()
+		_ = result
+		buf.Truncate(oldLen)
+	}
+	return buf.String()
+}

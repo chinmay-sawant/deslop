@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_io_operations_temporary_file_for_bytes_transform",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag temporary files used only for pure bytes transformations that can stream in memory.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

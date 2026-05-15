@@ -1,0 +1,25 @@
+def find_matching_orders(orders: list, valid_ids: list[str]) -> list:
+    results = []
+    for order in orders:
+        valid_set = set(valid_ids)
+        if order.id in valid_set:
+            results.append(order)
+    return results
+
+
+def filter_by_category(items: list, categories: list[str]) -> list:
+    filtered = []
+    for item in items:
+        cat_set = set(categories)
+        if item.category in cat_set:
+            filtered.append(item)
+    return filtered
+
+
+def check_membership(data: list, allowed: list[str]) -> list:
+    matched = []
+    for entry in data:
+        allowed_set = set(allowed)
+        if entry.name in allowed_set:
+            matched.append(entry)
+    return matched

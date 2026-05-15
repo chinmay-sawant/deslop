@@ -1,0 +1,21 @@
+use std::net::TcpStream;
+
+struct Connection {
+    stream: TcpStream,
+    buffer: Vec<u8>,
+}
+
+impl Drop for Connection {
+    fn drop(&mut self) {
+        let _ = self.stream.write_all(b"QUIT\r\n");
+        let _ = self.stream.flush();
+        let mut response = vec![0u8; 1024];
+        let _ = self.stream.read(&mut response);
+    }
+}
+
+impl Connection {
+    fn write_all(&mut self, _data: &[u8]) -> std::io::Result<()> { todo!() }
+    fn flush(&mut self) -> std::io::Result<()> { todo!() }
+    fn read(&mut self, _buf: &mut [u8]) -> std::io::Result<usize> { todo!() }
+}

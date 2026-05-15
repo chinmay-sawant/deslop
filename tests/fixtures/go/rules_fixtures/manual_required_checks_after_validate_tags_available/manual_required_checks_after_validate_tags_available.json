@@ -1,0 +1,14 @@
+{
+  "id": "manual_required_checks_after_validate_tags_available",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that re-check required fields manually even though struct-tag validation already exists.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

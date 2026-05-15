@@ -1,0 +1,23 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Product
+
+
+class ProductListView(View):
+    def get(self, request):
+        page = int(request.GET.get("page", 1))
+        page_size = int(request.GET.get("page_size", 20))
+        offset = (page - 1) * page_size
+        products = Product.objects.all()[offset:offset + page_size]
+        data = [
+            {"id": p.id, "name": p.name, "price": str(p.price)}
+            for p in products
+        ]
+        return JsonResponse({"products": data, "page": page})
+
+
+class InventoryReportView(View):
+    def get(self, request):
+        count = Product.objects.count()
+        return JsonResponse({"count": count})

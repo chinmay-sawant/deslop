@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_database_access_row_by_row_bulk_insert",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Database access. Flag bulk inserts implemented one row at a time instead of executemany or ORM bulk APIs.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

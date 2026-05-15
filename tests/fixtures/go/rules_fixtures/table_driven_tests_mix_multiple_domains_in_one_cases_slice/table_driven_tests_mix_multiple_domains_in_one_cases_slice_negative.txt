@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for table_driven_tests_mix_multiple_domains_in_one_cases_slice: Oversized case tables that mix unrelated behaviors into one monolithic test.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule196NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule196NegativeService interface {
+	Run(context.Context, Rule196NegativeRecord) error
+}
+
+func scenario196Negative(ctx context.Context, service Rule196NegativeService, input Rule196NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

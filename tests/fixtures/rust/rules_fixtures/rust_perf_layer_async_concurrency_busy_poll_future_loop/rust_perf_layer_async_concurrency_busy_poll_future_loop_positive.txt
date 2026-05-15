@@ -1,0 +1,16 @@
+use std::sync::mpsc;
+use tokio::time::{sleep, Duration};
+
+async fn poll_loop(rx: mpsc::Receiver<String>) {
+    loop {
+        match rx.try_recv() {
+            Ok(msg) => process(msg),
+            Err(mpsc::TryRecvError::Empty) => {
+                sleep(Duration::from_millis(1)).await;
+            }
+            Err(mpsc::TryRecvError::Disconnected) => break,
+        }
+    }
+}
+
+fn process(_s: String) {}

@@ -1,0 +1,14 @@
+use rayon::ThreadPoolBuilder;
+
+// BAD: library code setting global Rayon thread pool
+pub fn init_library() {
+    ThreadPoolBuilder::new()
+        .num_threads(8)
+        .build_global()
+        .unwrap();
+}
+
+pub fn process_data(data: &[u8]) -> Vec<u8> {
+    init_library();
+    data.par_iter().map(|b| b.wrapping_add(1)).collect()
+}

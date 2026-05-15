@@ -1,0 +1,34 @@
+from sqlalchemy.orm import Session, selectinload
+from sqlalchemy import select
+from models import Author, Book
+
+
+def get_authors_with_books(session: Session) -> list[dict]:
+    authors = session.query(Author).all()
+    result = []
+    for author in authors:
+        books = [{"id": b.id, "title": b.title} for b in author.books]
+        result.append({"id": author.id, "name": author.name, "books": books})
+    return result
+
+
+def get_publishers_with_authors(session: Session) -> list[dict]:
+    from models import Publisher
+    publishers = session.query(Publisher).all()
+    result = []
+    for publisher in publishers:
+        authors = []
+        for book in publisher.books:
+            authors.append({"id": book.author.id, "name": book.author.name})
+        result.append({"id": publisher.id, "authors": authors})
+    return result
+
+
+def get_book_details(session: Session, book_id: int) -> dict:
+    book = session.get(Book, book_id)
+    return {
+        "id": book.id,
+        "title": book.title,
+        "author_name": book.author.name,
+        "publisher_name": book.publisher.name,
+    }

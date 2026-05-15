@@ -1,0 +1,18 @@
+package rulefixtures
+
+// scenario for empty_interface_parameter_overuse: exported functions with `any` or `interface{}` parameters when concrete types would suffice
+// fixture polarity: positive; family: performance; severity: info.
+
+func ProcessPayload(data any) error {
+	switch v := data.(type) {
+	case string:
+		return handleString(v)
+	case int:
+		return handleInt(v)
+	default:
+		return nil
+	}
+}
+
+func handleString(s string) error { return nil }
+func handleInt(i int) error       { return nil }

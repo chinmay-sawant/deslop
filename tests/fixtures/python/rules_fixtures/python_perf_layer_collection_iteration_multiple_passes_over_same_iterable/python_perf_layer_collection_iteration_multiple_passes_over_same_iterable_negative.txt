@@ -1,0 +1,36 @@
+def analyze_data(items: list[dict]) -> dict:
+    total = 0
+    max_val = float("-inf")
+    min_val = float("inf")
+    count = 0
+
+    for item in items:
+        val = item["value"]
+        total += val
+        count += 1
+        if val > max_val:
+            max_val = val
+        if val < min_val:
+            min_val = val
+
+    avg = total / count if count else 0
+    above_avg = sum(1 for item in items if item["value"] > avg)
+
+    return {"total": total, "avg": avg, "max": max_val, "min": min_val, "above_avg": above_avg}
+
+
+def process_orders(orders: list) -> dict:
+    revenue = 0
+    tax = 0
+    count = 0
+    high_value = 0
+
+    for o in orders:
+        revenue += o.amount
+        tax += o.tax
+        count += 1
+        if o.amount > 1000:
+            high_value += 1
+
+    avg_amount = revenue / count if count else 0
+    return {"revenue": revenue, "tax": tax, "avg": avg_amount, "high_value": high_value}

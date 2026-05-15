@@ -1,0 +1,14 @@
+{
+  "id": "pandas_chain_assignment_warning",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Chained DataFrame assignment patterns risk SettingWithCopy-style behavior.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "test_compares_float_with_equality_operator",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test uses == to compare floating-point values instead of pytest.approx or math.isclose.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

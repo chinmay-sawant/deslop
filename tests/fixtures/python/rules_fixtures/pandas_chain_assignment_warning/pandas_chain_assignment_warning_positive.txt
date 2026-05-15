@@ -1,0 +1,21 @@
+import pandas as pd
+
+
+def update_prices(df):
+    df[df["category"] == "electronics"]["price"] = df[df["category"] == "electronics"]["price"] * 1.1
+    return df
+
+
+def fix_names(df):
+    df.loc[df["name"].isna()]["name"] = "unknown"
+    return df
+
+
+def adjust_quantities(df):
+    df[df["status"] == "active"]["quantity"] = df[df["status"] == "active"]["quantity"].clip(lower=1)
+    return df
+
+
+def correct_emails(df):
+    df[df["email"].str.contains("@")]["verified"] = True
+    return df

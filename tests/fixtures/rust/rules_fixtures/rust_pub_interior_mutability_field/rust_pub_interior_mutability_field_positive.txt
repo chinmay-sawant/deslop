@@ -1,0 +1,24 @@
+use std::sync::Mutex;
+use std::cell::RefCell;
+
+// BAD: public struct exposing interior mutability fields
+pub struct SharedState {
+    pub cache: Mutex<HashMap<String, String>>,
+    pub counters: RefCell<Vec<u64>>,
+    pub flags: std::cell::Cell<u32>,
+}
+
+impl SharedState {
+    pub fn new() -> Self {
+        Self {
+            cache: Mutex::new(HashMap::new()),
+            counters: RefCell::new(Vec::new()),
+            flags: std::cell::Cell::new(0),
+        }
+    }
+}
+
+pub struct ConnectionPool {
+    pub connections: Mutex<Vec<Connection>>,
+    pub active: std::sync::atomic::AtomicUsize,
+}

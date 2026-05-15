@@ -1,0 +1,27 @@
+from sqlalchemy.orm import Session
+from sqlalchemy import select
+from models import User
+
+
+def update_user_statuses(session: Session, user_ids: list[int], new_status: str) -> None:
+    for user_id in user_ids:
+        user = session.get(User, user_id)
+        user.status = new_status
+        session.commit()
+
+
+def deactivate_inactive_users(session: Session, inactive_days: int) -> int:
+    users = session.execute(select(User).where(User.last_login < inactive_days)).scalars().all()
+    count = 0
+    for user in users:
+        user.active = False
+        session.commit()
+        count += 1
+    return count
+
+
+def bulk_update_emails(session: Session, updates: list[dict]) -> None:
+    for update in updates:
+        user = session.get(User, update["user_id"])
+        user.email = update["new_email"]
+        session.commit()

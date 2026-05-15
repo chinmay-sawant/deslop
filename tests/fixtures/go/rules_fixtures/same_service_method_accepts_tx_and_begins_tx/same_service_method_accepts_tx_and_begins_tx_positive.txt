@@ -1,0 +1,30 @@
+package rulefixtures
+
+import (
+	"fmt"
+
+	gorm "gorm.io/gorm"
+)
+
+// scenario for same_service_method_accepts_tx_and_begins_tx: Service methods that sometimes reuse a transaction and sometimes open one themselves.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type Order struct {
+	ID     int
+	Status string
+}
+
+type OrderService struct {
+	db *gorm.DB
+}
+
+func (s *OrderService) CompleteOrder(tx *gorm.DB, orderID int) error {
+	if tx == nil {
+		tx = s.db.Begin()
+		defer tx.Rollback()
+	}
+	if err := tx.Model(&Order{}).Where("id = ?", orderID).Update("status", "completed").Error; err != nil {
+		return fmt.Errorf("update failed: %w", err)
+	}
+	return tx.Commit().Error
+}

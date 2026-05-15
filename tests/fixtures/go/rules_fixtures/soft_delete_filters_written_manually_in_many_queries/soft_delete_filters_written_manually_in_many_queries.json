@@ -1,0 +1,14 @@
+{
+  "id": "soft_delete_filters_written_manually_in_many_queries",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated `deleted_at IS NULL` style filters rather than a shared repository or scope policy.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

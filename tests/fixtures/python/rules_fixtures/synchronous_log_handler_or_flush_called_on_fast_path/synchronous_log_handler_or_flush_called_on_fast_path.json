@@ -1,0 +1,14 @@
+{
+  "id": "synchronous_log_handler_or_flush_called_on_fast_path",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that forces synchronous log flushing in latency-sensitive paths.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

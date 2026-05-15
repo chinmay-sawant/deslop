@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_database_access_query_inside_loop_without_batching: Layer: Database access. Flag SQL queries issued inside loops where batching or IN queries can bound round trips.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule525PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario525Positive(records []Rule525PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

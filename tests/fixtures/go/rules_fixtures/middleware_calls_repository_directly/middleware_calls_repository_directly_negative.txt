@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for middleware_calls_repository_directly: Middleware that reaches into repositories instead of delegating through focused services or auth abstractions.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule086NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule086NegativeService interface {
+	Run(context.Context, Rule086NegativeRecord) error
+}
+
+func scenario086Negative(ctx context.Context, service Rule086NegativeService, input Rule086NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

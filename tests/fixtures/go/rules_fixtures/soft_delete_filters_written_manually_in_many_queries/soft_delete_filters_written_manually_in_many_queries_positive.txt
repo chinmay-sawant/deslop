@@ -1,0 +1,35 @@
+package rulefixtures
+
+import (
+	"database/sql"
+)
+
+// scenario for soft_delete_filters_written_manually_in_many_queries: Repeated `deleted_at IS NULL` style filters rather than a shared repository or scope policy.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type CustomerRepo struct {
+	DB *sql.DB
+}
+
+func (r *CustomerRepo) FindAll() (*sql.Rows, error) {
+	return r.DB.Query("SELECT id, name FROM customers WHERE deleted_at IS NULL")
+}
+
+func (r *CustomerRepo) FindByEmail(email string) (*sql.Row, error) {
+	row := r.DB.QueryRow(
+		"SELECT id, name FROM customers WHERE email = $1 AND deleted_at IS NULL", email,
+	)
+	return row, nil
+}
+
+func (r *CustomerRepo) FindActiveSince(since string) (*sql.Rows, error) {
+	return r.DB.Query(
+		"SELECT id, name FROM customers WHERE active_since > $1 AND deleted_at IS NULL", since,
+	)
+}
+
+func (r *CustomerRepo) CountAll() (int, error) {
+	var count int
+	err := r.DB.QueryRow("SELECT COUNT(*) FROM customers WHERE deleted_at IS NULL").Scan(&count)
+	return count, err
+}

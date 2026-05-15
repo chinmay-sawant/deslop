@@ -1,0 +1,14 @@
+{
+  "id": "mixed_mutation_and_query_methods_share_same_manager_class",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag manager-style classes that both mutate and answer read-model queries with no boundary.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

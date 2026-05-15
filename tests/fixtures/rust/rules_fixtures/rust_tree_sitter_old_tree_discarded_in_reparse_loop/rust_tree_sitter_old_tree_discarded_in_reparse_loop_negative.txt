@@ -1,0 +1,30 @@
+use tree_sitter::Parser;
+
+fn incremental_reparsing(files: &[&str]) {
+    let mut parser = Parser::new();
+    parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+
+    let mut old_tree: Option<tree_sitter::Tree> = None;
+    for file_path in files {
+        let source = std::fs::read_to_string(file_path).unwrap();
+        let tree = parser.parse(&source, old_tree.as_ref()).unwrap();
+        process_tree(tree.root_node(), &source);
+        old_tree = Some(tree);
+    }
+}
+
+fn reparsing_with_edits(file_path: &str) {
+    let mut parser = Parser::new();
+    parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+
+    let source = std::fs::read_to_string(file_path).unwrap();
+    let mut tree = parser.parse(&source, None).unwrap();
+    process_tree(tree.root_node(), &source);
+
+    let edited = apply_edits(&source);
+    let new_tree = parser.parse(&edited, Some(&tree)).unwrap();
+    process_tree(new_tree.root_node(), &edited);
+}
+
+fn apply_edits(source: &str) -> String { source.to_string() }
+fn process_tree(_node: tree_sitter::Node, _source: &str) {}

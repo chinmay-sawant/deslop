@@ -1,0 +1,13 @@
+pub fn dependencies_opt_out_default_features() -> bool {
+    let manifest = r#"[dependencies]
+tokio = { version = \"1\", default-features = false, features = [\"rt\", \"macros\", \"net\"] }
+serde = { version = \"1\", default-features = false, features = [\"derive\"] }
+reqwest = { version = \"0.11\", default-features = false, features = [\"json\", \"rustls-tls\"] }
+"#;
+    for required in ["tokio", "serde", "reqwest"] {
+        if !manifest.contains(required) {
+            return false;
+        }
+    }
+    manifest.contains("default-features = false")
+}

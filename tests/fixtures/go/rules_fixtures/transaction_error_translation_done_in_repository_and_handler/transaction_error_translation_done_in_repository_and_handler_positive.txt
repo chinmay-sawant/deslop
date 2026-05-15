@@ -1,0 +1,47 @@
+package rulefixtures
+
+import (
+	"errors"
+	"fmt"
+	"net/http"
+
+	"gorm.io/gorm"
+)
+
+// scenario for transaction_error_translation_done_in_repository_and_handler: Both repository and handler layers translating the same transaction errors.
+// fixture polarity: positive; family: architecture; severity: info.
+var ErrNotFound = errors.New("not found")
+var ErrConflict = errors.New("conflict")
+
+type UserRepo struct {
+	db *gorm.DB
+}
+
+func (r *UserRepo) Create(name string) error {
+	err := r.db.Create(&struct{ Name string }{Name: name}).Error
+	if errors.Is(err, gorm.ErrDuplicatedKey) {
+		return ErrConflict
+	}
+	if err != nil {
+		return fmt.Errorf("user repo create: %w", err)
+	}
+	return nil
+}
+
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	repo := &UserRepo{}
+	err := repo.Create("test")
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			http.Error(w, "conflict", http.StatusConflict)
+			return
+		}
+		if errors.Is(err, ErrConflict) {
+			http.Error(w, "conflict", http.StatusConflict)
+			return
+		}
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+}

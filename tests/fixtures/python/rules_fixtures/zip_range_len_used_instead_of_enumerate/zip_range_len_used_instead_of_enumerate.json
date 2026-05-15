@@ -1,0 +1,14 @@
+{
+  "id": "zip_range_len_used_instead_of_enumerate",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "zip(range(len(x)), x) pattern used; replace with enumerate(x).",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

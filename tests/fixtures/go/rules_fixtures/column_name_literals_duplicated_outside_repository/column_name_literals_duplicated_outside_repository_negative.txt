@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for column_name_literals_duplicated_outside_repository: Repeated column-name strings outside repository or query packages.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule015NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule015NegativeService interface {
+	Run(context.Context, Rule015NegativeRecord) error
+}
+
+func scenario015Negative(ctx context.Context, service Rule015NegativeService, input Rule015NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,25 @@
+use anyhow::Context;
+
+fn process_records(records: &[Record]) -> anyhow::Result<Vec<Processed>> {
+    let mut results = Vec::new();
+    for record in records {
+        // BAD: anyhow context formatting allocates on every iteration
+        let parsed = parse_record(record)
+            .with_context(|| format!("failed to parse record id={}", record.id))?;
+        let validated = validate(parsed)
+            .with_context(|| format!("validation failed for record id={}", record.id))?;
+        results.push(validated);
+    }
+    Ok(results)
+}
+
+struct Record { id: u64, data: String }
+struct Processed { id: u64, value: i64 }
+
+fn parse_record(r: &Record) -> anyhow::Result<Processed> {
+    Ok(Processed { id: r.id, value: r.data.parse()? })
+}
+
+fn validate(p: Processed) -> anyhow::Result<Processed> {
+    Ok(p)
+}

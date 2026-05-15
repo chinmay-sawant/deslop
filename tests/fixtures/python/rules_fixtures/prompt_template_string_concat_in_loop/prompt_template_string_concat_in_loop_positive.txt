@@ -1,0 +1,30 @@
+def build_prompts(items):
+    prompts = []
+    for item in items:
+        prompt = ""
+        prompt += "Context: " + item["context"] + "\n"
+        prompt += "Question: " + item["question"] + "\n"
+        prompt += "Answer in " + str(item["max_tokens"]) + " tokens."
+        prompts.append(prompt)
+    return prompts
+
+
+def generate_batch(questions, context):
+    results = []
+    for q in questions:
+        text = "Given the following context:\n"
+        text += context + "\n\n"
+        text += "Please answer: " + q + "\n"
+        text += "Be concise."
+        results.append(text)
+    return results
+
+
+def format_messages(data):
+    messages = []
+    for entry in data:
+        msg = "User: " + entry["user"] + "\n"
+        msg += "System: " + entry["system"] + "\n"
+        msg += "Task: " + entry["task"]
+        messages.append(msg)
+    return messages

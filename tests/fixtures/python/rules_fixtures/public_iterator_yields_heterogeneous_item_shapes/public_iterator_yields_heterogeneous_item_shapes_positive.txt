@@ -1,0 +1,25 @@
+from typing import Iterator, Any
+
+
+def iter_events(log_path: str) -> Iterator:
+    with open(log_path) as f:
+        for line in f:
+            parts = line.strip().split("\t")
+            if parts[0] == "ERROR":
+                yield {"level": "error", "message": parts[1], "code": int(parts[2])}
+            elif parts[0] == "METRIC":
+                yield {"name": parts[1], "value": float(parts[2])}
+            elif parts[0] == "TRACE":
+                yield parts[1]
+            else:
+                yield None
+
+
+def iterate_results(query_result) -> Iterator[Any]:
+    for row in query_result:
+        if row.type == "scalar":
+            yield row.value
+        elif row.type == "record":
+            yield {"id": row.id, "name": row.name, "tags": row.tags}
+        elif row.type == "aggregate":
+            yield (row.count, row.sum, row.avg)

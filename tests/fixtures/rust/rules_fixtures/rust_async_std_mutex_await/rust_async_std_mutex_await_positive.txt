@@ -1,0 +1,22 @@
+use std::sync::Mutex;
+
+async fn process_request(state: &Mutex<SharedState>, data: Vec<u8>) -> Response {
+    let mut guard = state.lock().unwrap();
+    guard.request_count += 1;
+    let count = guard.request_count;
+    let result = validate_and_transform(&data).await;
+    guard.last_result = Some(result.clone());
+    Response { count, body: result }
+}
+
+async fn validate_and_transform(_data: &[u8]) -> String { todo!() }
+
+struct SharedState {
+    request_count: u64,
+    last_result: Option<String>,
+}
+
+struct Response {
+    count: u64,
+    body: String,
+}

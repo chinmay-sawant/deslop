@@ -1,0 +1,18 @@
+use tracing::{info, span, Level, Span};
+
+fn process_batch(records: &[Record]) {
+    // GOOD: batch-level span, let tracing handle per-record details lazily
+    let batch_span = span!(Level::INFO, "batch", count = records.len());
+    let _enter = batch_span.enter();
+
+    for record in records {
+        // fields evaluated only if subscriber enables this span
+        tracing::debug!(id = record.id, name = %record.name, "processing record");
+    }
+}
+
+struct Record {
+    id: u64,
+    name: String,
+    data: Vec<u8>,
+}

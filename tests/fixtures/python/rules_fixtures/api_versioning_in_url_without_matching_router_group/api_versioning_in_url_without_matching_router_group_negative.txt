@@ -1,0 +1,40 @@
+from fastapi import APIRouter, FastAPI
+
+app = FastAPI()
+
+v1_router = APIRouter(prefix="/v1")
+v2_router = APIRouter(prefix="/v2")
+
+
+@v1_router.get("/users")
+async def list_users_v1():
+    users = await get_all_users()
+    return [{"id": u.id, "name": u.name} for u in users]
+
+
+@v1_router.get("/users/{user_id}")
+async def get_user_v1(user_id: int):
+    user = await get_user_by_id(user_id)
+    return {"id": user.id, "name": user.name}
+
+
+@v2_router.get("/users")
+async def list_users_v2():
+    users = await get_all_users()
+    return [{"id": u.id, "name": u.name, "email": u.email} for u in users]
+
+
+@v2_router.get("/users/{user_id}")
+async def get_user_v2(user_id: int):
+    user = await get_user_by_id(user_id)
+    return {"id": user.id, "name": user.name, "email": user.email}
+
+
+@v1_router.get("/orders")
+async def list_orders_v1():
+    orders = await get_all_orders()
+    return [{"id": o.id, "total": o.total} for o in orders]
+
+
+app.include_router(v1_router)
+app.include_router(v2_router)

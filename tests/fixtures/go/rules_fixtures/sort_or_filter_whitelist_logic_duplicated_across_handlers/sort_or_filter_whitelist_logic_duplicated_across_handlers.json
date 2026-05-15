@@ -1,0 +1,14 @@
+{
+  "id": "sort_or_filter_whitelist_logic_duplicated_across_handlers",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated client-field whitelist logic across endpoints.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

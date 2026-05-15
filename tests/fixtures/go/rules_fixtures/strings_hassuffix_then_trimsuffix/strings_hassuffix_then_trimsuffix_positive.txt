@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_hassuffix_then_trimsuffix: `if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`
+// fixture polarity: positive; family: performance; severity: info.
+func scenario657Positive(s, sfx string) string {
+	if strings.HasSuffix(s, sfx) {
+		s = strings.TrimSuffix(s, sfx)
+	}
+	return s
+}

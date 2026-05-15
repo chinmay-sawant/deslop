@@ -1,0 +1,44 @@
+class TaskQueue:
+    def __init__(self):
+        self._tasks = []
+        self._workers = []
+        self._running = False
+
+    def add(self, task):
+        self._tasks.append(task)
+
+    def remove(self, task_id):
+        self._tasks = [t for t in self._tasks if t.id != task_id]
+
+    def get_all(self):
+        return list(self._tasks)
+
+    def start(self):
+        self._running = True
+        for i in range(4):
+            worker = threading.Thread(target=self._run_worker, daemon=True)
+            worker.start()
+            self._workers.append(worker)
+
+    def stop(self):
+        self._running = False
+        for worker in self._workers:
+            worker.join(timeout=5)
+        self._workers.clear()
+
+    def _run_worker(self):
+        while self._running:
+            if self._tasks:
+                task = self._tasks.pop(0)
+                task.execute()
+            time.sleep(0.1)
+
+    def scale_up(self, count):
+        for _ in range(count):
+            worker = threading.Thread(target=self._run_worker, daemon=True)
+            worker.start()
+            self._workers.append(worker)
+
+    def scale_down(self, count):
+        for _ in range(min(count, len(self._workers))):
+            self._workers.pop()

@@ -1,0 +1,16 @@
+package rulefixtures
+
+// scenario for type_switch_vs_repeated_assertions: multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns
+// fixture polarity: positive; family: performance; severity: info.
+func scenario689Positive(v interface{}) string {
+	if _, ok := v.(int); ok {
+		return "int"
+	} else if _, ok := v.(string); ok {
+		return "string"
+	} else if _, ok := v.(float64); ok {
+		return "float64"
+	} else if _, ok := v.([]byte); ok {
+		return "bytes"
+	}
+	return "unknown"
+}

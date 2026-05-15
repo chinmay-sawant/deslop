@@ -1,0 +1,27 @@
+import tempfile
+import os
+
+def write_report(data: str) -> str:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as tmp:
+        tmp.write(data)
+        tmp.flush()
+        os.fsync(tmp.fileno())
+        return tmp.name
+
+def create_workspace() -> str:
+    with tempfile.TemporaryDirectory(prefix="workspace_") as tmp_dir:
+        config_path = os.path.join(tmp_dir, "config.json")
+        with open(config_path, "w") as f:
+            f.write("{}")
+        return tmp_dir
+
+def process_upload(file_bytes: bytes) -> str:
+    with tempfile.NamedTemporaryFile(mode="wb", suffix=".bin", delete=False) as tmp:
+        tmp.write(file_bytes)
+        return tmp.name
+
+def export_csv(rows: list[dict]) -> str:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as tmp:
+        for row in rows:
+            tmp.write(",".join(str(v) for v in row.values()) + "\n")
+        return tmp.name

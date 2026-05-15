@@ -1,0 +1,24 @@
+from celery import Celery
+
+celery = Celery("myapp", broker="redis://localhost:6379/0")
+
+
+@celery.task
+def send_email(user_id, subject, body):
+    from myapp.db import get_session
+    from myapp.mailer import Mailer
+
+    session = get_session()
+    user = session.query(User).get(user_id)
+    mailer = Mailer()
+    mailer.send(user.email, subject, body)
+
+
+@celery.task
+def process_upload(file_path):
+    from myapp.config import get_upload_folder
+
+    upload_folder = get_upload_folder()
+    with open(f"{upload_folder}/{file_path}", "rb") as f:
+        data = f.read()
+    return len(data)

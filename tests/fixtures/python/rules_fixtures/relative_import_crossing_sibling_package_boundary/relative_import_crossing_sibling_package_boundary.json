@@ -1,0 +1,14 @@
+{
+  "id": "relative_import_crossing_sibling_package_boundary",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Relative import uses three or more dots, crossing into a sibling package boundary.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

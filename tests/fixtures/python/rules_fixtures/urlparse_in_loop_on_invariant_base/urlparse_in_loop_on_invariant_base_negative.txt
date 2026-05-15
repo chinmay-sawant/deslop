@@ -1,0 +1,29 @@
+from urllib.parse import urlparse
+
+def enrich_links(links: list[str], base_url: str) -> list[dict]:
+    parsed = urlparse(base_url)
+    results = []
+    for link in links:
+        link_parsed = urlparse(link)
+        if link_parsed.netloc == parsed.netloc:
+            results.append({"url": link, "internal": True})
+        else:
+            results.append({"url": link, "internal": False})
+    return results
+
+def filter_valid_urls(urls: list[str], allowed_domain: str) -> list[str]:
+    valid = []
+    for url in urls:
+        parsed = urlparse(url)
+        if parsed.netloc == allowed_domain:
+            valid.append(url)
+    return valid
+
+def rewrite_paths(urls: list[str], base: str) -> list[str]:
+    base_parsed = urlparse(base)
+    prefix = f"{base_parsed.scheme}://{base_parsed.netloc}"
+    rewritten = []
+    for url in urls:
+        url_parsed = urlparse(url)
+        rewritten.append(f"{prefix}{url_parsed.path}")
+    return rewritten

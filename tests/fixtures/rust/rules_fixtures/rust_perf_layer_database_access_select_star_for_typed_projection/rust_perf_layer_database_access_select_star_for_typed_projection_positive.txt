@@ -1,0 +1,15 @@
+use sqlx::PgPool;
+
+#[derive(sqlx::FromRow)]
+struct OrderSummary {
+    id: i64,
+    customer_name: String,
+    total: f64,
+}
+
+async fn get_order_summaries(pool: &PgPool) -> Result<Vec<OrderSummary>, sqlx::Error> {
+    // BAD: SELECT * fetches all columns when only a few are needed
+    sqlx::query_as::<_, OrderSummary>("SELECT * FROM orders")
+        .fetch_all(pool)
+        .await
+}

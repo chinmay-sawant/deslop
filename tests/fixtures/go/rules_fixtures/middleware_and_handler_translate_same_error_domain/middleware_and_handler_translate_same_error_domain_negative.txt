@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for middleware_and_handler_translate_same_error_domain: Double translation layers where middleware and handlers both map the same error family to responses.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule085NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule085NegativeService interface {
+	Run(context.Context, Rule085NegativeRecord) error
+}
+
+func scenario085Negative(ctx context.Context, service Rule085NegativeService, input Rule085NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

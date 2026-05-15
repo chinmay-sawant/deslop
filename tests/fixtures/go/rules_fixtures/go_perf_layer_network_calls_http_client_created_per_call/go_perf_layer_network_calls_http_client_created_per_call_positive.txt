@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for go_perf_layer_network_calls_http_client_created_per_call: Layer: Network calls. Flag http.Client construction per call instead of reusing clients and transports.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario570Positive(urls []string) int {
+	total := 0
+	for _, url := range urls {
+		client := &http.Client{}
+		resp, err := client.Get(url)
+		if err == nil { total += resp.StatusCode }
+	}
+	return total
+}

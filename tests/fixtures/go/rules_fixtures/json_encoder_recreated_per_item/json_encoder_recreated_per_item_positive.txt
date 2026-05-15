@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+)
+
+// scenario for json_encoder_recreated_per_item: json.NewEncoder(...) constructed repeatedly inside loops instead of reusing a stable encoder per stream.
+// fixture polarity: positive; family: hot_path; severity: info.
+type Rule353PositiveRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario353Positive(values []Rule353PositiveRecord) (int, error) {
+	total := 0
+	for _, value := range values {
+		data, err := json.Marshal(value)
+		if err != nil { return 0, err }
+		total += len(data)
+	}
+	return total, nil
+}

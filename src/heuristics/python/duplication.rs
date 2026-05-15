@@ -29,6 +29,32 @@ pub(super) fn repeated_string_literal_findings(file: &ParsedFile) -> Vec<Finding
             .or_default()
             .push(literal.line);
     }
+    if occurrences.is_empty() {
+        for function in &file.functions {
+            for line in function.body_text.lines() {
+                let trimmed = line.trim();
+                for quote in ['"', '\''] {
+                    let parts = trimmed.split(quote).collect::<Vec<_>>();
+                    if parts.len() < 3 {
+                        continue;
+                    }
+                    for value in parts
+                        .iter()
+                        .enumerate()
+                        .filter_map(|(idx, value)| (idx % 2 == 1).then_some(*value))
+                    {
+                        if value.len() < REPEATED_LITERAL_MIN_LENGTH {
+                            continue;
+                        }
+                        occurrences
+                            .entry(value.to_string())
+                            .or_default()
+                            .push(function.fingerprint.start_line);
+                    }
+                }
+            }
+        }
+    }
 
     occurrences
         .into_iter()

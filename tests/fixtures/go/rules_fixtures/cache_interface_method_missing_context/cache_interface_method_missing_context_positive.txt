@@ -1,0 +1,38 @@
+package rulefixtures
+
+import "time"
+
+// scenario for cache_interface_method_missing_context: Cache-oriented interfaces whose IO-style methods omit context.Context.
+// fixture polarity: positive; family: context; severity: info.
+
+type CacheStore interface {
+	Get(key string) (string, error)
+	Set(key string, value string, ttl time.Duration) error
+	Delete(key string) error
+	Increment(key string, delta int64) (int64, error)
+	Exists(key string) (bool, error)
+}
+
+type RedisCache struct {
+	addr string
+}
+
+func (r *RedisCache) Get(key string) (string, error) {
+	return "", nil
+}
+
+func (r *RedisCache) Set(key string, value string, ttl time.Duration) error {
+	return nil
+}
+
+func (r *RedisCache) Delete(key string) error {
+	return nil
+}
+
+func (r *RedisCache) Increment(key string, delta int64) (int64, error) {
+	return 0, nil
+}
+
+func (r *RedisCache) Exists(key string) (bool, error) {
+	return false, nil
+}

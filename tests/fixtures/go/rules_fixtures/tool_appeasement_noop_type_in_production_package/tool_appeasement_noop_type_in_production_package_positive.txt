@@ -1,0 +1,34 @@
+package rulefixtures
+
+// scenario for tool_appeasement_noop_type_in_production_package: Production no-op or dummy types that appear to exist mainly to satisfy tooling instead of runtime behavior.
+// fixture polarity: positive; family: architecture; severity: info.
+type Logger interface {
+	Info(msg string)
+	Error(msg string)
+}
+
+type NoopLogger struct{}
+
+func (NoopLogger) Info(_ string)  {}
+func (NoopLogger) Error(_ string) {}
+
+var _ Logger = NoopLogger{}
+
+type MetricsClient interface {
+	IncrementCounter(name string)
+	RecordDuration(name string, ms float64)
+}
+
+type NoopMetricsClient struct {
+	sink chan struct{}
+}
+
+func (n NoopMetricsClient) IncrementCounter(_ string) {
+	<-n.sink
+}
+
+func (n NoopMetricsClient) RecordDuration(_ string, _ float64) {
+	<-n.sink
+}
+
+var _ MetricsClient = NoopMetricsClient{}

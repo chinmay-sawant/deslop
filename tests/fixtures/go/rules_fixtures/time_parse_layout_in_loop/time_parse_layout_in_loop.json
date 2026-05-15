@@ -1,0 +1,14 @@
+{
+  "id": "time_parse_layout_in_loop",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "time.Parse(...) or ParseInLocation(...) observed inside loops with a stable layout.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

@@ -1,0 +1,15 @@
+import os
+
+def load_user_avatar(filepath):
+    try:
+        with open(filepath, "rb") as f:
+            return f.read()
+    except FileNotFoundError:
+        return None
+
+def read_config_if_present(path):
+    try:
+        with open(path, "r") as f:
+            return f.read()
+    except FileNotFoundError:
+        return {}

@@ -1,0 +1,14 @@
+{
+  "id": "test_bootstrap_package_reused_by_production_wiring",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Production startup code that imports test-only bootstrap helpers.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

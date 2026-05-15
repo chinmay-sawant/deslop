@@ -1,0 +1,30 @@
+use tree_sitter::{Parser, Node};
+
+fn extract_column(source: &str, node: Node) -> String {
+    let start = node.start_byte();
+    let text = &source[start..];
+    let chars: String = text.chars().take(80).collect();
+    chars
+}
+
+fn get_nth_char(source: &str, node: Node) -> char {
+    let byte_offset = node.start_byte();
+    source.chars().nth(byte_offset).unwrap_or(' ')
+}
+
+fn count_chars_before(source: &str, node: Node) -> usize {
+    let byte_offset = node.start_byte();
+    source[..byte_offset].chars().count()
+}
+
+fn slice_at_byte(source: &str, node: Node) -> &str {
+    let start = node.start_byte();
+    let end = node.end_byte();
+    &source[start..end]
+}
+
+fn get_line_content(source: &str, node: Node) -> String {
+    let start = node.start_byte();
+    let line = source[start..].lines().next().unwrap_or("");
+    line.chars().take(100).collect()
+}

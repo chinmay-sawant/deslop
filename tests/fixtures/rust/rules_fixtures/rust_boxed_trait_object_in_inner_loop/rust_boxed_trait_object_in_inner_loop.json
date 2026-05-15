@@ -1,0 +1,14 @@
+{
+  "id": "rust_boxed_trait_object_in_inner_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated `Box<dyn Trait>` allocation inside loops where generics, enum dispatch, or object reuse may be better.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

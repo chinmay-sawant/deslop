@@ -1,0 +1,8 @@
+// GOOD: work with the string directly
+fn process_text(input: &str) -> String {
+    input.to_uppercase()
+}
+
+fn count_words(text: &str) -> usize {
+    text.split_whitespace().count()
+}

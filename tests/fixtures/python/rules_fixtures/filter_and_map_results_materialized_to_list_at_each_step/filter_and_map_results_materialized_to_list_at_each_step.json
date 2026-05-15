@@ -1,0 +1,14 @@
+{
+  "id": "filter_and_map_results_materialized_to_list_at_each_step",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "list(filter(...)) followed by list(map(...)), materializing intermediate collections; use a generator pipeline.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

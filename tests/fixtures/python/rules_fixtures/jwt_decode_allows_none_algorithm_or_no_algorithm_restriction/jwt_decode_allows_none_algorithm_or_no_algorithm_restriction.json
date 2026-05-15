@@ -1,0 +1,14 @@
+{
+  "id": "jwt_decode_allows_none_algorithm_or_no_algorithm_restriction",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "JWT decoded without restricting the allowed algorithm list, permitting the none algorithm bypass.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

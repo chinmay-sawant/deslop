@@ -1,0 +1,11 @@
+package rulefixtures
+
+// scenario for md5_sum_in_loop: `md5.Sum(...)` inside loops.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario618Negative(chunks [][]byte) int {
+	total := 0
+	for _, payload := range chunks {
+		total += len(payload)
+	}
+	return total
+}

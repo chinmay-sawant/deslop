@@ -1,0 +1,24 @@
+fn sum_positive(values: &[i64]) -> i64 {
+    let mut total = 0i64;
+    // BAD: manual index loop with repeated bounds-checked indexing
+    for i in 0..values.len() {
+        if values[i] > 0 {
+            total += values[i];
+        }
+    }
+    total
+}
+
+fn find_max(values: &[f64]) -> Option<f64> {
+    if values.is_empty() {
+        return None;
+    }
+    let mut max_val = values[0];
+    // BAD: manual index loop
+    for i in 1..values.len() {
+        if values[i] > max_val {
+            max_val = values[i];
+        }
+    }
+    Some(max_val)
+}

@@ -1,0 +1,41 @@
+def process_value(value, mode: str):
+    if isinstance(value, int):
+        if mode == "fast":
+            return value * 2
+        elif mode == "slow":
+            return value * 3
+        elif mode == "verbose":
+            print(f"Processing int: {value}")
+            return value * 4
+    elif isinstance(value, str):
+        if mode == "fast":
+            return value.upper()
+        elif mode == "slow":
+            return value.lower()
+        elif mode == "verbose":
+            print(f"Processing str: {value}")
+            return value.title()
+    elif isinstance(value, list):
+        if mode == "fast":
+            return len(value)
+        elif mode == "slow":
+            return sum(value)
+        elif mode == "verbose":
+            print(f"Processing list: {value}")
+            return sorted(value)
+    return value
+
+def transform_data(data, transform_type: str, mode: str):
+    if isinstance(data, dict):
+        if transform_type == "normalize":
+            if mode == "batch":
+                return {k: v / max(data.values()) for k, v in data.items()}
+            elif mode == "stream":
+                return {k: v / max(data.values()) for k, v in data.items()}
+    elif isinstance(data, list):
+        if transform_type == "normalize":
+            if mode == "batch":
+                return [x / max(data) for x in data]
+            elif mode == "stream":
+                return [x / max(data) for x in data]
+    return data

@@ -1,0 +1,13 @@
+use std::ffi::CString;
+
+fn open_file(path: &str) -> i32 {
+    let c_path = CString::new(path).unwrap();
+    unsafe { libc::open(c_path.as_ptr(), libc::O_RDONLY | libc::O_CLOEXEC) }
+}
+
+fn create_file(path: &str) -> i32 {
+    let c_path = CString::new(path).unwrap();
+    unsafe {
+        libc::open(c_path.as_ptr(), libc::O_CREAT | libc::O_WRONLY | libc::O_CLOEXEC, 0o644)
+    }
+}

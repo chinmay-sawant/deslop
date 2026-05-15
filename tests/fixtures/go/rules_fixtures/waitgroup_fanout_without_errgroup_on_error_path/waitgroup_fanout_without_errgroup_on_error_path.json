@@ -1,0 +1,14 @@
+{
+  "id": "waitgroup_fanout_without_errgroup_on_error_path",
+  "language": "go",
+  "family": "concurrency",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup.",
+  "binding_location": "src/heuristics/go/concurrency.rs"
+}

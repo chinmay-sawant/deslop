@@ -1,0 +1,33 @@
+from typing import Any
+
+
+class TaskProcessor:
+    def __init__(self):
+        self.pending_tasks: list[dict] = []
+
+    def enqueue(self, task: dict) -> None:
+        self.pending_tasks.append(task)
+
+    def dequeue(self) -> dict | None:
+        if self.pending_tasks:
+            return self.pending_tasks.pop(0)
+        return None
+
+
+def process_commands(commands: list[str]) -> list[str]:
+    queue = list(commands)
+    results = []
+    while queue:
+        cmd = queue.pop(0)
+        results.append(cmd.upper())
+    return results
+
+
+def fifo_drain(items: list[Any]) -> list[Any]:
+    buffer = []
+    for item in items:
+        buffer.append(item)
+    output = []
+    while buffer:
+        output.append(buffer.pop(0))
+    return output

@@ -1,0 +1,25 @@
+pub fn process_request(req: &Request) -> Response {
+    let body = parse_body(req);
+    todo!()
+}
+
+pub fn validate_input(data: &[u8]) -> Result<(), Error> {
+    if data.is_empty() {
+        return Err(Error::Empty);
+    }
+    todo!()
+}
+
+pub fn serialize_response(resp: &Response) -> Vec<u8> {
+    todo!()
+}
+
+pub fn connect_to_database(url: &str) -> Connection {
+    todo!()
+}
+
+struct Request;
+struct Response;
+enum Error { Empty }
+struct Connection;
+fn parse_body(_req: &Request) -> Vec<u8> { vec![] }

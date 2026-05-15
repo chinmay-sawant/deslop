@@ -1,0 +1,16 @@
+use clap::Parser;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long, default_value = "8080")]
+    port: String,
+
+    #[arg(long, default_value = "1024")]
+    buffer_size: String,
+}
+
+fn run(cli: Cli) {
+    let port: u16 = cli.port.parse().expect("invalid port");
+    let buffer_size: usize = cli.buffer_size.parse().expect("invalid buffer size");
+    println!("port={port} buffer={buffer_size}");
+}

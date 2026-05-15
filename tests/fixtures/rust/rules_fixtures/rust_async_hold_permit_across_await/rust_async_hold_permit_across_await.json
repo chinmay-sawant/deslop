@@ -1,0 +1,15 @@
+{
+  "id": "rust_async_hold_permit_across_await",
+  "language": "rust",
+  "family": "async_patterns",
+  "default_severity": "contextual",
+  "status": "experimental",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override",
+    "rust_async_experimental"
+  ],
+  "description": "A permit or pooled resource may be held across an .await.",
+  "binding_location": "src/heuristics/rust/async_patterns.rs"
+}

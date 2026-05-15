@@ -1,0 +1,14 @@
+{
+  "id": "select_or_get_inside_loop_lookup",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "ORM lookups (Select, Get, First, etc.) executed inside loops.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

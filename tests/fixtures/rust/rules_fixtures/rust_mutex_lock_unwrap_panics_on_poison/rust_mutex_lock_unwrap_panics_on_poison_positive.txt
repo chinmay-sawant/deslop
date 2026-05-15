@@ -1,0 +1,11 @@
+use std::sync::Mutex;
+
+fn update_state(state: &Mutex<Vec<String>>, item: String) {
+    let mut guard = state.lock().unwrap();
+    guard.push(item);
+}
+
+fn read_state(state: &Mutex<HashMap<String, u64>>, key: &str) -> u64 {
+    let guard = state.lock().unwrap();
+    *guard.get(key).unwrap_or(&0)
+}

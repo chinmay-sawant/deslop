@@ -1,0 +1,26 @@
+from dataclasses import dataclass
+import csv
+
+
+@dataclass
+class Student:
+    name: str
+    age: int
+    grade: float
+
+
+def load_students(path):
+    students = []
+    with open(path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            students.append(Student(
+                name=row["name"],
+                age=int(row["age"]),
+                grade=float(row["grade"]),
+            ))
+    return students
+
+
+def find_top_student(students):
+    return max(students, key=lambda s: s.grade)

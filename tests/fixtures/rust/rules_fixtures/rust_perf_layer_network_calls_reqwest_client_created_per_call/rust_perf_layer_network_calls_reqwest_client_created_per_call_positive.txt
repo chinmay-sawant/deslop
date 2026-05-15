@@ -1,0 +1,9 @@
+use reqwest;
+
+async fn call_api(url: &str) -> Result<String, reqwest::Error> {
+    // BAD: new reqwest::Client created per call
+    let client = reqwest::Client::new();
+    let resp = client.get(url).send().await?;
+    let body = resp.text().await?;
+    Ok(body)
+}

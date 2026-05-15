@@ -1,0 +1,33 @@
+NORTH_AMERICA = frozenset({"US", "CA", "MX"})
+EUROPE = frozenset({"GB", "FR", "DE", "IT", "ES"})
+ASIA = frozenset({"JP", "CN", "KR"})
+VALID_STATUSES = frozenset({"active", "pending", "suspended"})
+HIGH_PRIORITY = frozenset({"critical", "high"})
+LOW_PRIORITY = frozenset({"low", "none"})
+CURRENCY_SYMBOLS = frozenset({"USD", "CAD", "AUD"})
+
+def classify_region(country_code):
+    if country_code in NORTH_AMERICA:
+        return "north_america"
+    elif country_code in EUROPE:
+        return "europe"
+    elif country_code in ASIA:
+        return "asia"
+    return "other"
+
+def is_valid_status(status):
+    return status in VALID_STATUSES
+
+def get_priority_color(priority):
+    if priority in HIGH_PRIORITY:
+        return "red"
+    elif priority == "medium":
+        return "yellow"
+    elif priority in LOW_PRIORITY:
+        return "green"
+    return "gray"
+
+def format_currency(amount, currency):
+    if currency in CURRENCY_SYMBOLS:
+        return f"${amount:.2f}"
+    return f"{amount:.2f} {currency}"

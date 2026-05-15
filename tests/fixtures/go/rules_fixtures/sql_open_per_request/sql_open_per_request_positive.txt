@@ -1,0 +1,28 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"net/http"
+
+	_ "github.com/lib/pq"
+)
+
+// scenario for sql_open_per_request: database/sql pools opened on request paths instead of process-level setup.
+// fixture polarity: positive; family: data_access; severity: contextual.
+
+func scenario298Positive(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("postgres", "host=localhost dbname=app sslmode=disable")
+	if err != nil {
+		http.Error(w, "db connection failed", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	var count int
+	row := db.QueryRow("SELECT count(*) FROM users WHERE active = true")
+	if err := row.Scan(&count); err != nil {
+		http.Error(w, "query failed", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

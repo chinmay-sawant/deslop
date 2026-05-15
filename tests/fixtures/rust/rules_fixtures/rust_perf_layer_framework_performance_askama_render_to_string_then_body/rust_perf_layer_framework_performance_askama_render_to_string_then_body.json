@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_framework_performance_askama_render_to_string_then_body",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag template rendering to String before writing to streaming response bodies.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

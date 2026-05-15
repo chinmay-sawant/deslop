@@ -1,0 +1,14 @@
+{
+  "id": "linear_membership_test_in_loop_over_large_static_list",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Membership test `in list` used inside a loop; convert to a set for O(1) lookup.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

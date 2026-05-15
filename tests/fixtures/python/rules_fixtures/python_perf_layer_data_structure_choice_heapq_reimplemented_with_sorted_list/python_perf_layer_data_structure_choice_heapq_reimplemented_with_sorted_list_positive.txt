@@ -1,0 +1,24 @@
+class PriorityQueue:
+    def __init__(self):
+        self.items = []
+
+    def push(self, item, priority):
+        self.items.append((priority, item))
+        self.items.sort(key=lambda x: x[0])
+
+    def pop(self):
+        return self.items.pop(0)
+
+    def peek(self):
+        return self.items[0] if self.items else None
+
+
+def process_tasks(tasks: list) -> list:
+    pq = PriorityQueue()
+    for task in tasks:
+        pq.push(task, task.priority)
+    results = []
+    while pq.items:
+        _, task = pq.pop()
+        results.append(execute(task))
+    return results

@@ -1,0 +1,14 @@
+{
+  "id": "where_clause_templates_duplicated_across_repositories",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated filter templates that should be shared through scopes or query builders.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

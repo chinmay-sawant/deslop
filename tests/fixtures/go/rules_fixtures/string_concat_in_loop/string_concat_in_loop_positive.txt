@@ -1,0 +1,11 @@
+package rulefixtures
+
+// scenario for string_concat_in_loop: Repeated string concatenation inside loops (O(n^2) risk).
+// fixture polarity: positive; family: performance; severity: info.
+func scenario645Positive(items []string) string {
+	result := ""
+	for _, item := range items {
+		result += item
+	}
+	return result
+}

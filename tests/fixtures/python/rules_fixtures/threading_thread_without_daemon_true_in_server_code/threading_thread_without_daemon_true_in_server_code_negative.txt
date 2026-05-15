@@ -1,0 +1,38 @@
+import threading
+import time
+
+def start_background_cleanup():
+    def cleanup_loop():
+        while True:
+            remove_stale_sessions()
+            time.sleep(300)
+
+    t = threading.Thread(target=cleanup_loop, daemon=True)
+    t.start()
+
+def remove_stale_sessions():
+    pass
+
+def start_metrics_collector():
+    def collect():
+        while True:
+            gather_metrics()
+            time.sleep(60)
+
+    worker = threading.Thread(target=collect, daemon=True)
+    worker.start()
+
+def gather_metrics():
+    pass
+
+def start_wal_checkpoint():
+    def checkpoint():
+        while True:
+            run_checkpoint()
+            time.sleep(3600)
+
+    t = threading.Thread(target=checkpoint, daemon=True)
+    t.start()
+
+def run_checkpoint():
+    pass

@@ -1,0 +1,38 @@
+package rulefixtures
+
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// scenario for repository_accepts_gin_context: Repositories that accept `*gin.Context` rather than `context.Context`.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type Account struct {
+	ID    uint   `gorm:"primaryKey"`
+	Name  string `gorm:"size:128"`
+	Email string `gorm:"size:256"`
+}
+
+type AccountRepo struct {
+	db *gorm.DB
+}
+
+func NewAccountRepo(db *gorm.DB) *AccountRepo {
+	return &AccountRepo{db: db}
+}
+
+func (r *AccountRepo) FindByID(c *gin.Context, id uint) (*Account, error) {
+	var account Account
+	err := r.db.WithContext(c.Request.Context()).First(&account, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &account, nil
+}
+
+func (r *AccountRepo) Create(c *gin.Context, account *Account) error {
+	return r.db.WithContext(c.Request.Context()).Create(account).Error
+}
+
+var _ = gorm.ErrRecordNotFound

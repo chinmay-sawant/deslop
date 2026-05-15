@@ -1,0 +1,24 @@
+use serde_json::Value;
+
+// BAD: cloning serde_json::Value in loop
+fn extract_fields(data: &Value, fields: &[&str]) -> Vec<Value> {
+    let mut results = Vec::new();
+    for field in fields {
+        if let Some(value) = data.get(field) {
+            results.push(value.clone()); // clones Value in loop
+        }
+    }
+    results
+}
+
+fn merge_configs(base: &Value, overrides: &[Value]) -> Value {
+    let mut result = base.clone();
+    for override_val in overrides {
+        if let Value::Object(map) = override_val {
+            for (key, value) in map {
+                result[key] = value.clone(); // clones Value in loop
+            }
+        }
+    }
+    result
+}

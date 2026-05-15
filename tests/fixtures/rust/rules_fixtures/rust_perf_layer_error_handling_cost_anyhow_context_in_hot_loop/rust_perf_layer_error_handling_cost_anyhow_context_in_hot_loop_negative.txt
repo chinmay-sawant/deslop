@@ -1,0 +1,24 @@
+use anyhow::Context;
+
+fn process_records(records: &[Record]) -> anyhow::Result<Vec<Processed>> {
+    // GOOD: single boundary context outside the loop
+    let mut results = Vec::new();
+    for record in records {
+        let parsed = parse_record(record)?;
+        let validated = validate(parsed)?;
+        results.push(validated);
+    }
+    Ok(results)
+    .context("batch processing failed")
+}
+
+struct Record { id: u64, data: String }
+struct Processed { id: u64, value: i64 }
+
+fn parse_record(r: &Record) -> anyhow::Result<Processed> {
+    Ok(Processed { id: r.id, value: r.data.parse()? })
+}
+
+fn validate(p: Processed) -> anyhow::Result<Processed> {
+    Ok(p)
+}

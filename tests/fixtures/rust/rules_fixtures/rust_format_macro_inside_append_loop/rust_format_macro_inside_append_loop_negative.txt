@@ -1,0 +1,17 @@
+fn build_report(items: &[u32]) -> String {
+    let mut output = String::new();
+    for item in items {
+        use std::fmt::Write;
+        write!(output, "item: {}\n", item).unwrap();
+    }
+    output
+}
+
+fn render_csv(rows: &[(&str, &str)]) -> String {
+    let mut buf = String::new();
+    for (key, val) in rows {
+        use std::fmt::Write;
+        writeln!(buf, "{},{}", key, val).unwrap();
+    }
+    buf
+}

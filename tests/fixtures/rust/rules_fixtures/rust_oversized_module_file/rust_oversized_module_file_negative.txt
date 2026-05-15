@@ -1,0 +1,8 @@
+// src/auth/mod.rs
+mod login;
+mod token;
+mod session;
+
+pub use login::authenticate;
+pub use token::verify_token;
+pub use session::Session;

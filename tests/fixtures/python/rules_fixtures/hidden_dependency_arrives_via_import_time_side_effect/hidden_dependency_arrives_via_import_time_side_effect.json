@@ -1,0 +1,14 @@
+{
+  "id": "hidden_dependency_arrives_via_import_time_side_effect",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that becomes initialized only because another import happened first.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+import "bytes"
+
+// scenario for buffer_write_rune_ascii_literal: `bytes.Buffer.WriteRune('x')` for ASCII literals instead of `WriteByte`.
+// fixture polarity: positive; family: performance; severity: info.
+
+func scenario441Positive(items []string) []byte {
+	var buf bytes.Buffer
+	for i, item := range items {
+		if i > 0 {
+			buf.WriteRune(',')
+		}
+		buf.WriteString(item)
+	}
+	return buf.Bytes()
+}

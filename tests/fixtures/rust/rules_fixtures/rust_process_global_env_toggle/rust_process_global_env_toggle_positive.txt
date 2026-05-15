@@ -1,0 +1,23 @@
+use std::env;
+
+// BAD: process-global env mutation used as runtime control flow
+fn set_feature_flag(key: &str, value: bool) {
+    env::set_var(key, if value { "1" } else { "0" });
+}
+
+fn is_feature_enabled(key: &str) -> bool {
+    env::var(key).map(|v| v == "1").unwrap_or(false)
+}
+
+fn handle_request(request: &Request) -> Response {
+    if request.path == "/admin/enable-search" {
+        set_feature_flag("ENABLE_SEARCH", true);
+        return Response::ok();
+    }
+
+    if is_feature_enabled("ENABLE_SEARCH") {
+        return search_handler(request);
+    }
+
+    legacy_handler(request)
+}

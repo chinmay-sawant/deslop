@@ -1,0 +1,23 @@
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
+
+
+class Order(Base):
+    __tablename__ = "orders"
+    id = Column(Integer, primary_key=True)
+    status = Column(String(32))
+    total_amount = Column(Integer)
+    customer_id = Column(Integer)
+    created_at = Column(DateTime)
+    notes = Column(String)
+
+
+class UserSession(Base):
+    __tablename__ = "user_sessions"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    started_at = Column(DateTime)
+    expires_at = Column(DateTime)
+    is_active = Column(Integer)

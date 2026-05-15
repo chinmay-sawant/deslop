@@ -1,0 +1,28 @@
+trait Renderable {
+    fn render(&self) -> String;
+}
+
+struct TextWidget {
+    content: String,
+}
+
+impl Renderable for TextWidget {
+    fn render(&self) -> String {
+        self.content.clone()
+    }
+}
+
+struct ImageWidget {
+    path: String,
+}
+
+impl Renderable for ImageWidget {
+    fn render(&self) -> String {
+        format!("<img src=\"{}\">", self.path)
+    }
+}
+
+fn render_all(widgets: &Vec<Box<dyn Renderable>>) -> String {
+    // BAD: dynamic dispatch in hot collection iteration
+    widgets.iter().map(|w| w.render()).collect()
+}

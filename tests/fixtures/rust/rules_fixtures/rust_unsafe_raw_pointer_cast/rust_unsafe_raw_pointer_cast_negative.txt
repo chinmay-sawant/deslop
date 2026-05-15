@@ -1,0 +1,19 @@
+fn safe_as_bytes<T>(data: &[T]) -> &[u8] {
+    unsafe { std::slice::from_raw_parts(data.as_ptr() as *const u8, std::mem::size_of_val(data)) }
+}
+
+fn safe_cast_slice<T: Copy, U: Copy>(data: &[T]) -> Vec<U> {
+    let bytes = unsafe { std::slice::from_raw_parts(data.as_ptr() as *const u8, std::mem::size_of_val(data)) };
+    let mut result = Vec::with_capacity(bytes.len() / std::mem::size_of::<U>());
+    for chunk in bytes.chunks_exact(std::mem::size_of::<U>()) {
+        let val = unsafe { std::ptr::read(chunk.as_ptr() as *const U) };
+        result.push(val);
+    }
+    result
+}
+
+fn safe_reinterpret_u64(data: &[u8]) -> Vec<u64> {
+    data.chunks_exact(8)
+        .map(|chunk| u64::from_ne_bytes(chunk.try_into().unwrap()))
+        .collect()
+}

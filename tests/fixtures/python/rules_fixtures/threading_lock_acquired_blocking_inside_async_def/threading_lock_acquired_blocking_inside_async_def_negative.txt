@@ -1,0 +1,26 @@
+import asyncio
+
+_lock = asyncio.Lock()
+_shared_state: dict = {}
+
+async def update_state(key: str, value: str):
+    async with _lock:
+        _shared_state[key] = value
+
+async def read_state(key: str) -> str | None:
+    async with _lock:
+        return _shared_state.get(key)
+
+async def process_batch(items: list[dict]):
+    results = []
+    for item in items:
+        async with _lock:
+            result = _shared_state.get(item["id"])
+            if result is None:
+                result = await compute(item)
+                _shared_state[item["id"]] = result
+        results.append(result)
+    return results
+
+async def compute(item: dict) -> dict:
+    return {"id": item["id"], "value": "processed"}

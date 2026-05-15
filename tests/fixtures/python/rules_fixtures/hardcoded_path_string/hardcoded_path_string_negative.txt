@@ -1,0 +1,27 @@
+import os
+
+def load_user_data():
+    path = os.path.join(os.environ["DATA_DIR"], "users.json")
+    with open(path, "r") as f:
+        return json.load(f)
+
+def backup_database():
+    backup_dir = os.environ.get("BACKUP_DIR", "/var/backups/db")
+    subprocess.run(["pg_dump", "-f", os.path.join(backup_dir, "latest.sql"), "mydb"])
+
+def read_config():
+    config_path = os.environ.get("CONFIG_PATH", "/etc/myapp/config.yaml")
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
+
+def export_report(data):
+    report_dir = os.environ.get("REPORT_DIR", "/tmp/reports")
+    os.makedirs(report_dir, exist_ok=True)
+    with open(os.path.join(report_dir, "quarterly.csv"), "w") as f:
+        writer = csv.writer(f)
+        writer.writerows(data)
+
+def load_model():
+    model_path = os.path.join(os.environ["MODEL_DIR"], "classifier_v2.pt")
+    model = torch.load(model_path)
+    return model

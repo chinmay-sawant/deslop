@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for custom_validator_registration_inside_handler: Per-request validator registration instead of startup-time validator wiring.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule022NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule022NegativeService interface {
+	Run(context.Context, Rule022NegativeRecord) error
+}
+
+func scenario022Negative(ctx context.Context, service Rule022NegativeService, input Rule022NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

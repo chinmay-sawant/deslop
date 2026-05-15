@@ -1,0 +1,14 @@
+{
+  "id": "offset_pagination_on_large_table",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Request-path GORM Find(...) chains that page with Offset(...), which often scales poorly on large lists.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

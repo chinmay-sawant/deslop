@@ -1,0 +1,8 @@
+use std::collections::HashMap;
+use std::sync::Mutex;
+
+struct AppState {
+    users: Mutex<HashMap<String, User>>,
+    sessions: Mutex<HashMap<String, Session>>,
+    cache: Mutex<Vec<CachedItem>>,
+}

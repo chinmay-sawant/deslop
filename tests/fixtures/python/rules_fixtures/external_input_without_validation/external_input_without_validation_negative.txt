@@ -1,0 +1,41 @@
+from flask import Flask, request, abort
+from pathlib import Path
+
+app = Flask(__name__)
+
+ALLOWED_ROLES = {"user", "admin", "moderator"}
+BASE_DIR = Path("/data")
+
+
+@app.route("/users", methods=["POST"])
+def create_user():
+    data = request.get_json()
+    if not data or not data.get("name") or not data.get("email"):
+        abort(400, "name and email are required")
+    if len(data["name"]) > 255:
+        abort(400, "name too long")
+    if "@" not in data["email"]:
+        abort(400, "invalid email")
+    role = data.get("role", "user")
+    if role not in ALLOWED_ROLES:
+        abort(400, f"invalid role: {role}")
+    user = db.create_user(name=data["name"], email=data["email"], role=role)
+    return {"id": user.id}
+
+
+@app.route("/search")
+def search():
+    query = request.args.get("q", "").strip()
+    if not query or len(query) > 500:
+        abort(400, "invalid query")
+    results = search_engine.search(query)
+    return {"results": results}
+
+
+@app.route("/files/<path:filepath>")
+def serve_file(filepath):
+    resolved = (BASE_DIR / filepath).resolve()
+    if not resolved.is_relative_to(BASE_DIR):
+        abort(403, "access denied")
+    with open(resolved) as f:
+        return f.read()

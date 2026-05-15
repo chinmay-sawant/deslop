@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_profiling_benchmarking_benchmark_allocations_not_tracked",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag memory-sensitive benchmarks that omit tracemalloc, memory_profiler, or allocation accounting.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

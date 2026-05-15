@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_database_access_query_inside_loop_without_batching",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Database access. Flag SQL queries issued inside loops where batching or IN queries can bound round trips.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

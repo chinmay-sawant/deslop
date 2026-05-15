@@ -1,0 +1,14 @@
+{
+  "id": "unittest_test_class_duplicates_setup_without_base_class",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Multiple unittest.TestCase subclasses in the same file duplicate setUp logic without extracting a base class.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

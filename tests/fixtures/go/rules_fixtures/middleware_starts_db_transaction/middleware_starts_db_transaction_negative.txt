@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for middleware_starts_db_transaction: Middleware that opens database transactions for the whole request path by default.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule090NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule090NegativeService interface {
+	Run(context.Context, Rule090NegativeRecord) error
+}
+
+func scenario090Negative(ctx context.Context, service Rule090NegativeService, input Rule090NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

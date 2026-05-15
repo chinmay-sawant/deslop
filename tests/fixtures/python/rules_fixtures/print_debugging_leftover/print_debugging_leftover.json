@@ -1,0 +1,14 @@
+{
+  "id": "print_debugging_leftover",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "print() calls left in non-test Python functions that do not look like obvious main-entrypoint output.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

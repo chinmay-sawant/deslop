@@ -1,0 +1,26 @@
+import numpy as np
+from typing import List
+
+def get_top_scores(scores: np.ndarray, n: int) -> List[float]:
+    sorted_indices = np.argsort(scores)[::-1]
+    top_n = scores[sorted_indices[:n]]
+    return top_n.tolist()
+
+def filter_valid(data: np.ndarray, mask: np.ndarray) -> List[float]:
+    filtered = data[mask]
+    return filtered.tolist()
+
+def compute_stats(values: np.ndarray) -> dict:
+    values_list = values.tolist()
+    return {
+        "mean": np.mean(values_list),
+        "std": np.std(values_list),
+        "min": min(values_list),
+        "max": max(values_list),
+        "median": np.median(values_list),
+    }
+
+def find_peaks(signal: np.ndarray) -> List[int]:
+    diff = np.diff(signal)
+    peaks = np.where(diff > 0)[0]
+    return peaks.tolist()

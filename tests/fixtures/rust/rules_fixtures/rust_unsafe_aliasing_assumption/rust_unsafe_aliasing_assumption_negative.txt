@@ -1,0 +1,34 @@
+use std::cell::Cell;
+use std::sync::atomic::{AtomicI32, Ordering};
+
+struct SafeCell<T> {
+    value: Cell<T>,
+}
+
+impl<T: Copy> SafeCell<T> {
+    fn get(&self) -> T {
+        self.value.get()
+    }
+
+    fn set(&self, val: T) {
+        self.value.set(val);
+    }
+}
+
+fn safe_shared_state() {
+    let cell = SafeCell { value: Cell::new(42i32) };
+    cell.set(100);
+    let val = cell.get();
+    println!("{}", val);
+}
+
+fn safe_atomic() {
+    let atomic = AtomicI32::new(42);
+    atomic.store(100, Ordering::Relaxed);
+    let val = atomic.load(Ordering::Relaxed);
+    println!("{}", val);
+}
+
+fn safe_slice_swap(data: &mut [u8], idx1: usize, idx2: usize) {
+    data.swap(idx1, idx2);
+}

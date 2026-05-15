@@ -1,0 +1,33 @@
+use clap::Parser;
+use std::fmt;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long, env = "API_TOKEN")]
+    api_token: SecretString,
+
+    #[arg(long, env = "DATABASE_PASSWORD")]
+    database_password: SecretString,
+
+    #[arg(long)]
+    host: String,
+}
+
+struct SecretString(String);
+
+impl fmt::Debug for SecretString {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[REDACTED]")
+    }
+}
+
+impl fmt::Display for SecretString {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[REDACTED]")
+    }
+}
+
+fn main() {
+    let cli = Cli::parse();
+    println!("connecting to {} with token {:?}", cli.host, cli.api_token);
+}

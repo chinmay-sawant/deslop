@@ -1,0 +1,14 @@
+{
+  "id": "type_switch_vs_repeated_assertions",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

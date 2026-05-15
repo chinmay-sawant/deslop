@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag dict-of-dicts records in hot loops where dataclass, tuple, or typed containers reduce lookup cost.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

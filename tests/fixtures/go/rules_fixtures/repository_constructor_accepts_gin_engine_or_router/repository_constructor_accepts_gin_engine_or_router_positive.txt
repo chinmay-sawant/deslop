@@ -1,0 +1,46 @@
+package rulefixtures
+
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// scenario for repository_constructor_accepts_gin_engine_or_router: Repository constructors that take transport objects.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type Invoice struct {
+	ID     uint    `gorm:"primaryKey"`
+	Amount float64 `gorm:"not null"`
+	Status string  `gorm:"size:32"`
+}
+
+type InvoiceRepo struct {
+	db     *gorm.DB
+	router *gin.Engine
+}
+
+func NewInvoiceRepo(router *gin.Engine, db *gorm.DB) *InvoiceRepo {
+	return &InvoiceRepo{
+		db:     db,
+		router: router,
+	}
+}
+
+func (r *InvoiceRepo) FindUnpaid() ([]Invoice, error) {
+	var invoices []Invoice
+	err := r.db.Where("status = ?", "unpaid").Find(&invoices).Error
+	return invoices, err
+}
+
+func (r *InvoiceRepo) RegisterRoutes() {
+	r.router.GET("/invoices/unpaid", func(c *gin.Context) {
+		invoices, err := r.FindUnpaid()
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, invoices)
+	})
+}
+
+var _ = gorm.ErrRecordNotFound

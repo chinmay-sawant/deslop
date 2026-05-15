@@ -1,0 +1,46 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def load_config(path: str) -> dict:
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        logger.warning("Config file %s not found, using defaults", path)
+        return {}
+    except json.JSONDecodeError as e:
+        logger.error("Invalid JSON in %s: %s", path, e)
+        raise
+
+
+def process_items(items: list) -> list:
+    results = []
+    for item in items:
+        try:
+            result = transform(item)
+            results.append(result)
+        except ValueError as e:
+            logger.warning("Skipping invalid item: %s", e)
+    return results
+
+
+def fetch_all_users(user_ids: list[str]) -> list[dict]:
+    users = []
+    for uid in user_ids:
+        try:
+            user = db.fetch(uid)
+            users.append(user)
+        except UserNotFoundError:
+            logger.warning("User %s not found", uid)
+        except DatabaseError as e:
+            logger.error("DB error fetching user %s: %s", uid, e)
+            raise
+    return users
+
+
+def safe_divide(a: float, b: float) -> float:
+    if b == 0:
+        raise ValueError("Division by zero")
+    return a / b

@@ -1,0 +1,14 @@
+{
+  "id": "http_status_ignored_before_decode",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Response decoding or body consumption that happens without an observed StatusCode check.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

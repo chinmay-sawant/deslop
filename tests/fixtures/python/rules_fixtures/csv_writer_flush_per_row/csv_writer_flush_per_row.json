@@ -1,0 +1,14 @@
+{
+  "id": "csv_writer_flush_per_row",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "csv.Writer flushes on each row instead of buffering a larger batch.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

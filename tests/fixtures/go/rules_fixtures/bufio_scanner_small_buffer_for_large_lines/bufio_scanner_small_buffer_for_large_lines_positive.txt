@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"bufio"
+	"io"
+)
+
+// scenario for bufio_scanner_small_buffer_for_large_lines: `bufio.NewScanner(r)` without `scanner.Buffer()` when processing files with lines > 64KB
+// fixture polarity: positive; family: performance; severity: warning.
+
+func scenario443Positive(r io.Reader) ([]string, error) {
+	scanner := bufio.NewScanner(r)
+	var lines []string
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return lines, scanner.Err()
+}

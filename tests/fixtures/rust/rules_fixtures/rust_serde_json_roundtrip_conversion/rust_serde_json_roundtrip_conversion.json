@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_json_roundtrip_conversion",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `to_value` followed by `from_value`, or `to_string` followed by `from_str`, when a direct conversion or typed boundary is available.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

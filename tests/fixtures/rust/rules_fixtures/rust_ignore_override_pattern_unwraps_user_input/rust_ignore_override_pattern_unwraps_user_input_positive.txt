@@ -1,0 +1,13 @@
+use ignore::overrides::OverrideBuilder;
+
+fn build_overrides(root: &str, pattern: &str) -> ignore::overrides::Override {
+    let mut builder = OverrideBuilder::new(root);
+    builder.add(pattern).unwrap();
+    builder.build().unwrap()
+}
+
+fn make_override(root: &str, user_glob: &str) -> ignore::overrides::Override {
+    let mut ob = OverrideBuilder::new(root);
+    ob.add(user_glob).expect("bad pattern");
+    ob.build().expect("failed to build overrides")
+}

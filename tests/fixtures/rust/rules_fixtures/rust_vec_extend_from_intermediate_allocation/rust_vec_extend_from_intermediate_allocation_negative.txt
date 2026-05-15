@@ -1,0 +1,22 @@
+fn extend_direct(a: &[u8], b: &[u8]) -> Vec<u8> {
+    let mut result = Vec::with_capacity(a.len() + b.len());
+    result.extend_from_slice(a);
+    result.extend_from_slice(b);
+    result
+}
+
+fn merge_slices(slices: &[&[i32]]) -> Vec<i32> {
+    let total_len: usize = slices.iter().map(|s| s.len()).sum();
+    let mut result = Vec::with_capacity(total_len);
+    for slice in slices {
+        result.extend_from_slice(slice);
+    }
+    result
+}
+
+fn concat_strings(a: &str, b: &str) -> String {
+    let mut result = String::with_capacity(a.len() + b.len());
+    result.push_str(a);
+    result.push_str(b);
+    result
+}

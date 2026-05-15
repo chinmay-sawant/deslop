@@ -1,0 +1,14 @@
+{
+  "id": "threading_lock_acquired_blocking_inside_async_def",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "threading.Lock.acquire() called with blocking=True inside an async function, blocking the event loop thread.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

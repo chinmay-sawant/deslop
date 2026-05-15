@@ -1,0 +1,14 @@
+{
+  "id": "get_raw_data_then_should_bindjson_duplicate_body",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Gin handlers that read GetRawData() and later bind JSON from the same request body.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

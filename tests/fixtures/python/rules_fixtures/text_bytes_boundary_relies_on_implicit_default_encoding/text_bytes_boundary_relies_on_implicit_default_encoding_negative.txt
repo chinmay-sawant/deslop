@@ -1,0 +1,24 @@
+import os
+
+def read_config(path: str) -> dict:
+    with open(path, "rb") as f:
+        raw = f.read()
+    text = raw.decode("utf-8")
+    return parse_config(text)
+
+def write_report(data: str, path: str):
+    encoded = data.encode("utf-8")
+    with open(path, "wb") as f:
+        f.write(encoded)
+
+def process_payload(payload: bytes) -> str:
+    text = payload.decode("utf-8")
+    lines = text.strip().split("\n")
+    return lines[0]
+
+def hash_content(content: str) -> str:
+    import hashlib
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+def parse_config(text: str) -> dict:
+    return {"raw": text}

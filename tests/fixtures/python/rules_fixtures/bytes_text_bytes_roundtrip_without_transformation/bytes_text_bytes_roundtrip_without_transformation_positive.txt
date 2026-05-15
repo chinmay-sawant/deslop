@@ -1,0 +1,22 @@
+def process_message(raw_bytes: bytes) -> str:
+    text = raw_bytes.decode("utf-8")
+    cleaned = text.strip()
+    return cleaned.encode("utf-8").decode("utf-8")
+
+
+def save_to_file(data: bytes, path: str):
+    text = data.decode("utf-8")
+    encoded = text.encode("utf-8")
+    with open(path, "wb") as f:
+        f.write(encoded)
+
+
+def transform_payload(payload: bytes) -> bytes:
+    decoded = payload.decode("ascii")
+    normalized = decoded.strip()
+    return normalized.encode("ascii")
+
+
+def hash_content(content: bytes) -> str:
+    text = content.decode("utf-8")
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()

@@ -1,0 +1,30 @@
+class UserNotFoundError(Exception):
+    pass
+
+
+class PermissionDeniedError(Exception):
+    pass
+
+
+class UserService:
+    def get_user(self, user_id: int) -> dict:
+        if user_id <= 0:
+            raise ValueError("Invalid user ID")
+        return {"id": user_id, "name": "John"}
+
+    def delete_user(self, user_id: int, requester_role: str) -> None:
+        if requester_role != "admin":
+            raise PermissionDeniedError("Not authorized")
+        pass
+
+
+class OrderService:
+    def get_order(self, order_id: int) -> dict:
+        if order_id == 0:
+            raise UserNotFoundError("Order not found")
+        return {"id": order_id}
+
+    def cancel_order(self, order_id: int, user_id: int) -> None:
+        if user_id != 1:
+            raise PermissionDeniedError("Not your order")
+        pass

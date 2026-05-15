@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_parse_result_unwrapped",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `parser.parse(...).unwrap ()` or `expect (...)` at parser boundaries where parse cancellation or invalid parser state should become a typed finding/error.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

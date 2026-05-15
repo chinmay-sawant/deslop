@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for n_plus_one_query: Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule620NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario620Negative(records []Rule620NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

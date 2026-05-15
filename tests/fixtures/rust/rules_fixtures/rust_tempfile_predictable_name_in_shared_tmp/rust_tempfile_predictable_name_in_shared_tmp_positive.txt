@@ -1,0 +1,32 @@
+use std::fs;
+use std::path::PathBuf;
+
+#[test]
+fn test_write_report() {
+    let path = std::env::temp_dir().join("test_report.txt");
+    fs::write(&path, "report data").unwrap();
+    assert!(path.exists());
+}
+
+#[test]
+fn test_read_log() {
+    let path = std::env::temp_dir().join("test_log.log");
+    fs::write(&path, "log entry 1\nlog entry 2").unwrap();
+    let content = fs::read_to_string(&path).unwrap();
+    assert!(content.contains("log entry"));
+}
+
+#[test]
+fn test_config_file() {
+    let path = std::env::temp_dir().join("test_config.toml");
+    fs::write(&path, "[server]\nport = 8080").unwrap();
+    let _ = fs::remove_file(&path);
+}
+
+#[test]
+fn test_output_file() {
+    let path = PathBuf::from("/tmp/test_output.json");
+    fs::write(&path, r#"{"status": "ok"}"#).unwrap();
+    assert!(path.exists());
+    let _ = fs::remove_file(&path);
+}

@@ -1,0 +1,32 @@
+import httpx
+from fastapi import FastAPI, Query, HTTPException
+from urllib.parse import urlparse
+
+app = FastAPI()
+
+ALLOWED_HOSTS = {"api.example.com", "cdn.example.com"}
+
+
+def _validate_url(url: str) -> str:
+    parsed = urlparse(url)
+    if parsed.hostname not in ALLOWED_HOSTS:
+        raise HTTPException(status_code=400, detail="Host not allowed")
+    return url
+
+
+@app.get("/fetch")
+async def fetch_resource(url: str = Query(...)):
+    validated_url = _validate_url(url)
+    async with httpx.AsyncClient() as client:
+        response = await client.get(validated_url)
+        return response.json()
+
+
+@app.get("/proxy")
+async def proxy_request(host: str = Query(...), path: str = Query(...)):
+    if host not in ALLOWED_HOSTS:
+        raise HTTPException(status_code=400, detail="Host not allowed")
+    target_url = f"https://{host}/{path}"
+    async with httpx.AsyncClient() as client:
+        response = await client.get(target_url)
+        return response.text

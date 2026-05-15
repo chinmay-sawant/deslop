@@ -4,6 +4,7 @@ pub(crate) mod engine;
 pub(crate) mod go;
 pub(crate) mod hallucination;
 pub(crate) mod naming;
+mod performance_layers;
 pub(crate) mod python;
 pub(crate) mod registry;
 pub(crate) mod rust;

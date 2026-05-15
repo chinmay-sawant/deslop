@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_data_structure_choice_boxed_trait_objects_in_hot_collection",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag Vec<Box<dyn Trait>> in hot homogeneous collections where enums or generics can avoid dispatch and pointer chasing.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

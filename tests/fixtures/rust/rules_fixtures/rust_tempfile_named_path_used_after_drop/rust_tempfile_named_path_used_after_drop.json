@@ -1,0 +1,14 @@
+{
+  "id": "rust_tempfile_named_path_used_after_drop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `NamedTempFile::path()` stored or returned while the temporary file owner may drop before the path is used.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

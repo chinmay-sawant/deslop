@@ -1,0 +1,14 @@
+{
+  "id": "rust_anyhow_bail_in_low_level_library_module",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `anyhow::bail!` in domain, parser, storage, or library modules that should usually expose typed error variants.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

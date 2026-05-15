@@ -1,0 +1,14 @@
+{
+  "id": "test_function_stacks_too_many_mock_patch_decorators",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test function has five or more @mock.patch decorators, indicating over-specified mocking.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

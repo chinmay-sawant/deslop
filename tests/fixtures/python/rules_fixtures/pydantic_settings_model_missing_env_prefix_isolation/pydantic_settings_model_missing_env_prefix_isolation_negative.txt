@@ -1,0 +1,25 @@
+from pydantic_settings import BaseSettings
+
+
+class DatabaseSettings(BaseSettings):
+    host: str = "localhost"
+    port: int = 5432
+    username: str
+    password: str
+
+    model_config = {"env_prefix": "DB_"}
+
+
+class RedisSettings(BaseSettings):
+    host: str = "localhost"
+    port: int = 6379
+
+    model_config = {"env_prefix": "REDIS_"}
+
+
+class AppSettings(BaseSettings):
+    database_url: str
+    api_key: str
+    debug: bool = False
+
+    model_config = {"env_prefix": "APP_", "extra": "forbid"}

@@ -1,0 +1,14 @@
+{
+  "id": "log_level_check_after_format",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`zap.S().Debugf(\"expensive %v\", computeDebug())` or `logrus.Debugf(\"data: %v\", expensiveCall())` where the expensive computation happens regardless of log level",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "sensitive_config_key_included_in_debug_level_log_dict_dump",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Debug log statement dumps the full config dict including keys that may hold secrets.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

@@ -1,0 +1,18 @@
+fn drain_old_entries(map: &mut std::collections::HashMap<String, Vec<u8>>) {
+    map.retain(|_, v| !v.is_empty());
+}
+
+fn process_completed(queue: &mut Vec<Task>) {
+    queue.retain(|t| !t.done);
+}
+
+fn drain_and_process(queue: &mut Vec<Task>) {
+    for task in queue.drain(..) {
+        if task.done {
+            archive(task);
+        }
+    }
+}
+
+fn archive(_task: Task) {}
+struct Task { done: bool }

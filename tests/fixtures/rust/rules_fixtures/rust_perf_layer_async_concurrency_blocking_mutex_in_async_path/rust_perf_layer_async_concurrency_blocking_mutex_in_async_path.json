@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_async_concurrency_blocking_mutex_in_async_path",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag std::sync::Mutex use in async paths where blocking can stall executor workers.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

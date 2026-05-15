@@ -1,0 +1,27 @@
+package service
+
+import (
+	"gorm.io/gorm"
+)
+
+// scenario for service_returns_tx_to_caller: Services that hand transaction objects back to handlers or controllers.
+// fixture polarity: positive; family: architecture; severity: warning.
+type TransferService struct {
+	db *gorm.DB
+}
+
+func NewTransferService(db *gorm.DB) *TransferService {
+	return &TransferService{db: db}
+}
+
+func (s *TransferService) BeginTx() *gorm.DB {
+	return s.db.Begin()
+}
+
+func (s *TransferService) Debit(tx *gorm.DB, accountID string, amount float64) error {
+	return tx.Exec("UPDATE accounts SET balance = balance - ? WHERE id = ?", amount, accountID).Error
+}
+
+func (s *TransferService) Credit(tx *gorm.DB, accountID string, amount float64) error {
+	return tx.Exec("UPDATE accounts SET balance = balance + ? WHERE id = ?", amount, accountID).Error
+}

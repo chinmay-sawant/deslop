@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/google/uuid"
+)
+
+// scenario for request_id_generation_duplicated_outside_middleware: Repeated request-id creation logic spread across handlers.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
+	reqID := uuid.New().String()
+	fmt.Fprintf(w, "order created, request_id=%s", reqID)
+}
+
+func GetOrderHandler(w http.ResponseWriter, r *http.Request) {
+	reqID := uuid.New().String()
+	fmt.Fprintf(w, "order details, request_id=%s", reqID)
+}
+
+func ListOrdersHandler(w http.ResponseWriter, r *http.Request) {
+	reqID := uuid.New().String()
+	fmt.Fprintf(w, "order list, request_id=%s", reqID)
+}

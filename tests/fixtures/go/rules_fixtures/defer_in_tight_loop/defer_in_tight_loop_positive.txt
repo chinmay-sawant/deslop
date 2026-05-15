@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for defer_in_tight_loop: `defer` statements inside loops with > 100 iterations or visible hot-path markers
+// fixture polarity: positive; family: performance; severity: warning.
+func scenario476Positive(paths []string) error {
+	for _, path := range paths {
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		_, err = file.Read(make([]byte, 1024))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

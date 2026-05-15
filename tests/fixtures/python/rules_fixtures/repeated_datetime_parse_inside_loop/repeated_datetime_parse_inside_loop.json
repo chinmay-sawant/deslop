@@ -1,0 +1,14 @@
+{
+  "id": "repeated_datetime_parse_inside_loop",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag loops that parse timestamps repeatedly when values could be normalized once.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

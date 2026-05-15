@@ -1,0 +1,14 @@
+{
+  "id": "subprocess_shell_true",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Subprocess boundaries that enable shell=True.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

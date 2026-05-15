@@ -1,0 +1,14 @@
+{
+  "id": "rust_arc_mutex_option_state",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Arc<Mutex<Option<T>>>-style state bags that hide lifecycle state behind nested mutation layers.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

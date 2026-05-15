@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	crand "crypto/rand"
+)
+
+// scenario for insecure_random_for_security: `math/rand` usage (any of `rand.Int`, `rand.Intn`, `rand.Read`, `rand.New`) in functions whose names suggest security use (token generation, key generation, password, nonce, salt, session)
+// fixture polarity: negative; family: security; severity: error.
+func Generatescenario721NegativeToken(buf []byte) error {
+	_, err := crand.Read(buf)
+	return err
+}

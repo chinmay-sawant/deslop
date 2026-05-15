@@ -1,0 +1,14 @@
+{
+  "id": "generic_manager_or_processor_class_controls_many_unrelated_modes",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag vague manager-style classes that centralize unrelated behaviors behind mode flags.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

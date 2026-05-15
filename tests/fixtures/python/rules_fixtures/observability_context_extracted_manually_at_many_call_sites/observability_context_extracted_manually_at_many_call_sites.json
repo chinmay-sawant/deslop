@@ -1,0 +1,14 @@
+{
+  "id": "observability_context_extracted_manually_at_many_call_sites",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag repeated manual extraction of the same tracing or logging context.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

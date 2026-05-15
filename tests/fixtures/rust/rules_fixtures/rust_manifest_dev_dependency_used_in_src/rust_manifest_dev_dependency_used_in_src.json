@@ -1,0 +1,14 @@
+{
+  "id": "rust_manifest_dev_dependency_used_in_src",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag dev-only crates such as `tempfile`, `proptest`, or fuzz helpers imported from production `src` code.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

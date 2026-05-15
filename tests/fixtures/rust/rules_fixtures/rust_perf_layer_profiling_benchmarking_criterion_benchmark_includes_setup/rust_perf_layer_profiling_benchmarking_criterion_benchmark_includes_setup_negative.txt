@@ -1,0 +1,24 @@
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+
+fn load_dataset_from_disk(path: &str) -> Vec<u8> {
+    std::fs::read(path).unwrap()
+}
+
+fn process_data(data: &[u8]) -> usize {
+    data.iter().filter(|b| **b > 0x7f).count()
+}
+
+fn bench_processing(c: &mut Criterion) {
+    // GOOD: setup outside the measured closure using iter_batched
+    let dataset = load_dataset_from_disk("/tmp/large_dataset.bin");
+
+    c.bench_function("process_dataset", |b| {
+        b.iter(|| {
+            let result = process_data(black_box(&dataset));
+            result
+        })
+    });
+}
+
+criterion_group!(benches, bench_processing);
+criterion_main!(benches);

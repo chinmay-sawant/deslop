@@ -1,0 +1,20 @@
+package rulefixtures
+
+import (
+	"os"
+
+	gin "github.com/gin-gonic/gin"
+)
+
+// scenario for servefile_via_readfile_then_c_data: Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming.
+// fixture polarity: positive; family: gin; severity: contextual.
+
+func scenario336Positive(c *gin.Context) {
+	filename := c.Param("filepath")
+	data, err := os.ReadFile("/var/static/" + filename)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "file not found"})
+		return
+	}
+	c.Data(200, "application/octet-stream", data)
+}

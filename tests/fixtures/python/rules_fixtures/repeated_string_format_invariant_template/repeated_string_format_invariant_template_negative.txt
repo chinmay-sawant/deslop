@@ -1,0 +1,13 @@
+def build_urls(base_url, paths):
+    prefix = f"{base_url}/api/v1/"
+    return [f"{prefix}{path}" for path in paths]
+
+
+def generate_log_messages(prefix, events):
+    tag = f"[{prefix}] Event:"
+    return [f"{tag} {e['name']} at {e['time']}" for e in events]
+
+
+def create_headers(host, requests_list):
+    base = f"Host: {host}\r\nContent-Type: application/json\r\nX-Request-ID: "
+    return [f"{base}{req['id']}" for req in requests_list]

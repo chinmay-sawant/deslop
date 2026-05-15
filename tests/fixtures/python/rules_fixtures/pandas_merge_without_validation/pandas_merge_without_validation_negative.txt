@@ -1,0 +1,15 @@
+import pandas as pd
+
+
+def join_orders_with_customers(orders, customers):
+    result = pd.merge(orders, customers, on="customer_id", validate="many_to_one")
+    return result
+
+
+def combine_datasets(left, right):
+    merged = pd.merge(left, right, left_on="user_id", right_on="id", validate="one_to_one")
+    return merged
+
+
+def enrich_with_prices(products, prices):
+    return pd.merge(products, prices, on="sku", validate="many_to_one")

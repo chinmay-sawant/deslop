@@ -1,0 +1,27 @@
+package rulefixtures
+
+import (
+	"io"
+	"os"
+)
+
+// scenario for bufio_reader_missing_for_small_read_loop: File or socket reads inside loops without visible bufio buffering.
+// fixture polarity: positive; family: hot_path; severity: info.
+
+func scenario343Positive(f *os.File) ([]byte, error) {
+	var out []byte
+	buf := make([]byte, 4096)
+	for {
+		n, err := f.Read(buf)
+		if n > 0 {
+			out = append(out, buf[:n]...)
+		}
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, err
+		}
+	}
+	return out, nil
+}

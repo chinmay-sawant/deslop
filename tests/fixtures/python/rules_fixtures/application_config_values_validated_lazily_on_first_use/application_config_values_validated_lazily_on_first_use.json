@@ -1,0 +1,14 @@
+{
+  "id": "application_config_values_validated_lazily_on_first_use",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Config values validated inside request handlers rather than at startup, deferring misconfiguration errors.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

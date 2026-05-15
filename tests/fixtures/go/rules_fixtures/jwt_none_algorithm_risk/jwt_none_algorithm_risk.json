@@ -1,0 +1,14 @@
+{
+  "id": "jwt_none_algorithm_risk",
+  "language": "go",
+  "family": "security",
+  "default_severity": "error",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "JWT verification code that accepts `\"none\"` or `alg: \"\"` as valid signing methods, or uses `jwt.Parse` without `WithValidMethods`",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

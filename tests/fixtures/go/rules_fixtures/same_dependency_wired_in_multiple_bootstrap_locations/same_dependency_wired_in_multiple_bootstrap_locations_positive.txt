@@ -1,0 +1,27 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"net/http"
+
+	_ "github.com/lib/pq"
+)
+
+// scenario for same_dependency_wired_in_multiple_bootstrap_locations: Duplicated construction of the same service or client in several startup files.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func initAPI(db *sql.DB) http.Handler {
+	cache := NewRedisCache("localhost:6379")
+	_ = cache
+	mux := http.NewServeMux()
+	return mux
+}
+
+func initWorker(db *sql.DB) {
+	cache := NewRedisCache("localhost:6379")
+	_ = cache
+}
+
+type RedisCache struct{ addr string }
+
+func NewRedisCache(addr string) *RedisCache { return &RedisCache{addr: addr} }

@@ -1,0 +1,38 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+// scenario for route_registration_tests_duplicate_full_bootstrap_per_file: Tests that rebuild the full application bootstrap repeatedly instead of using shared test setup.
+// fixture polarity: positive; family: architecture; severity: info.
+func SetupServer() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("users list"))
+	})
+	return mux
+}
+
+func TestUsersEndpoint(t *testing.T) {
+	mux := SetupServer()
+	req := httptest.NewRequest("GET", "/users", nil)
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+	if rec.Code != 200 {
+		t.Errorf("expected 200, got %d", rec.Code)
+	}
+}
+
+func TestUsersEndpointWithAuth(t *testing.T) {
+	mux := SetupServer()
+	req := httptest.NewRequest("GET", "/users", nil)
+	req.Header.Set("Authorization", "Bearer token")
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+	if rec.Code != 200 {
+		t.Errorf("expected 200, got %d", rec.Code)
+	}
+}

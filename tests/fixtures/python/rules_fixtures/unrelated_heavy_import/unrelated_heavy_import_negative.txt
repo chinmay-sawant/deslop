@@ -1,0 +1,17 @@
+import pandas as pd
+
+def load_csv(path: str) -> pd.DataFrame:
+    return pd.read_csv(path)
+
+def get_user_name(user_id: int) -> str:
+    return f"user_{user_id}"
+
+def format_date(dt) -> str:
+    return dt.strftime("%Y-%m-%d")
+
+def compute_summary(df: pd.DataFrame) -> dict:
+    return {
+        "count": len(df),
+        "mean": df["value"].mean(),
+        "std": df["value"].std(),
+    }

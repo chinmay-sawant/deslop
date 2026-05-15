@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	"html/template"
+	"net/http"
+	"os"
+)
+
+// scenario for file_or_template_read_per_request: Request-path handlers that read files directly instead of using startup caching or dedicated file-serving paths.
+// fixture polarity: positive; family: gin; severity: contextual.
+
+func RenderPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, _ := template.ParseFiles("templates/layout.html", "templates/page.html")
+	tmpl.Execute(w, map[string]string{"Title": "Welcome"})
+}
+
+func ServeConfig(w http.ResponseWriter, r *http.Request) {
+	data, _ := os.ReadFile("config/settings.json")
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(data)
+}

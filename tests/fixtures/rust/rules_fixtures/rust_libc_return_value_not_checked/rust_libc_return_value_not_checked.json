@@ -1,0 +1,14 @@
+{
+  "id": "rust_libc_return_value_not_checked",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag libc calls whose integer or pointer return value is ignored or not checked for `-1`, null, or documented failure sentinels.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

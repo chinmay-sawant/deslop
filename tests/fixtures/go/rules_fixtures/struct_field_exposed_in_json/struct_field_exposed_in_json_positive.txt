@@ -1,0 +1,8 @@
+package rulefixtures
+
+// scenario for struct_field_exposed_in_json: exported struct fields containing sensitive data (Password, Secret, Token, APIKey, PrivateKey) without `json:"-"` tags in API response structs
+// fixture polarity: positive; family: security; severity: warning.
+type Rule737PositiveRecord struct {
+	UserID string `json:"user_id"`
+	Token string `json:"token"`
+}

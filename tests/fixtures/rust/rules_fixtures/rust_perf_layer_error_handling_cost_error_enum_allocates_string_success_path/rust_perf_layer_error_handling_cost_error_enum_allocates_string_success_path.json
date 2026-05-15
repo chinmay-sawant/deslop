@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_error_handling_cost_error_enum_allocates_string_success_path",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag error strings built before the failing branch is known.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

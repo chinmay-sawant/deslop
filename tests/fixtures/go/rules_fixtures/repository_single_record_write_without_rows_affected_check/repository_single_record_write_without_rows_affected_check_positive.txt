@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"gorm.io/gorm"
+)
+
+// scenario for repository_single_record_write_without_rows_affected_check: Single-record-oriented repository updates or deletes that never inspect `RowsAffected` or an equivalent write-outcome signal.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule136PositiveRecord struct {
+	ID   int    `gorm:"primaryKey"`
+	Name string
+}
+
+func scenario136Positive(db *gorm.DB, item Rule136PositiveRecord) error {
+	if err := db.Create(&item).Error; err != nil {
+		return err
+	}
+	return nil
+}

@@ -1,0 +1,33 @@
+package rulefixtures
+
+import "net/http"
+
+// scenario for api_error_type_outside_transport_package: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type UserRepository struct{}
+
+type APIError struct {
+	HTTPStatus int    `json:"-"`
+	Code       string `json:"code"`
+	Message    string `json:"message"`
+	Details    any    `json:"details,omitempty"`
+}
+
+var (
+	ErrUserNotFound   = &APIError{HTTPStatus: http.StatusNotFound, Code: "USER_NOT_FOUND", Message: "user not found"}
+	ErrInvalidEmail   = &APIError{HTTPStatus: http.StatusBadRequest, Code: "INVALID_EMAIL", Message: "email format is invalid"}
+	ErrDuplicateEntry = &APIError{HTTPStatus: http.StatusConflict, Code: "DUPLICATE_ENTRY", Message: "resource already exists"}
+)
+
+func (r *UserRepository) FindByEmail(email string) (*User, *APIError) {
+	if email == "" {
+		return nil, ErrInvalidEmail
+	}
+	return nil, ErrUserNotFound
+}
+
+type User struct {
+	ID    int
+	Email string
+}

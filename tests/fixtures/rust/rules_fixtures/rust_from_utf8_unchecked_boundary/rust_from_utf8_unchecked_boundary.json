@@ -1,0 +1,14 @@
+{
+  "id": "rust_from_utf8_unchecked_boundary",
+  "language": "rust",
+  "family": "security_footguns",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Unchecked UTF-8 conversion at a repository or service boundary.",
+  "binding_location": "src/heuristics/rust/security_footguns.rs"
+}

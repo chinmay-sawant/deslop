@@ -1,0 +1,14 @@
+import logging
+
+def handle_request(request):
+    logger = logging.getLogger(f"request.{request.request_id}")
+    logger.setLevel(logging.INFO)
+    handler = logging.StreamHandler()
+    logger.addHandler(handler)
+    logger.info("Request started")
+    result = process(request)
+    logger.info("Request completed")
+    return result
+
+def process(request):
+    return {"status": "ok"}

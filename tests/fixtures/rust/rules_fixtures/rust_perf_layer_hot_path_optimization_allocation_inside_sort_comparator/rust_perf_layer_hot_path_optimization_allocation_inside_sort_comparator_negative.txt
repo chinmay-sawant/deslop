@@ -1,0 +1,13 @@
+struct Record {
+    name: String,
+    score: f64,
+}
+
+fn sort_records(records: &mut [Record]) {
+    // GOOD: compare fields directly without allocation
+    records.sort_by(|a, b| {
+        a.name
+            .cmp(&b.name)
+            .then_with(|| a.score.partial_cmp(&b.score).unwrap_or(std::cmp::Ordering::Equal))
+    });
+}

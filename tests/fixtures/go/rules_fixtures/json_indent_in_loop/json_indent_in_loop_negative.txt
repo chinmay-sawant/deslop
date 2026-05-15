@@ -1,0 +1,14 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+)
+
+// scenario for json_indent_in_loop: `json.Indent(...)` inside loops.
+// fixture polarity: negative; family: performance; severity: info.
+type Rule606NegativeRecord struct { Name string `json:"name"`; Count int `json:"count"` }
+
+func scenario606Negative(writer io.Writer, value Rule606NegativeRecord) error {
+	return json.NewEncoder(writer).Encode(value)
+}

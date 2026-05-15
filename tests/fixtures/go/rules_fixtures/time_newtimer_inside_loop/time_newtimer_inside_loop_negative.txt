@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for time_newtimer_inside_loop: `time.NewTimer(...)` inside loops.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario683Negative(items []string) int {
+	started := time.Now()
+	total := 0
+	for _, item := range items {
+		if !started.IsZero() { total += len(item) }
+	}
+	return total
+}

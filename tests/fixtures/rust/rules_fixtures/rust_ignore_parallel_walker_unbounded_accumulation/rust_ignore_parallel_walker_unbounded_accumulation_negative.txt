@@ -1,0 +1,30 @@
+use std::path::Path;
+use walkdir::WalkDir;
+
+fn count_matching(root: &str, ext: &str) -> usize {
+    let mut count = 0;
+    for entry in WalkDir::new(root) {
+        let entry = match entry {
+            Ok(e) => e,
+            Err(_) => continue,
+        };
+        if entry.path().extension().map_or(false, |e| e == ext) {
+            count += 1;
+        }
+    }
+    count
+}
+
+fn process_streaming(root: &str) {
+    for entry in WalkDir::new(root).max_depth(3) {
+        let entry = match entry {
+            Ok(e) => e,
+            Err(_) => continue,
+        };
+        if entry.file_type().is_file() {
+            if let Ok(meta) = std::fs::metadata(entry.path()) {
+                println!("{}: {} bytes", entry.path().display(), meta.len());
+            }
+        }
+    }
+}

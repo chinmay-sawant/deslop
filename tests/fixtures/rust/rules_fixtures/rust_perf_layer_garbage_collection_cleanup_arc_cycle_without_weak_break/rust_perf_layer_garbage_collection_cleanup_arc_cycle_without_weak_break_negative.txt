@@ -1,0 +1,25 @@
+use std::sync::{Arc, Mutex, Weak};
+
+struct Node {
+    value: i64,
+    // GOOD: Weak reference breaks the cycle
+    parent: Option<Weak<Mutex<Node>>>,
+    children: Vec<Arc<Mutex<Node>>>,
+}
+
+fn build_tree() -> Arc<Mutex<Node>> {
+    let root = Arc::new(Mutex::new(Node {
+        value: 0,
+        parent: None,
+        children: Vec::new(),
+    }));
+
+    let child = Arc::new(Mutex::new(Node {
+        value: 1,
+        parent: Some(Arc::downgrade(&root)),
+        children: Vec::new(),
+    }));
+
+    root.lock().unwrap().children.push(Arc::clone(&child));
+    root
+}

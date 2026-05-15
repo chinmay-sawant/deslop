@@ -1,4 +1,0 @@
-SQL = "UPDATE reports SET status = 'open' WHERE status = 'draft'"
-
-def upgrade(cursor):
-    cursor.execute(SQL)

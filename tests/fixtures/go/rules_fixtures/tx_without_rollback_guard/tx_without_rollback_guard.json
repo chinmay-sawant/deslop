@@ -1,0 +1,14 @@
+{
+  "id": "tx_without_rollback_guard",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Transactions begun and later committed with no observed rollback guard.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

@@ -1,0 +1,35 @@
+import json
+
+
+def deduplicate_events(events: list[dict]) -> list[dict]:
+    seen = set()
+    unique = []
+    for event in events:
+        key = json.dumps(event, sort_keys=True)
+        if key not in seen:
+            seen.add(key)
+            unique.append(event)
+    return unique
+
+
+_cache: dict[str, dict] = {}
+
+
+def get_cached_result(params: dict) -> dict | None:
+    cache_key = json.dumps(params, sort_keys=True)
+    return _cache.get(cache_key)
+
+
+def store_in_cache(params: dict, result: dict) -> None:
+    cache_key = json.dumps(params, sort_keys=True)
+    _cache[cache_key] = result
+
+
+def find_duplicate_configs(configs: list[dict]) -> list[dict]:
+    duplicates = []
+    serialized = [json.dumps(c, sort_keys=True) for c in configs]
+    for i in range(len(serialized)):
+        for j in range(i + 1, len(serialized)):
+            if serialized[i] == serialized[j]:
+                duplicates.append(configs[i])
+    return duplicates

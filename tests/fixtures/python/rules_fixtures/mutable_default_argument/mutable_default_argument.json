@@ -1,0 +1,14 @@
+{
+  "id": "mutable_default_argument",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Function parameters that use mutable defaults such as [], {}, or set() directly in the signature.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

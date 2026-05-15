@@ -1,0 +1,10 @@
+package rulefixtures
+
+// scenario for gorm_model_contains_binding_or_validate_tags: GORM models that accumulate transport validation and binding concerns.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule061PositiveRecord struct {
+	ID       int    `gorm:"primaryKey" json:"id" binding:"required"`
+	TenantID int    `gorm:"index" json:"tenant_id" validate:"min=1"`
+	Name     string `gorm:"size:255" json:"name" binding:"required" validate:"min=3,max=100"`
+	Email    string `gorm:"size:255" json:"email" binding:"required,email"`
+}

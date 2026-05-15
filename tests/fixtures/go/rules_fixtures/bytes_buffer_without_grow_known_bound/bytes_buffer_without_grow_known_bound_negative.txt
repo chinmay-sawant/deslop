@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_buffer_without_grow_known_bound: bytes.Buffer used without Grow when approximate output size is locally visible.
+// fixture polarity: negative; family: hot_path; severity: info.
+func scenario347Negative(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.Contains(haystack, needle)
+}

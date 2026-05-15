@@ -1,0 +1,14 @@
+{
+  "id": "magic_thresholds_duplicated_across_modules",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag repeated numeric thresholds with shared meaning that are copied across modules.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

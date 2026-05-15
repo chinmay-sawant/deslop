@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_runtime_configuration_debug_build_tags_in_hot_binary",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Build and runtime configuration. Flag performance-sensitive binaries that keep debug/profiling build tags enabled by default.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

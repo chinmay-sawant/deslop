@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for sql_rows_scan_logic_outside_repository: Code outside repositories that manually scans rows into structs.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule193NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule193NegativeService interface {
+	Run(context.Context, Rule193NegativeRecord) error
+}
+
+func scenario193Negative(ctx context.Context, service Rule193NegativeService, input Rule193NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

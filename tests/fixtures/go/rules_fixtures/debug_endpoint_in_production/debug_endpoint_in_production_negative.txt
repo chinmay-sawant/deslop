@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for debug_endpoint_in_production: `net/http/pprof` import or `http.Handle("/debug/pprof/", ...)` registration without access control
+// fixture polarity: negative; family: security; severity: warning.
+func scenario705Negative(mux *http.ServeMux, adminOnly bool) {
+	if adminOnly {
+		mux.HandleFunc("/internal/health", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) })
+	}
+}

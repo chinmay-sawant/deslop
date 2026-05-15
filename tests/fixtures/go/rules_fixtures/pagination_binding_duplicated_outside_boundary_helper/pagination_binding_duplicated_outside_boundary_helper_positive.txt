@@ -1,0 +1,38 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"strconv"
+)
+
+// scenario for pagination_binding_duplicated_outside_boundary_helper: Repeated pagination DTO binding and defaulting logic across handler files.
+// fixture polarity: positive; family: architecture; severity: info.
+func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+	page, _ := strconv.Atoi(pageStr)
+	limit, _ := strconv.Atoi(limitStr)
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 || limit > 100 {
+		limit = 20
+	}
+	w.Write([]byte("users page"))
+	_, _ = page, limit
+}
+
+func ListOrdersHandler(w http.ResponseWriter, r *http.Request) {
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+	page, _ := strconv.Atoi(pageStr)
+	limit, _ := strconv.Atoi(limitStr)
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 || limit > 100 {
+		limit = 20
+	}
+	w.Write([]byte("orders page"))
+	_, _ = page, limit
+}

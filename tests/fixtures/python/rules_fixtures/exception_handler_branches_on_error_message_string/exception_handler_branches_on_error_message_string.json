@@ -1,0 +1,14 @@
+{
+  "id": "exception_handler_branches_on_error_message_string",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Exception handler inspects str(e) or e.message in a condition instead of matching on exception type.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

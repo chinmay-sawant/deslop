@@ -1,0 +1,43 @@
+package service
+
+import (
+	"database/sql"
+
+	"github.com/go-redis/redis/v8"
+	"github.com/segmentio/kafka-go"
+	"gorm.io/gorm"
+)
+
+// scenario for service_struct_has_excessive_dependency_count: Services with too many unrelated dependencies, which often signals a god-service.
+// fixture polarity: positive; family: architecture; severity: info.
+type MegaService struct {
+	db         *gorm.DB
+	legacyDB   *sql.DB
+	cache      *redis.Client
+	queue      *kafka.Writer
+	emailer    EmailClient
+	smsClient  SMSClient
+	auditLog   AuditLogger
+	fileStore  FileStorage
+	fraudCheck FraudChecker
+}
+
+type EmailClient interface {
+	Send(to, subject, body string) error
+}
+
+type SMSClient interface {
+	SendText(phone, message string) error
+}
+
+type AuditLogger interface {
+	Log(event string) error
+}
+
+type FileStorage interface {
+	Upload(path string, data []byte) error
+}
+
+type FraudChecker interface {
+	Evaluate(accountID string) (bool, error)
+}

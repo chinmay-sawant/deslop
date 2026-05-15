@@ -1,0 +1,28 @@
+import pandas as pd
+
+
+def calculate_totals(df):
+    totals = []
+    for _, row in df.iterrows():
+        total = row["price"] * row["quantity"]
+        totals.append(total)
+    df["total"] = totals
+    return df
+
+
+def filter_active_users(df):
+    active = []
+    for index, row in df.iterrows():
+        if row["status"] == "active" and row["age"] >= 18:
+            active.append(index)
+    return df.loc[active]
+
+
+def build_summary(df):
+    records = []
+    for _, row in df.iterrows():
+        records.append({
+            "name": row["name"],
+            "revenue": row["price"] * row["units_sold"],
+        })
+    return pd.DataFrame(records)

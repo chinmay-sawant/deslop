@@ -1,4 +1,0 @@
-QUERY = "SELECT id, status FROM reports WHERE status = 'open' ORDER BY created_at"
-
-def build_query():
-    return QUERY

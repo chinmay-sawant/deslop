@@ -1,0 +1,33 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def authenticate(username: str, password: str) -> dict:
+    user = find_user(username)
+    if not user or user["password"] != hash_password(password):
+        raise ValueError(f"Authentication failed for user '{username}'")
+    return user
+
+
+def connect_to_database(url: str) -> None:
+    try:
+        db.connect(url)
+    except Exception as e:
+        raise ConnectionError(f"Failed to connect to database: {e}")
+
+
+def process_payment(card_number: str, amount: float) -> dict:
+    masked = f"****{card_number[-4:]}"
+    try:
+        result = charge(card_number, amount)
+    except Exception as e:
+        logger.error(f"Payment failed for card {masked}: {e}")
+        raise
+
+
+def send_email(to: str, api_key: str, body: str) -> None:
+    try:
+        email_client.send(to=to, key=api_key, body=body)
+    except Exception as e:
+        raise RuntimeError(f"Email delivery failed: {e}")

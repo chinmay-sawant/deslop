@@ -1,0 +1,14 @@
+{
+  "id": "background_jobs_registered_from_gin_packages_instead_of_bootstrap",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Scheduler or worker registration hidden inside Gin transport packages.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

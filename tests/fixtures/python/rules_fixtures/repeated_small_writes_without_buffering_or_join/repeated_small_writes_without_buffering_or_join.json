@@ -1,0 +1,14 @@
+{
+  "id": "repeated_small_writes_without_buffering_or_join",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that emits many tiny writes instead of buffering.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

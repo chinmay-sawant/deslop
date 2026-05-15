@@ -1,0 +1,30 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	gin "github.com/gin-gonic/gin"
+)
+
+// scenario for sort_or_filter_whitelist_logic_duplicated_across_handlers: Repeated client-field whitelist logic across endpoints.
+// fixture polarity: positive; family: architecture; severity: info.
+
+var allowedSortFields = map[string]bool{"name": true, "created_at": true, "status": true}
+
+func ListUsersHandler(c *gin.Context) {
+	sort := c.DefaultQuery("sort", "name")
+	if !allowedSortFields[sort] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid sort field"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"sort": sort})
+}
+
+func ListOrdersHandler(c *gin.Context) {
+	sort := c.DefaultQuery("sort", "name")
+	if !allowedSortFields[sort] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid sort field"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"sort": sort})
+}

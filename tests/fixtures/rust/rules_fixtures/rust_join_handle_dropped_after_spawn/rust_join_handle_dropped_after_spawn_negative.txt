@@ -1,0 +1,19 @@
+use std::thread;
+
+fn spawn_workers(tasks: Vec<String>) {
+    let handles: Vec<_> = tasks.into_iter()
+        .map(|task| thread::spawn(move || process(task)))
+        .collect();
+    for handle in handles {
+        handle.join().unwrap();
+    }
+}
+
+fn spawn_detached_worker(task: String) {
+    let builder = thread::Builder::new().name("worker".into());
+    builder.spawn(move || {
+        process(task);
+    }).expect("failed to spawn worker");
+}
+
+fn process(_s: String) {}

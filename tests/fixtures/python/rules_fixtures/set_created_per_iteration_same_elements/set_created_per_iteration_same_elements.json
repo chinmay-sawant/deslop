@@ -1,0 +1,14 @@
+{
+  "id": "set_created_per_iteration_same_elements",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "A set with the same elements is rebuilt on each iteration instead of being hoisted.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

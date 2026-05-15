@@ -1,0 +1,9 @@
+// GOOD: use standard module resolution
+// In src/lib.rs:
+mod handlers;
+mod models;
+mod utils;
+
+// Only use #[path] for non-standard layouts:
+#[path = "../legacy/old_handlers.rs"]
+mod old_handlers;

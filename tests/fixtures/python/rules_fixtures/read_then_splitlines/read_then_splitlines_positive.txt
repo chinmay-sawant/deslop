@@ -1,0 +1,21 @@
+def count_lines(filepath: str) -> int:
+    with open(filepath, "r") as f:
+        content = f.read()
+    lines = content.splitlines()
+    return len(lines)
+
+
+def find_errors(filepath: str) -> list[str]:
+    with open(filepath, "r") as f:
+        text = f.read()
+    return [line for line in text.splitlines() if "ERROR" in line]
+
+
+def extract_emails(filepath: str) -> list[str]:
+    with open(filepath, "r") as f:
+        data = f.read()
+    emails = []
+    for line in data.splitlines():
+        if "@" in line:
+            emails.append(line.strip())
+    return emails

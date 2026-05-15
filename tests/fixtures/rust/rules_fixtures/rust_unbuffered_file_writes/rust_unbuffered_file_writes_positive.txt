@@ -1,0 +1,37 @@
+use std::fs::File;
+use std::io::Write;
+
+fn write_lines(path: &str, lines: &[&str]) -> Result<(), Box<dyn std::error::Error>> {
+    let mut file = File::create(path)?;
+    for line in lines {
+        writeln!(file, "{}", line)?;
+    }
+    Ok(())
+}
+
+fn write_records(path: &str, records: &[Record]) -> Result<(), Box<dyn std::error::Error>> {
+    let mut file = File::create(path)?;
+    for record in records {
+        writeln!(file, "{},{},{}", record.id, record.name, record.value)?;
+    }
+    Ok(())
+}
+
+fn append_log(path: &str, entries: &[String]) -> Result<(), Box<dyn std::error::Error>> {
+    let mut file = File::options().append(true).open(path)?;
+    for entry in entries {
+        writeln!(file, "{}", entry)?;
+    }
+    Ok(())
+}
+
+fn write_json_lines(path: &str, items: &[serde_json::Value]) -> Result<(), Box<dyn std::error::Error>> {
+    let mut file = File::create(path)?;
+    for item in items {
+        let json = serde_json::to_string(item)?;
+        writeln!(file, "{}", json)?;
+    }
+    Ok(())
+}
+
+struct Record { id: u64, name: String, value: String }

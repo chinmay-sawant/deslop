@@ -1,0 +1,38 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def get_user_role(user_id: str) -> str:
+    user = db.fetch_user(user_id)
+    if user is None:
+        raise ValueError(f"User {user_id} not found")
+    return user["role"]
+
+
+def calculate_discount(customer_id: str, order_total: float) -> float:
+    tier = get_customer_tier(customer_id)
+    if tier is None:
+        raise ValueError(f"Customer {customer_id} has no tier assigned")
+    if tier not in ("bronze", "silver", "gold", "platinum"):
+        raise ValueError(f"Invalid customer tier: {tier}")
+    return DISCOUNT_RATES[tier]
+
+
+def get_config_value(key: str) -> str:
+    try:
+        value = config_store.get(key)
+    except ConfigError as e:
+        raise RuntimeError(f"Config lookup failed for '{key}'") from e
+    if value is None:
+        raise KeyError(f"Config key '{key}' not found")
+    return value
+
+
+def resolve_tenant(request_host: str) -> str:
+    tenant = tenant_registry.lookup(request_host)
+    if tenant is None:
+        raise ValueError(f"No tenant registered for host: {request_host}")
+    if not tenant.is_active:
+        raise ValueError(f"Tenant {tenant.id} is inactive")
+    return tenant.id

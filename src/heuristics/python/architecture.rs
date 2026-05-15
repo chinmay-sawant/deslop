@@ -1554,7 +1554,10 @@ fn mixed_domain_transport_return_line(body: &str, start_line: usize) -> Option<u
             continue;
         }
 
-        let indent = line.chars().take_while(|ch| ch.is_ascii_whitespace()).count();
+        let indent = line
+            .chars()
+            .take_while(|ch| ch.is_ascii_whitespace())
+            .count();
         let mut block = String::new();
         block.push_str(trimmed);
 
@@ -1575,7 +1578,10 @@ fn mixed_domain_transport_return_line(body: &str, start_line: usize) -> Option<u
         }
 
         let lower = block.to_ascii_lowercase();
-        let has_transport = contains_any(&lower, &["\"status\":", "'status':", "\"headers\":", "'headers':"]);
+        let has_transport = contains_any(
+            &lower,
+            &["\"status\":", "'status':", "\"headers\":", "'headers':"],
+        );
         let has_domain = contains_any(
             &lower,
             &[

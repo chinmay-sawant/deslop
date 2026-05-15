@@ -1,0 +1,28 @@
+package rulefixtures
+
+import (
+	"fmt"
+	gorm "gorm.io/gorm"
+	"strings"
+)
+
+// scenario for unbounded_in_clause_expansion: IN clauses built from request-driven collections without bound limits.
+// fixture polarity: positive; family: data_access; severity: contextual.
+
+type Asset struct {
+	ID   int
+	Name string
+}
+
+func FindAssetsByIDs(db *gorm.DB, ids []int) ([]Asset, error) {
+	placeholders := make([]string, len(ids))
+	args := make([]interface{}, len(ids))
+	for i, id := range ids {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = id
+	}
+	var assets []Asset
+	err := db.Where("id IN ("+strings.Join(placeholders, ",")+")", args...).
+		Find(&assets).Error
+	return assets, err
+}

@@ -1,0 +1,27 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for file_handle_without_close: File handles opened via os.Open, os.Create, or os.OpenFile without an observed Close() path.
+// fixture polarity: positive; family: idioms; severity: info.
+func scenario378Positive(path string) ([]byte, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	stat, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+
+	data := make([]byte, stat.Size())
+	_, err = file.Read(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}

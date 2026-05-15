@@ -1,4 +1,0 @@
-SHARED_LITERAL = "this repeated literal belongs in one shared constant"
-
-def helper(payload):
-    return [item for item in payload]

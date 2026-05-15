@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+// scenario for repository_type_outside_repository_package: Repository implementations declared outside `repository`, `repo`, or `store` packages when the repo already uses those roles elsewhere.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule138PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario138Positive(w http.ResponseWriter, r *http.Request, repo Rule138PositiveRecord) error {
+	ctx := context.Background()
+	query := "select id from accounts where tenant_id = '" + r.Header.Get("X-Tenant") + "'"
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("storage failure: %v", err), http.StatusInternalServerError)
+		return err
+	}
+	defer rows.Close()
+	return rows.Err()
+}

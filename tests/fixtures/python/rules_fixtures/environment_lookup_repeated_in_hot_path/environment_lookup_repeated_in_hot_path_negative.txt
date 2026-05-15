@@ -1,0 +1,54 @@
+import os
+import logging
+from dataclasses import dataclass
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class AppConfig:
+    log_level: str
+    db_url: str
+    api_key: str
+    db_timeout: int
+    region: str
+    s3_prefix: str
+    s3_bucket: str
+
+
+def load_config() -> AppConfig:
+    return AppConfig(
+        log_level=os.environ.get("LOG_LEVEL", "INFO"),
+        db_url=os.environ.get("DATABASE_URL", "postgresql://localhost/app"),
+        api_key=os.environ.get("API_KEY", ""),
+        db_timeout=int(os.environ.get("DB_TIMEOUT", "30")),
+        region=os.environ.get("AWS_REGION", "us-east-1"),
+        s3_prefix=os.environ.get("S3_PREFIX", "data/"),
+        s3_bucket=os.environ.get("S3_BUCKET", "my-bucket"),
+    )
+
+
+config = load_config()
+
+
+def process_request(request):
+    logger.info(f"Processing with level {config.log_level}")
+    result = query_database(config.db_url, request.data)
+    return format_response(result, config.api_key)
+
+
+def handle_batch(items: list) -> list:
+    results = []
+    for item in items:
+        result = query_database(config.db_url, item, timeout=config.db_timeout)
+        results.append(result)
+    return results
+
+
+def transform_record(record: dict) -> dict:
+    return {
+        "region": config.region,
+        "prefix": config.s3_prefix,
+        "bucket": config.s3_bucket,
+        **record,
+    }

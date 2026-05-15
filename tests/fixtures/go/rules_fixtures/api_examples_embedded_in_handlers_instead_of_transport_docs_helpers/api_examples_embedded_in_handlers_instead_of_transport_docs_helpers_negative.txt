@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for api_examples_embedded_in_handlers_instead_of_transport_docs_helpers: Long example payload blocks hardcoded in handlers rather than doc or example helpers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule002NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule002NegativeService interface {
+	Run(context.Context, Rule002NegativeRecord) error
+}
+
+func scenario002Negative(ctx context.Context, service Rule002NegativeService, input Rule002NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

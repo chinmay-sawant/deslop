@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for duplicate_struct_tag_key: Struct field tags that repeat the same key more than once.
+// fixture polarity: negative; family: consistency; severity: contextual.
+type Rule229NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario229Negative(records []Rule229NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

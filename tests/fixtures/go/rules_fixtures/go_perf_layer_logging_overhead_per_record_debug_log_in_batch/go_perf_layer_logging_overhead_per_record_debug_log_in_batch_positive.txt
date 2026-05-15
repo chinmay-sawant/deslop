@@ -1,0 +1,18 @@
+package rulefixtures
+
+import "log/slog"
+
+// scenario for go_perf_layer_logging_overhead_per_record_debug_log_in_batch: Layer: Logging overhead. Flag debug logging per batch record on hot ingestion paths.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario563Positive(records []string) {
+	// Emits a Debug-level log per record inside a batch processing loop.
+	// Even if Debug is disabled, log call arguments may be evaluated,
+	// and per-record logging in hot ingestion paths adds unnecessary
+	// overhead at scale.
+	for _, record := range records {
+		slog.Debug("processing record", slog.String("item", record))
+		processRecord563(record)
+	}
+}
+
+func processRecord563(record string) {}

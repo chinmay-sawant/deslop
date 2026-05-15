@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for default_transaction_enabled_for_bulk_create: Bulk creates performed with GORM default transaction enabled - SkipDefaultTransaction improves throughput.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule255NegativeRecord struct { ID int }
+
+func scenario255Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule255NegativeRecord{}).Error
+}

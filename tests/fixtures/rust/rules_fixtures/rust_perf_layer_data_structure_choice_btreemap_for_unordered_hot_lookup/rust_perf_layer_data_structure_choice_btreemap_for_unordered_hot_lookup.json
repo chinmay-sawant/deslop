@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_data_structure_choice_btreemap_for_unordered_hot_lookup",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag BTreeMap lookups in unordered hot paths where HashMap or indexed Vec may be cheaper.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -1,0 +1,31 @@
+import sys
+import os
+import cProfile
+
+
+def process_data(items: list[dict]) -> list[dict]:
+    return [transform(item) for item in items]
+
+
+def transform(item: dict) -> dict:
+    return {k: v for k, v in item.items() if v is not None}
+
+
+def main():
+    enable_profiling = os.environ.get("ENABLE_PROFILING", "0") == "1"
+    profiler = None
+    if enable_profiling:
+        profiler = cProfile.Profile()
+        profiler.enable()
+
+    data = [{"id": i, "name": f"item_{i}", "value": i * 10} for i in range(1000)]
+    result = process_data(data)
+    print(f"Processed {len(result)} items")
+
+    if profiler is not None:
+        profiler.disable()
+        profiler.print_stats(sort="cumulative")
+
+
+if __name__ == "__main__":
+    main()

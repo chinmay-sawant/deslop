@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_serialization_base64_roundtrip_for_binary_transport",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside a single process boundary.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

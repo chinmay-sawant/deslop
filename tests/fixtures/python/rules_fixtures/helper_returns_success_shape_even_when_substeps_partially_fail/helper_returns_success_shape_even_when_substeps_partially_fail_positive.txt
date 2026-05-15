@@ -1,0 +1,37 @@
+from dataclasses import dataclass, field
+
+
+@dataclass
+class SyncResult:
+    success: bool = True
+    synced_count: int = 0
+    errors: list[str] = field(default_factory=list)
+
+
+def sync_user_data(user_id: int) -> SyncResult:
+    result = SyncResult()
+    try:
+        sync_profile(user_id)
+        result.synced_count += 1
+    except Exception as e:
+        result.errors.append(f"profile: {e}")
+
+    try:
+        sync_orders(user_id)
+        result.synced_count += 1
+    except Exception as e:
+        result.errors.append(f"orders: {e}")
+
+    try:
+        sync_preferences(user_id)
+        result.synced_count += 1
+    except Exception as e:
+        result.errors.append(f"preferences: {e}")
+
+    return result
+
+
+def process_sync(user_id: int):
+    result = sync_user_data(user_id)
+    if result.success:
+        notify_user(user_id, "Sync completed successfully")

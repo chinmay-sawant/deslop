@@ -1,0 +1,14 @@
+{
+  "id": "parallel_lists_used_instead_of_record_object",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that keeps related values synchronized across multiple lists instead of using one record type.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

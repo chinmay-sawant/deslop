@@ -1,0 +1,12 @@
+package rulefixtures
+
+// scenario for copy_append_idiom_waste: `dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known
+// fixture polarity: positive; family: performance; severity: info.
+
+func scenario472Positive(a, b, c []int) []int {
+	result := make([]int, len(a))
+	copy(result, a)
+	result = append(result, b...)
+	result = append(result, c...)
+	return result
+}

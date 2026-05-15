@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for toctou_file_check_then_open: `os.Stat(path)` or file existence check followed by `os.Open(path)` or `os.Create(path)` without atomic operations
+// fixture polarity: positive; family: security; severity: warning.
+func scenario742Positive(path string) (*os.File, error) {
+	if _, err := os.Stat(path); err != nil { return nil, err }
+	return os.Open(path)
+}

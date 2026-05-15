@@ -1,0 +1,14 @@
+{
+  "id": "magic_value_branching",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated branch-shaping numeric or string literals that likely want an explicit constant or policy name.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

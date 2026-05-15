@@ -1,0 +1,14 @@
+{
+  "id": "rust_ignore_parallel_walker_unbounded_accumulation",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag parallel walker callbacks that push every path into an unbounded `Vec` or channel before processing.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

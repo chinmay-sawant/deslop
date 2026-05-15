@@ -1,0 +1,14 @@
+{
+  "id": "gorm_hook_mutates_unrelated_tables",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Hooks that reach beyond the owning aggregate and write unrelated records.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

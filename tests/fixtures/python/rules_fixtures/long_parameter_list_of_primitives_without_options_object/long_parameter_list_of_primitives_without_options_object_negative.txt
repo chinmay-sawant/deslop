@@ -1,0 +1,60 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class UserCreateParams:
+    username: str
+    email: str
+    first_name: str
+    last_name: str
+    age: int
+    is_active: bool = True
+    role: str = "user"
+    department: str = ""
+    manager_id: int | None = None
+    salary: float = 0.0
+    start_date: str = ""
+    phone: str = ""
+    address: str = ""
+    city: str = ""
+    state: str = ""
+    zip_code: str = ""
+
+
+def create_user(params: UserCreateParams) -> dict:
+    return {
+        "username": params.username,
+        "email": params.email,
+        "first_name": params.first_name,
+        "last_name": params.last_name,
+        "age": params.age,
+        "is_active": params.is_active,
+        "role": params.role,
+        "department": params.department,
+        "manager_id": params.manager_id,
+        "salary": params.salary,
+        "start_date": params.start_date,
+        "phone": params.phone,
+        "address": params.address,
+        "city": params.city,
+        "state": params.state,
+        "zip_code": params.zip_code,
+    }
+
+
+@dataclass
+class EmailParams:
+    recipient: str
+    sender: str
+    subject: str
+    body: str
+    cc: str = ""
+    bcc: str = ""
+    priority: str = "normal"
+    format_type: str = "html"
+    attachments: list[str] | None = None
+    read_receipt: bool = False
+
+
+def send_email(params: EmailParams) -> bool:
+    pass

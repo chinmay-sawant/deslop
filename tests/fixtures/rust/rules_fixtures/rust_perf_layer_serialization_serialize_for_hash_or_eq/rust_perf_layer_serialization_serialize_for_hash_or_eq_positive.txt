@@ -1,0 +1,28 @@
+use serde::Serialize;
+use std::collections::HashSet;
+
+#[derive(Serialize, Clone)]
+struct Config {
+    name: String,
+    value: String,
+    version: u32,
+}
+
+// BAD: serializing to compare or hash
+fn configs_equal(a: &Config, b: &Config) -> bool {
+    let bytes_a = serde_json::to_vec(a).unwrap();
+    let bytes_b = serde_json::to_vec(b).unwrap();
+    bytes_a == bytes_b
+}
+
+fn deduplicate_configs(configs: &[Config]) -> Vec<&Config> {
+    let mut seen = HashSet::new();
+    let mut result = Vec::new();
+    for config in configs {
+        let bytes = serde_json::to_vec(config).unwrap();
+        if seen.insert(bytes) {
+            result.push(config);
+        }
+    }
+    result
+}

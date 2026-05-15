@@ -1,0 +1,37 @@
+from dataclasses import dataclass, asdict
+from typing import Any
+
+
+@dataclass(frozen=True)
+class Event:
+    type: str
+    payload: dict[str, Any]
+    timestamp: float
+
+    def __hash__(self):
+        return hash((self.type, tuple(sorted(self.payload.items())), self.timestamp))
+
+
+def deduplicate_events(events: list[Event]) -> list[Event]:
+    seen: set[Event] = set()
+    unique = []
+    for event in events:
+        if event not in seen:
+            seen.add(event)
+            unique.append(event)
+    return unique
+
+
+_cache: dict[tuple, dict] = {}
+
+
+def _make_key(params: dict) -> tuple:
+    return tuple(sorted(params.items()))
+
+
+def get_cached_result(params: dict) -> dict | None:
+    return _cache.get(_make_key(params))
+
+
+def store_in_cache(params: dict, result: dict) -> None:
+    _cache[_make_key(params)] = result

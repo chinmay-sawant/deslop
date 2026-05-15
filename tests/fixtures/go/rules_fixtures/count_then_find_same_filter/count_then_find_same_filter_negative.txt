@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for count_then_find_same_filter: Request-path GORM flows that run Count(...) and then a broad Find(...) with the same filter shape.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule251NegativeRecord struct { ID int }
+
+func scenario251Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule251NegativeRecord{}).Error
+}

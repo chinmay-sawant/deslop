@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_async_concurrency_goroutine_per_item_without_worker_limit",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Async and concurrency. Flag unbounded goroutine-per-item fanout without a semaphore or worker pool.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

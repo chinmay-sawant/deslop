@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"os"
+)
+
+// scenario for temp_file_predictable_name: `os.Create("/tmp/myapp-data.txt")` or `os.OpenFile("/tmp/" + fixedName, ...)` with predictable filenames
+// fixture polarity: positive; family: security; severity: warning.
+func scenario738Positive(data []byte) error {
+	return os.WriteFile("/tmp/myapp-data.txt", data, 0600)
+}

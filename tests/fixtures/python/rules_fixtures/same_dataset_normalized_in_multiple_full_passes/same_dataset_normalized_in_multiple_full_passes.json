@@ -1,0 +1,14 @@
+{
+  "id": "same_dataset_normalized_in_multiple_full_passes",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that walks the same dataset several times for normalization steps that can be fused.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

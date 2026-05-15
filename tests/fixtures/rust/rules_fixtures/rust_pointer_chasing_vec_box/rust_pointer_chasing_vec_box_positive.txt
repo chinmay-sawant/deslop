@@ -1,0 +1,36 @@
+// BAD: Vec<Box<T>> causes pointer chasing and poor cache locality
+struct ParticleSystem {
+    particles: Vec<Box<Particle>>,
+}
+
+struct Particle {
+    x: f32,
+    y: f32,
+    z: f32,
+    vx: f32,
+    vy: f32,
+    vz: f32,
+    life: f32,
+}
+
+impl ParticleSystem {
+    fn new() -> Self {
+        let particles = (0..10_000)
+            .map(|i| Box::new(Particle {
+                x: 0.0, y: 0.0, z: 0.0,
+                vx: 0.0, vy: 0.0, vz: 0.0,
+                life: 1.0,
+            }))
+            .collect();
+        Self { particles }
+    }
+
+    fn tick(&mut self, dt: f32) {
+        for p in &mut self.particles {
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.z += p.vz * dt;
+            p.life -= dt * 0.01;
+        }
+    }
+}

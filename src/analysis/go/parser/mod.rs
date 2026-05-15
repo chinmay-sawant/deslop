@@ -4,17 +4,16 @@ mod errors;
 mod frameworks;
 mod general;
 mod performance;
-#[cfg(test)]
-mod tests;
 
+use std::cell::RefCell;
 use std::path::Path;
 
 use tree_sitter::{Node, Parser};
 
 use crate::analysis::go::fingerprint::build_function_fingerprint;
 use crate::analysis::{
-    AnalysisResult, Error, GoFileData, GoFunctionEvidence, Language, LanguageFileData, ParsedFile,
-    ParsedFunction,
+    AnalysisResult, Error, GoFileData, GoFunctionEvidence, Language, LanguageFileData,
+    LanguageFunctionData, ParsedFile, ParsedFunction,
 };
 
 use self::comments::extract_doc_comment;
@@ -34,15 +33,16 @@ use self::performance::{
     collect_json_loops, collect_reflect_loops,
 };
 
-pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
-    let mut parser = Parser::new();
-    parser
-        .set_language(&tree_sitter_go::LANGUAGE.into())
-        .map_err(|error| Error::parser_configuration("Go", error.to_string()))?;
+thread_local! {
+    static GO_PARSER: RefCell<Option<Parser>> = const { RefCell::new(None) };
+}
 
-    let tree = parser
-        .parse(source, None)
-        .ok_or_else(|| Error::missing_parse_tree("Go"))?;
+pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
+    let tree = with_go_parser(|parser| {
+        parser
+            .parse(source, None)
+            .ok_or_else(|| Error::missing_parse_tree("Go"))
+    })?;
 
     let root = tree.root_node();
     let package_name = find_package_name(root, source);
@@ -80,6 +80,28 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
             interfaces,
             go_structs,
         }),
+    })
+}
+
+fn with_go_parser<T>(action: impl FnOnce(&mut Parser) -> AnalysisResult<T>) -> AnalysisResult<T> {
+    GO_PARSER.with(|parser_cell| {
+        let mut parser_slot = parser_cell.borrow_mut();
+        if parser_slot.is_none() {
+            let mut parser = Parser::new();
+            parser
+                .set_language(&tree_sitter_go::LANGUAGE.into())
+                .map_err(|error| Error::parser_configuration("Go", error.to_string()))?;
+            *parser_slot = Some(parser);
+        }
+
+        let Some(parser) = parser_slot.as_mut() else {
+            return Err(Error::parser_configuration(
+                "Go",
+                "thread-local parser cache was not initialized",
+            ));
+        };
+
+        action(parser)
     })
 }
 
@@ -186,7 +208,7 @@ fn parse_function_node(
         body_text,
         local_strings: local_string_literals,
         test_summary,
-        go: Some(GoFunctionEvidence {
+        lang: LanguageFunctionData::Go(GoFunctionEvidence {
             has_context_parameter,
             context_factory_calls,
             dropped_errors: dropped_error_lines,
@@ -208,7 +230,5 @@ fn parse_function_node(
             parse_input_calls,
             gin_calls,
         }),
-        python: None,
-        rust: None,
     })
 }

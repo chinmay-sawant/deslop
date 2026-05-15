@@ -1,0 +1,14 @@
+{
+  "id": "unsafe_yaml_loader",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "yaml.load(...) or full_load(...) style loaders used where safe loading is more appropriate.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

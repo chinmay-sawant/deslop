@@ -1,0 +1,34 @@
+use tracing::info;
+
+fn process_request(req: &Request) -> Result<Response, Error> {
+    let data = load_data(&req.id)?;
+    let result = transform(&data)?;
+    info!(request_id = %req.id, "request completed");
+    Ok(Response { body: result })
+}
+
+fn load_data(_id: &str) -> Result<Vec<u8>, Error> {
+    todo!().map_err(|_| Error::LoadFailed)
+}
+
+fn transform(_data: &[u8]) -> Result<String, Error> {
+    todo!().map_err(|_| Error::TransformFailed)
+}
+
+struct Request { id: String }
+struct Response { body: String }
+
+#[derive(Debug)]
+enum Error {
+    LoadFailed,
+    TransformFailed,
+}
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Error::LoadFailed => write!(f, "failed to load data"),
+            Error::TransformFailed => write!(f, "failed to transform data"),
+        }
+    }
+}

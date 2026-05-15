@@ -1,0 +1,60 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
+
+// scenario for no_streaming_for_large_export_handler: Large export handlers that materialize everything before writing.
+// fixture polarity: positive; family: gin; severity: contextual.
+
+type ExportRecord struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Status    string `json:"status"`
+	CreatedAt string `json:"created_at"`
+}
+
+func scenario330Positive(w http.ResponseWriter, r *http.Request) {
+	records := fetchAllRecords()
+
+	payload := make([]ExportRecord, 0, len(records))
+	for _, rec := range records {
+		payload = append(payload, ExportRecord{
+			ID:        rec.ID,
+			Name:      rec.Name,
+			Status:    rec.Status,
+			CreatedAt: rec.CreatedAt,
+		})
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		http.Error(w, "encoding failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
+}
+
+type dbRecord struct {
+	ID        int
+	Name      string
+	Status    string
+	CreatedAt string
+}
+
+func fetchAllRecords() []dbRecord {
+	result := make([]dbRecord, 0, 1000)
+	for i := 0; i < 1000; i++ {
+		result = append(result, dbRecord{
+			ID:        i,
+			Name:      fmt.Sprintf("item-%d", i),
+			Status:    "active",
+			CreatedAt: "2024-01-01T00:00:00Z",
+		})
+	}
+	return result
+}

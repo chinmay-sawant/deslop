@@ -1,0 +1,14 @@
+{
+  "id": "template_parse_in_handler",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Template construction or parsing inside Gin handlers instead of startup-time caching.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

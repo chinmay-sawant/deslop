@@ -1,0 +1,14 @@
+{
+  "id": "repository_begins_transaction_without_uow_or_callback",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repositories that quietly start transactions inside generic CRUD methods.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

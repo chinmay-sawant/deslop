@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"net/http"
+	_ "net/http/pprof"
+)
+
+// scenario for go_perf_layer_profiling_benchmarking_pprof_endpoint_enabled_without_sampling_plan: Layer: Profiling and benchmarking. Flag always-on profiling endpoints in production services without access or sampling controls.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func StartServer(addr string) error {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	return http.ListenAndServe(addr, mux)
+}

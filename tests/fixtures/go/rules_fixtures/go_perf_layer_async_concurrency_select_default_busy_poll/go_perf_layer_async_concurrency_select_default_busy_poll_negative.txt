@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_async_concurrency_select_default_busy_poll: Layer: Async and concurrency. Flag select loops with default branches that spin instead of blocking or using timers.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule508NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario508Negative(records []Rule508NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

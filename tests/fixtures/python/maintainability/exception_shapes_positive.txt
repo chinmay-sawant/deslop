@@ -1,6 +1,0 @@
-
-def load_config():
-    try:
-        return read_config()
-    except Exception:
-        pass

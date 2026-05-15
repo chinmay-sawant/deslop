@@ -1,0 +1,29 @@
+struct Parser {
+    buffer: Vec<u8>,
+    position: usize,
+    input: String,
+}
+
+impl Parser {
+    fn new(input: String) -> Self {
+        Parser {
+            buffer: Vec::new(),
+            position: 0,
+            input,
+        }
+    }
+
+    fn parse_next(&mut self) -> Option<Parsed> {
+        let p = Parsed {
+            buffer: &mut self.buffer,
+            position: self.position,
+        };
+        self.position += 1;
+        Some(p)
+    }
+}
+
+struct Parsed<'a> {
+    buffer: &'a mut Vec<u8>,
+    position: usize,
+}

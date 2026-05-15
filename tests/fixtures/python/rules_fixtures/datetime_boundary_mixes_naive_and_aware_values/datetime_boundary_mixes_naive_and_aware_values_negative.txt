@@ -1,0 +1,25 @@
+from datetime import datetime, timedelta, timezone
+
+
+def compute_deadline(created_at: datetime, buffer_hours: int = 24) -> datetime:
+    if created_at.tzinfo is None:
+        created_at = created_at.replace(tzinfo=timezone.utc)
+    return created_at + timedelta(hours=buffer_hours)
+
+
+def is_overdue(task: dict) -> bool:
+    now = datetime.now(timezone.utc)
+    deadline = task["deadline"]
+    if deadline.tzinfo is None:
+        deadline = deadline.replace(tzinfo=timezone.utc)
+    return now > deadline
+
+
+def schedule_meeting(start_time: datetime, duration_minutes: int) -> dict:
+    now = datetime.now(timezone.utc)
+    if start_time.tzinfo is None:
+        start_time = start_time.replace(tzinfo=timezone.utc)
+    end_time = start_time + timedelta(minutes=duration_minutes)
+    if now < end_time:
+        return {"status": "ok"}
+    return {"status": "conflict"}

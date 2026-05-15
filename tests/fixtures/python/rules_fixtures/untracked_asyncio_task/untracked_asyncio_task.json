@@ -1,0 +1,14 @@
+{
+  "id": "untracked_asyncio_task",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "asyncio.create_task(...) or similar task creation whose handle is discarded immediately.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

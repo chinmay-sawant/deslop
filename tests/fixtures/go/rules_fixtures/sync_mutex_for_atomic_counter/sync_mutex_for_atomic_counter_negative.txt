@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for sync_mutex_for_atomic_counter: `mu.Lock(); count++; mu.Unlock()` for simple integer counters
+// fixture polarity: negative; family: performance; severity: warning.
+type Rule675NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario675Negative(records []Rule675NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

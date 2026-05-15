@@ -1,8 +1,0 @@
-package sample
-
-import "time"
-
-func Poll() {
-	ticker := time.NewTicker(time.Second)
-	_ = ticker
-}

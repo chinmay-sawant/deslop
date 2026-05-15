@@ -1,0 +1,37 @@
+package rulefixtures
+
+import (
+	"errors"
+)
+
+// scenario for not_found_semantics_implemented_by_nil_nil_return: Repository or service APIs that encode missing records as `nil, nil` with no explicit result contract.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type User struct {
+	ID   int
+	Name string
+}
+
+type UserRepository struct{}
+
+func (r *UserRepository) FindByID(id int) (*User, error) {
+	if id <= 0 {
+		return nil, nil
+	}
+	return &User{ID: id, Name: "Alice"}, nil
+}
+
+type UserService struct {
+	repo *UserRepository
+}
+
+func (s *UserService) GetUser(id int) (*User, error) {
+	user, err := s.repo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil && err == nil {
+		return nil, errors.New("ambiguous: no user and no error")
+	}
+	return user, nil
+}

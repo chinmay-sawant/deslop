@@ -1,0 +1,33 @@
+import asyncio
+import time
+import requests
+
+async def fetch_user_data(user_id: str) -> dict:
+    time.sleep(2)
+    return {"id": user_id, "name": "Alice"}
+
+async def process_batch(user_ids: list[str]) -> list[dict]:
+    results = []
+    for uid in user_ids:
+        resp = requests.get(f"https://api.example.com/users/{uid}")
+        results.append(resp.json())
+    return results
+
+async def heavy_computation(data: list[float]) -> float:
+    import hashlib
+    result = hashlib.sha256(str(data).encode()).hexdigest()
+    total = 0.0
+    for i in range(10_000_000):
+        total += i * 0.1
+    return total
+
+async def save_to_disk(path: str, content: bytes) -> None:
+    with open(path, "wb") as f:
+        f.write(content)
+
+async def background_sync():
+    conn = sqlite3.connect("cache.db")
+    cursor = conn.execute("SELECT * FROM items")
+    rows = cursor.fetchall()
+    conn.close()
+    return rows

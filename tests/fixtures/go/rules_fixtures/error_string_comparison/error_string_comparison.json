@@ -1,0 +1,14 @@
+{
+  "id": "error_string_comparison",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`if err.Error() == \"some error\"` string comparison for error checking",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

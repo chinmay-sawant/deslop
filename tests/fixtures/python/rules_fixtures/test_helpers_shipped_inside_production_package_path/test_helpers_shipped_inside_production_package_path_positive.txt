@@ -1,0 +1,12 @@
+PACKAGE_FILES = [
+    "myapp/__init__.py",
+    "myapp/models.py",
+    "myapp/service.py",
+    "myapp/_test_helpers.py",
+    "myapp/_factories.py",
+    "myapp/tests/test_service.py",
+]
+
+
+def production_package_contains_test_helpers(paths: list[str]) -> bool:
+    return any("_test_helpers.py" in path or "_factories.py" in path for path in paths)

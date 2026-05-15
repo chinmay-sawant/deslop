@@ -1,0 +1,14 @@
+{
+  "id": "bytes_buffer_without_grow_known_bound",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "bytes.Buffer used without Grow when approximate output size is locally visible.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

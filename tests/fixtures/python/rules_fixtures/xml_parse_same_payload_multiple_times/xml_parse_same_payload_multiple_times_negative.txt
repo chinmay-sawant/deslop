@@ -1,0 +1,23 @@
+import xml.etree.ElementTree as ET
+
+def process_orders(xml_payload: str) -> list[dict]:
+    root = ET.fromstring(xml_payload)
+    orders = []
+    for order_elem in root.findall("order"):
+        order_id = order_elem.find("id").text
+        status = order_elem.find("status").text
+        orders.append({"id": order_id, "status": status})
+    return orders
+
+def validate_and_transform(xml_data: str) -> dict:
+    tree = ET.fromstring(xml_data)
+    config = tree.find("config")
+    items = tree.findall(".//item")
+    return {"config": config.text, "item_count": len(items)}
+
+def extract_with_fallback(xml_payload: str) -> dict:
+    root = ET.fromstring(xml_payload)
+    primary = root.find("primary")
+    if primary is None:
+        primary = root.find("fallback")
+    return {"data": primary.text if primary is not None else None}

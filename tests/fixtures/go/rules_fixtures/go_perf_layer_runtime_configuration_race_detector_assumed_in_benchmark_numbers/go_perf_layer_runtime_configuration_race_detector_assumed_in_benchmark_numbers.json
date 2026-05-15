@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_runtime_configuration_race_detector_assumed_in_benchmark_numbers",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Build and runtime configuration. Flag benchmark guidance or scripts that compare race-enabled and normal builds directly.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

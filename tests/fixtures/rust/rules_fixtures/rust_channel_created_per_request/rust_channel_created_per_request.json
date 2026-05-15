@@ -1,0 +1,14 @@
+{
+  "id": "rust_channel_created_per_request",
+  "language": "rust",
+  "family": "runtime_ownership",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Per-request channel and notification state creation instead of startup-owned coordination.",
+  "binding_location": "src/heuristics/rust/runtime_ownership.rs"
+}

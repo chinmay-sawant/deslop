@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_model_hook_calls_service_or_repository: Model hooks that depend on higher-layer services or repositories.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule063NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule063NegativeService interface {
+	Run(context.Context, Rule063NegativeRecord) error
+}
+
+func scenario063Negative(ctx context.Context, service Rule063NegativeService, input Rule063NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,22 @@
+use std::sync::atomic::{AtomicU64, AtomicBool, Ordering};
+
+static COUNTER: AtomicU64 = AtomicU64::new(0);
+static READY: AtomicBool = AtomicBool::new(false);
+
+fn mark_ready() {
+    READY.store(true, Ordering::SeqCst);
+    COUNTER.fetch_add(1, Ordering::SeqCst);
+}
+
+fn check_ready() -> bool {
+    READY.load(Ordering::SeqCst)
+}
+
+fn get_count() -> u64 {
+    COUNTER.load(Ordering::SeqCst)
+}
+
+fn reset() {
+    COUNTER.store(0, Ordering::SeqCst);
+    READY.store(false, Ordering::SeqCst);
+}

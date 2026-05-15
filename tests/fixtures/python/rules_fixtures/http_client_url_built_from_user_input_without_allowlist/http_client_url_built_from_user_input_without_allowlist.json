@@ -1,0 +1,14 @@
+{
+  "id": "http_client_url_built_from_user_input_without_allowlist",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "HTTP client URL constructed from user-controlled input without an allowlist or URL validation.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

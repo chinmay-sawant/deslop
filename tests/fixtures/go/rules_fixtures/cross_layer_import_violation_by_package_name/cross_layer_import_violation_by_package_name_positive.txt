@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"fmt"
+
+	"example.com/myapp/handler"
+	"example.com/myapp/transport"
+)
+
+// scenario for cross_layer_import_violation_by_package_name: Imports where package names clearly violate a layered direction such as `repository -> handler` or `model -> gin`.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type UserRepository struct{}
+
+func (r *UserRepository) FindByID(id string) error {
+	h := handler.UserHandler{}
+	h.LogAccess(id)
+
+	t := transport.NewHTTPClient()
+	fmt.Println(t)
+
+	return fmt.Errorf("cross_layer_import_violation_by_package_name: repository importing handler and transport")
+}

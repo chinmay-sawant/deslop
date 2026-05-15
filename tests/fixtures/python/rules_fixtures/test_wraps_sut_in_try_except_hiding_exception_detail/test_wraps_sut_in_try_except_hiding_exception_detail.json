@@ -1,0 +1,14 @@
+{
+  "id": "test_wraps_sut_in_try_except_hiding_exception_detail",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test wraps the system-under-test call in try/except, hiding the raised exception from pytest output.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

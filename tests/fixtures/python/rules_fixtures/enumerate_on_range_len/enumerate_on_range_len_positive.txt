@@ -1,0 +1,24 @@
+def process_items(items: list[str]) -> list[dict]:
+    results = []
+    for i in range(len(items)):
+        results.append({"index": i, "value": items[i]})
+    return results
+
+
+def indexed_lookup(keys: list[str], values: list[int]) -> dict:
+    mapping = {}
+    for i in range(len(keys)):
+        mapping[keys[i]] = values[i]
+    return mapping
+
+
+def debug_print(items: list):
+    for i in range(len(items)):
+        print(f"[{i}] {items[i]}")
+
+
+def pair_with_indices(data: list[float]) -> list[tuple[int, float]]:
+    pairs = []
+    for i in range(len(data)):
+        pairs.append((i, data[i]))
+    return pairs

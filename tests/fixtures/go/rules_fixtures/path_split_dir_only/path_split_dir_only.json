@@ -1,0 +1,14 @@
+{
+  "id": "path_split_dir_only",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`path.Split(...)` when only the directory is used.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

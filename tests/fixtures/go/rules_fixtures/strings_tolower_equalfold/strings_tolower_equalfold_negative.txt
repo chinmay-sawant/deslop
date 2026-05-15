@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_tolower_equalfold: `strings.ToLower(...) == strings.ToLower(...)` instead of `strings.EqualFold(...)`.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario671Negative(haystack string, needle string, left string, right string) bool {
+	return strings.EqualFold(left, right)
+}

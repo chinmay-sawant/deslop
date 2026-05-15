@@ -1,0 +1,28 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for shared_gorm_db_state_mutated_and_reused_across_requests: Code that mutates shared `*gorm.DB` state and reuses it as if it were immutable configuration.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+var sharedDB *gorm.DB
+
+type Product struct {
+	ID       int
+	TenantID string
+	Name     string
+}
+
+func GetProducts(tenantID string) ([]Product, error) {
+	var products []Product
+	err := sharedDB.Where("tenant_id = ?", tenantID).Find(&products).Error
+	return products, err
+}
+
+func GetOrders(tenantID string) ([]Product, error) {
+	var products []Product
+	err := sharedDB.Where("tenant_id = ?", tenantID).Find(&products).Error
+	return products, err
+}

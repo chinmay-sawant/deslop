@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_logging_overhead_log_payload_serialized_before_sampling",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Logging overhead. Flag payload serialization for logs before sampling or level filters run.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,28 @@
+use tokio::sync::mpsc;
+
+async fn event_loop(mut rx: mpsc::Receiver<Event>, mut timeout: tokio::time::Interval) {
+    let mut current_request: Option<String> = None;
+    loop {
+        tokio::select! {
+            Some(event) = rx.recv() => match event {
+                Event::Request(req) => {
+                    current_request = Some(req.url);
+                }
+                Event::Timeout => {
+                    current_request = Some("default".to_string());
+                }
+            },
+            _ = timeout.tick(), if current_request.is_some() => {
+                let url = current_request.take().unwrap();
+                let resp = query_service(&url).await;
+                send_response(resp).await;
+            }
+        }
+    }
+}
+
+async fn query_service(_url: &str) -> Response { todo!() }
+async fn send_response(_resp: Response) { todo!() }
+enum Event { Request(Request), Timeout }
+struct Request { url: String }
+struct Response;

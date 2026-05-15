@@ -1,0 +1,33 @@
+import json
+
+
+def process_data(items: list[dict]) -> list[dict]:
+    # This function is optimized for performance - O(n) single pass
+    results = []
+    seen = set()
+    for item in items:
+        key = item["id"]
+        if key not in seen:
+            seen.add(key)
+            results.append(transform(item))
+    return results
+
+
+def transform(item: dict) -> dict:
+    return {k: v for k, v in item.items() if v is not None}
+
+
+# Optimized: avoids quadratic behavior by using hash set lookup
+def find_duplicates(records: list[dict]) -> list[dict]:
+    counts = {}
+    for rec in records:
+        key = rec.get("email", "")
+        counts[key] = counts.get(key, 0) + 1
+    return [r for r in records if counts.get(r.get("email", ""), 0) > 1]
+
+
+# Performance-tuned version using vectorized approach
+def aggregate_metrics(data_points: list[float]) -> dict:
+    total = sum(data_points)
+    count = len(data_points)
+    return {"mean": total / count, "total": total, "count": count}

@@ -1,0 +1,25 @@
+// BAD: public glob re-exports flatten the crate surface
+pub use crate::handlers::*;
+pub use crate::models::*;
+pub use crate::utils::*;
+pub use crate::config::*;
+
+mod handlers {
+    pub fn handle_request() {}
+    pub fn handle_response() {}
+}
+
+mod models {
+    pub struct User {}
+    pub struct Order {}
+}
+
+mod utils {
+    pub fn format_date() {}
+    pub fn parse_json() {}
+}
+
+mod config {
+    pub struct Config {}
+    pub fn load() {}
+}

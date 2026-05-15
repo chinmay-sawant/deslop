@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_sensitive_deserialize",
+  "language": "rust",
+  "family": "domain_modeling",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Deserialize is derived for sensitive fields without obvious validation.",
+  "binding_location": "src/heuristics/rust/domain_modeling.rs"
+}

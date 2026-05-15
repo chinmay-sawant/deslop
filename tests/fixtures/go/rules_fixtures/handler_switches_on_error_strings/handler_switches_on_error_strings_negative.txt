@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for handler_switches_on_error_strings: Handlers that branch on `err.Error()` text rather than typed errors.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule073NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule073NegativeService interface {
+	Run(context.Context, Rule073NegativeRecord) error
+}
+
+func scenario073Negative(ctx context.Context, service Rule073NegativeService, input Rule073NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

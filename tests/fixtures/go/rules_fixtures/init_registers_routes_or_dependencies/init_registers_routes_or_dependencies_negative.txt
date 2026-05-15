@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for init_registers_routes_or_dependencies: `init()` functions that register handlers, routes, or runtime dependencies.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule077NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule077NegativeService interface {
+	Run(context.Context, Rule077NegativeRecord) error
+}
+
+func scenario077Negative(ctx context.Context, service Rule077NegativeService, input Rule077NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

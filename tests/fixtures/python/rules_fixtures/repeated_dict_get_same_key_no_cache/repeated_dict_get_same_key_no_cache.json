@@ -1,0 +1,14 @@
+{
+  "id": "repeated_dict_get_same_key_no_cache",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same dictionary key is fetched repeatedly instead of storing the value in a local binding.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

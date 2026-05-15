@@ -1,0 +1,14 @@
+{
+  "id": "list_materialization_first_element",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "list(...)[0] style access that materializes a whole list just to read the first element.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

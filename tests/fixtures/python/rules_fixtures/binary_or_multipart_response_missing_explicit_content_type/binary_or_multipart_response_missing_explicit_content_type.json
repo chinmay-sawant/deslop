@@ -1,0 +1,14 @@
+{
+  "id": "binary_or_multipart_response_missing_explicit_content_type",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Binary or streaming response returned without an explicit Content-Type header.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

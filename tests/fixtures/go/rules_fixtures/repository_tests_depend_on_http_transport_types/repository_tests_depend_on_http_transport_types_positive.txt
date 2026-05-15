@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+// scenario for repository_tests_depend_on_http_transport_types: Repository tests that assert HTTP DTOs or handler-layer types.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule137PositiveRepo struct {
+	db interface{}
+}
+
+func TestScenario137Positive(t *testing.T) {
+	repo := &Rule137PositiveRepo{}
+	req := httptest.NewRequest(http.MethodPost, "/users", nil)
+	req.Header.Set("X-Tenant", "acme")
+
+	ctx := context.WithValue(req.Context(), "request", req)
+	_ = repo.db
+	_ = ctx
+}

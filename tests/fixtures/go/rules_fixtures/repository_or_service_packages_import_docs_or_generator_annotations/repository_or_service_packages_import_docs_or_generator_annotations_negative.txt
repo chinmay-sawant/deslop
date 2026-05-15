@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_or_service_packages_import_docs_or_generator_annotations: Core business packages that depend on documentation-only tooling or generator-specific concerns.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule131NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule131NegativeService interface {
+	Run(context.Context, Rule131NegativeRecord) error
+}
+
+func scenario131Negative(ctx context.Context, service Rule131NegativeService, input Rule131NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

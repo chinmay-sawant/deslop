@@ -1,0 +1,20 @@
+def process_event(event):
+    etype = type(event).__name__
+
+    if etype == "dict":
+        return event.get("type")
+    elif etype == "list":
+        return event[0] if event else None
+    elif etype == "tuple":
+        return event[0] if event else None
+    elif etype == "set":
+        return next(iter(event), None)
+    return None
+
+
+def validate_payload(payload):
+    if not isinstance(payload, dict):
+        return False
+    if "id" not in payload:
+        return False
+    return bool(payload.get("active"))

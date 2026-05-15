@@ -1,0 +1,4 @@
+pub fn workspace_has_non_centralized_versions() -> bool {
+    let manifests = ["serde = \"1.0\"", "tokio = \"1.28\"", "tokio = \"1.30\""];
+    manifests.windows(2).any(|pair| pair[0] != pair[1])
+}

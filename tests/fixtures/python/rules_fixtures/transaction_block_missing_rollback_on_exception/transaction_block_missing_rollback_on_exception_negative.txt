@@ -1,0 +1,39 @@
+from sqlalchemy.orm import Session
+
+def transfer_funds(session: Session, from_id: int, to_id: int, amount: float):
+    try:
+        session.begin()
+        from_account = session.query(Account).filter_by(id=from_id).one()
+        to_account = session.query(Account).filter_by(id=to_id).one()
+        from_account.balance -= amount
+        to_account.balance += amount
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+
+def create_order_with_items(session: Session, order_data: dict, items: list):
+    try:
+        session.begin()
+        order = Order(**order_data)
+        session.add(order)
+        for item_data in items:
+            item = OrderItem(order_id=order.id, **item_data)
+            session.add(item)
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+
+def update_user_and_log(session: Session, user_id: int, changes: dict):
+    try:
+        tx = session.begin()
+        user = session.query(User).filter_by(id=user_id).one()
+        for key, value in changes.items():
+            setattr(user, key, value)
+        log = AuditLog(user_id=user_id, changes=changes)
+        session.add(log)
+        tx.commit()
+    except Exception:
+        session.rollback()
+        raise

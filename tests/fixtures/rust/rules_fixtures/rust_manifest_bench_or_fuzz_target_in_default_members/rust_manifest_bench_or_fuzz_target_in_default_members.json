@@ -1,0 +1,14 @@
+{
+  "id": "rust_manifest_bench_or_fuzz_target_in_default_members",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag fuzz/bench crates included in default workspace members without an explicit opt-in.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

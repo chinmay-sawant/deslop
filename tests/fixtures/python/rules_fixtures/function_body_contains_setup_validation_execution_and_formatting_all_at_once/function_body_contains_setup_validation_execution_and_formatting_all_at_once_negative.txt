@@ -1,0 +1,34 @@
+def validate_registration(data):
+    errors = []
+    if not data.get("email"):
+        errors.append("email required")
+    if not data.get("password"):
+        errors.append("password required")
+    elif len(data["password"]) < 8:
+        errors.append("password too short")
+    return errors
+
+def create_user(data):
+    password_hash = bcrypt.hashpw(data["password"].encode(), bcrypt.gensalt())
+    user = {
+        "email": data["email"],
+        "password_hash": password_hash,
+        "name": data.get("name", ""),
+        "created_at": datetime.utcnow().isoformat(),
+    }
+    db = get_database()
+    db.execute("INSERT INTO users (email, password_hash, name, created_at) VALUES (?, ?, ?, ?)",
+               user["email"], user["password_hash"], user["name"], user["created_at"])
+    db.commit()
+    return user
+
+def send_welcome_email(user):
+    send_email(user["email"], "Welcome!", f"Welcome, {user['name']}!")
+
+def handle_user_registration(request_data):
+    errors = validate_registration(request_data)
+    if errors:
+        return {"error": errors[0]}, 400
+    user = create_user(request_data)
+    send_welcome_email(user)
+    return {"status": "created", "user_id": user["email"]}, 201

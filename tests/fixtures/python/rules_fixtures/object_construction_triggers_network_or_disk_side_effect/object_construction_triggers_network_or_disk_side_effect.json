@@ -1,0 +1,14 @@
+{
+  "id": "object_construction_triggers_network_or_disk_side_effect",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag constructors that perform expensive I/O instead of separating configuration from execution.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

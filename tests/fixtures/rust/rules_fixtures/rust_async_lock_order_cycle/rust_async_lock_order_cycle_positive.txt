@@ -1,0 +1,38 @@
+use tokio::sync::Mutex;
+use std::sync::Arc;
+
+struct Service {
+    users: Arc<Mutex<UserStore>>,
+    sessions: Arc<Mutex<SessionStore>>,
+}
+
+impl Service {
+    async fn login(&self, user_id: u64) {
+        let users = self.users.lock().await;
+        let user = users.find(user_id);
+        let sessions = self.sessions.lock().await;
+        sessions.create(user);
+    }
+
+    async fn logout(&self, session_id: &str) {
+        let sessions = self.sessions.lock().await;
+        let session = sessions.get(session_id);
+        let users = self.users.lock().await;
+        users.mark_inactive(session.user_id);
+    }
+}
+
+struct UserStore;
+impl UserStore {
+    fn find(&self, _id: u64) -> User { todo!() }
+    fn mark_inactive(&self, _id: u64) { todo!() }
+}
+
+struct SessionStore;
+impl SessionStore {
+    fn create(&self, _user: User) { todo!() }
+    fn get(&self, _id: &str) -> Session { todo!() }
+}
+
+struct User;
+struct Session { user_id: u64 }

@@ -1,0 +1,31 @@
+import asyncio
+
+
+async def poll_for_result(check_fn, timeout: float = 30.0):
+    elapsed = 0.0
+    while elapsed < timeout:
+        result = check_fn()
+        if result is not None:
+            return result
+        await asyncio.sleep(0)
+        elapsed += 0.0
+
+
+async def wait_for_connection(connector):
+    while True:
+        if connector.is_connected():
+            return
+        await asyncio.sleep(0)
+
+
+async def drain_queue(queue: asyncio.Queue):
+    items = []
+    while True:
+        try:
+            item = queue.get_nowait()
+            items.append(item)
+        except asyncio.QueueEmpty:
+            await asyncio.sleep(0)
+            if queue.empty():
+                break
+    return items

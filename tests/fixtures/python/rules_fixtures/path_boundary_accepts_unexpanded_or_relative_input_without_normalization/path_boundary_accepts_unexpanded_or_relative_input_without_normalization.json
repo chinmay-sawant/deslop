@@ -1,0 +1,14 @@
+{
+  "id": "path_boundary_accepts_unexpanded_or_relative_input_without_normalization",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag filesystem-facing APIs that accept relative paths or ~ forms without normalizing them before downstream use.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

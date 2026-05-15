@@ -1,0 +1,30 @@
+use rust_decimal::Decimal;
+
+struct Invoice {
+    amount: Decimal,
+    tax: Decimal,
+    total: Decimal,
+    currency: String,
+}
+
+impl Invoice {
+    fn new(amount: Decimal, tax_rate: Decimal, currency: &str) -> Self {
+        let tax = amount * tax_rate;
+        Self {
+            amount,
+            tax,
+            total: amount + tax,
+            currency: currency.into(),
+        }
+    }
+
+    fn apply_discount(&mut self, pct: Decimal) {
+        self.amount *= Decimal::ONE - pct;
+        self.total = self.amount + self.tax;
+    }
+}
+
+struct PriceBook {
+    base_price: Decimal,
+    discount: Decimal,
+}

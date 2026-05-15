@@ -1,0 +1,72 @@
+package rulefixtures
+
+import (
+	"gorm.io/gorm"
+)
+
+// scenario for repository_returns_transport_dto: Repositories that know about response contracts instead of returning persistence or domain results.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type Customer struct {
+	ID        uint   `gorm:"primaryKey"`
+	FirstName string `gorm:"size:64"`
+	LastName  string `gorm:"size:64"`
+	Email     string `gorm:"size:256"`
+	Plan      string `gorm:"size:32"`
+}
+
+type CustomerResponse struct {
+	ID       uint   `json:"id"`
+	FullName string `json:"full_name"`
+	Email    string `json:"email"`
+	PlanName string `json:"plan"`
+
+	Links struct {
+		Self    string `json:"self"`
+		Invoices string `json:"invoices"`
+	} `json:"_links"`
+}
+
+type CustomerListResponse struct {
+	Data  []CustomerResponse `json:"data"`
+	Total int64              `json:"total"`
+	Page  int                `json:"page"`
+}
+
+type CustomerRepo struct {
+	db *gorm.DB
+}
+
+func NewCustomerRepo(db *gorm.DB) *CustomerRepo {
+	return &CustomerRepo{db: db}
+}
+
+func (r *CustomerRepo) ListAsResponse(page, perPage int) (*CustomerListResponse, error) {
+	var customers []Customer
+	offset := (page - 1) * perPage
+
+	var total int64
+	r.db.Model(&Customer{}).Count(&total)
+
+	r.db.Offset(offset).Limit(perPage).Find(&customers)
+
+	response := &CustomerListResponse{
+		Data:  make([]CustomerResponse, 0, len(customers)),
+		Total: total,
+		Page:  page,
+	}
+	for _, c := range customers {
+		cr := CustomerResponse{
+			ID:       c.ID,
+			FullName: c.FirstName + " " + c.LastName,
+			Email:    c.Email,
+			PlanName: c.Plan,
+		}
+		cr.Links.Self = "/api/customers/" + string(rune(c.ID))
+		cr.Links.Invoices = "/api/customers/" + string(rune(c.ID)) + "/invoices"
+		response.Data = append(response.Data, cr)
+	}
+	return response, nil
+}
+
+var _ = gorm.ErrRecordNotFound

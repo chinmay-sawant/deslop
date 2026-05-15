@@ -1,0 +1,14 @@
+{
+  "id": "import_time_file_io",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Module-scope file reads, writes, or directory scans that happen during import.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

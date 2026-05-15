@@ -1,0 +1,33 @@
+import json
+import csv
+from typing import Any, Dict, List
+
+def load_user_data(path: str) -> List[Dict[str, Any]]:
+    with open(path) as f:
+        data = json.load(f)
+    return data
+
+def import_products(csv_path: str) -> List[dict]:
+    products = []
+    with open(csv_path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            products.append(row)
+    return products
+
+def process_api_response(response_data: dict) -> dict:
+    user = response_data["user"]
+    orders = response_data["orders"]
+    return {
+        "name": user["name"],
+        "email": user["email"],
+        "total": sum(o["amount"] for o in orders),
+    }
+
+def parse_config(config_path: str) -> dict:
+    with open(config_path) as f:
+        return json.load(f)
+
+def load_dataset(path: str) -> List[dict]:
+    with open(path) as f:
+        return json.load(f)

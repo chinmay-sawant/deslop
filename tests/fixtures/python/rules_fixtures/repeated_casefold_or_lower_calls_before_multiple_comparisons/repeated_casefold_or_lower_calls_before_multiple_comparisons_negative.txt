@@ -1,0 +1,23 @@
+def classify_status(raw_status):
+    normalized = raw_status.lower()
+    if normalized == "active":
+        return "ACTIVE"
+    elif normalized == "pending":
+        return "PENDING"
+    elif normalized == "suspended":
+        return "SUSPENDED"
+    elif normalized == "archived":
+        return "ARCHIVED"
+    else:
+        return "UNKNOWN"
+
+
+def match_role(raw_role):
+    normalized = raw_role.lower()
+    if normalized == "admin":
+        return 3
+    elif normalized == "editor":
+        return 2
+    elif normalized == "viewer":
+        return 1
+    return 0

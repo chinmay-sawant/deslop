@@ -1,0 +1,11 @@
+package rulefixtures
+
+// scenario for base64_decode_string_in_loop: Base64 decode from string inside loops.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario438Negative(decodedValues [][]byte) int {
+	total := 0
+	for _, value := range decodedValues {
+		total += len(value)
+	}
+	return total
+}

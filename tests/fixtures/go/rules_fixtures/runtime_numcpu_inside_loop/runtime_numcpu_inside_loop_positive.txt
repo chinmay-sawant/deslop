@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"runtime"
+)
+
+// scenario for runtime_numcpu_inside_loop: `runtime.NumCPU()` inside loops instead of caching once.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario634Positive(items []string) int {
+	total := 0
+	for _, item := range items {
+		n := runtime.NumCPU()
+		total += len(item) * n
+	}
+	return total
+}

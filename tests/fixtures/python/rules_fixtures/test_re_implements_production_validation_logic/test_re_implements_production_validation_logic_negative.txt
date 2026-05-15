@@ -1,0 +1,25 @@
+import pytest
+from myapp.orders import Order
+from myapp.validation import validate_email, validate_age, validate_discount
+
+def test_order_total_calculation():
+    items = [
+        {"price": 10.0, "qty": 2},
+        {"price": 5.0, "qty": 3},
+    ]
+    order = Order(items=items)
+    assert order.total == 35.0
+
+def test_discount_validation():
+    assert validate_discount(15) is True
+    assert validate_discount(-5) is False
+    assert validate_discount(105) is False
+
+def test_email_format_check():
+    assert validate_email("user@example.com") is True
+    assert validate_email("invalid") is False
+
+def test_age_boundary():
+    assert validate_age(25) is True
+    assert validate_age(17) is False
+    assert validate_age(121) is False

@@ -1,0 +1,51 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"gorm.io/gorm"
+)
+
+// scenario for transport_tests_bypass_service_interface_and_touch_repo_directly: Transport tests that skip the service seam and assert repository behavior.
+// fixture polarity: positive; family: architecture; severity: info.
+type UserRepo struct {
+	db *gorm.DB
+}
+
+func (r *UserRepo) FindByID(id int) (string, error) {
+	return "user-from-repo", nil
+}
+
+type mockUserRepo struct {
+	findByIDFunc func(int) (string, error)
+}
+
+func (m *mockUserRepo) FindByID(id int) (string, error) {
+	return m.findByIDFunc(id)
+}
+
+func GetUserHandler(repo *UserRepo) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		name, err := repo.FindByID(1)
+		if err != nil {
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+		w.Write([]byte(name))
+	}
+}
+
+func TestGetUserHandler(t *testing.T) {
+	repo := &UserRepo{}
+	handler := GetUserHandler(repo)
+
+	req := httptest.NewRequest(http.MethodGet, "/users/1", nil)
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rec.Code)
+	}
+}

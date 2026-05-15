@@ -1,0 +1,14 @@
+{
+  "id": "date_or_cast_wrapped_indexed_column",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "DATE/CAST wrapping indexed columns in WHERE clauses, preventing index usage.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

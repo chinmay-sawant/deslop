@@ -1,0 +1,14 @@
+{
+  "id": "batchable_writes_executed_one_at_a_time",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag repeated write operations that could be grouped or buffered.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

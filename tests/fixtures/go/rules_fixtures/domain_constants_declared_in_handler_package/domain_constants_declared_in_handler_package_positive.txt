@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+)
+
+// scenario for domain_constants_declared_in_handler_package: Domain enums, statuses, and lifecycle constants that live in handler packages instead of domain-facing packages.
+// fixture polarity: positive; family: architecture; severity: info.
+
+const MaxOrderItems = 10
+const OrderStatusPending = "pending"
+const OrderStatusShipped = "shipped"
+
+func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
+	if r.ContentLength > MaxOrderItems {
+		http.Error(w, "too many items", http.StatusBadRequest)
+		return
+	}
+	fmt.Fprintf(w, "order created with status %s", OrderStatusPending)
+}

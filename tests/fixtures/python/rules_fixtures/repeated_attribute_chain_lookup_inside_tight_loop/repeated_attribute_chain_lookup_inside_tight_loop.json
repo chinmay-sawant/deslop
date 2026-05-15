@@ -1,0 +1,14 @@
+{
+  "id": "repeated_attribute_chain_lookup_inside_tight_loop",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag tight loops that repeatedly traverse the same attribute chain instead of binding a local reference.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

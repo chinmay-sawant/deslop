@@ -1,0 +1,28 @@
+from typing import TypedDict
+
+class UserConfig(TypedDict, total=False):
+    theme: str
+    language: str
+    notifications_enabled: bool
+    two_factor_enabled: bool
+    timezone: str
+
+class DatabaseConfig(TypedDict, total=False):
+    host: str
+    port: int
+    pool_size: int
+    max_overflow: int
+    pool_timeout: int
+
+class APIResponse(TypedDict, total=False):
+    data: dict
+    error: str
+    warnings: list[str]
+    metadata: dict
+    pagination: dict
+
+def load_config() -> UserConfig:
+    return {"theme": "dark", "language": "en"}
+
+def get_db_settings() -> DatabaseConfig:
+    return {"host": "localhost", "port": 5432}

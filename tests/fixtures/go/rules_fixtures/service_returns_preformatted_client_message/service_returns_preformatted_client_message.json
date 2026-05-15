@@ -1,0 +1,14 @@
+{
+  "id": "service_returns_preformatted_client_message",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Services that return final client-facing message strings instead of typed domain errors.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

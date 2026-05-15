@@ -1,0 +1,54 @@
+import re
+import json
+from typing import Dict, List, Any
+
+def execute_pipeline(config_path: str) -> Dict[str, Any]:
+    with open(config_path) as f:
+        raw = f.read()
+
+    tokens = []
+    current = ""
+    for char in raw:
+        if char in '{}[]:,':
+            if current.strip():
+                tokens.append(current.strip())
+            tokens.append(char)
+            current = ""
+        else:
+            current += char
+    if current.strip():
+        tokens.append(current.strip())
+
+    ast = _parse_tokens(tokens)
+
+    results = []
+    for node in ast:
+        if node["type"] == "transform":
+            data = _read_source(node["source"])
+            cleaned = _apply_regex(data, node["pattern"])
+            results.append({"name": node["name"], "data": cleaned})
+
+    return {"results": results, "count": len(results)}
+
+def _parse_tokens(tokens: List[str]) -> List[dict]:
+    nodes = []
+    i = 0
+    while i < len(tokens):
+        if tokens[i] == "transform":
+            nodes.append({
+                "type": "transform",
+                "name": tokens[i + 1],
+                "source": tokens[i + 2],
+                "pattern": tokens[i + 3],
+            })
+            i += 4
+        else:
+            i += 1
+    return nodes
+
+def _read_source(path: str) -> str:
+    with open(path) as f:
+        return f.read()
+
+def _apply_regex(text: str, pattern: str) -> str:
+    return re.sub(pattern, "", text)

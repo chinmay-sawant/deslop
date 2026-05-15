@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for test_helpers_duplicated_across_packages: Near-identical helper builders or setup code duplicated across test packages.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule201NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule201NegativeService interface {
+	Run(context.Context, Rule201NegativeRecord) error
+}
+
+func scenario201Negative(ctx context.Context, service Rule201NegativeService, input Rule201NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

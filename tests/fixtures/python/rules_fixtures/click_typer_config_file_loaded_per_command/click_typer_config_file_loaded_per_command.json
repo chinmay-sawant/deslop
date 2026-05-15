@@ -1,0 +1,14 @@
+{
+  "id": "click_typer_config_file_loaded_per_command",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "click or typer commands parse config files on each invocation instead of using shared bootstrap or dependency setup.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

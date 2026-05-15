@@ -1,0 +1,38 @@
+use serde::Deserialize;
+use std::io::{BufRead, BufReader, Read};
+
+#[derive(Debug, Deserialize)]
+struct Record {
+    id: u64,
+    value: String,
+}
+
+fn process_records_streaming(reader: impl Read) -> Result<u64, Box<dyn std::error::Error>> {
+    let stream = serde_json::Deserializer::from_reader(reader).into_iter::<Record>();
+    let mut total: u64 = 0;
+    for record in stream {
+        let record = record?;
+        total += record.id;
+    }
+    Ok(total)
+}
+
+fn count_entries_streaming(reader: impl BufRead) -> Result<usize, Box<dyn std::error::Error>> {
+    let mut count = 0;
+    let stream = serde_json::Deserializer::from_reader(reader).into_iter::<serde_json::Value>();
+    for _ in stream {
+        count += 1;
+    }
+    Ok(count)
+}
+
+fn process_lines(reader: impl Read) -> Result<Vec<Record>, Box<dyn std::error::Error>> {
+    let buf_reader = BufReader::new(reader);
+    let mut records = Vec::new();
+    for line in buf_reader.lines() {
+        let line = line?;
+        let record: Record = serde_json::from_str(&line)?;
+        records.push(record);
+    }
+    Ok(records)
+}

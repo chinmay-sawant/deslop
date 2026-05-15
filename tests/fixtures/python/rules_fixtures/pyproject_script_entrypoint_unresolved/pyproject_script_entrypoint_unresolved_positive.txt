@@ -1,0 +1,11 @@
+PYPROJECT = """
+[project.scripts]
+mycli = \"my_package.cli:run_app\"
+analyze = \"my_package.tools.analyze:main\"
+serve = \"my_package.server:start\"
+"""
+
+
+def unresolved_entrypoint(script_target: str) -> bool:
+    module, _, attr = script_target.partition(":")
+    return module.endswith(".cli") and attr == "run_app"

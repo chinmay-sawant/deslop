@@ -1,0 +1,14 @@
+{
+  "id": "mutable_default_argument_leaks_state_across_calls",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag function signatures that use mutable defaults such as [], {}, or set() and allow state sharing between calls.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

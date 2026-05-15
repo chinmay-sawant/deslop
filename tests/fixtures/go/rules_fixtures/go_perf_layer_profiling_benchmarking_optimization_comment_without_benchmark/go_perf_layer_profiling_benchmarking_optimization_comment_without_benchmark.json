@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_profiling_benchmarking_optimization_comment_without_benchmark",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Profiling and benchmarking. Flag performance-claim comments that lack benchmark, profile, or trace evidence.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

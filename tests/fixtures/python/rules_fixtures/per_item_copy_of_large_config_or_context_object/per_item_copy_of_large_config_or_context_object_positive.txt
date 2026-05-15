@@ -1,0 +1,30 @@
+import copy
+from typing import Any
+
+
+def process_items(items: list[dict], config: dict[str, Any]) -> list[dict]:
+    results = []
+    for item in items:
+        local_config = copy.deepcopy(config)
+        local_config["current_item"] = item["id"]
+        result = transform(item, local_config)
+        results.append(result)
+    return results
+
+
+def transform(item, config):
+    return {**item, "processed": True}
+
+
+def run_pipeline(records, settings):
+    outputs = []
+    for record in records:
+        ctx = copy.deepcopy(settings)
+        ctx["record_id"] = record["id"]
+        ctx["timestamp"] = record.get("ts")
+        outputs.append(process(record, ctx))
+    return outputs
+
+
+def process(record, ctx):
+    return record

@@ -1,0 +1,17 @@
+import sqlite3
+
+def import_users(conn, users):
+    cursor = conn.cursor()
+    cursor.executemany(
+        "INSERT INTO users (name, email, age) VALUES (?, ?, ?)",
+        [(u["name"], u["email"], u["age"]) for u in users],
+    )
+    conn.commit()
+
+def seed_permissions(conn, user_ids, permission_names):
+    cursor = conn.cursor()
+    cursor.executemany(
+        "INSERT INTO user_permissions (user_id, permission) VALUES (?, ?)",
+        [(uid, perm) for uid in user_ids for perm in permission_names],
+    )
+    conn.commit()

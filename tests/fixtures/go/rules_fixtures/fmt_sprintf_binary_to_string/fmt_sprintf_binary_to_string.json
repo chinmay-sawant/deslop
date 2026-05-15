@@ -1,0 +1,14 @@
+{
+  "id": "fmt_sprintf_binary_to_string",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`fmt.Sprintf(\"%b\", ...)` instead of direct `strconv` integer formatting.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for cross_repository_write_flow_without_shared_uow_boundary: Service methods coordinating several repositories with no explicit shared transaction or consistency boundary.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule020NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule020NegativeService interface {
+	Run(context.Context, Rule020NegativeRecord) error
+}
+
+func scenario020Negative(ctx context.Context, service Rule020NegativeService, input Rule020NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

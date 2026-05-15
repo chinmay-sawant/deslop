@@ -1,0 +1,14 @@
+{
+  "id": "transport_metrics_emitted_from_repository_layer",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repositories that record HTTP-route or handler-oriented metrics.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

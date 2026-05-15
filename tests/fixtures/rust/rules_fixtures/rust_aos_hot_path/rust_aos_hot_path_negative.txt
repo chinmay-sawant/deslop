@@ -1,0 +1,41 @@
+struct ParticlesSoA {
+    x: Vec<f32>,
+    y: Vec<f32>,
+    z: Vec<f32>,
+    vx: Vec<f32>,
+    vy: Vec<f32>,
+    vz: Vec<f32>,
+    mass: Vec<f32>,
+    charge: Vec<f32>,
+    lifetime: Vec<f32>,
+    active: Vec<bool>,
+}
+
+fn update_particles(p: &mut ParticlesSoA, dt: f32) {
+    for i in 0..p.x.len() {
+        p.x[i] += p.vx[i] * dt;
+        p.y[i] += p.vy[i] * dt;
+        p.z[i] += p.vz[i] * dt;
+        let ax = p.charge[i] * 0.1 / p.mass[i];
+        let ay = p.charge[i] * 0.1 / p.mass[i];
+        let az = -9.8 / p.mass[i];
+        p.vx[i] += ax * dt;
+        p.vy[i] += ay * dt;
+        p.vz[i] += az * dt;
+        p.lifetime[i] -= dt;
+        if p.lifetime[i] <= 0.0 {
+            p.active[i] = false;
+        }
+    }
+}
+
+fn compute_energy(p: &ParticlesSoA) -> f32 {
+    let mut total = 0.0f32;
+    for i in 0..p.x.len() {
+        let speed_sq = p.vx[i] * p.vx[i] + p.vy[i] * p.vy[i] + p.vz[i] * p.vz[i];
+        total += 0.5 * p.mass[i] * speed_sq;
+        total += p.charge[i] * p.x[i];
+        total += p.charge[i] * p.y[i];
+    }
+    total
+}

@@ -1,0 +1,14 @@
+{
+  "id": "transaction_helper_outside_repository_or_uow_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Transaction helpers buried in handlers or services instead of a repository or unit-of-work package.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_framework_performance_grpc_metadata_parsed_repeatedly",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag repeated metadata extraction/parsing in gRPC interceptors and handlers.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

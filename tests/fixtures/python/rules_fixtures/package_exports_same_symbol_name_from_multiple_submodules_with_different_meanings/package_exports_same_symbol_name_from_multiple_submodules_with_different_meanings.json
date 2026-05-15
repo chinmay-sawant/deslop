@@ -1,0 +1,14 @@
+{
+  "id": "package_exports_same_symbol_name_from_multiple_submodules_with_different_meanings",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag packages that reuse one exported name for unrelated implementations.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

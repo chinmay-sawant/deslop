@@ -1,0 +1,14 @@
+{
+  "id": "swagger_or_openapi_annotations_on_persistence_models",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Persistence structs used as the public docs contract instead of transport DTOs.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for binary_read_for_single_field: `binary.Read(r, order, &singleField)` for reading a single integer
+// fixture polarity: negative; family: performance; severity: info.
+type Rule440NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario440Negative(records []Rule440NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

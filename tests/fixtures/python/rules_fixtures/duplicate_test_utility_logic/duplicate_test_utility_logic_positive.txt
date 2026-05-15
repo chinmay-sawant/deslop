@@ -1,0 +1,31 @@
+import json
+import os
+from pathlib import Path
+
+
+# tests/test_api.py
+def load_test_fixture(filename):
+    fixtures_dir = os.path.join(os.path.dirname(__file__), "fixtures")
+    path = os.path.join(fixtures_dir, filename)
+    with open(path) as f:
+        return json.load(f)
+
+
+def create_test_user(db, name="Test User", email="test@example.com"):
+    user = db.create_user(name=name, email=email)
+    db.session.commit()
+    return user
+
+
+# tests/test_models.py
+def load_test_fixture(filename):
+    fixtures_dir = os.path.join(os.path.dirname(__file__), "fixtures")
+    path = os.path.join(fixtures_dir, filename)
+    with open(path) as f:
+        return json.load(f)
+
+
+def create_test_user(db, name="Test User", email="test@example.com"):
+    user = db.create_user(name=name, email=email)
+    db.session.commit()
+    return user

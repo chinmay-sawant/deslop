@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_toupper_equalfold: `bytes.Equal(bytes.ToUpper(...), bytes.ToUpper(...))` instead of `bytes.EqualFold(...)`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario467Positive(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.Equal(bytes.ToUpper(left), bytes.ToUpper(right))
+}

@@ -1,0 +1,14 @@
+{
+  "id": "service_method_accepts_dto_and_persistence_model_together",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Signatures that mix transport DTOs and GORM models in the same service API.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

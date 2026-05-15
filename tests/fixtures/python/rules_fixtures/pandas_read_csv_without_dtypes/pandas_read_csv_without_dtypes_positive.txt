@@ -1,0 +1,21 @@
+import pandas as pd
+
+
+def load_users(path):
+    return pd.read_csv(path)
+
+
+def load_transactions(path):
+    df = pd.read_csv(path)
+    return df
+
+
+def load_products(path):
+    return pd.read_csv(path, index_col=0)
+
+
+def load_all_data(users_path, txns_path, products_path):
+    users = pd.read_csv(users_path)
+    txns = pd.read_csv(txns_path)
+    products = pd.read_csv(products_path)
+    return users, txns, products

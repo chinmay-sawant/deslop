@@ -1,0 +1,39 @@
+package rulefixtures
+
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
+
+// scenario for cache_invalidation_before_transaction_commit: Cache mutation or eviction that happens before a write transaction commits.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type CacheClient struct{}
+func (c *CacheClient) Delete(keys ...string) error { return nil }
+func (c *CacheClient) InvalidatePrefix(prefix string) error { return nil }
+
+type Product struct {
+	ID    int `gorm:"primaryKey"`
+	Name  string
+	Price float64
+	Stock int
+}
+
+func updateProduct(db *gorm.DB, cache *CacheClient, id int, price float64, stock int) error {
+	tx := db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if err := tx.Model(&Product{}).Where("id = ?", id).
+		Updates(map[string]any{"price": price, "stock": stock}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	cache.Delete(fmt.Sprintf("product:%d", id))
+	cache.InvalidatePrefix("products:list")
+
+	return tx.Commit().Error
+}

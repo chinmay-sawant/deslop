@@ -1,0 +1,40 @@
+use std::sync::{Arc, Mutex};
+
+struct Service {
+    db: Arc<Mutex<Option<DbConnection>>>,
+    cache: Arc<Mutex<Option<CacheHandle>>>,
+    ready: Arc<Mutex<bool>>,
+}
+
+impl Service {
+    fn new() -> Self {
+        Self {
+            db: Arc::new(Mutex::new(None)),
+            cache: Arc::new(Mutex::new(None)),
+            ready: Arc::new(Mutex::new(false)),
+        }
+    }
+
+    fn connect(&self) {
+        let conn = DbConnection::connect("localhost");
+        *self.db.lock().unwrap() = Some(conn);
+        *self.ready.lock().unwrap() = true;
+    }
+
+    fn is_ready(&self) -> bool {
+        *self.ready.lock().unwrap()
+    }
+
+    fn query(&self, sql: &str) -> Option<String> {
+        let guard = self.db.lock().unwrap();
+        guard.as_ref().map(|db| db.execute(sql))
+    }
+}
+
+struct DbConnection;
+impl DbConnection {
+    fn connect(_addr: &str) -> Self { Self }
+    fn execute(&self, _sql: &str) -> String { todo!() }
+}
+
+struct CacheHandle;

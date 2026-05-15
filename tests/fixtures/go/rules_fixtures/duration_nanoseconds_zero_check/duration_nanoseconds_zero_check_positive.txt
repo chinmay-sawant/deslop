@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for duration_nanoseconds_zero_check: Duration zero checks written as `d.Nanoseconds() == 0` instead of `d == 0`.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario477Positive(items []string) int {
+	total := 0
+	for _, item := range items {
+		_ = time.Now()
+		_ = time.After(time.Millisecond)
+		total += len(item)
+	}
+	return total
+}

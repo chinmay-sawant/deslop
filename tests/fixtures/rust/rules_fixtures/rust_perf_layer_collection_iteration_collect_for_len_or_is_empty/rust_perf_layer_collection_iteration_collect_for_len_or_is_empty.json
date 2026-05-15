@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_collection_iteration_collect_for_len_or_is_empty",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag iterator collection used only to call len or check emptiness.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

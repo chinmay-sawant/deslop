@@ -1,0 +1,28 @@
+import requests
+from typing import List, Dict, Any
+
+def fetch_all_products(product_ids: List[str]) -> List[Dict[str, Any]]:
+    results = []
+    for pid in product_ids:
+        session = requests.Session()
+        response = session.get(f"https://api.example.com/products/{pid}", timeout=10)
+        results.append(response.json())
+    return results
+
+def process_orders(order_ids: List[str]) -> List[dict]:
+    processed = []
+    for oid in order_ids:
+        client = _create_db_client()
+        order = client.query(f"SELECT * FROM orders WHERE id = '{oid}'")
+        processed.append(order)
+    return processed
+
+def _create_db_client():
+    import psycopg2
+    return psycopg2.connect("dbname=mydb")
+
+def send_notifications(users: List[dict], message: str) -> None:
+    for user in users:
+        smtp = smtplib.SMTP("smtp.example.com", 587)
+        smtp.sendmail("app@example.com", user["email"], message)
+        smtp.quit()

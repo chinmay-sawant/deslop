@@ -1,0 +1,14 @@
+{
+  "id": "strings_hassuffix_then_trimsuffix",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

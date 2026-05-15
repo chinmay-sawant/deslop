@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for find_all_then_manual_paginate_in_go: All rows fetched and then sliced in Go instead of using database-level pagination.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule262NegativeRecord struct { ID int }
+
+func scenario262Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule262NegativeRecord{}).Error
+}

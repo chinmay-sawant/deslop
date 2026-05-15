@@ -1,0 +1,14 @@
+{
+  "id": "mutable_package_global",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Package-level variables that are mutated from function bodies instead of kept immutable.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

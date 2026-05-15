@@ -1,0 +1,14 @@
+{
+  "id": "sql_query_built_with_string_formatting_instead_of_parameters",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "SQL query string built via f-string or % formatting instead of parameterised query binding.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

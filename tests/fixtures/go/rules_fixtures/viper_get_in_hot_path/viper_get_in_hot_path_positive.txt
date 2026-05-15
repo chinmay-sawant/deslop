@@ -1,0 +1,20 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/spf13/viper"
+)
+
+// scenario for viper_get_in_hot_path: `viper.GetString("key")` or `viper.GetInt("key")` inside handler functions or loops
+// fixture polarity: positive; family: library; severity: warning.
+func scenario431Positive(w http.ResponseWriter, r *http.Request) {
+	host := viper.GetString("server.host")
+	port := viper.GetInt("server.port")
+	timeout := viper.GetDuration("server.timeout")
+
+	_ = host
+	_ = port
+	_ = timeout
+	w.WriteHeader(http.StatusOK)
+}

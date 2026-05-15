@@ -1,0 +1,22 @@
+from jinja2 import Template
+
+
+def render_welcome_page(username: str, user_template: str) -> str:
+    template = Template(user_template)
+    return template.render(username=username)
+
+
+def build_email_body(user_input: str) -> str:
+    template_source = f"<h1>Hello {user_input}</h1><p>Welcome to our site</p>"
+    template = Template(template_source)
+    return template.render()
+
+
+def render_dashboard(user_name: str, layout_template: str) -> str:
+    template = Template(layout_template)
+    return template.render(name=user_name, title="Dashboard")
+
+
+def generate_report_html(data: dict, report_template: str) -> str:
+    template = Template(report_template)
+    return template.render(**data)

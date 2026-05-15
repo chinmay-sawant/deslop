@@ -1,0 +1,14 @@
+{
+  "id": "rust_rc_cycle_parent_link",
+  "language": "rust",
+  "family": "security_footguns",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Rc-based parent/back-reference shapes that likely need Weak on the reverse edge.",
+  "binding_location": "src/heuristics/rust/security_footguns.rs"
+}

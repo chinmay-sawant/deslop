@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	"sync"
+)
+
+// scenario for waitgroup_add_inside_loop: `for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count
+// fixture polarity: positive; family: performance; severity: info.
+func scenario693Positive(urls []string) {
+	var wg sync.WaitGroup
+	for _, url := range urls {
+		wg.Add(1)
+		go func(u string) {
+			defer wg.Done()
+			_ = u
+		}(url)
+	}
+	wg.Wait()
+}

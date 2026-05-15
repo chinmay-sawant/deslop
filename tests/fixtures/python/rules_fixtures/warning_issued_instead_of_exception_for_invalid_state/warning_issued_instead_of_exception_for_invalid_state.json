@@ -1,0 +1,14 @@
+{
+  "id": "warning_issued_instead_of_exception_for_invalid_state",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "warnings.warn() issued for an invalid state that should raise an exception instead.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

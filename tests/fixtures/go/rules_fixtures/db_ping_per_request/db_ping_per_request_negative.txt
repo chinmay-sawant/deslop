@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for db_ping_per_request: database Ping(...) or PingContext(...) called on request paths instead of startup or explicit health checks.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule254NegativeRecord struct { ID int }
+
+func scenario254Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule254NegativeRecord{}).Error
+}

@@ -1,0 +1,26 @@
+use askama::Template;
+use actix_web::{HttpResponse, web};
+use std::io::Write;
+
+#[derive(Template)]
+#[template(path = "welcome.html")]
+struct WelcomeTemplate {
+    username: String,
+    items: Vec<String>,
+}
+
+// GOOD: write_into renders directly into a pre-allocated buffer, no intermediate String
+async fn welcome_page(params: web::Query<Params>) -> HttpResponse {
+    let tmpl = WelcomeTemplate {
+        username: params.username.clone(),
+        items: params.items.clone(),
+    };
+    let mut buf = Vec::with_capacity(4096);
+    tmpl.write_into(&mut buf).unwrap();
+    HttpResponse::Ok().content_type("text/html").body(buf)
+}
+
+struct Params {
+    username: String,
+    items: Vec<String>,
+}

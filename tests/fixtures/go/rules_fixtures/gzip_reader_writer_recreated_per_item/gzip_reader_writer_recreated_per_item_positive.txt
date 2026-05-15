@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"bytes"
+	"compress/gzip"
+	"io"
+)
+
+// scenario for gzip_reader_writer_recreated_per_item: gzip.NewReader(...) or gzip.NewWriter(...) recreated inside iterative paths instead of per stream.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario351Positive(payloads []string) ([]string, error) {
+	var results []string
+	for _, p := range payloads {
+		var buf bytes.Buffer
+		gw := gzip.NewWriter(&buf)
+		gw.Write([]byte(p))
+		gw.Close()
+
+		gr, err := gzip.NewReader(&buf)
+		if err != nil {
+			return nil, err
+		}
+		data, err := io.ReadAll(gr)
+		gr.Close()
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, string(data))
+	}
+	return results, nil
+}

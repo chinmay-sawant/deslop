@@ -1,0 +1,14 @@
+{
+  "id": "module_mixes_constants_types_helpers_and_execution_flow",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag modules that combine unrelated responsibilities and become hard to scan.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

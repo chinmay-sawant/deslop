@@ -1,0 +1,21 @@
+import tempfile
+import gzip
+import os
+
+def compress_data(data_bytes):
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        tmp.write(data_bytes)
+        tmp_path = tmp.name
+    with open(tmp_path, "rb") as f_in:
+        compressed = gzip.compress(f_in.read())
+    os.unlink(tmp_path)
+    return compressed
+
+def encode_payload(payload):
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmp:
+        tmp.write(payload)
+        tmp_path = tmp.name
+    with open(tmp_path, "rb") as f:
+        encoded = f.read()
+    os.unlink(tmp_path)
+    return encoded

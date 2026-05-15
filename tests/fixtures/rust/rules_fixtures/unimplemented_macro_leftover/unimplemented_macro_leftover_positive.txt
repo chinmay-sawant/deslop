@@ -1,0 +1,32 @@
+pub fn handle_event(event: &Event) {
+    match event.kind {
+        EventKind::Message => process_message(event),
+        EventKind::Error => process_error(event),
+        _ => unimplemented!(),
+    }
+}
+
+pub fn encode(data: &[u8], format: Format) -> Vec<u8> {
+    match format {
+        Format::Json => serde_json::to_vec(data).unwrap(),
+        Format::Binary => data.to_vec(),
+        Format::Xml => unimplemented!("XML encoding not yet supported"),
+    }
+}
+
+pub fn connect(transport: Transport) -> Connection {
+    match transport {
+        Transport::Tcp => connect_tcp(),
+        Transport::Udp => unimplemented!(),
+        Transport::Unix => unimplemented!(),
+    }
+}
+
+struct Event { kind: EventKind }
+enum EventKind { Message, Error, Unknown }
+enum Format { Json, Binary, Xml }
+enum Transport { Tcp, Udp, Unix }
+struct Connection;
+fn process_message(_e: &Event) {}
+fn process_error(_e: &Event) {}
+fn connect_tcp() -> Connection { Connection }

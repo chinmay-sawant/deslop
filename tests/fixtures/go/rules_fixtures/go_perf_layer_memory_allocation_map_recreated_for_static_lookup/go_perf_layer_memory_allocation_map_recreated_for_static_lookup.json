@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_memory_allocation_map_recreated_for_static_lookup",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag static lookup maps rebuilt inside functions instead of package-level immutable tables.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

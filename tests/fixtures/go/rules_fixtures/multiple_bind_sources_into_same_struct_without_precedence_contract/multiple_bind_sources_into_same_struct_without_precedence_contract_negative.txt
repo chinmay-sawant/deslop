@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for multiple_bind_sources_into_same_struct_without_precedence_contract: One DTO being filled from body, query, and path without a clear precedence policy.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule100NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule100NegativeService interface {
+	Run(context.Context, Rule100NegativeRecord) error
+}
+
+func scenario100Negative(ctx context.Context, service Rule100NegativeService, input Rule100NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

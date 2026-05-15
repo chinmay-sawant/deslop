@@ -1,0 +1,10 @@
+pub fn workspace_dependencies_are_centralized() -> bool {
+    let shared = ["serde.workspace = true", "tokio.workspace = true"];
+    let mut ok = 0usize;
+    for dep in shared {
+        if dep.ends_with("true") {
+            ok += 1;
+        }
+    }
+    ok == 2
+}

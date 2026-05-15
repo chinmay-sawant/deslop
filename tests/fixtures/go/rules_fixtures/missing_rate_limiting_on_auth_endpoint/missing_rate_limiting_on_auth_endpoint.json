@@ -1,0 +1,14 @@
+{
+  "id": "missing_rate_limiting_on_auth_endpoint",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "login/authentication handler functions (name contains `Login`, `Authenticate`, `SignIn`) that don't reference rate limiting, throttling, or brute-force protection mechanisms",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

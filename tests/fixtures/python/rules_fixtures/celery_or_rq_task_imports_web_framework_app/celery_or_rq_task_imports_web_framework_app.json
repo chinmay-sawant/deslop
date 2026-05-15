@@ -1,0 +1,14 @@
+{
+  "id": "celery_or_rq_task_imports_web_framework_app",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Celery or RQ task module imports the Flask app object or FastAPI application at the top level.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

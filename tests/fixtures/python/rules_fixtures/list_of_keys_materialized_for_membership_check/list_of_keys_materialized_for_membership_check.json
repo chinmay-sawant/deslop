@@ -1,0 +1,14 @@
+{
+  "id": "list_of_keys_materialized_for_membership_check",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that builds list(mapping.keys()) before checking membership.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

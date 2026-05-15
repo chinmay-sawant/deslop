@@ -1,0 +1,41 @@
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum AppError {
+    #[error(transparent)]
+    ParseConfig {
+        context: String,
+        line: u32,
+        #[from]
+        err: serde_json::Error,
+    },
+
+    #[error(transparent)]
+    ReadFile {
+        path: String,
+        #[from]
+        err: std::io::Error,
+    },
+
+    #[error(transparent)]
+    QueryUser {
+        user_id: u64,
+        #[from]
+        err: sqlx::Error,
+    },
+}
+
+fn load_config() -> Result<Config, AppError> {
+    let data = std::fs::read_to_string("config.json").map_err(|e| AppError::ReadFile {
+        path: "config.json".into(),
+        err: e,
+    })?;
+    let config: Config = serde_json::from_str(&data).map_err(|e| AppError::ParseConfig {
+        context: "Failed to parse config.json".into(),
+        line: 0,
+        err: e,
+    })?;
+    Ok(config)
+}
+
+struct Config;

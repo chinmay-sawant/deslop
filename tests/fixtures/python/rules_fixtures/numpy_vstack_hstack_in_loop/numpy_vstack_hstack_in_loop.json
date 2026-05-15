@@ -1,0 +1,14 @@
+{
+  "id": "numpy_vstack_hstack_in_loop",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Arrays are repeatedly stacked inside loops instead of collected and stacked once.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	gin "github.com/gin-gonic/gin"
+	binding "github.com/gin-gonic/gin/binding"
+)
+
+// scenario for multiple_shouldbind_calls_same_handler: Gin handlers that bind the request body multiple times in one function.
+// fixture polarity: positive; family: gin; severity: contextual.
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type ProfileRequest struct {
+	Token string `json:"token"`
+}
+
+func scenario328Positive(ctx *gin.Context) {
+	var login LoginRequest
+	if err := ctx.ShouldBindBodyWith(&login, binding.JSON); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	var profile ProfileRequest
+	if err := ctx.ShouldBindBodyWith(&profile, binding.JSON); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, gin.H{"user": login.Username, "token": profile.Token})
+}

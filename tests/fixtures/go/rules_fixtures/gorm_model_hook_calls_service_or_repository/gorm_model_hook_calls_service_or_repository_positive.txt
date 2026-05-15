@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for gorm_model_hook_calls_service_or_repository: Model hooks that depend on higher-layer services or repositories.
+// fixture polarity: positive; family: architecture; severity: warning.
+type Rule063PositiveRecord struct {
+	ID       int
+	TenantID int
+	Name     string
+}
+
+type Rule063UserService struct {
+	DB *gorm.DB
+}
+
+func (s *Rule063UserService) NotifyAdmins(tenantID int, record Rule063PositiveRecord) error {
+	return nil
+}
+
+func (u *Rule063PositiveRecord) AfterCreate(tx *gorm.DB) error {
+	svc := &Rule063UserService{DB: tx}
+	return svc.NotifyAdmins(u.TenantID, *u)
+}

@@ -1,0 +1,14 @@
+{
+  "id": "mutex_value_receiver",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

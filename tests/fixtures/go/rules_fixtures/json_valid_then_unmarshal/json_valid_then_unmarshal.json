@@ -1,0 +1,14 @@
+{
+  "id": "json_valid_then_unmarshal",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Code that validates JSON and then unmarshals the same payload again.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

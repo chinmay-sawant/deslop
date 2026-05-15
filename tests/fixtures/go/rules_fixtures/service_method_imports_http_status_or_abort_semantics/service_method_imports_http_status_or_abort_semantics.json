@@ -1,0 +1,14 @@
+{
+  "id": "service_method_imports_http_status_or_abort_semantics",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Services that depend on transport-specific status constants, abort helpers, or Gin response behavior.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

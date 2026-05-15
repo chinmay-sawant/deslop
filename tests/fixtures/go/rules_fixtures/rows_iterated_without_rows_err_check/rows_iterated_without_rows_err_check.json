@@ -1,0 +1,14 @@
+{
+  "id": "rows_iterated_without_rows_err_check",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Rows iterated with Next() but without a visible final Rows.Err() check.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

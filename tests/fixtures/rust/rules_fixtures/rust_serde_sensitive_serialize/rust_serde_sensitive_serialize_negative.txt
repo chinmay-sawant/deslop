@@ -1,0 +1,42 @@
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct UserRecord {
+    name: String,
+    email: String,
+    #[serde(skip_serializing)]
+    password_hash: String,
+    #[serde(skip_serializing)]
+    api_secret: String,
+    #[serde(skip_serializing)]
+    session_token: String,
+}
+
+#[derive(Serialize)]
+struct AuditLog {
+    user_id: u64,
+    action: String,
+    #[serde(skip_serializing)]
+    auth_cookie: String,
+    #[serde(skip_serializing)]
+    bearer_token: String,
+}
+
+#[derive(Serialize)]
+struct SafeUserView<'a> {
+    name: &'a str,
+    email: &'a str,
+}
+
+fn serialize_user_safe(user: &UserRecord) -> String {
+    let view = SafeUserView {
+        name: &user.name,
+        email: &user.email,
+    };
+    serde_json::to_string(&view).unwrap()
+}
+
+fn log_event_safe(log: &AuditLog) {
+    let json = serde_json::to_string(log).unwrap();
+    std::fs::write("audit.log", json).unwrap();
+}

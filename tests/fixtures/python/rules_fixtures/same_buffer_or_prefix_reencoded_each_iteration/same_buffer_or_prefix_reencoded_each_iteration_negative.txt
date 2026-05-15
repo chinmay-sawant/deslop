@@ -1,0 +1,17 @@
+def encode_messages(messages, encoding="utf-8"):
+    header = "MSG:".encode(encoding)
+    results = []
+    for msg in messages:
+        payload = msg.encode(encoding)
+        results.append(header + payload)
+    return results
+
+
+def build_packets(chunks):
+    prefix = b"\x00\x01\x02\x03"
+    packets = []
+    for chunk in chunks:
+        encoded = chunk.encode("utf-8")
+        length = len(encoded).to_bytes(4, "big")
+        packets.append(prefix + length + encoded)
+    return packets

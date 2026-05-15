@@ -1,0 +1,14 @@
+{
+  "id": "nested_transaction_in_request_path",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Multiple transactions started on a single request path.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

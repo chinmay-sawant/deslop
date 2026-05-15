@@ -1,0 +1,16 @@
+fn find_matching(items: &[Item], pattern: &str) -> Option<&Item> {
+    items.iter().find(|item| item.name.contains(pattern))
+}
+
+fn accumulate_tags(entries: &[Entry]) -> Vec<&str> {
+    entries.iter().map(|e| e.name.as_str()).collect()
+}
+
+fn transform_values(values: &[Value]) -> Vec<String> {
+    values.iter().map(|v| v.to_string()).collect()
+}
+
+struct Item { name: String }
+struct Entry { name: String }
+struct Value;
+impl Value { fn to_string(&self) -> String { todo!() } }

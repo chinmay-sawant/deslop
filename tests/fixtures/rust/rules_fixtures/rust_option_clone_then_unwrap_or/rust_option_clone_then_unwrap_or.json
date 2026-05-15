@@ -1,0 +1,14 @@
+{
+  "id": "rust_option_clone_then_unwrap_or",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag cloning `Option<T>` or `Result<T, E>` only to unwrap/default instead of borrowing with `as_ref`, `as_deref`, or `map`.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

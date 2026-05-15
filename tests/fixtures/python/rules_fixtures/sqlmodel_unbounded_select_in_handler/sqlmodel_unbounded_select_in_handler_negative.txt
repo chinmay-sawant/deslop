@@ -1,0 +1,35 @@
+from fastapi import FastAPI, Query
+from sqlmodel import Session, SQLModel, Field, create_engine, select
+from typing import Optional
+
+app = FastAPI()
+engine = create_engine("postgresql://user:pass@localhost/mydb")
+
+
+class Item(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    price: float
+
+
+@app.get("/items")
+def list_items(limit: int = Query(default=50, le=100), offset: int = 0):
+    with Session(engine) as session:
+        items = session.exec(select(Item).offset(offset).limit(limit)).all()
+        return [{"id": i.id, "name": i.name, "price": i.price} for i in items]
+
+
+@app.get("/users")
+def list_users(limit: int = Query(default=50, le=100), offset: int = 0):
+    with Session(engine) as session:
+        from models import User
+        users = session.exec(select(User).offset(offset).limit(limit)).all()
+        return [{"id": u.id, "name": u.name} for u in users]
+
+
+@app.get("/orders")
+def list_orders(limit: int = Query(default=50, le=100), offset: int = 0):
+    with Session(engine) as session:
+        from models import Order
+        orders = session.exec(select(Order).offset(offset).limit(limit)).all()
+        return [{"id": o.id, "total": o.total} for o in orders]

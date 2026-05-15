@@ -1,3 +1,0 @@
-pub fn Normalize(address: &str) -> String {
-    address.to_string()
-}

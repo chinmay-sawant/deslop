@@ -1,0 +1,17 @@
+import numpy as np
+
+
+def compute_similarity(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
+    return float(np.dot(vec_a, vec_b))
+
+
+def find_nearest(query_embedding: np.ndarray, corpus_embeddings: np.ndarray) -> int:
+    scores = np.dot(corpus_embeddings, query_embedding)
+    return int(np.argmax(scores))
+
+
+def rank_documents(query_vec: list[float], doc_vecs: list[list[float]]) -> list[int]:
+    q = np.array(query_vec)
+    docs = np.array(doc_vecs)
+    similarities = docs @ q
+    return list(np.argsort(similarities)[::-1])

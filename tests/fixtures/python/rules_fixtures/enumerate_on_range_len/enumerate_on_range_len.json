@@ -1,0 +1,14 @@
+{
+  "id": "enumerate_on_range_len",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "enumerate(range(len(...))) style loops that add indexing ceremony without extra value.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

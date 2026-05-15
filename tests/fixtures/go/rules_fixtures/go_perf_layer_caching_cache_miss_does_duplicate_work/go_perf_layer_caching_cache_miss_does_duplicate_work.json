@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_caching_cache_miss_does_duplicate_work",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

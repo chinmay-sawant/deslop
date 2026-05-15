@@ -1,0 +1,14 @@
+{
+  "id": "malformed_struct_tag",
+  "language": "go",
+  "family": "consistency",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Struct field tags that do not parse as valid Go tag key/value pairs.",
+  "binding_location": "src/heuristics/go/consistency.rs"
+}

@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for ent_open_per_request: ent clients opened directly inside request handlers instead of shared startup wiring.
+// fixture polarity: negative; family: data_access; severity: warning.
+type Rule259NegativeRecord struct { ID int }
+
+func scenario259Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule259NegativeRecord{}).Error
+}

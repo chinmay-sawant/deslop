@@ -1,0 +1,30 @@
+import numpy as np
+from dataclasses import dataclass
+
+@dataclass
+class Point2D:
+    x: float
+    y: float
+
+@dataclass
+class Pixel:
+    r: int
+    g: int
+    b: int
+
+def compute_distances(points_a: list[Point2D], points_b: list[Point2D]) -> list[float]:
+    a_arr = np.array([(p.x, p.y) for p in points_a])
+    b_arr = np.array([(p.x, p.y) for p in points_b])
+    diff = a_arr - b_arr
+    return np.sqrt((diff ** 2).sum(axis=1)).tolist()
+
+def process_pixel_batch(pixels: list[Pixel]) -> list[int]:
+    arr = np.array([(p.r, p.g, p.b) for p in pixels])
+    weights = np.array([0.299, 0.587, 0.114])
+    return (arr @ weights).astype(int).tolist()
+
+def normalize_vertices(vertices: list[tuple[float, float, float]]) -> list[tuple[float, float, float]]:
+    arr = np.array(vertices)
+    lengths = np.sqrt((arr ** 2).sum(axis=1, keepdims=True))
+    result = arr / lengths
+    return [tuple(row) for row in result]

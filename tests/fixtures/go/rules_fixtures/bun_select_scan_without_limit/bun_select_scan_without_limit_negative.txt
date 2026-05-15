@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for bun_select_scan_without_limit: Bun select-and-scan request paths without a visible limit or pagination marker.
+// fixture polarity: negative; family: data_access; severity: info.
+type Rule248NegativeRecord struct { ID int }
+
+func scenario248Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule248NegativeRecord{}).Error
+}

@@ -1,0 +1,14 @@
+{
+  "id": "time_until_candidate_via_deadline_sub_now",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`deadline.Sub(time.Now())` instead of `time.Until(deadline)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

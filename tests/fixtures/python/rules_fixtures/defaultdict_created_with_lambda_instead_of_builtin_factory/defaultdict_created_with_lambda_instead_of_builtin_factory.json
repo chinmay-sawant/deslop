@@ -1,0 +1,14 @@
+{
+  "id": "defaultdict_created_with_lambda_instead_of_builtin_factory",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "defaultdict(lambda: []) or similar lambda factory; use defaultdict(list) or defaultdict(int).",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

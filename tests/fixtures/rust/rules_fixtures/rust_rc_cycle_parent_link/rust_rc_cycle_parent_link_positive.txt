@@ -1,0 +1,26 @@
+use std::rc::Rc;
+use std::cell::RefCell;
+
+// BAD: Rc-based parent link creates cycle
+struct TreeNode {
+    value: i32,
+    children: Vec<Rc<RefCell<TreeNode>>>,
+    parent: Option<Rc<RefCell<TreeNode>>>, // strong reference to parent = cycle
+}
+
+impl TreeNode {
+    fn new(value: i32) -> Rc<RefCell<Self>> {
+        Rc::new(RefCell::new(Self {
+            value,
+            children: Vec::new(),
+            parent: None,
+        }))
+    }
+
+    fn add_child(parent: &Rc<RefCell<Self>>, value: i32) -> Rc<RefCell<TreeNode>> {
+        let child = Self::new(value);
+        child.borrow_mut().parent = Some(Rc::clone(parent)); // creates cycle
+        parent.borrow_mut().children.push(Rc::clone(&child));
+        child
+    }
+}

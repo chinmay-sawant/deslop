@@ -1,0 +1,31 @@
+def validate_email(email):
+    if "@" not in email:
+        raise ValueError("Invalid email")
+    return True
+
+
+def normalize_phone(phone):
+    digits = "".join(c for c in phone if c.isdigit())
+    if len(digits) < 10:
+        raise ValueError("Invalid phone")
+    return digits
+
+
+def check_rate_limit(user_id, limit=100):
+    count = get_request_count(user_id)
+    if count > limit:
+        raise RateLimitError("Too many requests")
+
+
+def log_action(action, user_id):
+    timestamp = datetime.utcnow().isoformat()
+    logger.info(f"[{timestamp}] {user_id}: {action}")
+
+
+def validate_and_normalize(data):
+    if not data.get("email"):
+        raise ValueError("Email required")
+    if "@" not in data["email"]:
+        raise ValueError("Invalid email")
+    data["email"] = data["email"].lower().strip()
+    return data

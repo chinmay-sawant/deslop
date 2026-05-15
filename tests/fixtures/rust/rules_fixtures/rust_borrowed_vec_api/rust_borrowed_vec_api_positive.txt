@@ -1,0 +1,18 @@
+fn sum(values: &Vec<i64>) -> i64 {
+    values.iter().sum()
+}
+
+fn find_duplicates(items: &Vec<String>) -> Vec<String> {
+    let mut seen = std::collections::HashSet::new();
+    let mut dupes = Vec::new();
+    for item in items {
+        if !seen.insert(item.clone()) {
+            dupes.push(item.clone());
+        }
+    }
+    dupes
+}
+
+fn first_n(v: &Vec<u8>, n: usize) -> &[u8] {
+    &v[..n.min(v.len())]
+}

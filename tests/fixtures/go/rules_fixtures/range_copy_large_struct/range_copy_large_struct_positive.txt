@@ -1,0 +1,24 @@
+package rulefixtures
+
+// scenario for range_copy_large_struct: `for _, v := range largeStructSlice` where the struct is > 64 bytes
+// fixture polarity: positive; family: performance; severity: info.
+type Rule628PositiveRecord struct {
+	ID          int
+	Name        string
+	Description string
+	Tags        []string
+	Metadata    map[string]string
+	CreatedBy   string
+	UpdatedBy   string
+	NotBefore   int64
+	NotAfter    int64
+	Payload     [256]byte
+}
+
+func scenario628Positive(items []Rule628PositiveRecord) []string {
+	var names []string
+	for _, item := range items {
+		names = append(names, item.Name)
+	}
+	return names
+}

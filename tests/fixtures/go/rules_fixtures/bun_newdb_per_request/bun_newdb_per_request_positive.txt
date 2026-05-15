@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for bun_newdb_per_request: Bun DB handles created directly on request paths instead of reused process-level state.
+// fixture polarity: positive; family: data_access; severity: warning.
+type Rule247PositiveRecord struct { ID int }
+
+func scenario247Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule247PositiveRecord{}).Error
+}

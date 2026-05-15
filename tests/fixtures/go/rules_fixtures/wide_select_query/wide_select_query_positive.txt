@@ -1,0 +1,33 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"fmt"
+)
+
+// scenario for wide_select_query: Literal SELECT * query shapes.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+type Report struct {
+	ID    int
+	Title string
+}
+
+func GetUserReports(db *sql.DB, userID int) ([]Report, error) {
+	rows, err := db.Query(
+		"SELECT * FROM reports WHERE user_id = $1",
+		userID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("query: %w", err)
+	}
+	defer rows.Close()
+
+	var reports []Report
+	for rows.Next() {
+		var r Report
+		rows.Scan(&r.ID, &r.Title)
+		reports = append(reports, r)
+	}
+	return reports, rows.Err()
+}

@@ -1,0 +1,14 @@
+{
+  "id": "constructor_performs_real_work_beyond_state_initialization",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag constructors that do heavy work instead of leaving execution to explicit methods.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

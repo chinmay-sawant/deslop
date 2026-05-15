@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for transport_layer_uses_untyped_string_codes_without_catalog: Response code strings that have no shared type or catalog package.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule210NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule210NegativeService interface {
+	Run(context.Context, Rule210NegativeRecord) error
+}
+
+func scenario210Negative(ctx context.Context, service Rule210NegativeService, input Rule210NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

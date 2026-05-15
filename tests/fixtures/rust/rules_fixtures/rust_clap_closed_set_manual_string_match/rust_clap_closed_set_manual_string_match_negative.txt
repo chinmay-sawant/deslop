@@ -1,0 +1,23 @@
+use clap::{Parser, ValueEnum};
+
+#[derive(Clone, ValueEnum)]
+enum OutputFormat {
+    Json,
+    Text,
+    Csv,
+}
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long, value_enum)]
+    format: OutputFormat,
+}
+
+fn run(cli: Cli) {
+    let output = match cli.format {
+        OutputFormat::Json => "json output",
+        OutputFormat::Text => "text output",
+        OutputFormat::Csv => "csv output",
+    };
+    println!("{output}");
+}

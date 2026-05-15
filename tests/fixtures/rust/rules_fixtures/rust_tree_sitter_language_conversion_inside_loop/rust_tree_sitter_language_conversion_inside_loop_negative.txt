@@ -1,0 +1,29 @@
+use tree_sitter::Parser;
+use std::collections::HashMap;
+
+fn parse_files(files: &[&str]) {
+    let mut languages: HashMap<String, tree_sitter::Language> = HashMap::new();
+
+    for file_path in files {
+        let source = std::fs::read_to_string(file_path).unwrap();
+        let ext = file_path.rsplit('.').next().unwrap_or("");
+        let language = languages
+            .entry(ext.to_string())
+            .or_insert_with(|| get_language_for_ext(ext));
+
+        let mut parser = Parser::new();
+        parser.set_language(language).unwrap();
+        let tree = parser.parse(&source, None).unwrap();
+        process_tree(tree.root_node(), &source);
+    }
+}
+
+fn get_language_for_ext(ext: &str) -> tree_sitter::Language {
+    match ext {
+        "rs" => tree_sitter_rust::LANGUAGE.into(),
+        "py" => tree_sitter_python::LANGUAGE.into(),
+        _ => tree_sitter_rust::LANGUAGE.into(),
+    }
+}
+
+fn process_tree(_node: tree_sitter::Node, _source: &str) {}

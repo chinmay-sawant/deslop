@@ -1,0 +1,20 @@
+import yaml
+
+def load_app_config(path: str) -> dict:
+    with open(path) as f:
+        return yaml.safe_load(f)
+
+def load_deployment_spec(path: str) -> dict:
+    with open(path) as f:
+        data = yaml.load(f, Loader=yaml.SafeLoader)
+    return data
+
+def parse_pipeline_config(yaml_text: str) -> dict:
+    return yaml.safe_load(yaml_text)
+
+def load_service_config(path: str) -> dict:
+    with open(path) as f:
+        return yaml.safe_load(f)
+
+def parse_manifest(yaml_text: str) -> dict:
+    return yaml.safe_load(yaml_text)

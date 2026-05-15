@@ -1,0 +1,17 @@
+struct SensorReading {
+    timestamp: u64,
+    value: f64,
+    is_anomaly: bool,
+}
+
+fn analyze_readings(readings: &[SensorReading]) -> (f64, f64, usize) {
+    // BAD: three separate passes over the same slice
+    let sum: f64 = readings.iter().map(|r| r.value).sum();
+    let mean = sum / readings.len() as f64;
+
+    let max_val = readings.iter().map(|r| r.value).fold(f64::NEG_INFINITY, f64::max);
+
+    let anomaly_count = readings.iter().filter(|r| r.is_anomaly).count();
+
+    (mean, max_val, anomaly_count)
+}

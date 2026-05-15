@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for map_lookup_double_access: `if _, ok := m[k]; ok { v := m[k] }` - two map lookups for the same key
+// fixture polarity: negative; family: performance; severity: warning.
+type Rule616NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario616Negative(records []Rule616NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

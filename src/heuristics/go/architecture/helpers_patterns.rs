@@ -520,14 +520,22 @@ fn sort_whitelist_line(lines: &[super::framework_patterns::BodyLine]) -> Option<
 fn route_param_merge_line(lines: &[super::framework_patterns::BodyLine]) -> Option<usize> {
     let has_bind = lines.iter().any(|line| {
         let lower = line.text.to_ascii_lowercase();
-        lower.contains("bind") || lower.contains("shouldbind")
+        lower.contains("bind")
+            || lower.contains("shouldbind")
+            || lower.contains("decode(&")
+            || lower.contains("json.newdecoder(")
     });
     if !has_bind {
         return None;
     }
     lines
         .iter()
-        .find(|line| line.text.contains(".Param(") || line.text.contains(".Query("))
+        .find(|line| {
+            line.text.contains(".Param(")
+                || line.text.contains(".Query(")
+                || line.text.contains("Vars(")
+                || line.text.contains(".URL.Query().Get(")
+        })
         .map(|line| line.line)
 }
 

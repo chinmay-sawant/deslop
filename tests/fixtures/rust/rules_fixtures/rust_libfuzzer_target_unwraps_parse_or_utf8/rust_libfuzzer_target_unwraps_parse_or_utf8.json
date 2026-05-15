@@ -1,0 +1,14 @@
+{
+  "id": "rust_libfuzzer_target_unwraps_parse_or_utf8",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag fuzz targets that call `unwrap`/`expect` on parser, UTF-8, TOML, JSON, or path conversion results.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

@@ -1,0 +1,8 @@
+fn check_and_read(path: &str) -> String {
+    match std::fs::metadata(path) {
+        Ok(meta) if meta.is_file() && meta.len() > 0 => {
+            std::fs::read_to_string(path).unwrap_or_default()
+        }
+        _ => String::new(),
+    }
+}

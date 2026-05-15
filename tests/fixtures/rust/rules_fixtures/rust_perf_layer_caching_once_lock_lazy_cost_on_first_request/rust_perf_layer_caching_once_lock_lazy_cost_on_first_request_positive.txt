@@ -1,0 +1,29 @@
+use std::sync::OnceLock;
+
+struct AppConfig {
+    db_pool: Vec<String>,
+    templates: Vec<String>,
+    feature_flags: Vec<String>,
+}
+
+fn load_config() -> AppConfig {
+    // BAD: expensive initialization on first request, blocking that user
+    std::thread::sleep(std::time::Duration::from_secs(2));
+    AppConfig {
+        db_pool: (0..100).map(|i| format!("conn_{}", i)).collect(),
+        templates: (0..50).map(|i| format!("template_{}", i)).collect(),
+        feature_flags: vec!["flag_a".into(), "flag_b".into()],
+    }
+}
+
+static CONFIG: OnceLock<AppConfig> = OnceLock::new();
+
+fn get_config() -> &'static AppConfig {
+    // BAD: first user pays cold-start latency
+    CONFIG.get_or_init(|| load_config())
+}
+
+async fn handle_request() -> String {
+    let cfg = get_config();
+    format!("using {} connections", cfg.db_pool.len())
+}

@@ -1,0 +1,14 @@
+{
+  "id": "sort_then_first_or_membership_only",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "A collection is sorted even though only the first element or a membership-style check is needed.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "middleware_allocates_regex_or_template_per_request",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Regexp compilation inside Gin handlers instead of using precompiled patterns.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

@@ -1,0 +1,13 @@
+pub fn workspace_manifest_without_resolver() -> &'static str {
+    r#"[workspace]
+members = [
+    \"crates/core\",
+    \"crates/cli\",
+    \"crates/server\",
+]
+"#
+}
+
+pub fn resolver_is_missing() -> bool {
+    !workspace_manifest_without_resolver().contains("resolver")
+}

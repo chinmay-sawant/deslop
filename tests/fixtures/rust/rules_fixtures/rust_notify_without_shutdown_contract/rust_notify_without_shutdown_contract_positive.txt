@@ -1,0 +1,9 @@
+use tokio::sync::Notify;
+use std::sync::Arc;
+
+async fn wait_for_data(notify: Arc<Notify>) {
+    notify.notified().await;
+    process_data();
+}
+
+fn process_data() {}

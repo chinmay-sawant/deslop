@@ -1,0 +1,32 @@
+import timeit
+import json
+
+
+def benchmark_parse():
+    payload = '{"key": "value", "items": [1, 2, 3]}'
+    result = timeit.timeit(lambda: json.loads(payload), number=10000)
+    print(f"JSON parse: {result:.4f}s")
+    return result
+
+
+def benchmark_sort():
+    data = list(range(1000))
+    result = timeit.timeit(lambda: sorted(data), number=5000)
+    print(f"Sort: {result:.4f}s")
+    return result
+
+
+def benchmark_string_ops():
+    result = timeit.timeit(lambda: "hello world".upper(), number=100000)
+    print(f"String ops: {result:.4f}s")
+    return result
+
+
+def run_all_benchmarks():
+    results = {
+        "parse": benchmark_parse(),
+        "sort": benchmark_sort(),
+        "string_ops": benchmark_string_ops(),
+    }
+    print(f"All benchmarks completed: {results}")
+    return results

@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_caching_cached_value_immediately_deserialized",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Caching. Flag caches storing serialized data only to deserialize before every use.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

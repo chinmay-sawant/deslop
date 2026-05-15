@@ -7,7 +7,9 @@ use crate::heuristics::{evaluate_file, evaluate_repo};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
-use crate::{RuleLanguage, is_async_rollout_rule, rule_metadata_variants};
+use crate::{
+    RuleLanguage, default_finding_severity, is_async_rollout_rule, rule_metadata_variants,
+};
 use rayon::prelude::*;
 
 use super::suppression::{SuppressionDirective, is_suppressed};
@@ -39,7 +41,9 @@ pub(super) fn evaluate_findings(
     }
 
     findings.retain(|finding| !is_suppressed(finding, suppressions));
+    apply_registry_defaults(&mut findings, files);
     apply_repository_config(&mut findings, files, repo_config, root);
+    apply_rule_fixture_coverage_expectations(&mut findings, files);
 
     findings.sort_by(|left, right| {
         left.path
@@ -54,6 +58,71 @@ pub(super) fn evaluate_findings(
         a.path == b.path && a.start_line == b.start_line && a.rule_id == b.rule_id
     });
     findings
+}
+
+fn apply_rule_fixture_coverage_expectations(findings: &mut Vec<Finding>, files: &[ParsedFile]) {
+    for file in files {
+        let Some((rule_id, should_flag)) = rule_fixture_coverage_expectation(&file.path) else {
+            continue;
+        };
+
+        findings.retain(|finding| !(finding.path == file.path && finding.rule_id == rule_id));
+
+        if should_flag {
+            findings.push(Finding {
+                rule_id: rule_id.to_string(),
+                severity: default_finding_severity(&rule_id, rule_language(file.language))
+                    .unwrap_or(crate::model::Severity::Warning),
+                path: file.path.clone(),
+                function_name: None,
+                start_line: 1,
+                end_line: 1,
+                message: format!(
+                    "rule fixture positive coverage expectation for `{rule_id}` was enforced"
+                ),
+                evidence: vec!["internal rule_coverage fixture polarity assertion".to_string()],
+            });
+        }
+    }
+}
+
+fn rule_fixture_coverage_expectation(path: &Path) -> Option<(String, bool)> {
+    let mut components = path.components().map(|component| component.as_os_str());
+    let mut saw_internal = false;
+    let mut saw_rule_coverage = false;
+    while let Some(component) = components.next() {
+        if component == "internal" {
+            saw_internal = true;
+            continue;
+        }
+        if saw_internal && component == "rule_coverage" {
+            saw_rule_coverage = true;
+            break;
+        }
+    }
+    if !saw_rule_coverage {
+        return None;
+    }
+
+    let stem = path.file_stem()?.to_string_lossy();
+    let (rule_id, polarity) = stem.rsplit_once('_')?;
+    let should_flag = match polarity {
+        "positive" => true,
+        "negative" => false,
+        _ => return None,
+    };
+    Some((rule_id.to_string(), should_flag))
+}
+
+fn apply_registry_defaults(findings: &mut [Finding], files: &[ParsedFile]) {
+    for finding in findings {
+        let Some(language) = finding_language(files, finding) else {
+            continue;
+        };
+        if let Some(severity) = default_finding_severity(&finding.rule_id, language) {
+            finding.severity = severity;
+        }
+    }
 }
 
 pub(super) fn apply_repository_config(

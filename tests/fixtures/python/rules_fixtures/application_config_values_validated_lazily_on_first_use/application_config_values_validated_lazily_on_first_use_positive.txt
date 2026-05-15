@@ -1,0 +1,45 @@
+import os
+
+
+class AppConfig:
+    _instance = None
+
+    def __init__(self):
+        self._database_url = None
+        self._redis_url = None
+        self._secret_key = None
+
+    @property
+    def database_url(self) -> str:
+        if self._database_url is None:
+            url = os.environ.get("DATABASE_URL")
+            if not url:
+                raise ValueError("DATABASE_URL environment variable is required")
+            if not url.startswith("postgresql://"):
+                raise ValueError("DATABASE_URL must be a postgresql:// URL")
+            self._database_url = url
+        return self._database_url
+
+    @property
+    def redis_url(self) -> str:
+        if self._redis_url is None:
+            url = os.environ.get("REDIS_URL")
+            if not url:
+                raise ValueError("REDIS_URL environment variable is required")
+            self._redis_url = url
+        return self._redis_url
+
+    @property
+    def secret_key(self) -> str:
+        if self._secret_key is None:
+            key = os.environ.get("SECRET_KEY")
+            if not key or len(key) < 32:
+                raise ValueError("SECRET_KEY must be at least 32 characters")
+            self._secret_key = key
+        return self._secret_key
+
+
+def handle_request(request):
+    config = AppConfig()
+    db = connect(config.database_url)
+    return db.query("SELECT 1")

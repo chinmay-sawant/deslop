@@ -1,0 +1,22 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	gin "github.com/gin-gonic/gin"
+)
+
+// scenario for bindquery_into_map_any_hot_endpoint: Gin handlers that bind query parameters into map[string]any or map[string]interface{} on hot request paths.
+// fixture polarity: positive; family: gin; severity: contextual.
+func scenario308Positive(c *gin.Context) {
+	filters := map[string]any{}
+	if err := c.ShouldBindQuery(&filters); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	results := make([]gin.H, 0)
+	for k, v := range filters {
+		results = append(results, gin.H{k: v})
+	}
+	c.JSON(http.StatusOK, results)
+}

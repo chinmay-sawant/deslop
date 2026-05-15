@@ -1,0 +1,32 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for validation_error_response_shape_inconsistent: Handlers in the same API module that emit different validation error contracts.
+// fixture polarity: positive; family: architecture; severity: info.
+func scenario216CreateUser(w http.ResponseWriter, r *http.Request) {
+	var input struct{ Name string }
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil || input.Name == "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "name is required"})
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+}
+
+func scenario216UpdateUser(w http.ResponseWriter, r *http.Request) {
+	var input struct{ Email string }
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil || input.Email == "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]any{
+			"errors": []map[string]string{{"field": "email", "msg": "email is required"}},
+		})
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

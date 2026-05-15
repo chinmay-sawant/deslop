@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for same_dependency_wired_in_multiple_bootstrap_locations: Duplicated construction of the same service or client in several startup files.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule156NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule156NegativeService interface {
+	Run(context.Context, Rule156NegativeRecord) error
+}
+
+func scenario156Negative(ctx context.Context, service Rule156NegativeService, input Rule156NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

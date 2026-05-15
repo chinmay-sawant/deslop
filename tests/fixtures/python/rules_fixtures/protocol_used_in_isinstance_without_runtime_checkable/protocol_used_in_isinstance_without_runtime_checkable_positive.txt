@@ -1,0 +1,27 @@
+from typing import Protocol
+
+
+class Drawable(Protocol):
+    def draw(self) -> None: ...
+
+
+class Circle:
+    def draw(self) -> None:
+        print("circle")
+
+
+def process_shape(shape):
+    if isinstance(shape, Drawable):
+        shape.draw()
+    else:
+        raise TypeError("Not drawable")
+
+
+class Serializable(Protocol):
+    def to_json(self) -> str: ...
+
+
+def export(obj):
+    if isinstance(obj, Serializable):
+        return obj.to_json()
+    return None

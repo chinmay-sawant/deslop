@@ -1,9 +1,0 @@
-def parse_record(raw):
-    return raw.strip()
-
-def transform_record(payload):
-    return payload.lower()
-
-def build_slug(raw):
-    payload = parse_record(raw)
-    return transform_record(payload)

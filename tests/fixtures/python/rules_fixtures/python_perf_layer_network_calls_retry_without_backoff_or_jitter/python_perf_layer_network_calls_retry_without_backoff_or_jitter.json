@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_network_calls_retry_without_backoff_or_jitter",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Network calls. Flag network retries without backoff and jitter, which amplifies latency and load.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

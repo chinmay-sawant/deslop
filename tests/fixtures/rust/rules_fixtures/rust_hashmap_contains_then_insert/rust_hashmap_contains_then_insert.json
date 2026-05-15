@@ -1,0 +1,14 @@
+{
+  "id": "rust_hashmap_contains_then_insert",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `contains_key` followed by `insert` or `get_mut` where `entry` would avoid duplicate hashing.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

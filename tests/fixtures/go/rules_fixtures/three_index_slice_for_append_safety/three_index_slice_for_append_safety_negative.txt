@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for three_index_slice_for_append_safety: `sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound
+// fixture polarity: negative; family: performance; severity: warning.
+type Rule679NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario679Negative(records []Rule679NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

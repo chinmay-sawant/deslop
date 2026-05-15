@@ -1,0 +1,18 @@
+import asyncio
+
+loop = asyncio.get_event_loop()
+background_tasks = set()
+
+
+def schedule_background(coro):
+    task = loop.create_task(coro)
+    background_tasks.add(task)
+    task.add_done_callback(background_tasks.discard)
+    return task
+
+
+async def main():
+    await asyncio.sleep(1)
+
+
+loop.run_until_complete(main())

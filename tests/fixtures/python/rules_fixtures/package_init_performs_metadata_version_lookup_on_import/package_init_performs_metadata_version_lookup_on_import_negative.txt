@@ -1,0 +1,13 @@
+__version__ = "2.5.1"
+
+from myapp.core import engine
+from myapp.api import router
+from myapp.db import session
+
+
+def get_version() -> str:
+    from importlib.metadata import version, PackageNotFoundError
+    try:
+        return version("myapp")
+    except PackageNotFoundError:
+        return __version__

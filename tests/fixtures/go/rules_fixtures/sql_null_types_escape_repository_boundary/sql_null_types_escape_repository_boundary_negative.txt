@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for sql_null_types_escape_repository_boundary: Repository methods that leak driver-specific null wrappers beyond the persistence boundary.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule190NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule190NegativeService interface {
+	Run(context.Context, Rule190NegativeRecord) error
+}
+
+func scenario190Negative(ctx context.Context, service Rule190NegativeService, input Rule190NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

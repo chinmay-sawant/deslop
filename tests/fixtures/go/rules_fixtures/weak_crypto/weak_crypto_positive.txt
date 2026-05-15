@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"crypto/md5"
+)
+
+// scenario for weak_crypto: Direct use of weak standard-library crypto packages such as crypto/md5, crypto/sha1, crypto/des, and crypto/rc4.
+// fixture polarity: positive; family: security; severity: warning.
+func scenario745Positive(payload []byte) []byte {
+	sum := md5.Sum(payload)
+	return sum[:]
+}

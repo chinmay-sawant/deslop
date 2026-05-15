@@ -1,0 +1,14 @@
+{
+  "id": "fallback_branch_swallows_invariant_violation_and_returns_plausible_default",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag fallback logic that hides broken invariants by returning believable defaults.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

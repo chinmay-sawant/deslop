@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_network_calls_http_session_created_per_call",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Network calls. Flag requests.Session or client objects created per call instead of reused per upstream.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

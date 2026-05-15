@@ -1,0 +1,22 @@
+package rulefixtures
+
+import (
+	"io"
+	"net/http"
+)
+
+// scenario for upstream_http_call_per_item_in_handler_loop: Upstream HTTP calls made per item inside handler loops.
+// fixture polarity: positive; family: gin; severity: contextual.
+func scenario339Positive(w http.ResponseWriter, r *http.Request, ids []string) error {
+	for _, id := range ids {
+		resp, err := http.Get("https://api.example.com/users/" + id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return err
+		}
+		io.Copy(io.Discard, resp.Body)
+		resp.Body.Close()
+	}
+	w.WriteHeader(http.StatusOK)
+	return nil
+}

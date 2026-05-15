@@ -1,0 +1,46 @@
+use anyhow::Result;
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum ApiError {
+    #[error("upstream timeout")]
+    Timeout,
+    #[error("permission denied")]
+    PermissionDenied,
+    #[error("resource not found: {0}")]
+    NotFound(String),
+    #[error("rate limited")]
+    RateLimited,
+    #[error(transparent)]
+    Other(#[from] anyhow::Error),
+}
+
+fn handle_api_error(result: Result<Response>) -> String {
+    match result {
+        Ok(resp) => format!("ok: {}", resp.body),
+        Err(e) => match e.downcast_ref::<ApiError>() {
+            Some(ApiError::Timeout) => "retry later".to_string(),
+            Some(ApiError::PermissionDenied) => "unauthorized".to_string(),
+            Some(ApiError::NotFound(_)) => "missing resource".to_string(),
+            _ => "internal error".to_string(),
+        },
+    }
+}
+
+fn classify_error(e: &anyhow::Error) -> ErrorCode {
+    match e.downcast_ref::<ApiError>() {
+        Some(ApiError::Timeout) => ErrorCode::Unavailable,
+        Some(ApiError::RateLimited) => ErrorCode::RateLimited,
+        _ => ErrorCode::Unknown,
+    }
+}
+
+struct Response {
+    body: String,
+}
+
+enum ErrorCode {
+    Unavailable,
+    RateLimited,
+    Unknown,
+}

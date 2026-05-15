@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"fmt"
+	"os"
+)
+
+// scenario for constructor_reads_env_directly: Constructors that call `os.Getenv` instead of receiving normalized config.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func NewDBConnection() (*sql.DB, error) {
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PASS")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/mydb", user, pass, host, port)
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return nil, fmt.Errorf("constructor_reads_env_directly: %w", err)
+	}
+	return db, nil
+}

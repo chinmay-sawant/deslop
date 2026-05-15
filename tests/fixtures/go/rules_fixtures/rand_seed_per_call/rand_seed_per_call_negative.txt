@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for rand_seed_per_call: `rand.Seed(...)` inside regular call paths instead of process startup.
+// fixture polarity: negative; family: performance; severity: info.
+type Rule627NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario627Negative(records []Rule627NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

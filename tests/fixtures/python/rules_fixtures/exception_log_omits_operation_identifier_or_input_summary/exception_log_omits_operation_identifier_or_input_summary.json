@@ -1,0 +1,14 @@
+{
+  "id": "exception_log_omits_operation_identifier_or_input_summary",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag exception logs that lose the operation context needed to diagnose failures.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

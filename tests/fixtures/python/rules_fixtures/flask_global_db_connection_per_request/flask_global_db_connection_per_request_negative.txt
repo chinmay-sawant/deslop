@@ -1,0 +1,31 @@
+from flask import Flask, jsonify, g
+import sqlite3
+
+app = Flask(__name__)
+DATABASE = "app.db"
+
+def get_db():
+    if "db" not in g:
+        g.db = sqlite3.connect(DATABASE)
+        g.db.row_factory = sqlite3.Row
+    return g.db
+
+@app.teardown_appcontext
+def close_db(exception):
+    db = g.pop("db", None)
+    if db is not None:
+        db.close()
+
+@app.route("/users/<int:user_id>")
+def get_user(user_id):
+    db = get_db()
+    row = db.execute("SELECT id, name, email FROM users WHERE id = ?", (user_id,)).fetchone()
+    if row:
+        return jsonify({"id": row["id"], "name": row["name"], "email": row["email"]})
+    return jsonify({"error": "not found"}), 404
+
+@app.route("/products")
+def list_products():
+    db = get_db()
+    rows = db.execute("SELECT id, name, price FROM products").fetchall()
+    return jsonify([{"id": r["id"], "name": r["name"], "price": r["price"]} for r in rows])

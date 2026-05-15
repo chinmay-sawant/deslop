@@ -1,0 +1,32 @@
+fn make_request(url: &str) -> Result<String, Box<dyn std::error::Error>> {
+    let rt = tokio::runtime::Runtime::new()?;
+    let response = rt.block_on(async {
+        let resp = reqwest::get(url).await?;
+        let body = resp.text().await?;
+        Ok::<String, Box<dyn std::error::Error>>(body)
+    })?;
+    Ok(response)
+}
+
+fn fetch_user(id: u64) -> Result<User, Box<dyn std::error::Error>> {
+    let rt = tokio::runtime::Runtime::new()?;
+    let user = rt.block_on(async {
+        let resp = reqwest::get(&format!("https://api.example.com/users/{}", id)).await?;
+        let user: User = resp.json().await?;
+        Ok::<User, Box<dyn std::error::Error>>(user)
+    })?;
+    Ok(user)
+}
+
+fn process_batch(urls: &[String]) -> Vec<String> {
+    urls.iter()
+        .map(|url| {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            rt.block_on(async {
+                reqwest::get(url).await.unwrap().text().await.unwrap()
+            })
+        })
+        .collect()
+}
+
+struct User { name: String }

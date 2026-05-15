@@ -1,0 +1,14 @@
+{
+  "id": "text_template_for_html",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`text/template` used to generate HTML content (check for HTML tags in template literals or `.html` file extensions in `ParseFiles`)",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

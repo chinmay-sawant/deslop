@@ -1,0 +1,41 @@
+import logging
+from typing import Any, Dict
+from opentelemetry import trace
+
+logger = logging.getLogger(__name__)
+
+def process_payment(order_id: int, amount: float, user_id: int) -> dict:
+    span = trace.get_current_span()
+    span.set_attribute("user_id", user_id)
+    span.set_attribute("order_id", order_id)
+    span.set_attribute("amount", amount)
+
+    logger.info(f"Processing payment for user {user_id}, order {order_id}")
+
+    result = _charge_card(amount)
+
+    span.set_attribute("transaction_id", result["transaction_id"])
+    logger.info(f"Payment completed: {result['transaction_id']}")
+
+    return result
+
+def _charge_card(amount: float) -> dict:
+    return {"transaction_id": "txn_123", "status": "success"}
+
+def refund_payment(order_id: int, amount: float, user_id: int) -> dict:
+    span = trace.get_current_span()
+    span.set_attribute("user_id", user_id)
+    span.set_attribute("order_id", order_id)
+    span.set_attribute("amount", amount)
+
+    logger.info(f"Processing refund for user {user_id}, order {order_id}")
+
+    result = _issue_refund(amount)
+
+    span.set_attribute("refund_id", result["refund_id"])
+    logger.info(f"Refund completed: {result['refund_id']}")
+
+    return result
+
+def _issue_refund(amount: float) -> dict:
+    return {"refund_id": "ref_456", "status": "success"}

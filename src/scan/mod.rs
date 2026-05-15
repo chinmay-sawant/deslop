@@ -20,9 +20,7 @@ use self::file_analysis::analyze_discovered_files;
 use self::file_analysis::is_generated;
 use self::reporting::file_reports;
 #[cfg(test)]
-use self::suppression::{
-    SuppressionDirective, next_code_line, parse_rule_ids, parse_suppression_directives,
-};
+use self::suppression::{next_code_line, parse_rule_ids};
 
 pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     scan_repository_with_go_semantic(options, false)
@@ -32,12 +30,22 @@ pub fn scan_repository_with_go_semantic(
     options: &ScanOptions,
     enable_go_semantic: bool,
 ) -> Result<ScanReport> {
+    scan_repository_with_experimentals(options, enable_go_semantic, false)
+}
+
+pub fn scan_repository_with_experimentals(
+    options: &ScanOptions,
+    enable_go_semantic: bool,
+    enable_rust_async: bool,
+) -> Result<ScanReport> {
     let total_start = Instant::now();
     let canonical_root = options
         .root
         .canonicalize()
         .map_err(|error| crate::Error::io(&options.root, error))?;
-    let repo_config = load_repository_config(&canonical_root)?;
+    let mut repo_config = load_repository_config(&canonical_root)?;
+    repo_config.go_semantic_experimental |= enable_go_semantic;
+    repo_config.rust_async_experimental |= enable_rust_async;
 
     let discover_start = Instant::now();
     let supported_extensions = supported_extensions();
@@ -58,7 +66,7 @@ pub fn scan_repository_with_go_semantic(
     let index_ms = index_start.elapsed().as_millis();
 
     let analysis_config = AnalysisConfig {
-        enable_go_semantic: repo_config.go_semantic_experimental || enable_go_semantic,
+        enable_go_semantic: repo_config.go_semantic_experimental,
     };
 
     let heuristics_start = Instant::now();

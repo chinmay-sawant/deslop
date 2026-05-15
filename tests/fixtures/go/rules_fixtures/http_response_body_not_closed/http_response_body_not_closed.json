@@ -1,0 +1,14 @@
+{
+  "id": "http_response_body_not_closed",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "HTTP responses acquired locally without an observed resp.Body.Close() call.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

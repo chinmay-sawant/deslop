@@ -1,0 +1,14 @@
+{
+  "id": "test_helpers_duplicated_across_packages",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Near-identical helper builders or setup code duplicated across test packages.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

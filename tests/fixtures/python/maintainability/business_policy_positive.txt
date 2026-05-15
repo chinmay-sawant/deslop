@@ -1,6 +1,0 @@
-def decide_discount_tier(order_total, risk_score):
-    if order_total >= 5000 and risk_score < 0.2:
-        return "priority"
-    elif order_total >= 2500:
-        return "standard"
-    return "manual_review"

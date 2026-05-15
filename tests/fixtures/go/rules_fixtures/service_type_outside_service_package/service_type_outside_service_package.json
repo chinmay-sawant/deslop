@@ -1,0 +1,14 @@
+{
+  "id": "service_type_outside_service_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Concrete use-case services declared outside `service` or `services` packages in layered web-service repos.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

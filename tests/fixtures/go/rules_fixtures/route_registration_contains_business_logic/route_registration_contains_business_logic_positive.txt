@@ -1,0 +1,36 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"gorm.io/gorm"
+)
+
+// scenario for route_registration_contains_business_logic: Router setup files that build queries, mutate models, or execute business actions while registering routes.
+// fixture polarity: positive; family: architecture; severity: info.
+var db *gorm.DB
+
+func SetupRoutes(mux *http.ServeMux) {
+	var count int64
+	db.Table("users").Count(&count)
+	if count == 0 {
+		db.Exec("INSERT INTO users (name) VALUES ('admin')")
+	}
+
+	users, _ := db.Table("users").Select("id, name").Rows()
+	defer users.Close()
+
+	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		var total int64
+		db.Table("users").Count(&total)
+		if total > 1000 {
+			http.Error(w, "too many users, registration blocked", http.StatusForbidden)
+			return
+		}
+		w.Write([]byte("users"))
+	})
+
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("ok"))
+	})
+}

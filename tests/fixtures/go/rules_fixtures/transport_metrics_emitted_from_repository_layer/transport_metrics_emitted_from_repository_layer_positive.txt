@@ -1,0 +1,38 @@
+package rulefixtures
+
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
+
+// scenario for transport_metrics_emitted_from_repository_layer: Repositories that record HTTP-route or handler-oriented metrics.
+// fixture polarity: positive; family: architecture; severity: info.
+type MetricsClient struct{}
+
+func (MetricsClient) IncrementCounter(name string) {
+	fmt.Printf("counter: %s\n", name)
+}
+
+var metrics = MetricsClient{}
+
+type UserRepository struct {
+	db *gorm.DB
+}
+
+func (r *UserRepository) FindByID(id int) error {
+	metrics.IncrementCounter("http.get_user.requests")
+	metrics.IncrementCounter("route.users.get_by_id.calls")
+	return r.db.Where("id = ?", id).First(nil).Error
+}
+
+func (r *UserRepository) FindByEmail(email string) error {
+	metrics.IncrementCounter("http.get_user_by_email.requests")
+	metrics.IncrementCounter("route.users.lookup.calls")
+	return r.db.Where("email = ?", email).First(nil).Error
+}
+
+func (r *UserRepository) Create(name string) error {
+	metrics.IncrementCounter("http.create_user.success")
+	return r.db.Exec("INSERT INTO users (name) VALUES (?)", name).Error
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_clap_unbounded_vec_arg_on_scan_path",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `Vec<String>` or variadic CLI arguments that feed scan/filter work without a limit, deduplication, or validation.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

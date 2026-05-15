@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_database_access_transaction_per_row_bulk_write: Layer: Database access. Flag bulk writes that open and commit one transaction per row.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule528NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario528Negative(records []Rule528NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

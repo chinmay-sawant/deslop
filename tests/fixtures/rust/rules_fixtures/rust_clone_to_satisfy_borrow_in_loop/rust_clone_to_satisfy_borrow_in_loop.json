@@ -1,0 +1,14 @@
+{
+  "id": "rust_clone_to_satisfy_borrow_in_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `.clone()` in loops immediately passed by reference or consumed only for read-only access.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

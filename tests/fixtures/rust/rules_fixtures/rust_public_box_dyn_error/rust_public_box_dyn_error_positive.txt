@@ -1,0 +1,20 @@
+use std::error::Error;
+
+// BAD: public API exposing Box<dyn Error>
+pub fn parse_input(input: &str) -> Result<ParsedData, Box<dyn Error>> {
+    let data = serde_json::from_str(input)?;
+    validate_data(&data)?;
+    Ok(data)
+}
+
+pub fn load_plugin(path: &str) -> Result<Plugin, Box<dyn Error + Send + Sync>> {
+    let lib = unsafe { libloading::Library::new(path)? };
+    let entry: libloading::Symbol<fn() -> Plugin> = unsafe { lib.get(b"create")? };
+    Ok(entry())
+}
+
+pub fn fetch_url(url: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+    let response = reqwest::blocking::get(url)?;
+    let bytes = response.bytes()?;
+    Ok(bytes.to_vec())
+}

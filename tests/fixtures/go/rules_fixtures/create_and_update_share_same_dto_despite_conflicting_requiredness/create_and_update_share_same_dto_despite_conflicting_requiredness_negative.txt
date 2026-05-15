@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for create_and_update_share_same_dto_despite_conflicting_requiredness: A single DTO reused for create and update when validation rules clearly differ.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule018NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule018NegativeService interface {
+	Run(context.Context, Rule018NegativeRecord) error
+}
+
+func scenario018Negative(ctx context.Context, service Rule018NegativeService, input Rule018NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

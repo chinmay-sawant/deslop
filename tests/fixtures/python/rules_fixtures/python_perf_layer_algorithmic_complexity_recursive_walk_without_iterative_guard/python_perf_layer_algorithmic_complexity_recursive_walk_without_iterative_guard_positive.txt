@@ -1,0 +1,25 @@
+def flatten_tree(node, results=None):
+    if results is None:
+        results = []
+    results.append(node.value)
+    for child in node.children:
+        flatten_tree(child, results)
+    return results
+
+
+def find_all_descendants(root):
+    descendants = []
+    for child in root.children:
+        descendants.append(child)
+        descendants.extend(find_all_descendants(child))
+    return descendants
+
+
+def count_nested_items(structure):
+    total = 0
+    for item in structure:
+        if isinstance(item, list):
+            total += count_nested_items(item)
+        else:
+            total += 1
+    return total

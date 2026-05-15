@@ -1,0 +1,9 @@
+def validate_order(order):
+    if order["total"] < 0:
+        raise ValueError(f"Order {order['id']} has invalid total {order['total']:.2f} for customer {order['customer_id']}")
+
+def fetch_user_profile(user_id, db):
+    profile = db.get_user(user_id)
+    if profile is None:
+        raise LookupError(f"Failed to load profile for user_id={user_id}")
+    return profile

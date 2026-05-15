@@ -1,0 +1,28 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"reflect"
+)
+
+// scenario for go_perf_layer_runtime_configuration_reflection_config_loaded_per_call: Layer: Build and runtime configuration. Flag reflection-based config decoding performed per operation instead of at startup.
+// fixture polarity: positive; family: performance; severity: contextual.
+type scenario588Config struct {
+	Host string
+	Port int
+}
+
+func scenario588Positive(config *scenario588Config, fieldName string) (any, error) {
+	v := reflect.ValueOf(config).Elem()
+	f := v.FieldByName(fieldName)
+	if !f.IsValid() {
+		return nil, fmt.Errorf("field %q not found", fieldName)
+	}
+	return f.Interface(), nil
+}
+
+func scenario588Resolve(config *scenario588Config) string {
+	host, _ := scenario588Positive(config, "Host")
+	port, _ := scenario588Positive(config, "Port")
+	return fmt.Sprintf("%s:%d", host, port)
+}

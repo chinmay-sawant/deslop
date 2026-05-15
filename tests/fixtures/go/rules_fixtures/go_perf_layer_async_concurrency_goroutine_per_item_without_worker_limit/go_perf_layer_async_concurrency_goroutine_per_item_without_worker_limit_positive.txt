@@ -1,0 +1,14 @@
+package rulefixtures
+
+// scenario for go_perf_layer_async_concurrency_goroutine_per_item_without_worker_limit: Layer: Async and concurrency. Flag unbounded goroutine-per-item fanout without a semaphore or worker pool.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func scenario506Positive(items []string) []int {
+	results := make([]int, len(items))
+	for i, item := range items {
+		go func(idx int, val string) {
+			results[idx] = len(val)
+		}(i, item)
+	}
+	return results
+}

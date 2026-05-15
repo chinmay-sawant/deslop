@@ -1,0 +1,14 @@
+{
+  "id": "insecure_random_for_security",
+  "language": "go",
+  "family": "security",
+  "default_severity": "error",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`math/rand` usage (any of `rand.Int`, `rand.Intn`, `rand.Read`, `rand.New`) in functions whose names suggest security use (token generation, key generation, password, nonce, salt, session)",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

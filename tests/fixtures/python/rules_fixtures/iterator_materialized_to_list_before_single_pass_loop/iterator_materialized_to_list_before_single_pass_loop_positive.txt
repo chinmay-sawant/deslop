@@ -1,0 +1,29 @@
+def process_items(data_iterator):
+    items = list(data_iterator)
+    for item in items:
+        handle(item)
+
+
+def count_valid(generator):
+    all_items = list(generator)
+    count = 0
+    for item in all_items:
+        if item.is_valid():
+            count += 1
+    return count
+
+
+def transform_stream(reader):
+    lines = list(reader)
+    results = []
+    for line in lines:
+        results.append(parse(line))
+    return results
+
+
+def aggregate(pairs_iter):
+    pairs = list(pairs_iter)
+    total = 0
+    for key, value in pairs:
+        total += value
+    return total

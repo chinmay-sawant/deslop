@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_string_handling_fmt_sprintf_for_simple_concat",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: String handling. Flag fmt.Sprintf used for simple string concatenation on hot or repeated paths.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

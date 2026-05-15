@@ -1,0 +1,14 @@
+{
+  "id": "updates_map_allocated_per_row",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "GORM Updates(map[string]...) maps allocated inside loops for per-row updates.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

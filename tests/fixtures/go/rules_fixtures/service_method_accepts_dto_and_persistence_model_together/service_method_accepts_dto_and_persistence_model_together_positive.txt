@@ -1,0 +1,35 @@
+package service
+
+import (
+	"context"
+	"time"
+
+	"gorm.io/gorm"
+)
+
+// scenario for service_method_accepts_dto_and_persistence_model_together: Signatures that mix transport DTOs and GORM models in the same service API.
+// fixture polarity: positive; family: architecture; severity: warning.
+type CreateUserRequest struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type User struct {
+	ID        uint           `gorm:"primaryKey"`
+	Name      string         `gorm:"column:name"`
+	Email     string         `gorm:"column:email"`
+	CreatedAt time.Time      `gorm:"column:created_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+type UserService struct {
+	db *gorm.DB
+}
+
+func (s *UserService) ProcessUser(ctx context.Context, req CreateUserRequest, user User) (*User, error) {
+	user.Name = req.Name
+	user.Email = req.Email
+	user.CreatedAt = time.Now()
+	result := s.db.WithContext(ctx).Create(&user)
+	return &user, result.Error
+}

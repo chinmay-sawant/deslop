@@ -27,7 +27,8 @@ pub use analysis::Error as AnalysisError;
 pub use analysis::syntax_error_for_source;
 pub use analysis::validate_source;
 pub use benchmark::{
-    BenchmarkOptions, benchmark_repository, benchmark_repository_with_go_semantic,
+    BenchmarkOptions, benchmark_repository, benchmark_repository_with_experimentals,
+    benchmark_repository_with_go_semantic,
 };
 pub use config::Error as ConfigError;
 pub(crate) use config::{RepoConfig, load_repository_config};
@@ -39,7 +40,9 @@ pub use model::{
 };
 pub use rules::{
     RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleMetadata, RuleStatus,
-    is_async_rollout_rule, is_detail_only_rule, rule_binding_location, rule_metadata,
-    rule_metadata_variants, rule_registry,
+    default_finding_severity, is_async_rollout_rule, is_detail_only_rule, rule_binding_location,
+    rule_metadata, rule_metadata_variants, rule_registry,
 };
-pub use scan::{scan_repository, scan_repository_with_go_semantic};
+pub use scan::{
+    scan_repository, scan_repository_with_experimentals, scan_repository_with_go_semantic,
+};

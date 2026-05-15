@@ -1,0 +1,30 @@
+use std::fs;
+use std::path::Path;
+
+pub struct Config {
+    pub database_url: String,
+    pub max_connections: u32,
+}
+
+pub fn load_config(path: &Path) -> Config {
+    let contents = fs::read_to_string(path).expect("failed to read config file");
+    let parsed: toml::Value = toml::from_str(&contents).expect("invalid TOML in config");
+    let url = parsed["database"]["url"]
+        .as_str()
+        .expect("missing database.url")
+        .to_string();
+    let max_conn = parsed["database"]["max_connections"]
+        .as_integer()
+        .expect("missing max_connections") as u32;
+    Config {
+        database_url: url,
+        max_connections: max_conn,
+    }
+}
+
+pub fn init_logger() {
+    tracing_subscriber::fmt()
+        .with_env_filter("info")
+        .try_init()
+        .expect("failed to init logger");
+}

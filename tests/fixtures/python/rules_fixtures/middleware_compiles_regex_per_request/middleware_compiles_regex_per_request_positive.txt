@@ -1,0 +1,28 @@
+import re
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+
+class PathValidationMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        path_pattern = re.compile(r"^/api/v\d+/[a-z0-9-]+$")
+        if not path_pattern.match(request.url.path):
+            return JSONResponse({"error": "Invalid path"}, status_code=400)
+
+        sanitized = re.sub(r"[^a-zA-Z0-9/]", "", request.url.path)
+        if sanitized != request.url.path:
+            return JSONResponse({"error": "Invalid characters"}, status_code=400)
+
+        response = await call_next(request)
+        return response
+
+
+class AuthMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        token_pattern = re.compile(r"^Bearer\s+[A-Za-z0-9-._~+/]+=*$")
+        auth_header = request.headers.get("Authorization", "")
+        if not token_pattern.match(auth_header):
+            return JSONResponse({"error": "Invalid token"}, status_code=401)
+
+        response = await call_next(request)
+        return response

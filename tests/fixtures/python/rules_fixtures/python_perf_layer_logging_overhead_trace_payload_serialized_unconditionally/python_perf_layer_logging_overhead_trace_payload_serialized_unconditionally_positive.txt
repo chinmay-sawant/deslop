@@ -1,0 +1,18 @@
+import logging
+import json
+
+logger = logging.getLogger(__name__)
+tracer = None
+
+def process_event(event):
+    payload_json = json.dumps(event["payload"])
+    logger.debug(f"Event payload: {payload_json}")
+    trace_span = tracer.start_span("process") if tracer else None
+    result = handle(event)
+    if trace_span:
+        trace_span.set_attribute("payload", payload_json)
+        trace_span.end()
+    return result
+
+def handle(event):
+    return {"status": "processed", "id": event["id"]}

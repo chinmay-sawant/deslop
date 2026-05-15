@@ -1,0 +1,40 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def load_config(path: str) -> dict:
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def process_items(items: list) -> list:
+    results = []
+    for item in items:
+        try:
+            result = transform(item)
+            results.append(result)
+        except Exception:
+            pass
+    return results
+
+
+def fetch_all_users(user_ids: list[str]) -> list[dict]:
+    users = []
+    for uid in user_ids:
+        try:
+            user = db.fetch(uid)
+            users.append(user)
+        except Exception:
+            continue
+    return users
+
+
+def safe_divide(a: float, b: float) -> float:
+    try:
+        return a / b
+    except Exception:
+        return 0.0

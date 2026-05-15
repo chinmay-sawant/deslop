@@ -1,0 +1,20 @@
+package rulefixtures
+
+import (
+	"net/http"
+	gorm "gorm.io/gorm"
+)
+
+// scenario for order_by_random_request_path: ORDER BY RAND()/RANDOM() observed on request paths.
+// fixture polarity: positive; family: data_access; severity: contextual.
+
+type Quote struct {
+	ID   int
+	Text string
+}
+
+func RandomQuoteHandler(w http.ResponseWriter, _ *http.Request, db *gorm.DB) {
+	var quote Quote
+	db.Order("RANDOM()").First(&quote)
+	w.Write([]byte(quote.Text))
+}

@@ -1,0 +1,58 @@
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy.orm import relationship, declarative_base
+from datetime import datetime
+from dataclasses import dataclass
+from typing import List
+
+Base = declarative_base()
+
+class OrderModel(Base):
+    __tablename__ = "orders"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    status = Column(String(50))
+    total = Column(Float)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("UserModel", back_populates="orders")
+
+class UserModel(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100))
+    email = Column(String(255))
+    role = Column(String(50))
+
+    orders = relationship("OrderModel", back_populates="user")
+
+@dataclass
+class Order:
+    id: int
+    user_id: int
+    status: str
+    total: float
+    items: List[dict]
+
+    def calculate_total(self, tax_rate: float = 0.08) -> float:
+        subtotal = sum(item["price"] * item["quantity"] for item in self.items)
+        return subtotal * (1 + tax_rate)
+
+    def apply_discount(self, discount_code: str) -> float:
+        discounts = {"SAVE10": 0.10, "SAVE20": 0.20}
+        rate = discounts.get(discount_code, 0)
+        return self.total * (1 - rate)
+
+    def can_cancel(self) -> bool:
+        return self.status in ("pending", "processing")
+
+@dataclass
+class User:
+    id: int
+    name: str
+    email: str
+    role: str
+
+    def is_admin(self) -> bool:
+        return self.role == "admin"

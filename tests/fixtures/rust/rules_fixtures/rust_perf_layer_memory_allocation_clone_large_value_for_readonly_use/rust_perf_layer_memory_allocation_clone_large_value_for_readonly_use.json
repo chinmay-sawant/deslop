@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_memory_allocation_clone_large_value_for_readonly_use",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag Clone of large values immediately before read-only operations.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

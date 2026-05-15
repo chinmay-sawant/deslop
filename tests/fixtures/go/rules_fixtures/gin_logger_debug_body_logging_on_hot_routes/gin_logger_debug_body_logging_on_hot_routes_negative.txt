@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for gin_logger_debug_body_logging_on_hot_routes: Verbose body or payload logging observed on likely high-volume Gin routes.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule317NegativeRecord struct {
+	Name string
+}
+
+type Rule317NegativeService interface {
+	Handle(context.Context, Rule317NegativeRecord) (Rule317NegativeRecord, error)
+}
+
+func scenario317Negative(ctx context.Context, service Rule317NegativeService, input Rule317NegativeRecord) (Rule317NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule317NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

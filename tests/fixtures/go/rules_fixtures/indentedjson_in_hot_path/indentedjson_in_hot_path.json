@@ -1,0 +1,14 @@
+{
+  "id": "indentedjson_in_hot_path",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "IndentedJSON(...) used on a request path instead of compact JSON rendering.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

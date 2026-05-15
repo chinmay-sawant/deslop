@@ -1,0 +1,12 @@
+package rulefixtures
+
+// scenario for sort_before_first_or_membership_only: Sorting a collection when only the first element or min/max is needed.
+// fixture polarity: negative; family: hot_path; severity: info.
+func scenario365Negative(values []string) string {
+	if len(values) == 0 { return "" }
+	best := values[0]
+	for _, value := range values[1:] {
+		if value < best { best = value }
+	}
+	return best
+}

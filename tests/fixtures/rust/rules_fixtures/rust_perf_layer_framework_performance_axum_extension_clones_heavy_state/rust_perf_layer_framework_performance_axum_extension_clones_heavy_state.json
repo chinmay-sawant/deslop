@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_framework_performance_axum_extension_clones_heavy_state",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag Axum handler state extraction that clones heavy state instead of cheap Arc handles.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

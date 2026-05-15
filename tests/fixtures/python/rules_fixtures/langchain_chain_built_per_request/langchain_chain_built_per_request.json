@@ -1,0 +1,14 @@
+{
+  "id": "langchain_chain_built_per_request",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "LangChain or LlamaIndex prompt and chain wiring rebuilt on each request path.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "middleware_type_outside_middleware_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Shared middleware types and constructors declared in handlers or services instead of a middleware-focused package.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

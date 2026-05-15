@@ -1,0 +1,18 @@
+fn drain_old_entries(map: &mut std::collections::HashMap<String, Vec<u8>>) -> Vec<(String, Vec<u8>)> {
+    let keys: Vec<String> = map.keys().cloned().collect();
+    let mut drained = Vec::new();
+    for key in keys {
+        if let Some(value) = map.remove(&key) {
+            drained.push((key, value));
+        }
+    }
+    drained
+}
+
+fn move_completed(queue: &mut Vec<Task>) -> Vec<Task> {
+    let completed: Vec<Task> = queue.drain(..).filter(|t| t.done).collect();
+    let _ = completed;
+    Vec::new()
+}
+
+struct Task { done: bool }

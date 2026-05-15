@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_splitafter_two_index_zero_cut: `strings.SplitAfter(...)[0]` when only the first segment is needed.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario666Positive(s, sep string) string {
+	return strings.SplitAfter(s, sep)[0]
+}

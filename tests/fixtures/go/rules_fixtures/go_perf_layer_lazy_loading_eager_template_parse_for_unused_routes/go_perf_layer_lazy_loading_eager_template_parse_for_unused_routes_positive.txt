@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"html/template"
+)
+
+// scenario for go_perf_layer_lazy_loading_eager_template_parse_for_unused_routes: Layer: Lazy loading. Flag parsing templates for routes that may never be served in the current process mode.
+// fixture polarity: positive; family: performance; severity: contextual.
+var parsedTemplates = map[string]*template.Template{}
+
+func scenario557Positive() error {
+	// All templates are parsed at startup, including ones for routes
+	// that are disabled or unused in the current deployment mode.
+	// This adds unnecessary startup time and memory overhead.
+	routes := []string{"home", "about", "admin", "reports", "settings", "api_docs"}
+	for _, route := range routes {
+		tmpl, err := template.ParseFiles("templates/" + route + ".html")
+		if err != nil {
+			return err
+		}
+		parsedTemplates[route] = tmpl
+	}
+	return nil
+}

@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/go-playground/validator/v10"
+)
+
+// scenario for custom_validator_registration_inside_handler: Per-request validator registration instead of startup-time validator wiring.
+// fixture polarity: positive; family: architecture; severity: info.
+
+var validate = validator.New()
+
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	validate.RegisterValidation("custom", func(fl validator.FieldLevel) bool {
+		return fl.Field().String() != ""
+	})
+
+	fmt.Fprint(w, "custom validator registered in handler")
+}

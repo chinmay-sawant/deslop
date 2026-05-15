@@ -1,0 +1,40 @@
+from dataclasses import dataclass, field
+from typing import Optional, List
+
+@dataclass
+class QueryOptions:
+    limit: Optional[int] = None
+    offset: Optional[int] = None
+    sort_by: Optional[str] = None
+    sort_desc: bool = False
+    filter_status: Optional[str] = None
+    filter_type: Optional[str] = None
+    filter_category: Optional[str] = None
+    filter_date_from: Optional[str] = None
+    filter_date_to: Optional[str] = None
+    include_deleted: bool = False
+    include_archived: bool = False
+    include_metadata: bool = False
+    fields: Optional[List[str]] = None
+    expand: Optional[List[str]] = None
+    search_query: Optional[str] = None
+    locale: Optional[str] = None
+    timezone: Optional[str] = None
+    format: Optional[str] = None
+    raw: bool = False
+    debug: bool = False
+
+@dataclass
+class ExportConfig:
+    format: Optional[str] = None
+    compression: Optional[str] = None
+    include_headers: bool = True
+    delimiter: str = ","
+    encoding: str = "utf-8"
+    date_format: Optional[str] = None
+    null_value: str = ""
+    max_rows: Optional[int] = None
+    split_by: Optional[str] = None
+    watermark: bool = False
+    encrypt: bool = False
+    password: Optional[str] = None

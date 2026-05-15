@@ -1,0 +1,14 @@
+{
+  "id": "rust_hashmap_default_hasher",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "HashMap default-hasher construction in a likely hot path.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

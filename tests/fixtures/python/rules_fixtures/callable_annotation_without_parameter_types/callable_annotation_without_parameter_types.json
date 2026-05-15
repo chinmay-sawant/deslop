@@ -1,0 +1,14 @@
+{
+  "id": "callable_annotation_without_parameter_types",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Callable annotation used without explicit parameter types, losing type information downstream.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

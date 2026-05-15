@@ -1,0 +1,29 @@
+import pytest
+from myapp.validation import validate_email, validate_password, validate_username
+
+def test_valid_email():
+    assert validate_email("user@example.com") is True
+
+def test_invalid_email_format():
+    assert validate_email("invalid") is False
+
+def test_empty_email():
+    assert validate_email("") is False
+
+def test_strong_password():
+    assert validate_password("Str0ng!Pass") is True
+
+def test_weak_password():
+    assert validate_password("weak") is False
+
+def test_empty_password():
+    assert validate_password("") is False
+
+def test_valid_username():
+    assert validate_username("alice") is True
+
+def test_short_username():
+    assert validate_username("a") is False
+
+def test_username_with_special_chars():
+    assert validate_username("user@name") is False

@@ -1,0 +1,14 @@
+{
+  "id": "rust_path_join_absolute",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Path::join used with an absolute segment that discards the existing base path.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

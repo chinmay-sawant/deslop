@@ -1,0 +1,14 @@
+use std::sync::Mutex;
+
+fn process_data(data: &mut Vec<u64>, lock: &Mutex<Vec<u64>>) {
+    let snapshot = {
+        let guard = lock.lock().unwrap();
+        guard.clone()
+    };
+    let mut sorted = snapshot;
+    sorted.sort_unstable();
+    let sum: u64 = sorted.iter().sum();
+    data.push(sum);
+    let serialized = serde_json::to_string(&sorted).unwrap();
+    println!("{}", serialized);
+}

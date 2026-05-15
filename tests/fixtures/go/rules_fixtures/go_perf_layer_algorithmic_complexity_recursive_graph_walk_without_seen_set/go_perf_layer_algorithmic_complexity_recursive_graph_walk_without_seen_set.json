@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen_set",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag recursive graph or tree walks that do not track visited nodes for cyclic or shared inputs.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

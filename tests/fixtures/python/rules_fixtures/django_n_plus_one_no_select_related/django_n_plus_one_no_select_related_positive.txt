@@ -1,0 +1,18 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Order
+
+
+class OrderListView(View):
+    def get(self, request):
+        orders = Order.objects.filter(customer=request.user)
+        data = []
+        for order in orders:
+            data.append({
+                "id": order.id,
+                "total": str(order.total),
+                "customer_name": order.customer.name,
+                "shipping_address": order.shipping_address.full_address,
+            })
+        return JsonResponse({"orders": data})

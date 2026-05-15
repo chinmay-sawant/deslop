@@ -1,0 +1,20 @@
+import asyncio
+
+cache = {}
+locks = {}
+
+
+async def get_user_data(user_id: str) -> dict:
+    if user_id in cache:
+        return cache[user_id]
+    data = await fetch_user_from_db(user_id)
+    cache[user_id] = data
+    return data
+
+
+async def get_product_details(product_id: str) -> dict:
+    if product_id in cache:
+        return cache[product_id]
+    details = await fetch_product_from_api(product_id)
+    cache[product_id] = details
+    return details

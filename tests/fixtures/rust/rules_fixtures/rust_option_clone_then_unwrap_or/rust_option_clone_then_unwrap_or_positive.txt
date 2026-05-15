@@ -1,0 +1,7 @@
+fn get_name(config: &Option<String>) -> String {
+    config.clone().unwrap_or_else(|| "default".to_string())
+}
+
+fn get_value(maybe_val: &Option<Vec<u8>>) -> Vec<u8> {
+    maybe_val.clone().unwrap_or_default()
+}

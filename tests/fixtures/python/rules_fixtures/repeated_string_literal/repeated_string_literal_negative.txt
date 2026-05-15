@@ -1,0 +1,25 @@
+REQUIRED_FIELD_MSG = "Field '{}' is required and cannot be empty"
+
+
+def validate_user(data):
+    if not data.get("email"):
+        raise ValueError(REQUIRED_FIELD_MSG.format("email"))
+    if not data.get("name"):
+        raise ValueError(REQUIRED_FIELD_MSG.format("name"))
+    return True
+
+
+def validate_order(data):
+    if not data.get("customer_email"):
+        raise ValueError(REQUIRED_FIELD_MSG.format("customer_email"))
+    if not data.get("product_name"):
+        raise ValueError(REQUIRED_FIELD_MSG.format("product_name"))
+    return True
+
+
+def validate_invoice(data):
+    if not data.get("billing_email"):
+        raise ValueError(REQUIRED_FIELD_MSG.format("billing_email"))
+    if not data.get("line_items"):
+        raise ValueError(REQUIRED_FIELD_MSG.format("line_items"))
+    return True

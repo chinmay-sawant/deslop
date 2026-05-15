@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_error_handling_cost_anyhow_context_in_hot_loop",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Error handling cost. Flag anyhow/context formatting inside hot loops where one boundary context would suffice.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

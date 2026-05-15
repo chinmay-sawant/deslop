@@ -1,0 +1,14 @@
+{
+  "id": "gpu_memory_not_cleared_between_experiments",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "GPU-backed experiment flows show no visible memory or session cleanup between runs.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

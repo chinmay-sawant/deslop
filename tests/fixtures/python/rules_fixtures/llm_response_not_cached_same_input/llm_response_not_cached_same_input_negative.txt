@@ -1,0 +1,42 @@
+import openai
+from functools import lru_cache
+
+
+@lru_cache(maxsize=256)
+def classify_text(text: str) -> str:
+    client = openai.OpenAI()
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": f"Classify: {text}"}],
+    )
+    return response.choices[0].message.content
+
+
+def process_items(items: list[str]) -> list[str]:
+    results = []
+    for item in items:
+        label = classify_text(item)
+        results.append(label)
+    return results
+
+
+class SentimentAnalyzer:
+    def __init__(self):
+        self._cache: dict[str, str] = {}
+        self._client = openai.OpenAI()
+
+    def get_sentiment(self, text: str) -> str:
+        if text in self._cache:
+            return self._cache[text]
+        response = self._client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": f"Sentiment: {text}"}],
+        )
+        result = response.choices[0].message.content
+        self._cache[text] = result
+        return result
+
+
+def analyze_feedback(feedback_list: list[str]) -> list[str]:
+    analyzer = SentimentAnalyzer()
+    return [analyzer.get_sentiment(fb) for fb in feedback_list]

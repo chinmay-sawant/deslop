@@ -1,0 +1,14 @@
+{
+  "id": "mutable_module_global_state",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Mutable module globals updated from multiple functions.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

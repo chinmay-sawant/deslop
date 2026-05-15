@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for string_builder_write_string_vs_plus: `builder.WriteString(a + b)` where `a` and `b` are separate bindings
+// fixture polarity: positive; family: performance; severity: info.
+
+func scenario644Positive(firstName, lastName, title string) string {
+	var builder strings.Builder
+	builder.WriteString("User: ")
+	builder.WriteString(firstName + " " + lastName)
+	builder.WriteString(", Title: ")
+	builder.WriteString(title)
+	return builder.String()
+}

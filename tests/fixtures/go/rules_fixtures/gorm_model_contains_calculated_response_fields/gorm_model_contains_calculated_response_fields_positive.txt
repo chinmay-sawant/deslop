@@ -1,0 +1,15 @@
+package rulefixtures
+
+// scenario for gorm_model_contains_calculated_response_fields: Persistence structs that carry API-only derived presentation fields.
+// fixture polarity: positive; family: architecture; severity: info.
+type Rule062PositiveRecord struct {
+	ID        int    `gorm:"primaryKey"`
+	FirstName string `gorm:"column:first_name;size:100"`
+	LastName  string `gorm:"column:last_name;size:100"`
+	FullName  string `gorm:"-"`
+}
+
+func (r *Rule062PositiveRecord) AfterFind(tx *gorm.DB) error {
+	r.FullName = r.FirstName + " " + r.LastName
+	return nil
+}

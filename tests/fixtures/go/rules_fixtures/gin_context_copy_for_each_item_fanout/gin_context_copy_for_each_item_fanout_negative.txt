@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for gin_context_copy_for_each_item_fanout: Gin handlers that call c.Copy() once per loop iteration before goroutine fanout.
+// fixture polarity: negative; family: gin; severity: contextual.
+type Rule316NegativeRecord struct {
+	Name string
+}
+
+type Rule316NegativeService interface {
+	Handle(context.Context, Rule316NegativeRecord) (Rule316NegativeRecord, error)
+}
+
+func scenario316Negative(ctx context.Context, service Rule316NegativeService, input Rule316NegativeRecord) (Rule316NegativeRecord, int) {
+	output, err := service.Handle(ctx, input)
+	if err != nil {
+		return Rule316NegativeRecord{}, http.StatusBadRequest
+	}
+	return output, http.StatusOK
+}

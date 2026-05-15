@@ -1,0 +1,40 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for mapper_outside_mapper_package_when_repo_uses_mappers: Mapper functions scattered across handlers and services when the repo already has a dedicated mapping package.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type OrderDB struct {
+	ID       int
+	UserID   int
+	Amount   float64
+	ItemName string
+}
+
+type OrderResponse struct {
+	OrderID  int     `json:"order_id"`
+	UserName string  `json:"user_name"`
+	Total    float64 `json:"total"`
+	Item     string  `json:"item"`
+}
+
+func mapOrderToResponse(o *OrderDB) OrderResponse {
+	return OrderResponse{
+		OrderID:  o.ID,
+		UserName: "",
+		Total:    o.Amount,
+		Item:     o.ItemName,
+	}
+}
+
+func GetOrderHandler(w http.ResponseWriter, r *http.Request) {
+	record := &OrderDB{ID: 101, UserID: 5, Amount: 49.99, ItemName: "Laptop"}
+
+	resp := mapOrderToResponse(record)
+
+	json.NewEncoder(w).Encode(resp)
+}

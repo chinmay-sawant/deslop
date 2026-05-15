@@ -1,0 +1,27 @@
+/// FIXME: This entire module needs a rewrite once the new storage engine lands.
+pub struct CacheLayer {
+    entries: std::collections::HashMap<String, Vec<u8>>,
+}
+
+impl CacheLayer {
+    /// Creates a new cache with the given capacity.
+    ///
+    /// FIXME: The eviction policy is naive; replace with LRU once the
+    /// dependency is approved.
+    pub fn new(capacity: usize) -> Self {
+        Self {
+            entries: std::collections::HashMap::with_capacity(capacity),
+        }
+    }
+
+    /// Inserts a value into the cache.
+    ///
+    /// FIXME: handle key collisions properly instead of silently overwriting.
+    pub fn insert(&mut self, key: String, value: Vec<u8>) {
+        self.entries.insert(key, value);
+    }
+
+    pub fn get(&self, key: &str) -> Option<&[u8]> {
+        self.entries.get(key).map(|v| v.as_slice())
+    }
+}

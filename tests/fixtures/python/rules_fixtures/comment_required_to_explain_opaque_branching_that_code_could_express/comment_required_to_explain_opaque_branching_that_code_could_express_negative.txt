@@ -1,0 +1,26 @@
+def apply_discount(order):
+    is_vip = order.customer.tier == "vip"
+    is_high_value = order.total > 500
+    is_available = not order.item.backordered
+
+    if is_vip and is_high_value and is_available:
+        order.discount = order.total * 0.1
+    else:
+        order.discount = 0
+
+
+def determine_shipping(order):
+    is_vip = order.customer.tier == "vip"
+    is_priority = order.item.priority
+    is_domestic = order.shipping_zone == "domestic"
+
+    if is_vip and is_priority:
+        order.shipping = "express_free" if is_domestic else "express_discounted"
+    else:
+        order.shipping = "standard"
+
+
+def process_order(order):
+    apply_discount(order)
+    determine_shipping(order)
+    return order

@@ -1,0 +1,61 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+	"strings"
+)
+
+// scenario for auth_or_tenant_extraction_duplicated_across_handlers: Repeated auth, tenant, or principal extraction that should live in middleware or a shared boundary helper.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type OrderRepo struct{}
+func (r *OrderRepo) GetOrders(tenantID, userID string) ([]string, error) { return nil, nil }
+func (r *OrderRepo) GetOrder(tenantID, userID, orderID string) (string, error) { return "", nil }
+
+func listOrdersHandler(w http.ResponseWriter, r *http.Request, repo *OrderRepo) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		http.Error(w, "missing auth token", http.StatusUnauthorized)
+		return
+	}
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+	parts := strings.Split(token, ":")
+	if len(parts) != 2 {
+		http.Error(w, "invalid token format", http.StatusUnauthorized)
+		return
+	}
+	tenantID := parts[0]
+	userID := parts[1]
+
+	orders, err := repo.GetOrders(tenantID, userID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("query error: %v", err), http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprintf(w, "orders: %v", orders)
+}
+
+func getOrderHandler(w http.ResponseWriter, r *http.Request, repo *OrderRepo) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		http.Error(w, "missing auth token", http.StatusUnauthorized)
+		return
+	}
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+	parts := strings.Split(token, ":")
+	if len(parts) != 2 {
+		http.Error(w, "invalid token format", http.StatusUnauthorized)
+		return
+	}
+	tenantID := parts[0]
+	userID := parts[1]
+
+	orderID := r.URL.Query().Get("id")
+	order, err := repo.GetOrder(tenantID, userID, orderID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("query error: %v", err), http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprintf(w, "order: %s", order)
+}

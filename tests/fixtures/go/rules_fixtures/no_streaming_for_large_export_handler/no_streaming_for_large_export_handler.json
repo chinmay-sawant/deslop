@@ -1,0 +1,14 @@
+{
+  "id": "no_streaming_for_large_export_handler",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Large list or export handlers that materialize everything before writing rather than using chunked or streaming output.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

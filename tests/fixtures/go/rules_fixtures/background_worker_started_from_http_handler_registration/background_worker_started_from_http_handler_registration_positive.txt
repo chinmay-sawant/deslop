@@ -1,0 +1,35 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
+
+// scenario for background_worker_started_from_http_handler_registration: Route or middleware setup that also starts unrelated background jobs.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func RegisterRoutes(mux *http.ServeMux, queue chan string) {
+	workerCount := 4
+	for i := 0; i < workerCount; i++ {
+		go func(id int) {
+			for task := range queue {
+				fmt.Printf("worker %d processing: %s\n", id, task)
+			}
+		}(i)
+	}
+
+	go func() {
+		log.Println("background metrics reporter started")
+	}()
+
+	mux.HandleFunc("/api/task", func(w http.ResponseWriter, r *http.Request) {
+		task := r.URL.Query().Get("name")
+		queue <- task
+		fmt.Fprintf(w, "task %s queued", task)
+	})
+
+	mux.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "ok")
+	})
+}

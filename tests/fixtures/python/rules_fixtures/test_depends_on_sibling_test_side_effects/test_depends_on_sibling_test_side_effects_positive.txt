@@ -1,0 +1,24 @@
+import pytest
+from myapp.db import Database
+
+db = Database("sqlite:///test.db")
+
+def test_create_user():
+    db.execute("INSERT INTO users (name, email) VALUES ('alice', 'alice@test.com')")
+    user = db.query_one("SELECT * FROM users WHERE name = 'alice'")
+    assert user is not None
+
+def test_update_user_email():
+    user = db.query_one("SELECT * FROM users WHERE name = 'alice'")
+    db.execute(f"UPDATE users SET email = 'newalice@test.com' WHERE id = {user['id']}")
+    updated = db.query_one(f"SELECT * FROM users WHERE id = {user['id']}")
+    assert updated["email"] == "newalice@test.com"
+
+def test_delete_user():
+    user = db.query_one("SELECT * FROM users WHERE name = 'alice'")
+    db.execute(f"DELETE FROM users WHERE id = {user['id']}")
+    assert db.query_one("SELECT * FROM users WHERE name = 'alice'") is None
+
+def test_list_users_empty():
+    users = db.query("SELECT * FROM users")
+    assert len(users) == 0

@@ -1,0 +1,14 @@
+{
+  "id": "make_slice_inside_hot_loop_same_shape",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "make([]T, ...) scratch slices recreated inside loops instead of being reused.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

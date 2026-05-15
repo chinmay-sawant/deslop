@@ -1,0 +1,14 @@
+{
+  "id": "yaml_config_loaded_without_safe_loader",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "YAML configuration file loaded with yaml.load instead of yaml.safe_load or yaml.load + Loader=SafeLoader.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

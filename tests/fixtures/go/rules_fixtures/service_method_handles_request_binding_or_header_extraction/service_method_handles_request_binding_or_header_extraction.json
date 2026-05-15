@@ -1,0 +1,14 @@
+{
+  "id": "service_method_handles_request_binding_or_header_extraction",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Services that extract headers, cookies, forms, or route params directly.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

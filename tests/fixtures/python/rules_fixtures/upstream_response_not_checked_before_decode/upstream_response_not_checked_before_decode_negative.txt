@@ -1,0 +1,29 @@
+import httpx
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+@app.get("/api/user/{user_id}")
+async def get_user(user_id: int):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"https://users.example.com/api/users/{user_id}")
+        response.raise_for_status()
+        return response.json()
+
+@app.post("/api/fetch-data")
+async def fetch_data(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(body["url"])
+        response.raise_for_status()
+        data = response.json()
+        return {"results": data["items"]}
+
+@app.get("/api/proxy")
+async def proxy_request(request: Request):
+    url = request.query_params.get("url")
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(url)
+        resp.raise_for_status()
+        content = resp.content.decode("utf-8")
+        return {"content": content}

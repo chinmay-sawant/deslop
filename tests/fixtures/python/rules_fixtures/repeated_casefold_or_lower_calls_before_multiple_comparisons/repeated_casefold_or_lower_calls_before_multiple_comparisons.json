@@ -1,0 +1,14 @@
+{
+  "id": "repeated_casefold_or_lower_calls_before_multiple_comparisons",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that normalizes the same candidate repeatedly before several comparisons.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

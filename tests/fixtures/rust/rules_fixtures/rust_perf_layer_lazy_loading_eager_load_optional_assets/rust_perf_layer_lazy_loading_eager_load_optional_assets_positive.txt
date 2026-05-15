@@ -1,0 +1,27 @@
+struct Model {
+    weights: Vec<f64>,
+    name: String,
+}
+
+fn load_model(name: &str) -> Model {
+    // simulate expensive model load
+    Model {
+        weights: vec![0.0; 1_000_000],
+        name: name.to_string(),
+    }
+}
+
+struct App {
+    sentiment_model: Model,
+    translation_model: Model,
+    summarization_model: Model,
+}
+
+fn init_app() -> App {
+    // BAD: load all models eagerly, even if features are not used
+    App {
+        sentiment_model: load_model("sentiment"),
+        translation_model: load_model("translation"),
+        summarization_model: load_model("summarization"),
+    }
+}

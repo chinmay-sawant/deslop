@@ -1,0 +1,33 @@
+import threading
+import pytest
+from unittest.mock import patch
+
+def test_background_task_completes():
+    results = []
+    event = threading.Event()
+
+    def worker():
+        results.append("done")
+        event.set()
+
+    t = threading.Thread(target=worker)
+    t.start()
+    event.wait(timeout=2)
+    assert results == ["done"]
+
+def test_rate_limiter():
+    from myapp.limiter import RateLimiter
+    with patch("time.monotonic", return_value=1000.0):
+        limiter = RateLimiter(max_calls=3, period=1.0)
+        for _ in range(3):
+            limiter.allow()
+    with patch("time.monotonic", return_value=1001.1):
+        assert limiter.allow() is True
+
+def test_cache_expiry():
+    from myapp.cache import TTLCache
+    with patch("time.monotonic", return_value=100.0):
+        cache = TTLCache(ttl=0.5)
+        cache.set("k", "v")
+    with patch("time.monotonic", return_value=100.6):
+        assert cache.get("k") is None

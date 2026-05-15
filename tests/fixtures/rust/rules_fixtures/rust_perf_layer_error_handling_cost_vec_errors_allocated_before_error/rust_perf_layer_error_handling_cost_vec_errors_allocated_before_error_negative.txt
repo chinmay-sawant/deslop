@@ -1,0 +1,26 @@
+fn validate_batch(items: &[Item]) -> Result<(), Vec<String>> {
+    // GOOD: allocate error vec only on first error
+    let mut errors: Option<Vec<String>> = None;
+    for item in items {
+        if item.quantity == 0 {
+            errors
+                .get_or_insert_with(Vec::new)
+                .push(format!("item {} has zero quantity", item.id));
+        }
+        if item.price < 0.0 {
+            errors
+                .get_or_insert_with(Vec::new)
+                .push(format!("item {} has negative price", item.id));
+        }
+    }
+    match errors {
+        Some(errs) => Err(errs),
+        None => Ok(()),
+    }
+}
+
+struct Item {
+    id: u64,
+    quantity: u32,
+    price: f64,
+}

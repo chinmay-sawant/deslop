@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_data_structure_choice_small_enum_string_switch_map",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag map lookups for tiny static enum-like string sets where switch can avoid allocation and hashing.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

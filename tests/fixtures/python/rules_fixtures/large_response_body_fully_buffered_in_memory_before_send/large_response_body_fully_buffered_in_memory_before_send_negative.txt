@@ -1,0 +1,51 @@
+import csv
+import io
+import json
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+
+app = FastAPI()
+
+
+def _generate_csv():
+    yield "id,name,value\n"
+    for i in range(100000):
+        yield f"{i},item_{i},{i * 10.5}\n"
+
+
+@app.get("/export/csv")
+async def export_csv():
+    return StreamingResponse(_generate_csv(), media_type="text/csv")
+
+
+def _generate_json():
+    yield "["
+    for i in range(50000):
+        if i > 0:
+            yield ","
+        yield json.dumps({"id": i, "name": f"record_{i}", "value": i * 3.14})
+    yield "]"
+
+
+@app.get("/export/json")
+async def export_json():
+    return StreamingResponse(_generate_json(), media_type="application/json")
+
+
+def _generate_report():
+    output = io.StringIO()
+    writer = csv.writer(output)
+    for i in range(200000):
+        writer.writerow([i, f"data_{i}", i * 2.7])
+        if i % 1000 == 0:
+            yield output.getvalue()
+            output.seek(0)
+            output.truncate()
+    remaining = output.getvalue()
+    if remaining:
+        yield remaining
+
+
+@app.get("/download/report")
+async def download_report():
+    return StreamingResponse(_generate_report(), media_type="text/csv")

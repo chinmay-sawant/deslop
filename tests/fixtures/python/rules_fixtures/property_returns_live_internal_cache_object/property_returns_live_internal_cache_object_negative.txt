@@ -1,0 +1,33 @@
+class DataStore:
+    def __init__(self):
+        self._cache = {}
+
+    @property
+    def items(self):
+        return dict(self._cache)
+
+    def get(self, key):
+        return self._cache.get(key)
+
+
+class SessionManager:
+    def __init__(self):
+        self._sessions = {}
+
+    @property
+    def active_sessions(self):
+        return dict(self._sessions)
+
+    def add(self, session_id, data):
+        self._sessions[session_id] = data
+
+
+class CacheService:
+    def __init__(self):
+        self._store = {}
+
+    def keys(self):
+        return list(self._store.keys())
+
+    def get(self, key):
+        return self._store.get(key)

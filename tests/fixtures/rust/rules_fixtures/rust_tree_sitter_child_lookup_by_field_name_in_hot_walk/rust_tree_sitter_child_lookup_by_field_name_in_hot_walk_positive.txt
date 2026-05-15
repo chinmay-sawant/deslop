@@ -1,0 +1,36 @@
+use tree_sitter::{Parser, Node, TreeCursor};
+
+fn walk_and_extract(node: Node, source: &str) {
+    let name = node.child_by_field_name("name");
+    let value = node.child_by_field_name("value");
+    let body = node.child_by_field_name("body");
+    let params = node.child_by_field_name("parameters");
+    let return_type = node.child_by_field_name("return_type");
+    let condition = node.child_by_field_name("condition");
+    let consequence = node.child_by_field_name("consequence");
+
+    if let Some(name) = name {
+        let text = &source[name.start_byte()..name.end_byte()];
+        println!("name: {}", text);
+    }
+
+    for i in 0..node.child_count() {
+        if let Some(child) = node.child(i) {
+            let _ = child.child_by_field_name("name");
+            let _ = child.child_by_field_name("value");
+            let _ = child.child_by_field_name("type");
+            walk_and_extract(child, source);
+        }
+    }
+}
+
+fn extract_function_info(node: Node, source: &str) {
+    let name = node.child_by_field_name("name").unwrap();
+    let params = node.child_by_field_name("parameters").unwrap();
+    let body = node.child_by_field_name("body").unwrap();
+    let return_type = node.child_by_field_name("return_type");
+
+    let name_text = &source[name.start_byte()..name.end_byte()];
+    let params_text = &source[params.start_byte()..params.end_byte()];
+    println!("fn {}({})", name_text, params_text);
+}

@@ -1,0 +1,23 @@
+import re
+
+EMAIL_PATTERN = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+BRACKET_PATTERN = re.compile(r"\[([^\[\]]*)\]")
+SIMPLE_PATTERN = re.compile(r"^a+b$")
+
+MAX_INPUT_LENGTH = 10000
+
+
+def validate_email_list(emails: list[str]) -> list[str]:
+    return [e for e in emails if EMAIL_PATTERN.match(e)]
+
+
+def parse_nested_brackets(text: str) -> list[str]:
+    if len(text) > MAX_INPUT_LENGTH:
+        raise ValueError("Input too large")
+    return BRACKET_PATTERN.findall(text)
+
+
+def match_complex_string(input_str: str) -> bool:
+    if len(input_str) > MAX_INPUT_LENGTH:
+        return False
+    return bool(SIMPLE_PATTERN.match(input_str))

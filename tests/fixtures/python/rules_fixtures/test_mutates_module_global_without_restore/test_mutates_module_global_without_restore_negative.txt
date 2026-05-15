@@ -1,0 +1,41 @@
+import pytest
+from myapp import config
+from myapp.cache import GLOBAL_CACHE
+
+@pytest.fixture
+def debug_mode():
+    old_debug = config.DEBUG
+    old_level = config.LOG_LEVEL
+    config.DEBUG = True
+    config.LOG_LEVEL = "DEBUG"
+    yield
+    config.DEBUG = old_debug
+    config.LOG_LEVEL = old_level
+
+def test_enable_debug_mode(debug_mode):
+    assert config.DEBUG is True
+
+@pytest.fixture
+def custom_cache():
+    old_ttl = GLOBAL_CACHE.ttl
+    old_max = GLOBAL_CACHE.max_entries
+    GLOBAL_CACHE.ttl = 600
+    GLOBAL_CACHE.max_entries = 5000
+    yield
+    GLOBAL_CACHE.ttl = old_ttl
+    GLOBAL_CACHE.max_entries = old_max
+
+def test_set_cache_ttl(custom_cache):
+    assert GLOBAL_CACHE.ttl == 600
+
+@pytest.fixture
+def feature_flags():
+    old_flags = dict(config.FEATURE_FLAGS)
+    config.FEATURE_FLAGS["new_checkout"] = True
+    config.FEATURE_FLAGS["dark_mode"] = True
+    yield
+    config.FEATURE_FLAGS.clear()
+    config.FEATURE_FLAGS.update(old_flags)
+
+def test_change_feature_flags(feature_flags):
+    assert config.FEATURE_FLAGS["new_checkout"] is True

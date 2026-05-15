@@ -1,0 +1,33 @@
+use serde::de::{self, Deserialize, Deserializer, Visitor};
+use std::fmt;
+
+// GOOD: return errors instead of panicking
+struct Port(u16);
+
+impl<'de> Deserialize<'de> for Port {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = u16::deserialize(deserializer)?;
+        if value == 0 {
+            return Err(de::Error::custom("port cannot be zero"));
+        }
+        Ok(Port(value))
+    }
+}
+
+struct NonEmpty(String);
+
+impl<'de> Deserialize<'de> for NonEmpty {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        if s.is_empty() {
+            return Err(de::Error::custom("string must not be empty"));
+        }
+        Ok(NonEmpty(s))
+    }
+}

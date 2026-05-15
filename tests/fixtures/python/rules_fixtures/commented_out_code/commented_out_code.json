@@ -1,0 +1,14 @@
+{
+  "id": "commented_out_code",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Blocks of commented-out source code left in production files.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

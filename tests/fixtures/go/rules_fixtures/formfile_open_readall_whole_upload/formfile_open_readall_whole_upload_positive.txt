@@ -1,0 +1,30 @@
+package rulefixtures
+
+import (
+	"io"
+	"net/http"
+
+	gin "github.com/gin-gonic/gin"
+)
+
+// scenario for formfile_open_readall_whole_upload: Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...).
+// fixture polarity: positive; family: gin; severity: contextual.
+func scenario314Positive(c *gin.Context) {
+	file, err := c.FormFile("upload")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	f, err := file.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer f.Close()
+	data, err := io.ReadAll(f)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.Data(http.StatusOK, "application/octet-stream", data)
+}

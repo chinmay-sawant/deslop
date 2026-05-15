@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"encoding/base64"
+)
+
+// scenario for go_perf_layer_serialization_base64_roundtrip_for_binary_transport: Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside a single process boundary.
+// fixture polarity: negative; family: performance; severity: contextual.
+func scenario589Negative(values [][]byte) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, base64.StdEncoding.EncodeToString(value))
+	}
+	return out
+}

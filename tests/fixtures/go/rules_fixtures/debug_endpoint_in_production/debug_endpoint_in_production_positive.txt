@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"net/http"
+	_ "net/http/pprof"
+)
+
+// scenario for debug_endpoint_in_production: `net/http/pprof` import or `http.Handle("/debug/pprof/", ...)` registration without access control
+// fixture polarity: positive; family: security; severity: warning.
+func scenario705Positive() {
+	http.Handle("/debug/pprof/", http.DefaultServeMux)
+}

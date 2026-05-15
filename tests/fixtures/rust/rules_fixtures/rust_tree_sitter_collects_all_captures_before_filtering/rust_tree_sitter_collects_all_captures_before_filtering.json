@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_collects_all_captures_before_filtering",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag query capture pipelines that collect every capture into `Vec` and then filter locally instead of filtering as captures are visited.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

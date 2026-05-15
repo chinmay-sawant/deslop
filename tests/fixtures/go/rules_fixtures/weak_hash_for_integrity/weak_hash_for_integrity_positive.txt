@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	"crypto/md5"
+)
+
+// scenario for weak_hash_for_integrity: `md5.New()`, `sha1.New()`, `md5.Sum()`, `sha1.Sum()` used for integrity checks, checksums, or MAC operations (not just `weak_crypto` import-level detection)
+// fixture polarity: positive; family: security; severity: warning.
+func scenario746Positive(payload []byte) []byte {
+	sum := md5.Sum(payload)
+	return sum[:]
+}

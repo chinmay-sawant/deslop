@@ -1,0 +1,14 @@
+{
+  "id": "insecure_hash_algorithm_used_for_security_sensitive_purpose",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "MD5 or SHA-1 used for password hashing, token generation, or a security-sensitive digest.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

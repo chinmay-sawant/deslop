@@ -1,0 +1,40 @@
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum AppError {
+    #[error("IO error occurred")]
+    Io {
+        #[source]
+        source: std::io::Error,
+    },
+
+    #[error("JSON parse error")]
+    Json {
+        #[source]
+        source: serde_json::Error,
+    },
+
+    #[error("database error")]
+    Database {
+        #[source]
+        source: sqlx::Error,
+    },
+
+    #[error("HTTP error")]
+    Http {
+        #[source]
+        source: reqwest::Error,
+    },
+}
+
+fn read_data(path: &str) -> Result<String, AppError> {
+    let data = std::fs::read_to_string(path).map_err(|e| AppError::Io { source: e })?;
+    Ok(data)
+}
+
+fn parse_config(json: &str) -> Result<Config, AppError> {
+    let config: Config = serde_json::from_str(json).map_err(|e| AppError::Json { source: e })?;
+    Ok(config)
+}
+
+struct Config;

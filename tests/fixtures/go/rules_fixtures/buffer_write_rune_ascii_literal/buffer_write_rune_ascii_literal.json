@@ -1,0 +1,14 @@
+{
+  "id": "buffer_write_rune_ascii_literal",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.Buffer.WriteRune('x')` for ASCII literals instead of `WriteByte`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

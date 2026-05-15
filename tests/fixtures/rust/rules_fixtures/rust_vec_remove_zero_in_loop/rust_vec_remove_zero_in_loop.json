@@ -1,0 +1,14 @@
+{
+  "id": "rust_vec_remove_zero_in_loop",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated `Vec::remove(0)` in loops where `VecDeque` or index traversal would avoid shifting.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

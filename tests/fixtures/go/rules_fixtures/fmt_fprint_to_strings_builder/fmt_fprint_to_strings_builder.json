@@ -1,0 +1,14 @@
+{
+  "id": "fmt_fprint_to_strings_builder",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`fmt.Fprint(&builder, ...)` instead of direct builder writes.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

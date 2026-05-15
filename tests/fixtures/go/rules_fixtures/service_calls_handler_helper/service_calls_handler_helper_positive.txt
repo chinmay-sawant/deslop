@@ -1,0 +1,30 @@
+package service
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/example/app/internal/handler/helper"
+)
+
+// scenario for service_calls_handler_helper: Service packages that reach upward into handler helpers for parsing, rendering, or Gin-specific utilities.
+// fixture polarity: positive; family: architecture; severity: warning.
+type UserService struct {
+	repo UserRepository
+}
+
+func (s *UserService) GetUser(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	id, err := strconv.Atoi(helper.ExtractPathParam(r, "id"))
+	if err != nil {
+		return fmt.Errorf("invalid id: %w", err)
+	}
+	user, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		helper.WriteJSONError(w, http.StatusNotFound, "user not found")
+		return err
+	}
+	helper.WriteJSONResponse(w, http.StatusOK, user)
+	return nil
+}

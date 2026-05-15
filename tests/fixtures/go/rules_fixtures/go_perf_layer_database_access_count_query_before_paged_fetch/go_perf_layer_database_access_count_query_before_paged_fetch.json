@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_database_access_count_query_before_paged_fetch",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Database access. Flag count queries paired with page fetches on every request without cache or user-visible need.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,34 @@
+import os
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+
+@app.route("/dashboard")
+def dashboard():
+    if os.environ.get("FEATURE_NEW_DASHBOARD", "false") == "true":
+        return render_new_dashboard()
+    return render_old_dashboard()
+
+
+@app.route("/settings")
+def settings():
+    if os.environ.get("FEATURE_NEW_DASHBOARD", "false") == "true":
+        return render_new_settings()
+    return render_old_settings()
+
+
+@app.route("/api/users")
+def list_users():
+    if os.environ.get("FEATURE_ENHANCED_USERS", "false") == "true":
+        users = fetch_users_v2()
+    else:
+        users = fetch_users_v1()
+    return jsonify(users)
+
+
+@app.route("/api/reports")
+def reports():
+    if os.environ.get("FEATURE_ENHANCED_USERS", "false") == "true":
+        return generate_enhanced_report()
+    return generate_basic_report()

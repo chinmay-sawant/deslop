@@ -1,0 +1,14 @@
+{
+  "id": "intermediate_dataframe_not_freed",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Multiple intermediate DataFrames accumulate with no visible cleanup in one pipeline.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

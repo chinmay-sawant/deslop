@@ -1,0 +1,16 @@
+PACKAGE_FILES = [
+    "myapp/__init__.py",
+    "myapp/models.py",
+    "myapp/service.py",
+]
+
+TEST_FILES = [
+    "tests/conftest.py",
+    "tests/factories.py",
+    "tests/helpers.py",
+    "tests/test_service.py",
+]
+
+
+def test_helpers_are_outside_production_package(package_paths: list[str], test_paths: list[str]) -> bool:
+    return all(not path.startswith("myapp/_") for path in package_paths) and all(path.startswith("tests/") for path in test_paths)

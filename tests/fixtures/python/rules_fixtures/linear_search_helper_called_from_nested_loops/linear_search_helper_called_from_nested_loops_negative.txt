@@ -1,0 +1,19 @@
+def match_orders_to_products(orders: list[dict], products: list[dict]) -> list[dict]:
+    products_by_sku = {p["sku"]: p for p in products}
+    results = []
+    for order in orders:
+        for item in order["items"]:
+            product = products_by_sku.get(item["sku"])
+            if product:
+                results.append({"order_id": order["id"], "product": product, "qty": item["qty"]})
+    return results
+
+
+def build_report(events: list[dict], users: list[dict]) -> list[dict]:
+    users_by_id = {u["id"]: u for u in users}
+    report = []
+    for event in events:
+        user = users_by_id.get(event["user_id"])
+        if user:
+            report.append({"event": event["type"], "user": user["name"]})
+    return report

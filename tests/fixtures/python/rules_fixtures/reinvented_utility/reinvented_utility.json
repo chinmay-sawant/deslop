@@ -1,0 +1,14 @@
+{
+  "id": "reinvented_utility",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Obvious locally implemented utility helpers that overlap with already-imported standard-library style helpers.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

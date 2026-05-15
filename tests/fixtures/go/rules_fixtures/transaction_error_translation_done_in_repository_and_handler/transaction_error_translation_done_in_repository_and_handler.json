@@ -1,0 +1,14 @@
+{
+  "id": "transaction_error_translation_done_in_repository_and_handler",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Both repository and handler layers translating the same transaction errors.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

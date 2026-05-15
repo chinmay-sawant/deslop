@@ -1,0 +1,29 @@
+import signal
+import threading
+import os
+
+
+def cleanup(signum, frame):
+    print("Cleaning up...")
+
+
+def setup_signals():
+    signal.signal(signal.SIGTERM, cleanup)
+
+
+def start_worker():
+    worker = threading.Thread(target=lambda: None, daemon=True)
+    worker.start()
+
+
+def write_pid():
+    with open("/tmp/app.pid", "w") as f:
+        f.write(str(os.getpid()))
+
+
+if __name__ == "__main__":
+    os.environ["APP_MODE"] = "production"
+    setup_signals()
+    start_worker()
+    write_pid()
+    print("Application started")

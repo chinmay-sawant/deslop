@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_memory_allocation_map_recreated_for_static_lookup: Layer: Memory allocation. Flag static lookup maps rebuilt inside functions instead of package-level immutable tables.
+// fixture polarity: positive; family: performance; severity: contextual.
+func scenario567Positive(statusCode int) string {
+	// A new map is allocated on every call to this function.
+	// Since the mapping never changes, it should be a single
+	// package-level map created once at init time.
+	statusText := map[int]string{
+		200: "OK",
+		201: "Created",
+		400: "Bad Request",
+		404: "Not Found",
+		500: "Internal Server Error",
+	}
+	return statusText[statusCode]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_boolean_state_machine",
+  "language": "rust",
+  "family": "api_design",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "State structs encoded with multiple booleans instead of a dedicated enum.",
+  "binding_location": "src/heuristics/rust/api_design.rs"
+}

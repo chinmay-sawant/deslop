@@ -1,0 +1,14 @@
+{
+  "id": "handler_or_view_owns_transaction_lifecycle",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Route handler or view manually manages database transaction boundaries (begin/commit/rollback).",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

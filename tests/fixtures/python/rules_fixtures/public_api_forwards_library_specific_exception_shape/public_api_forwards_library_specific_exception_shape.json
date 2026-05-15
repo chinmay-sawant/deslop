@@ -1,0 +1,14 @@
+{
+  "id": "public_api_forwards_library_specific_exception_shape",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag public interfaces that require callers to understand raw exceptions from underlying libraries.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

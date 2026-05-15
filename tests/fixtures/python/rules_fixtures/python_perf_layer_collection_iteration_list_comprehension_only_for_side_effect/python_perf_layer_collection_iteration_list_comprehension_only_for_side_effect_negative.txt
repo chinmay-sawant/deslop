@@ -1,0 +1,18 @@
+def send_notifications(users: list):
+    for user in users:
+        send_email(user.email)
+
+
+def log_all_events(events: list):
+    for e in events:
+        logger.info(f"Event: {e}")
+
+
+def update_records(records: list):
+    for r in records:
+        db.save(r)
+
+
+def batch_delete(items: list):
+    for item in items:
+        cache.delete(item.key)

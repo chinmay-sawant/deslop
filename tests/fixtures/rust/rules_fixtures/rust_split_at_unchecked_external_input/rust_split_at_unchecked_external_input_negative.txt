@@ -1,0 +1,27 @@
+fn parse_delimited_field(input: &str, delimiter_pos: usize) -> Result<(&str, &str), String> {
+    if delimiter_pos > input.len() {
+        return Err("delimiter position out of bounds".into());
+    }
+    let (left, right) = input.split_at(delimiter_pos);
+    Ok((left, right))
+}
+
+fn extract_protocol_and_host(url: &str, sep_index: usize) -> Result<(&str, &str), String> {
+    if !url.is_char_boundary(sep_index) {
+        return Err("index not at char boundary".into());
+    }
+    let (scheme, rest) = url.split_at(sep_index);
+    Ok((scheme, rest))
+}
+
+fn split_header(raw: &[u8], offset: usize) -> Result<(&[u8], &[u8]), String> {
+    if offset > raw.len() {
+        return Err("offset out of bounds".into());
+    }
+    let (key, value) = raw.split_at(offset);
+    Ok((key, value))
+}
+
+fn parse_field_at_offset(data: &[u8], offset: usize) -> Result<&[u8], String> {
+    data.get(offset..).ok_or_else(|| "offset out of bounds".into())
+}

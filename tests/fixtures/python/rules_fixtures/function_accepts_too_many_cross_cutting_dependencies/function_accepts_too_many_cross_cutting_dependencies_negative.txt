@@ -1,0 +1,18 @@
+from dataclasses import dataclass
+
+@dataclass
+class OrderContext:
+    db: "Database"
+    logger: "Logger"
+    cache: "CacheClient"
+    mailer: "EmailSender"
+
+def process_order(order, ctx: OrderContext):
+    ctx.logger.info("Processing order %s", order["id"])
+    cached = ctx.cache.get(f"order:{order['id']}")
+    if cached:
+        return cached
+    ctx.db.save_order(order)
+    ctx.mailer.send(order["email"], "Order confirmed")
+    ctx.cache.set(f"order:{order['id']}", order, ttl=3600)
+    return order

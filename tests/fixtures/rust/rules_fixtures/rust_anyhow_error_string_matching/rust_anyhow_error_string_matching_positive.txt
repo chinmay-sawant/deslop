@@ -1,0 +1,40 @@
+use anyhow::Result;
+
+fn handle_api_error(result: Result<Response>) -> String {
+    match result {
+        Ok(resp) => format!("ok: {}", resp.body),
+        Err(e) => {
+            let msg = e.to_string();
+            if msg.contains("timeout") {
+                "retry later".to_string()
+            } else if msg.contains("permission") || msg.contains("denied") {
+                "unauthorized".to_string()
+            } else if msg.contains("not found") {
+                "missing resource".to_string()
+            } else {
+                "internal error".to_string()
+            }
+        }
+    }
+}
+
+fn classify_error(e: &anyhow::Error) -> ErrorCode {
+    let s = format!("{e}");
+    if s.starts_with("ECONNREFUSED") || s.contains("connection refused") {
+        ErrorCode::Unavailable
+    } else if s.contains("429") || s.contains("rate limit") {
+        ErrorCode::RateLimited
+    } else {
+        ErrorCode::Unknown
+    }
+}
+
+struct Response {
+    body: String,
+}
+
+enum ErrorCode {
+    Unavailable,
+    RateLimited,
+    Unknown,
+}

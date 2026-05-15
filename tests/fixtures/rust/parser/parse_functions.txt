@@ -1,9 +1,0 @@
-pub fn sum_pair(left: i32, right: i32) -> i32 {
-    left + right
-}
-
-impl Runner {
-    fn execute(&self) {
-        sum_pair(1, 2);
-    }
-}

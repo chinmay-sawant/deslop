@@ -1,0 +1,33 @@
+use axum::{Router, routing::get, Json};
+use serde_json::Value;
+
+fn build_app_router() -> Router {
+    Router::new()
+        .route("/health", get(health_handler))
+        .route("/users", get(list_users))
+        .route("/stats", get(get_stats))
+        .route("/admin", get(admin_handler))
+}
+
+async fn health_handler() -> &'static str {
+    "ok"
+}
+
+async fn list_users() -> Json<Value> {
+    Json(serde_json::json!([]))
+}
+
+async fn get_stats() -> Json<Value> {
+    Json(serde_json::json!({"requests": 0}))
+}
+
+async fn admin_handler() -> Json<Value> {
+    Json(serde_json::json!({"admin": true}))
+}
+
+#[tokio::main]
+async fn main() {
+    let app = build_app_router();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
+}

@@ -1,0 +1,14 @@
+{
+  "id": "three_index_slice_for_append_safety",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

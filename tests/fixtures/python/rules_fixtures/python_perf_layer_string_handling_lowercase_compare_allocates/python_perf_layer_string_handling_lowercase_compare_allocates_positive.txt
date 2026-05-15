@@ -1,0 +1,16 @@
+def find_user(users: list[dict], name: str) -> dict | None:
+    for user in users:
+        if user["name"].lower() == name.lower():
+            return user
+    return None
+
+
+def filter_by_status(items: list[dict], status: str) -> list[dict]:
+    return [item for item in items if item["status"].lower() == status.lower()]
+
+
+def match_permission(permissions: list[str], required: str) -> bool:
+    for perm in permissions:
+        if perm.lower() == required.lower():
+            return True
+    return False

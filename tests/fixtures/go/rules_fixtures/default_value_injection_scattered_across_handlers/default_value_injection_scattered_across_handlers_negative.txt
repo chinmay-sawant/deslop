@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for default_value_injection_scattered_across_handlers: Repeated defaulting logic for pagination, filters, or booleans across handlers.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule024NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule024NegativeService interface {
+	Run(context.Context, Rule024NegativeRecord) error
+}
+
+func scenario024Negative(ctx context.Context, service Rule024NegativeService, input Rule024NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

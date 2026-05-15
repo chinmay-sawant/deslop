@@ -1,0 +1,14 @@
+{
+  "id": "repository_returns_framework_builder_to_upper_layer",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repositories that leak `*gorm.DB`, `sqlx.NamedStmt`, query builders, or raw rows to higher layers instead of returning results or domain abstractions.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

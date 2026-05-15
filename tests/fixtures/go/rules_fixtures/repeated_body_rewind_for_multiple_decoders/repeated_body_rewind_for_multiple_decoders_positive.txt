@@ -1,0 +1,32 @@
+package rulefixtures
+
+import (
+	"bytes"
+	"encoding/json"
+	"io"
+
+	gin "github.com/gin-gonic/gin"
+)
+
+// scenario for repeated_body_rewind_for_multiple_decoders: Gin handlers that read, rewind, and decode the same request body multiple times.
+// fixture polarity: positive; family: gin; severity: contextual.
+type Rule333PositiveRecord struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+func scenario333Positive(c *gin.Context) {
+	body, _ := io.ReadAll(c.Request.Body)
+	c.Request.Body = io.NopCloser(bytes.NewReader(body))
+
+	var record Rule333PositiveRecord
+	if err := json.NewDecoder(c.Request.Body).Decode(&record); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.Request.Body = io.NopCloser(bytes.NewReader(body))
+
+	var audit map[string]any
+	json.NewDecoder(c.Request.Body).Decode(&audit)
+	c.JSON(200, gin.H{"record": record})
+}

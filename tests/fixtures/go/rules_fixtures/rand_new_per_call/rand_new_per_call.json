@@ -1,0 +1,14 @@
+{
+  "id": "rand_new_per_call",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`rand.New(...)` inside regular call paths instead of reusing a generator.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

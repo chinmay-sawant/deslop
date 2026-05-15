@@ -1,0 +1,37 @@
+import functools
+
+user_cache = {}
+product_cache = {}
+session_cache = {}
+
+
+@functools.lru_cache(maxsize=1000)
+def get_user(user_id: int):
+    return fetch_user_from_db(user_id)
+
+
+class ProductCatalog:
+    def __init__(self):
+        self._products = {}
+        self._categories = {}
+
+    def get_product(self, product_id: int):
+        if product_id not in self._products:
+            self._products[product_id] = load_product(product_id)
+        return self._products[product_id]
+
+    def get_category(self, category_id: int):
+        if category_id not in self._categories:
+            self._categories[category_id] = load_category(category_id)
+        return self._categories[category_id]
+
+
+class SessionStore:
+    def __init__(self):
+        self._sessions = {}
+
+    def get(self, session_id: str):
+        return self._sessions.get(session_id)
+
+    def set(self, session_id: str, data: dict):
+        self._sessions[session_id] = data

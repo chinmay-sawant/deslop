@@ -1,0 +1,14 @@
+{
+  "id": "bytes_hassuffix_manual_slice_after_len",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Manual `len` and slice suffix checks instead of `bytes.HasSuffix(...)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

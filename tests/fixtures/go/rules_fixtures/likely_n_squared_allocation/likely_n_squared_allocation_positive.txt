@@ -1,0 +1,16 @@
+package rulefixtures
+
+// scenario for likely_n_squared_allocation: Opt-in deeper semantic signal for allocations that also sit inside nested loop structure.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func scenario612Positive(matrix [][]int) [][]int {
+	var result [][]int
+	for _, row := range matrix {
+		for _, cell := range row {
+			buf := make([]int, 0, cell)
+			buf = append(buf, cell)
+			result = append(result, buf)
+		}
+	}
+	return result
+}

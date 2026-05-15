@@ -1,0 +1,45 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+)
+
+// scenario for client_input_error_mapped_to_internal_server_error: Request parsing or binding errors that are translated into `500` responses instead of client-error status codes.
+// fixture polarity: positive; family: architecture; severity: warning.
+
+type CreateItemRequest struct {
+	Name   string `json:"name"`
+	Price  float64 `json:"price"`
+	Qty    int    `json:"qty"`
+}
+
+func createItemHandler(w http.ResponseWriter, r *http.Request) {
+	var req CreateItemRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "server error processing request", http.StatusInternalServerError)
+		return
+	}
+
+	idParam := r.URL.Query().Get("category_id")
+	categoryID, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "internal error parsing category", http.StatusInternalServerError)
+		return
+	}
+	_ = categoryID
+
+	if req.Name == "" {
+		http.Error(w, "server validation failure", http.StatusInternalServerError)
+		return
+	}
+
+	if req.Price <= 0 {
+		http.Error(w, "server error: invalid input", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{"status": "created"})
+}

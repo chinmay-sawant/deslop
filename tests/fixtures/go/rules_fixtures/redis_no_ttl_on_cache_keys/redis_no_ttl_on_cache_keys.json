@@ -1,0 +1,14 @@
+{
+  "id": "redis_no_ttl_on_cache_keys",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`rdb.Set(ctx, key, val, 0)` or `rdb.Set(ctx, key, val, redis.KeepTTL)` for cache-like keys without TTL",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

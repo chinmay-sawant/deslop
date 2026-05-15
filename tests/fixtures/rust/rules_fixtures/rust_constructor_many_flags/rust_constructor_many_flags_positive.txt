@@ -1,0 +1,34 @@
+struct QueryBuilder {
+    table: String,
+    filters: Vec<String>,
+    limit: Option<usize>,
+    offset: Option<usize>,
+    distinct: bool,
+    case_sensitive: bool,
+    include_deleted: bool,
+    count_only: bool,
+}
+
+impl QueryBuilder {
+    fn new(table: &str) -> Self {
+        Self {
+            table: table.into(),
+            filters: Vec::new(),
+            limit: None,
+            offset: None,
+            distinct: false,
+            case_sensitive: true,
+            include_deleted: false,
+            count_only: false,
+        }
+    }
+
+    fn build(self) -> String {
+        format!("SELECT * FROM {}", self.table)
+    }
+}
+
+fn run_query() {
+    let qb = QueryBuilder::new("users");
+    let _ = qb.build();
+}

@@ -1,0 +1,33 @@
+import os
+from flask import Flask, request
+
+app = Flask(__name__)
+
+
+@app.route("/upload", methods=["POST"])
+def upload_file():
+    filename = request.form.get("filename")
+    content = request.files["file"].read()
+    filepath = os.path.join("/data/uploads", filename)
+    with open(filepath, "wb") as f:
+        f.write(content)
+    return {"status": "ok"}
+
+
+@app.route("/export/<path:filename>")
+def export_file(filename):
+    data = generate_report()
+    filepath = os.path.join("/tmp/exports", filename)
+    with open(filepath, "w") as f:
+        f.write(data)
+    return {"path": filepath}
+
+
+@app.route("/save-config", methods=["POST"])
+def save_config():
+    config_name = request.json.get("name")
+    config_data = request.json.get("data")
+    filepath = f"/etc/app/configs/{config_name}.json"
+    with open(filepath, "w") as f:
+        json.dump(config_data, f)
+    return {"status": "saved"}

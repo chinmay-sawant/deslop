@@ -1,0 +1,18 @@
+import redis
+
+
+def cache_users(r: redis.Redis, users: list[dict]) -> None:
+    for user in users:
+        r.hset(f"user:{user['id']}", mapping=user)
+        r.expire(f"user:{user['id']}", 3600)
+
+
+def invalidate_sessions(r: redis.Redis, session_ids: list[str]) -> None:
+    for sid in session_ids:
+        r.delete(f"session:{sid}")
+
+
+def update_counters(r: redis.Redis, event_names: list[str]) -> None:
+    for name in event_names:
+        r.incr(f"counter:{name}")
+        r.expire(f"counter:{name}", 86400)

@@ -1,0 +1,29 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for duplicate_find_then_preload_followup: Initial Find followed by a separate Preload query that could be folded into one.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule258PositiveRecord struct {
+	ID       int
+	Name     string
+	TenantID int
+}
+type Rule258RelatedRecord struct {
+	ID        int
+	ParentID  int
+	Detail    string
+}
+
+func scenario258Positive(db *gorm.DB, tenantID int) ([]Rule258PositiveRecord, error) {
+	var items []Rule258PositiveRecord
+	if err := db.Where("tenant_id = ?", tenantID).Find(&items).Error; err != nil {
+		return nil, err
+	}
+	if err := db.Preload("Related").Find(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
+}

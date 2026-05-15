@@ -1,0 +1,14 @@
+{
+  "id": "repository_constructor_accepts_gin_engine_or_router",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repository constructors that take transport objects.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

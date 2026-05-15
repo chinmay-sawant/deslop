@@ -1,0 +1,34 @@
+import os
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class Settings:
+    db_url: str
+    redis_url: str
+    api_key: str
+
+
+def load_settings() -> Settings:
+    host = os.environ.get("DB_HOST", "localhost")
+    port = os.environ.get("DB_PORT", "5432")
+    name = os.environ.get("DB_NAME", "mydb")
+    user = os.environ.get("DB_USER", "postgres")
+    password = os.environ.get("DB_PASSWORD", "")
+    db_url = f"postgresql://{user}:{password}@{host}:{port}/{name}"
+
+    redis_host = os.environ.get("REDIS_HOST", "localhost")
+    redis_port = os.environ.get("REDIS_PORT", "6379")
+    redis_db = os.environ.get("REDIS_DB", "0")
+    redis_url = f"redis://{redis_host}:{redis_port}/{redis_db}"
+
+    api_key = os.environ.get("API_KEY", "")
+
+    return Settings(db_url=db_url, redis_url=redis_url, api_key=api_key)
+
+
+settings = load_settings()
+
+
+def process_request():
+    return {"db": settings.db_url, "redis": settings.redis_url, "key": settings.api_key}

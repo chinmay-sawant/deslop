@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for go_perf_layer_resource_pooling_worker_pool_without_shutdown_backpressure: Layer: Resource pooling. Flag worker pools that accept unlimited jobs without bounded queues or shutdown draining.
+// fixture polarity: negative; family: performance; severity: contextual.
+type Rule583NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario583Negative(records []Rule583NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rust_question_mark_after_partial_side_effect_without_cleanup",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `?` after partially mutating files, shared state, transactions, or output buffers without rollback or cleanup.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

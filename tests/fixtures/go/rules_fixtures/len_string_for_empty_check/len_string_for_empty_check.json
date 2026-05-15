@@ -1,0 +1,14 @@
+{
+  "id": "len_string_for_empty_check",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`len(s) == 0` used interchangeably with `s == \"\"`",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

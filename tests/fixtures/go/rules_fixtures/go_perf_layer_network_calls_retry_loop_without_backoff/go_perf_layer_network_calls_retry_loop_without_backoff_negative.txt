@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for go_perf_layer_network_calls_retry_loop_without_backoff: Layer: Network calls. Flag network retry loops that immediately retry and amplify load.
+// fixture polarity: negative; family: performance; severity: contextual.
+func scenario571Negative(ctx context.Context, client *http.Client, urls []string) int {
+	total := 0
+	for _, url := range urls {
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+		if err == nil && req != nil { total += len(url) }
+	}
+	return total
+}

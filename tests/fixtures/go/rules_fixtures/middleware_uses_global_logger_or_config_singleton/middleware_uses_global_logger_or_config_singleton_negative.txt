@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for middleware_uses_global_logger_or_config_singleton: Middleware that depends on mutable globals instead of injected config and logger instances.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule092NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule092NegativeService interface {
+	Run(context.Context, Rule092NegativeRecord) error
+}
+
+func scenario092Negative(ctx context.Context, service Rule092NegativeService, input Rule092NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

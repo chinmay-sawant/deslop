@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_memory_allocation_closure_capture_allocates_in_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag loop-local closures that capture variables in high-frequency paths and may force heap allocation.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

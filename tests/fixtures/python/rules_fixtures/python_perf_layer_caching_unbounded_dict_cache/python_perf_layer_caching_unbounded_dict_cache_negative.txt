@@ -1,0 +1,19 @@
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1000)
+def get_user_profile(user_id: str) -> dict:
+    profile = fetch_profile(user_id)
+    return profile
+
+
+@lru_cache(maxsize=500)
+def get_product(product_id: str) -> dict:
+    product = fetch_product(product_id)
+    return product
+
+
+@lru_cache(maxsize=2000)
+def get_order(order_id: str) -> dict:
+    order = fetch_order(order_id)
+    return order

@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for clear_map_go121: `for k := range m { delete(m, k) }` in Go 1.21+ codebases
+// fixture polarity: negative; family: performance; severity: info.
+type Rule470NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario470Negative(records []Rule470NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

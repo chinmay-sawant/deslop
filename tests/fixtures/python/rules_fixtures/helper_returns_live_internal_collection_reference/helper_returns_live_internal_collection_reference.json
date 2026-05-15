@@ -1,0 +1,14 @@
+{
+  "id": "helper_returns_live_internal_collection_reference",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag helpers that hand out direct references to mutable internal lists, dicts, or sets instead of copies or read-only views.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "s3_listobjects_without_pagination",
+  "language": "go",
+  "family": "library",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`s3.ListObjectsV2` without `MaxKeys` or pagination in handler code",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

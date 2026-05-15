@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for auth_or_tenant_extraction_duplicated_across_handlers: Repeated auth, tenant, or principal extraction that should live in middleware or a shared boundary helper.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule005NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule005NegativeService interface {
+	Run(context.Context, Rule005NegativeRecord) error
+}
+
+func scenario005Negative(ctx context.Context, service Rule005NegativeService, input Rule005NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

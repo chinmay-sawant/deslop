@@ -1,0 +1,26 @@
+package rulefixtures
+
+import "reflect"
+
+// scenario for go_perf_layer_hot_path_optimization_reflection_on_hot_path: Layer: Hot path optimization. Flag reflect-based field access in hot loops where typed access is available.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+type Event struct {
+	Type   string
+	Source string
+	Data   map[string]string
+}
+
+func FilterEvents(events []Event, field string, value string) []Event {
+	var result []Event
+	for _, ev := range events {
+		rt := reflect.TypeOf(ev)
+		f, _ := rt.FieldByName(field)
+		v := reflect.ValueOf(ev)
+		fieldVal := v.FieldByIndex(f.Index).String()
+		if fieldVal == value {
+			result = append(result, ev)
+		}
+	}
+	return result
+}

@@ -1,0 +1,51 @@
+import json
+import cProfile
+import pstats
+
+
+def process_data(items: list[dict]) -> list[dict]:
+    profiler = cProfile.Profile()
+    profiler.enable()
+    results = []
+    seen = set()
+    for item in items:
+        key = item["id"]
+        if key not in seen:
+            seen.add(key)
+            results.append(transform(item))
+    profiler.disable()
+    stats = pstats.Stats(profiler)
+    stats.sort_stats("cumulative")
+    stats.print_stats(10)
+    return results
+
+
+def transform(item: dict) -> dict:
+    return {k: v for k, v in item.items() if v is not None}
+
+
+def find_duplicates(records: list[dict]) -> list[dict]:
+    profiler = cProfile.Profile()
+    profiler.enable()
+    counts = {}
+    for rec in records:
+        key = rec.get("email", "")
+        counts[key] = counts.get(key, 0) + 1
+    duplicates = [r for r in records if counts.get(r.get("email", ""), 0) > 1]
+    profiler.disable()
+    stats = pstats.Stats(profiler)
+    stats.sort_stats("cumulative")
+    stats.print_stats(10)
+    return duplicates
+
+
+def aggregate_metrics(data_points: list[float]) -> dict:
+    profiler = cProfile.Profile()
+    profiler.enable()
+    total = sum(data_points)
+    count = len(data_points)
+    profiler.disable()
+    stats = pstats.Stats(profiler)
+    stats.sort_stats("cumulative")
+    stats.print_stats(5)
+    return {"mean": total / count, "total": total, "count": count}

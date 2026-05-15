@@ -1,0 +1,17 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for rand_newsource_with_time_now_per_call: `rand.NewSource(...)` seeded from wall clock on each call path.
+// fixture polarity: positive; family: performance; severity: info.
+func scenario626Positive(items []string) int {
+	total := 0
+	for _, item := range items {
+		_ = time.Now()
+		_ = time.After(time.Millisecond)
+		total += len(item)
+	}
+	return total
+}

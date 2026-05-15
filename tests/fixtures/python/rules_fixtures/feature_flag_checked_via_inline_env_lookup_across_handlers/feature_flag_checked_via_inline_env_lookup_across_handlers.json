@@ -1,0 +1,14 @@
+{
+  "id": "feature_flag_checked_via_inline_env_lookup_across_handlers",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Feature flag checked via repeated inline os.getenv in multiple handlers instead of a single flag service.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

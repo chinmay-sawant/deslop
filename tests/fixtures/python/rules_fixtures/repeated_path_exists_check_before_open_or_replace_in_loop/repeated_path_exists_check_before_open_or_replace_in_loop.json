@@ -1,0 +1,14 @@
+{
+  "id": "repeated_path_exists_check_before_open_or_replace_in_loop",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag loops that perform a separate existence check before every file operation.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

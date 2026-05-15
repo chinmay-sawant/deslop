@@ -1,0 +1,14 @@
+{
+  "id": "rust_tempfile_predictable_name_in_shared_tmp",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag tests that combine `std::env::temp_dir()` with predictable filenames instead of `tempfile`.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

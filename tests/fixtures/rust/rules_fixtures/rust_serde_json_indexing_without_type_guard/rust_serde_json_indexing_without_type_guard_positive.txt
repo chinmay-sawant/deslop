@@ -1,0 +1,19 @@
+use serde_json::Value;
+
+// BAD: chained indexing without type checks
+fn get_user_name(data: &Value) -> String {
+    data["user"]["name"].as_str().unwrap().to_string()
+}
+
+fn get_nested_value(data: &Value) -> String {
+    data["response"]["data"]["items"][0]["value"]
+        .as_str()
+        .unwrap_or("")
+        .to_string()
+}
+
+fn process_config(config: &Value) {
+    let port = config["server"]["port"].as_u64().unwrap() as u16;
+    let host = config["server"]["host"].as_str().unwrap();
+    let max_conn = config["database"]["max_connections"].as_u64().unwrap() as u32;
+}

@@ -1,0 +1,30 @@
+use serde::Deserialize;
+use std::borrow::Cow;
+
+// GOOD: borrowed or Cow fields for readonly payload
+#[derive(Deserialize)]
+struct ApiResponse<'a> {
+    id: Cow<'a, str>,
+    name: Cow<'a, str>,
+    description: Cow<'a, str>,
+    tags: Vec<Cow<'a, str>>,
+    metadata: Cow<'a, str>,
+}
+
+#[derive(Deserialize)]
+struct EventPayload<'a> {
+    #[serde(borrow)]
+    event_type: &'a str,
+    #[serde(borrow)]
+    source: &'a str,
+    #[serde(borrow)]
+    data: &'a str,
+    #[serde(borrow)]
+    timestamp: &'a str,
+}
+
+fn process_response(json: &str) -> Result<ApiResponse<'_>, Error> {
+    let response: ApiResponse = serde_json::from_str(json)?;
+    println!("{}: {}", response.name, response.description);
+    Ok(response)
+}

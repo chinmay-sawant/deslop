@@ -1,0 +1,14 @@
+{
+  "id": "rust_proptest_assume_filters_most_cases",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag multiple `prop_assume!` calls or assume-heavy strategies that likely discard most generated cases.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

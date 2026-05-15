@@ -1,0 +1,14 @@
+{
+  "id": "per_item_deduplication_uses_list_instead_of_hash_index",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag high-cardinality deduplication done with linear container membership checks.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

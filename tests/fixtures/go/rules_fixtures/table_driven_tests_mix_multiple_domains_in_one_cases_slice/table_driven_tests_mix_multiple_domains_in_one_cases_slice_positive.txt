@@ -1,0 +1,30 @@
+package rulefixtures
+
+import (
+	"testing"
+)
+
+// scenario for table_driven_tests_mix_multiple_domains_in_one_cases_slice: Oversized case tables that mix unrelated behaviors into one monolithic test.
+// fixture polarity: positive; family: architecture; severity: info.
+func TestMixedDomainCases(t *testing.T) {
+	type testCase struct {
+		name      string
+		userID    int
+		orderID   int
+		paymentID int
+		wantError bool
+		wantMsg   string
+	}
+	cases := []testCase{
+		{name: "create user", userID: 1, wantError: false, wantMsg: "user created"},
+		{name: "ship order", orderID: 100, wantError: false, wantMsg: "order shipped"},
+		{name: "refund payment", paymentID: 500, wantError: true, wantMsg: "insufficient funds"},
+		{name: "delete user with open orders", userID: 2, orderID: 200, wantError: true, wantMsg: "orders still open"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			_ = tc.wantError
+			_ = tc.wantMsg
+		})
+	}
+}

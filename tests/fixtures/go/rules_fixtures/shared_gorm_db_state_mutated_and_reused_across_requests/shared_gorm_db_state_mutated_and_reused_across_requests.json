@@ -1,0 +1,14 @@
+{
+  "id": "shared_gorm_db_state_mutated_and_reused_across_requests",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Code that mutates shared `*gorm.DB` state and reuses it as if it were immutable configuration.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "metric_emission_occurs_per_item_inside_inner_loop",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag inner loops that emit one metric per item instead of aggregating.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

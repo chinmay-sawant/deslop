@@ -1,0 +1,51 @@
+def create_user(
+    username: str,
+    email: str,
+    first_name: str,
+    last_name: str,
+    age: int,
+    is_active: bool,
+    role: str,
+    department: str,
+    manager_id: int | None,
+    salary: float,
+    start_date: str,
+    phone: str,
+    address: str,
+    city: str,
+    state: str,
+    zip_code: str,
+) -> dict:
+    return {
+        "username": username,
+        "email": email,
+        "first_name": first_name,
+        "last_name": last_name,
+        "age": age,
+        "is_active": is_active,
+        "role": role,
+        "department": department,
+        "manager_id": manager_id,
+        "salary": salary,
+        "start_date": start_date,
+        "phone": phone,
+        "address": address,
+        "city": city,
+        "state": state,
+        "zip_code": zip_code,
+    }
+
+
+def send_email(
+    recipient: str,
+    sender: str,
+    subject: str,
+    body: str,
+    cc: str,
+    bcc: str,
+    priority: str,
+    format_type: str,
+    attachments: list[str],
+    read_receipt: bool,
+) -> bool:
+    pass

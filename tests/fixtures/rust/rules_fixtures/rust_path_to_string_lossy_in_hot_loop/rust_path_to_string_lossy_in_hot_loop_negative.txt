@@ -1,0 +1,6 @@
+fn report_files(root: &str) {
+    for entry in walkdir::WalkDir::new(root) {
+        let entry = entry.unwrap();
+        println!("file: {}", entry.path().display());
+    }
+}

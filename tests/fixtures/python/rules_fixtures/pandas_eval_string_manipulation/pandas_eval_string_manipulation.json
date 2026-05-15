@@ -1,0 +1,14 @@
+{
+  "id": "pandas_eval_string_manipulation",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Dynamic string building is fed into pandas eval/query calls, increasing injection and correctness risk.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

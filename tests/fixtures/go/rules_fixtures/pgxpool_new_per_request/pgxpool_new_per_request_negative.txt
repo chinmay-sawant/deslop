@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for pgxpool_new_per_request: pgxpool pools created on request paths instead of reused application-level state.
+// fixture polarity: negative; family: data_access; severity: warning.
+type Rule281NegativeRecord struct { ID int }
+
+func scenario281Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule281NegativeRecord{}).Error
+}

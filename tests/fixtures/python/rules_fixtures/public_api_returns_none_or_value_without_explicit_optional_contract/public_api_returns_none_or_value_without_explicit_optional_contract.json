@@ -1,0 +1,14 @@
+{
+  "id": "public_api_returns_none_or_value_without_explicit_optional_contract",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag public APIs that sometimes return None and sometimes a value without an explicit contract.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

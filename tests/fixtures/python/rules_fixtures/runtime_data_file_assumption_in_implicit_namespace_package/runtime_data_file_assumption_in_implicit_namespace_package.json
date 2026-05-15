@@ -1,0 +1,14 @@
+{
+  "id": "runtime_data_file_assumption_in_implicit_namespace_package",
+  "language": "python",
+  "family": "packaging",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag implicit namespace packages that assume local data-file discovery at runtime.",
+  "binding_location": "src/heuristics/python/packaging.rs"
+}

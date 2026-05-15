@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_method_imports_http_status_or_abort_semantics: Services that depend on transport-specific status constants, abort helpers, or Gin response behavior.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule173NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule173NegativeService interface {
+	Run(context.Context, Rule173NegativeRecord) error
+}
+
+func scenario173Negative(ctx context.Context, service Rule173NegativeService, input Rule173NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

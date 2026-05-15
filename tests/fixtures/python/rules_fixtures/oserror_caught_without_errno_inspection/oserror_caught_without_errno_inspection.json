@@ -1,0 +1,14 @@
+{
+  "id": "oserror_caught_without_errno_inspection",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "OSError caught as a broad class without inspecting errno to distinguish ENOENT, EACCES, and others.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"bytes"
+)
+
+// scenario for bytes_buffer_truncate_zero_reset: `buf.Truncate(0)` instead of `buf.Reset()`.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario447Negative(haystack []byte, needle []byte, left []byte, right []byte) bool {
+	return bytes.Contains(haystack, needle)
+}

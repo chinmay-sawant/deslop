@@ -1,0 +1,39 @@
+import os
+import json
+import tempfile
+
+
+def save_config_atomically(config_path: str, data: dict):
+    dir_name = os.path.dirname(config_path)
+    fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(data, f, indent=2)
+        os.replace(tmp_path, config_path)
+    except Exception:
+        os.unlink(tmp_path)
+        raise
+
+
+def update_state_file(state_path: str, state: dict):
+    dir_name = os.path.dirname(state_path)
+    fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(state, f)
+        os.replace(tmp_path, state_path)
+    except Exception:
+        os.unlink(tmp_path)
+        raise
+
+
+def write_lock_file(lock_path: str, pid: int):
+    dir_name = os.path.dirname(lock_path)
+    fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            f.write(str(pid))
+        os.replace(tmp_path, lock_path)
+    except Exception:
+        os.unlink(tmp_path)
+        raise

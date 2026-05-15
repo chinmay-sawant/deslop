@@ -1,0 +1,14 @@
+{
+  "id": "cobra_flag_lookup_in_run",
+  "language": "go",
+  "family": "library",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`cmd.Flags().GetString(\"flag\")` inside `RunE` when the flag could be bound to a variable with `StringVar`",
+  "binding_location": "src/heuristics/go/library_misuse/library.rs"
+}

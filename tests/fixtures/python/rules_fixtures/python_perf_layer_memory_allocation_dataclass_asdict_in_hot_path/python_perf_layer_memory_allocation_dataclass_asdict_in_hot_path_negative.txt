@@ -1,0 +1,27 @@
+from dataclasses import dataclass
+
+@dataclass
+class Event:
+    id: int
+    type: str
+    payload: dict
+    timestamp: float
+
+def serialize_events(events):
+    results = []
+    for event in events:
+        d = {
+            "id": event.id,
+            "type": event.type,
+            "payload": event.payload,
+            "timestamp": event.timestamp,
+            "serialized": True,
+        }
+        results.append(d)
+    return results
+
+def build_report(events):
+    rows = []
+    for event in events:
+        rows.append(f"{event.id},{event.type},{event.timestamp}")
+    return "\n".join(rows)

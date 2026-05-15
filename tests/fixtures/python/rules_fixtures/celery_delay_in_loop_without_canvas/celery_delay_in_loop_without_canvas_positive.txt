@@ -1,0 +1,22 @@
+from myapp.tasks import send_notification, process_item, generate_report
+
+
+def notify_all_users(users):
+    for user in users:
+        send_notification.delay(user.email, "Your report is ready")
+
+
+def batch_process_items(items):
+    for item in items:
+        process_item.apply_async(args=[item.id], countdown=10)
+
+
+def generate_reports_for_team(team_members):
+    for member in team_members:
+        generate_report.delay(member.id, member.department)
+
+
+def enqueue_orders(orders):
+    for order in orders:
+        process_item.delay(order.id)
+        send_notification.delay(order.customer_email, "Order processed")

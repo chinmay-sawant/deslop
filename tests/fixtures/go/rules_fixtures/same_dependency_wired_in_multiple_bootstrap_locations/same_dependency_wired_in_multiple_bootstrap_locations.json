@@ -1,0 +1,14 @@
+{
+  "id": "same_dependency_wired_in_multiple_bootstrap_locations",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Duplicated construction of the same service or client in several startup files.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

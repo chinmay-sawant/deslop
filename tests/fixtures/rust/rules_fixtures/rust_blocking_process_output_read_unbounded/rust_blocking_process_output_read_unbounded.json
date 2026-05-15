@@ -1,0 +1,14 @@
+{
+  "id": "rust_blocking_process_output_read_unbounded",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `Command::output()` or piped process reads where stdout/stderr may be large and no size bound exists.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

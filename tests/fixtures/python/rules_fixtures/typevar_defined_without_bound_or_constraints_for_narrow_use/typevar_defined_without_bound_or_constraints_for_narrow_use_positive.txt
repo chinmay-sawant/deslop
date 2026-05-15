@@ -1,0 +1,28 @@
+from typing import TypeVar
+
+T = TypeVar("T")
+
+def first(items: list[T]) -> T:
+    return items[0]
+
+def last(items: list[T]) -> T:
+    return items[-1]
+
+def clamp(value: T, low: T, high: T) -> T:
+    return max(low, min(value, high))
+
+def pick_longer(a: T, b: T) -> T:
+    if len(a) >= len(b):
+        return a
+    return b
+
+def merge_dicts(a: dict[str, T], b: dict[str, T]) -> dict[str, T]:
+    result = dict(a)
+    result.update(b)
+    return result
+
+K = TypeVar("K")
+V = TypeVar("V")
+
+def invert_mapping(d: dict[K, V]) -> dict[V, K]:
+    return {v: k for k, v in d.items()}

@@ -1,0 +1,14 @@
+{
+  "id": "range_copy_large_struct",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`for _, v := range largeStructSlice` where the struct is > 64 bytes",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

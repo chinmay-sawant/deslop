@@ -1,0 +1,23 @@
+fn has_active_users(users: &[User]) -> bool {
+    // BAD: collects into Vec just to check if empty
+    let active: Vec<&User> = users.iter().filter(|u| u.is_active).collect();
+    !active.is_empty()
+}
+
+fn count_admins(users: &[User]) -> usize {
+    // BAD: collects into Vec just to get count
+    let admins: Vec<&User> = users.iter().filter(|u| u.role == Role::Admin).collect();
+    admins.len()
+}
+
+struct User {
+    name: String,
+    role: Role,
+    is_active: bool,
+}
+
+enum Role {
+    Admin,
+    Member,
+    Guest,
+}

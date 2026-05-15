@@ -1,0 +1,24 @@
+from collections import namedtuple
+
+Point = namedtuple("Point", ["x", "y", "z"])
+Record = namedtuple("Record", ["id", "name", "value", "timestamp"])
+
+def process_points(points: list) -> list:
+    results = []
+    for p in points:
+        point = Point(p[0], p[1], p[2])
+        results.append(point[0] + point[1] + point[2])
+    return results
+
+def get_record_values(records: list) -> list:
+    values = []
+    for r in records:
+        record = Record(r["id"], r["name"], r["value"], r["timestamp"])
+        values.append(record[2])
+    return values
+
+def format_record(record: Record) -> str:
+    return f"ID: {record[0]}, Name: {record[1]}, Value: {record[2]}"
+
+def compare_points(p1: Point, p2: Point) -> bool:
+    return p1[0] == p2[0] and p1[1] == p2[1] and p1[2] == p2[2]

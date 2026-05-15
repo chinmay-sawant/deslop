@@ -1,0 +1,20 @@
+import inspect
+
+def dispatch(handlers, event):
+    for handler in handlers:
+        sig = inspect.signature(handler)
+        params = list(sig.parameters.keys())
+        if "event" in params:
+            handler(event=event)
+        else:
+            handler()
+
+def validate_payload(schema_class, payload):
+    schema = schema_class()
+    fields = inspect.getmembers(schema, lambda a: not callable(a))
+    for name, _ in fields:
+        if name.startswith("_"):
+            continue
+        if name not in payload:
+            raise ValueError(f"Missing field: {name}")
+    return payload

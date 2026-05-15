@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_resource_pooling_connection_pool_without_limits",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Resource pooling. Flag connection pools missing max size, idle, or timeout controls.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

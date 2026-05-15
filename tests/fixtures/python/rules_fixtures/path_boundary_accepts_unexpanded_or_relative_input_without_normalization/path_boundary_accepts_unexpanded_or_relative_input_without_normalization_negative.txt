@@ -1,0 +1,22 @@
+import os
+from pathlib import Path
+
+
+def read_file(user_path: str) -> str:
+    resolved = Path(user_path).expanduser().resolve()
+    if not str(resolved).startswith("/app/data"):
+        raise ValueError("Path outside allowed directory")
+    with open(resolved, "r") as f:
+        return f.read()
+
+
+def save_upload(filename: str, content: str) -> None:
+    safe_name = Path(filename).name
+    path = Path("/app/uploads") / safe_name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content)
+
+
+def resolve_config(config_path: str) -> str:
+    resolved = Path(config_path).expanduser().resolve()
+    return resolved.read_text()

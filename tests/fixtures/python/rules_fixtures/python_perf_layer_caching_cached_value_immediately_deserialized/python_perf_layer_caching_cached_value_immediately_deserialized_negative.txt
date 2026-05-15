@@ -1,0 +1,17 @@
+cache = {}
+
+
+def get_user_config(user_id: str) -> dict:
+    config = cache.get(f"config:{user_id}")
+    if config is None:
+        config = fetch_config(user_id)
+        cache[f"config:{user_id}"] = config
+    return config
+
+
+def get_settings(app_id: str) -> dict:
+    settings = cache.get(f"settings:{app_id}")
+    if settings is None:
+        settings = load_settings(app_id)
+        cache[f"settings:{app_id}"] = settings
+    return settings

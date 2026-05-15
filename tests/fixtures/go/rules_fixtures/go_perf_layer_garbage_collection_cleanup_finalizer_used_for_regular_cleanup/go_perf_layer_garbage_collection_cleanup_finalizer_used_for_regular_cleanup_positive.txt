@@ -1,0 +1,22 @@
+package rulefixtures
+
+import "runtime"
+
+// scenario for go_perf_layer_garbage_collection_cleanup_finalizer_used_for_regular_cleanup: Layer: Garbage collection and cleanup. Flag runtime.SetFinalizer use for ordinary resource cleanup instead of explicit Close ownership.
+// fixture polarity: positive; family: performance; severity: contextual.
+type scenario539Resource struct {
+	fd int
+}
+
+func (r *scenario539Resource) Close() error {
+	r.fd = -1
+	return nil
+}
+
+func scenario539Positive(fd int) *scenario539Resource {
+	r := &scenario539Resource{fd: fd}
+	runtime.SetFinalizer(r, func(obj *scenario539Resource) {
+		obj.Close()
+	})
+	return r
+}

@@ -1,0 +1,34 @@
+struct ServerConfig {
+    host: String,
+    port: u16,
+    max_connections: usize,
+    timeout: Duration,
+    tls: Option<TlsConfig>,
+    log_level: LogLevel,
+    worker_threads: usize,
+    max_request_size: usize,
+}
+
+struct TlsConfig {
+    cert_path: String,
+    key_path: String,
+}
+
+enum LogLevel {
+    Debug,
+    Info,
+    Warn,
+    Error,
+}
+
+impl ServerConfig {
+    fn validate(&self) -> Result<(), ConfigError> {
+        if self.port == 0 {
+            return Err(ConfigError::InvalidPort);
+        }
+        if self.max_connections == 0 {
+            return Err(ConfigError::InvalidMaxConnections);
+        }
+        Ok(())
+    }
+}

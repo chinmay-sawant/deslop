@@ -1,0 +1,26 @@
+use criterion::{criterion_group, criterion_main, Criterion, measurement::WallTime};
+use allocator_api2::alloc::Global;
+
+fn bench_string_concat(c: &mut Criterion) {
+    let items: Vec<String> = (0..1000).map(|i| format!("item_{}", i)).collect();
+    // GOOD: track allocation counts in allocation-sensitive benchmark
+    c.bench_function("string_concat", |b| {
+        b.iter_custom(|iters| {
+            let mut total_duration = std::time::Duration::ZERO;
+            for _ in 0..iters {
+                let start = std::time::Instant::now();
+                let mut result = String::new();
+                for item in &items {
+                    result.push_str(item);
+                    result.push(',');
+                }
+                total_duration += start.elapsed();
+                std::hint::black_box(&result);
+            }
+            total_duration
+        })
+    });
+}
+
+criterion_group!(benches, bench_string_concat);
+criterion_main!(benches);

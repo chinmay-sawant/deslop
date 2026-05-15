@@ -1,0 +1,14 @@
+{
+  "id": "test_depends_on_sibling_test_side_effects",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test function depends on state left behind by a sibling test in the same module.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

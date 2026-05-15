@@ -1,0 +1,14 @@
+{
+  "id": "celery_task_reads_env_per_invocation",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Celery task bodies repeatedly read environment configuration instead of using startup-time bootstrap.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

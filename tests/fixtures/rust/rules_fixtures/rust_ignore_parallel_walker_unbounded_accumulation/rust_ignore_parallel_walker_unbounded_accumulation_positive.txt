@@ -1,0 +1,13 @@
+use std::sync::Mutex;
+use walkdir::WalkDir;
+
+fn collect_all_paths(root: &str) -> Vec<String> {
+    let results = Mutex::new(Vec::new());
+    WalkDir::new(root)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .for_each(|e| {
+            results.lock().unwrap().push(e.path().to_string_lossy().to_string());
+        });
+    results.into_inner().unwrap()
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for service_tests_import_gin: Service-level tests that depend on Gin when the service contract is supposed to be transport-neutral.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule182NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule182NegativeService interface {
+	Run(context.Context, Rule182NegativeRecord) error
+}
+
+func scenario182Negative(ctx context.Context, service Rule182NegativeService, input Rule182NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,48 @@
+package rulefixtures
+
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
+
+// scenario for repository_mixes_raw_sql_and_gorm_same_method_without_adapter_boundary: Repository methods that mix raw SQL and ORM clauses with no clear boundary.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type OrderLine struct {
+	ID       uint    `gorm:"primaryKey"`
+	OrderID  uint    `gorm:"index"`
+	SKU      string  `gorm:"size:64"`
+	Quantity int
+	Price    float64
+}
+
+type OrderLineRepo struct {
+	db *gorm.DB
+}
+
+func NewOrderLineRepo(db *gorm.DB) *OrderLineRepo {
+	return &OrderLineRepo{db: db}
+}
+
+func (r *OrderLineRepo) GetOrderSummary(orderID uint) (map[string]interface{}, error) {
+	var items []OrderLine
+	r.db.Where("order_id = ?", orderID).Find(&items)
+
+	var result map[string]interface{}
+	rawSQL := "SELECT SUM(quantity) AS total_qty, SUM(quantity * price) AS total_value FROM order_lines WHERE order_id = ?"
+	row := r.db.Raw(rawSQL, orderID).Row()
+	var totalQty, totalValue float64
+	if err := row.Scan(&totalQty, &totalValue); err != nil {
+		return nil, err
+	}
+
+	result = map[string]interface{}{
+		"item_count":  len(items),
+		"total_qty":   totalQty,
+		"total_value": totalValue,
+	}
+	return result, nil
+}
+
+var _ = fmt.Println

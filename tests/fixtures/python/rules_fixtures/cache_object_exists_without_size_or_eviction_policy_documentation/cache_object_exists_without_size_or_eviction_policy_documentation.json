@@ -1,0 +1,14 @@
+{
+  "id": "cache_object_exists_without_size_or_eviction_policy_documentation",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag caches that exist as long-lived process state with no documented retention policy.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "reflection_hot_path",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "reflect package calls inside loops.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

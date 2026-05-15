@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_resource_pooling_large_buffer_pool_without_cap",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Resource pooling. Flag reusable buffer pools that keep oversized buffers after traffic spikes.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

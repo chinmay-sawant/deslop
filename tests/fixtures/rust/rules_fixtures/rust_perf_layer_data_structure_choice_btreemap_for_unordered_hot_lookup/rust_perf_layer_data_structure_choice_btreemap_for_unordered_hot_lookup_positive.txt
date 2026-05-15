@@ -1,0 +1,15 @@
+use std::collections::BTreeMap;
+
+fn lookup_prices(
+    prices: &BTreeMap<String, f64>,
+    product_ids: &[String],
+) -> Vec<f64> {
+    let mut results = Vec::new();
+    for id in product_ids {
+        // BAD: BTreeMap O(log n) lookup when ordering is not needed
+        if let Some(price) = prices.get(id) {
+            results.push(*price);
+        }
+    }
+    results
+}

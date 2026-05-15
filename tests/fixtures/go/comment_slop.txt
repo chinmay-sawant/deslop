@@ -1,7 +1,0 @@
-package sample
-
-// Process User Input And Validate It
-// This function does X by doing Y because Z.
-func processUserInputAndValidateIt(value string) string {
-	return value
-}

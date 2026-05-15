@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gin_handler_mixes_html_json_and_file_responses: Handlers that serve fundamentally different transport modes from one function.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule045NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule045NegativeService interface {
+	Run(context.Context, Rule045NegativeRecord) error
+}
+
+func scenario045Negative(ctx context.Context, service Rule045NegativeService, input Rule045NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

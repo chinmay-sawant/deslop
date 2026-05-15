@@ -1,0 +1,38 @@
+import asyncio
+
+class EventBus:
+    def __init__(self):
+        self._handlers: dict[str, list] = {}
+
+    def subscribe(self, event_type: str, handler) -> None:
+        self._handlers.setdefault(event_type, []).append(handler)
+
+    def publish(self, event_type: str, data: dict) -> None:
+        for handler in self._handlers.get(event_type, []):
+            handler(data)
+
+def process_results(results):
+    aggregated = []
+    for item in results:
+        aggregated.append(item)
+    return aggregated
+
+async def fetch_data():
+    return {"value": 42}
+
+bus = EventBus()
+coro = fetch_data()
+bus.subscribe("data_ready", process_results)
+bus.publish("data_ready", coro)
+
+class TaskQueue:
+    def add(self, task) -> None:
+        self._tasks.append(task)
+
+    def run_all(self):
+        for task in self._tasks:
+            task()
+
+queue = TaskQueue()
+queue.add(fetch_data())
+queue.run_all()

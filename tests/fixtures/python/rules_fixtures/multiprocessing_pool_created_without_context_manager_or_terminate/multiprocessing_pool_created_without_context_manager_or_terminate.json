@@ -1,0 +1,14 @@
+{
+  "id": "multiprocessing_pool_created_without_context_manager_or_terminate",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "multiprocessing.Pool created without a context manager or explicit .terminate() call, leaking worker processes.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

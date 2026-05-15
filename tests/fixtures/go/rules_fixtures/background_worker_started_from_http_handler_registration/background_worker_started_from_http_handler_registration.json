@@ -1,0 +1,14 @@
+{
+  "id": "background_worker_started_from_http_handler_registration",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Route or middleware setup that also starts unrelated background jobs.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

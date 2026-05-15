@@ -1,0 +1,17 @@
+use std::io::{self, Write, BufWriter};
+
+fn write_records<W: Write>(writer: &mut BufWriter<W>, records: &[String]) -> io::Result<()> {
+    for record in records {
+        writeln!(writer, "{}", record)?;
+        writer.flush()?;
+    }
+    Ok(())
+}
+
+fn emit_batch<W: Write>(writer: &mut W, items: &[u64]) -> io::Result<()> {
+    for item in items {
+        write!(writer, "{}\n", item)?;
+        writer.flush()?;
+    }
+    Ok(())
+}

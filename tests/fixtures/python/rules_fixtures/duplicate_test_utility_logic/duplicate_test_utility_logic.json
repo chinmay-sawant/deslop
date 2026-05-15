@@ -1,0 +1,14 @@
+{
+  "id": "duplicate_test_utility_logic",
+  "language": "python",
+  "family": "duplication",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Highly similar utility logic shared between test and production code.",
+  "binding_location": "src/heuristics/python/duplication.rs"
+}

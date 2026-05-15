@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_hot_path_optimization_schema_parsed_inside_handler",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Hot path optimization. Flag schemas, templates, or expressions parsed per request instead of precompiled once.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

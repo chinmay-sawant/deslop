@@ -1,0 +1,20 @@
+use rayon::prelude::*;
+
+// BAD: par_bridge on small or indexed collections
+fn process_few_items() {
+    let items = vec![1, 2, 3, 4, 5];
+    // par_bridge overhead dominates for tiny collections
+    let results: Vec<i32> = items.into_iter()
+        .par_bridge()
+        .map(|x| x * 2)
+        .collect();
+}
+
+fn process_slice(data: &[u8]) -> Vec<u8> {
+    // par_bridge on indexed slice where par_iter works directly
+    data.iter()
+        .par_bridge()
+        .map(|b| b.wrapping_add(1))
+        .copied()
+        .collect()
+}

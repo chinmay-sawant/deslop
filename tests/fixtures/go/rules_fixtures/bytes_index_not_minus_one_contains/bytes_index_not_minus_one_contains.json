@@ -1,0 +1,14 @@
+{
+  "id": "bytes_index_not_minus_one_contains",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`bytes.Index(...) != -1` presence checks instead of `bytes.Contains(...)`.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

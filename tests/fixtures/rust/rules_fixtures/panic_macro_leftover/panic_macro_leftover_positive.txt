@@ -1,0 +1,23 @@
+pub fn divide(a: i64, b: i64) -> i64 {
+    if b == 0 {
+        panic!("division by zero");
+    }
+    a / b
+}
+
+pub fn parse_port(s: &str) -> u16 {
+    let port: u16 = s.parse().unwrap_or_else(|_| {
+        panic!("invalid port number: {s}");
+    });
+    if port == 0 {
+        panic!("port must be non-zero");
+    }
+    port
+}
+
+pub fn get_config_value(key: &str) -> String {
+    match std::env::var(key) {
+        Ok(val) => val,
+        Err(_) => panic!("required environment variable {key} is not set"),
+    }
+}

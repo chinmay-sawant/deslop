@@ -1,0 +1,14 @@
+{
+  "id": "multiple_config_sources_merged_without_documented_precedence_order",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Application merges environment variables, config files, and defaults without explicit precedence documentation.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

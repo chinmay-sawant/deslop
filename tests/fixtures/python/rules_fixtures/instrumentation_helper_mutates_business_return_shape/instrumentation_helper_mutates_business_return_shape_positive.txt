@@ -1,0 +1,32 @@
+import time
+from functools import wraps
+
+
+def timed(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        elapsed = time.time() - start
+        if isinstance(result, dict):
+            result["_elapsed_ms"] = elapsed * 1000
+            result["_instrumented"] = True
+            return result
+        return {"result": result, "_elapsed_ms": elapsed * 1000}
+    return wrapper
+
+
+@timed
+def get_order(order_id: int) -> dict:
+    return {"id": order_id, "total": 99.99, "status": "shipped"}
+
+
+@timed
+def calculate_discount(amount: float) -> float:
+    return amount * 0.1
+
+
+order = get_order(42)
+assert "_elapsed_ms" in order
+discount = calculate_discount(100.0)
+assert isinstance(discount, dict)

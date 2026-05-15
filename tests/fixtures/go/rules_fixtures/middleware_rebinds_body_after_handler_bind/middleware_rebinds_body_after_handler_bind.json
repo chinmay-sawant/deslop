@@ -1,0 +1,14 @@
+{
+  "id": "middleware_rebinds_body_after_handler_bind",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Middleware or helper chains that parse the request body after the main handler has already bound it.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

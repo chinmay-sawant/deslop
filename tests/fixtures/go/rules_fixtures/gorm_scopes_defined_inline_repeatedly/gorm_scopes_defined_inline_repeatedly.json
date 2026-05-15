@@ -1,0 +1,14 @@
+{
+  "id": "gorm_scopes_defined_inline_repeatedly",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated ad hoc scope functions instead of shared named scopes.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for gorm_locking_clauses_built_outside_repository: `FOR UPDATE` or similar locking behavior built in handlers or services instead of repository-owned methods.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule060NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule060NegativeService interface {
+	Run(context.Context, Rule060NegativeRecord) error
+}
+
+func scenario060Negative(ctx context.Context, service Rule060NegativeService, input Rule060NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

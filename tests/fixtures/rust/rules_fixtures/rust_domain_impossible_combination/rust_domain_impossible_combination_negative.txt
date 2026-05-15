@@ -1,0 +1,20 @@
+enum AuthMode {
+    Disabled,
+    TokenAuth { token: String },
+    ApiKeyAuth { api_key: String },
+}
+
+impl AuthMode {
+    fn is_enabled(&self) -> bool {
+        !matches!(self, AuthMode::Disabled)
+    }
+}
+
+enum TlsConfig {
+    Disabled,
+    Enabled { cert_path: String, key_path: String },
+}
+
+struct DatabaseConfig {
+    tls: TlsConfig,
+}

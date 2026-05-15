@@ -6,7 +6,7 @@ PATH_TO_SCAN_GOPDFSUIT ?= /home/chinmay/ChinmayPersonalProjects/gopdfsuit
 PATH_TO_SCAN_SNAPBACK ?= /home/chinmay/ChinmayPersonalProjects/SnapBack
 PATH_TO_SCAN ?= .
 PATH_TO_SCAN_CLAW ?= /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/claw-code-main
-WSL_REPO_ROOT ?= /home/chinmay/ChinmayPersonalProjects/deslop-codex
+WSL_REPO_ROOT ?= /home/chinmay/ChinmayPersonalProjects/deslop
 CARGO ?= cargo
 
 ifeq ($(OS),Windows_NT)

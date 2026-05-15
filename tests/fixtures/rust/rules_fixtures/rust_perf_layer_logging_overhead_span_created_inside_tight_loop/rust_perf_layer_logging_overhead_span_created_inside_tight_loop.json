@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_logging_overhead_span_created_inside_tight_loop",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Logging overhead. Flag tracing span construction in very tight loops without sampling or aggregation.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

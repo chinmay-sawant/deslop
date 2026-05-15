@@ -1,0 +1,30 @@
+import logging
+
+from sqlalchemy.exc import IntegrityError, OperationalError
+
+logger = logging.getLogger(__name__)
+
+
+def _safe_create(session, entity, error_label):
+    try:
+        session.add(entity)
+        session.commit()
+        return entity
+    except IntegrityError:
+        session.rollback()
+        logger.error("Duplicate %s", error_label)
+        return None
+    except OperationalError:
+        session.rollback()
+        logger.error("Database connection failed during %s creation", error_label)
+        return None
+
+
+def create_user(data):
+    user = User(name=data["name"], email=data["email"])
+    return _safe_create(db.session, user, "user")
+
+
+def create_order(data):
+    order = Order(customer_id=data["customer_id"], total=data["total"])
+    return _safe_create(db.session, order, "order")

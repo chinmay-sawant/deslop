@@ -1,0 +1,50 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"fmt"
+	"net/http"
+	"os"
+
+	_ "github.com/lib/pq"
+)
+
+// scenario for bootstrap_builds_clients_inside_route_registration: Startup code that hides dependency construction inside route registration functions.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func RegisterRoutes(mux *http.ServeMux) {
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Printf("db connection failed: %v\n", err)
+		return
+	}
+
+	redisClient := newRedisClient(os.Getenv("REDIS_URL"))
+
+	httpClient := &http.Client{}
+
+	mux.HandleFunc("/api/users", func(w http.ResponseWriter, r *http.Request) {
+		rows, err := db.QueryContext(r.Context(), "SELECT id, name FROM users")
+		if err != nil {
+			http.Error(w, "db error", http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+		fmt.Fprintln(w, "users listed")
+	})
+
+	mux.HandleFunc("/api/cache", func(w http.ResponseWriter, r *http.Request) {
+		redisClient.Get(r.Context(), "some-key")
+		fmt.Fprintln(w, "cache hit")
+	})
+
+	mux.HandleFunc("/api/proxy", func(w http.ResponseWriter, r *http.Request) {
+		httpClient.Get("https://upstream.example.com/data")
+		fmt.Fprintln(w, "proxy done")
+	})
+}
+
+func newRedisClient(addr string) *fakeRedisClient { return &fakeRedisClient{} }
+
+type fakeRedisClient struct{}
+func (f *fakeRedisClient) Get(ctx interface{}, key string) (string, error) { return "", nil }

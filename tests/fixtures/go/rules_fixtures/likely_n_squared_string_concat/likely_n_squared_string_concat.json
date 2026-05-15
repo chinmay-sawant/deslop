@@ -1,0 +1,15 @@
+{
+  "id": "likely_n_squared_string_concat",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "experimental",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override",
+    "go_semantic_experimental"
+  ],
+  "description": "Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

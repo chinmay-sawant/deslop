@@ -1,0 +1,22 @@
+use std::process::{Command, Stdio};
+use std::io::Write;
+
+fn process_files(paths: &[&str]) -> Vec<String> {
+    // GOOD: single long-lived worker process with stdin/stdout
+    let mut child = Command::new("wc")
+        .arg("-l")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .expect("failed to spawn wc");
+
+    let stdin = child.stdin.as_mut().unwrap();
+    for path in paths {
+        writeln!(stdin, "{}", path).unwrap();
+    }
+    drop(child.stdin.take());
+
+    let output = child.wait_with_output().expect("failed to read output");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    stdout.lines().map(|l| l.to_string()).collect()
+}

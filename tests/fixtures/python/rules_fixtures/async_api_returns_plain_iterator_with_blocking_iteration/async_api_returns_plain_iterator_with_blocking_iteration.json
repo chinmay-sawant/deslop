@@ -1,0 +1,14 @@
+{
+  "id": "async_api_returns_plain_iterator_with_blocking_iteration",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag async-facing APIs that return plain iterators whose consumption can still block.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

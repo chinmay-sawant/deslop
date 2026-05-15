@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for dto_to_model_mapping_in_handler: Handlers that own transport-to-model mapping instead of dedicated mappers or services.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule029NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule029NegativeService interface {
+	Run(context.Context, Rule029NegativeRecord) error
+}
+
+func scenario029Negative(ctx context.Context, service Rule029NegativeService, input Rule029NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

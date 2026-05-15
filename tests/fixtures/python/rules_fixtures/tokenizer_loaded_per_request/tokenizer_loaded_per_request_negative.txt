@@ -1,0 +1,24 @@
+from fastapi import FastAPI, Request
+from transformers import AutoTokenizer
+
+app = FastAPI()
+
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+
+def get_user_embedding(text: str) -> list[float]:
+    tokens = tokenizer.encode(text, max_length=128, truncation=True)
+    return [float(t) for t in tokens]
+
+@app.post("/embed")
+async def embed_text(request: Request):
+    body = await request.json()
+    tokens = tokenizer.encode(body["text"])
+    return {"tokens": tokens, "count": len(tokens)}
+
+@app.post("/tokenize-batch")
+async def tokenize_batch(request: Request):
+    body = await request.json()
+    results = []
+    for item in body["items"]:
+        results.append(tokenizer.encode(item["text"]))
+    return {"results": results}

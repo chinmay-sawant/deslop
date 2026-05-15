@@ -1,0 +1,22 @@
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+
+class CreateUserRequest(BaseModel):
+    email: str
+    name: str
+    role: str = "user"
+
+
+class UserRepository:
+    def __init__(self, session: Session):
+        self.session = session
+
+    def create_user(self, request: CreateUserRequest):
+        user = User(email=request.email, name=request.name, role=request.role)
+        self.session.add(user)
+        self.session.commit()
+        return user
+
+    def find_by_email(self, request: CreateUserRequest):
+        return self.session.query(User).filter_by(email=request.email).first()

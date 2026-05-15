@@ -1,0 +1,18 @@
+class AppError(Exception):
+    pass
+
+
+class InvalidCredentials(AppError):
+    pass
+
+
+class ResourceNotFound(AppError):
+    pass
+
+
+class PaymentDeclined(AppError):
+    pass
+
+
+class RateLimitExceeded(AppError):
+    pass

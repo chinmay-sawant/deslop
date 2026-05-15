@@ -1,0 +1,22 @@
+def calculate_area(width: float, height: float) -> float:
+    # Multiply width by height to get area
+    return width * height
+
+def is_even(number: int) -> bool:
+    # Check if number is divisible by 2
+    return number % 2 == 0
+
+def get_first_item(items: list):
+    # Return the first item from the list
+    return items[0]
+
+def merge_dicts(dict1: dict, dict2: dict) -> dict:
+    # Create a new dict and update it with both dicts
+    result = {}
+    result.update(dict1)
+    result.update(dict2)
+    return result
+
+def format_name(first: str, last: str) -> str:
+    # Concatenate first and last name with a space
+    return f"{first} {last}"

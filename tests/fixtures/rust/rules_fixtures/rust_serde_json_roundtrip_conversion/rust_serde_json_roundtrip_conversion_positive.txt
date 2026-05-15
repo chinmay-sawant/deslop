@@ -1,0 +1,36 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+struct User {
+    name: String,
+    email: String,
+    age: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct UserProfile {
+    display_name: String,
+    contact_email: String,
+}
+
+fn convert_user_to_profile(user: &User) -> Result<UserProfile, Box<dyn std::error::Error>> {
+    let value = serde_json::to_value(user)?;
+    let profile = serde_json::from_value(value)?;
+    Ok(profile)
+}
+
+fn roundtrip_via_string(user: &User) -> Result<UserProfile, Box<dyn std::error::Error>> {
+    let json_str = serde_json::to_string(user)?;
+    let profile = serde_json::from_str(&json_str)?;
+    Ok(profile)
+}
+
+fn main() {
+    let user = User {
+        name: "Alice".into(),
+        email: "alice@example.com".into(),
+        age: 30,
+    };
+    let profile = convert_user_to_profile(&user).unwrap();
+    let profile2 = roundtrip_via_string(&user).unwrap();
+}

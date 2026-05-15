@@ -1,0 +1,21 @@
+package rulefixtures
+
+import (
+	"errors"
+	"fmt"
+)
+
+// scenario for string_format_for_error_wrap: `fmt.Errorf("failed: %s", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`
+// fixture polarity: positive; family: performance; severity: warning.
+
+func scenario647Positive(userID int) error {
+	err := fetchUser(userID)
+	if err != nil {
+		return fmt.Errorf("failed to fetch user %d: %s", userID, err.Error())
+	}
+	return nil
+}
+
+func fetchUser(id int) error {
+	return errors.New("user not found")
+}

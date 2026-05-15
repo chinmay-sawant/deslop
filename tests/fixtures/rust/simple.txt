@@ -1,8 +1,0 @@
-pub fn sum_pair(left: i32, right: i32) -> i32 {
-    left + right
-}
-
-pub fn render_summary() {
-    let total = sum_pair(20, 22);
-    println!("summary: {total}");
-}

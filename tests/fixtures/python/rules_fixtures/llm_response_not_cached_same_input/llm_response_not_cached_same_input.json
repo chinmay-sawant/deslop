@@ -1,0 +1,14 @@
+{
+  "id": "llm_response_not_cached_same_input",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repeated LLM calls show no visible caching even when prompt inputs appear likely to repeat.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

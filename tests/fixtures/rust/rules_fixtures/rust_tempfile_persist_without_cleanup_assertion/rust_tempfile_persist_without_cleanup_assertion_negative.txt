@@ -1,0 +1,30 @@
+use tempfile::NamedTempFile;
+
+#[test]
+fn test_persist_with_cleanup() {
+    let tmpfile = NamedTempFile::new().unwrap();
+    std::fs::write(tmpfile.path(), "test data").unwrap();
+    let final_path = tmpfile.persist("/tmp/output.txt").unwrap();
+    assert!(final_path.exists());
+    let _cleanup = scopeguard::guard(final_path.clone(), |p| {
+        let _ = std::fs::remove_file(p);
+    });
+}
+
+#[test]
+fn test_keep_with_explicit_cleanup() {
+    let tmpfile = NamedTempFile::new().unwrap();
+    std::fs::write(tmpfile.path(), "data").unwrap();
+    let path = tmpfile.into_temp_path().keep().unwrap();
+    assert!(path.exists());
+    let _ = std::fs::remove_file(&path);
+    assert!(!path.exists());
+}
+
+#[test]
+fn test_temp_path_scope() {
+    let tmpfile = NamedTempFile::new().unwrap();
+    std::fs::write(tmpfile.path(), "scoped data").unwrap();
+    let path = tmpfile.path().to_path_buf();
+    assert!(path.exists());
+}

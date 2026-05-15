@@ -1,0 +1,32 @@
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+use tokio::time::{sleep, Duration};
+
+struct Cache {
+    store: Mutex<HashMap<String, String>>,
+}
+
+impl Cache {
+    fn get(&self, key: &str) -> Option<String> {
+        self.store.lock().unwrap().get(key).cloned()
+    }
+
+    fn insert(&self, key: String, value: String) {
+        self.store.lock().unwrap().insert(key, value);
+    }
+}
+
+async fn expensive_compute(key: &str) -> String {
+    sleep(Duration::from_millis(100)).await;
+    format!("computed_{}", key)
+}
+
+async fn get_or_compute(cache: Arc<Cache>, key: String) -> String {
+    if let Some(val) = cache.get(&key) {
+        return val;
+    }
+    // BAD: concurrent requests for same key duplicate the work
+    let val = expensive_compute(&key).await;
+    cache.insert(key, val.clone());
+    val
+}

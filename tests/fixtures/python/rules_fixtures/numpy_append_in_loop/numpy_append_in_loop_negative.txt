@@ -1,0 +1,14 @@
+import numpy as np
+from typing import List
+
+def compute_features(data: List[float]) -> np.ndarray:
+    values = np.array(data)
+    return np.sin(values) + np.cos(values)
+
+def aggregate_scores(scores: List[np.ndarray]) -> np.ndarray:
+    normalized = [(s - s.mean()) / s.std() for s in scores]
+    return np.concatenate(normalized)
+
+def build_matrix(rows: List[List[float]]) -> np.ndarray:
+    arr = np.array(rows)
+    return arr ** 2

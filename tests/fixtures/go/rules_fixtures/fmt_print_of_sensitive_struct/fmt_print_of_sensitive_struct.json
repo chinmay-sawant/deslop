@@ -1,0 +1,14 @@
+{
+  "id": "fmt_print_of_sensitive_struct",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`fmt.Sprintf(\"%+v\", user)` or `fmt.Printf(\"%v\", config)` on structs that contain password/secret/token fields",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

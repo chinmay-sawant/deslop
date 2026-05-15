@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_io_operations_metadata_before_open_without_need",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: I/O operations. Flag fs::metadata calls immediately followed by open/read without using metadata meaningfully.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

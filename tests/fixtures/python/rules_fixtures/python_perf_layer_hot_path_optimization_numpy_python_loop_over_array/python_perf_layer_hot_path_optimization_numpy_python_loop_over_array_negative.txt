@@ -1,0 +1,7 @@
+import numpy as np
+
+def normalize_scores(scores):
+    return scores / 255.0
+
+def apply_threshold(values, threshold):
+    return np.where(values > threshold, values, 0.0)

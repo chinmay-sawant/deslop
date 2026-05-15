@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"net/http"
+	redis "github.com/redis/go-redis/v9"
+)
+
+// scenario for redis_keys_command_in_handler: `rdb.Keys(ctx, pattern)` in handler or loop code
+// fixture polarity: positive; family: library; severity: warning.
+func scenario425Positive(w http.ResponseWriter, r *http.Request) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+	defer rdb.Close()
+
+	keys, err := rdb.Keys(r.Context(), "user:*").Result()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	for _, key := range keys {
+		w.Write([]byte(key + "\n"))
+	}
+}

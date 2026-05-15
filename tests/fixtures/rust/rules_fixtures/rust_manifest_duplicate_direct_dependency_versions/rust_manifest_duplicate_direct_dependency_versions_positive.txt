@@ -1,0 +1,5 @@
+pub fn duplicate_versions_exist() -> bool {
+    let app = "serde = \"1.0.180\"";
+    let lib = "serde = \"1.0.190\"";
+    app != lib
+}

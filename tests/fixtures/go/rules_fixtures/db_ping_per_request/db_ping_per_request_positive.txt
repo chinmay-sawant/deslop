@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"context"
+	"database/sql"
+	"net/http"
+)
+
+// scenario for db_ping_per_request: database Ping(...) or PingContext(...) called on request paths instead of startup or explicit health checks.
+// fixture polarity: positive; family: data_access; severity: contextual.
+type Rule254PositiveRecord struct {
+	db *sql.DB
+}
+
+func scenario254Positive(w http.ResponseWriter, r *http.Request, repo Rule254PositiveRecord) {
+	ctx := r.Context()
+
+	if err := repo.db.PingContext(ctx); err != nil {
+		http.Error(w, "database not available", http.StatusServiceUnavailable)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

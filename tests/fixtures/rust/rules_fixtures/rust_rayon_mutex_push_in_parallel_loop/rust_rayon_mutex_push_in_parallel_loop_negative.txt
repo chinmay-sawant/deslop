@@ -1,0 +1,19 @@
+use rayon::prelude::*;
+
+// GOOD: use map/filter/reduce instead of Mutex collection
+fn find_errors(files: &[PathBuf]) -> Vec<Error> {
+    files.par_iter()
+        .flat_map(|file| {
+            let content = std::fs::read_to_string(file).unwrap();
+            content.lines()
+                .filter_map(|line| check_line(line))
+                .collect::<Vec<_>>()
+        })
+        .collect()
+}
+
+fn collect_metrics(data: &[DataPoint]) -> Vec<Metric> {
+    data.par_iter()
+        .map(|point| compute_metric(point))
+        .collect()
+}

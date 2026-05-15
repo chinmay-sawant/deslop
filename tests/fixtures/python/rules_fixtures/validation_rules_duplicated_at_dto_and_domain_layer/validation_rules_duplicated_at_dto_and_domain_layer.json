@@ -1,0 +1,14 @@
+{
+  "id": "validation_rules_duplicated_at_dto_and_domain_layer",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Identical validation constraint is applied at both the DTO/schema layer and the domain entity layer.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

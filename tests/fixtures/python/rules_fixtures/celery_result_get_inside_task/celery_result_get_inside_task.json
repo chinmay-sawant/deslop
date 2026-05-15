@@ -1,0 +1,14 @@
+{
+  "id": "celery_result_get_inside_task",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Celery tasks synchronously wait on AsyncResult.get(...) instead of handing work off asynchronously.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

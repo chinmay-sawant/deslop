@@ -1,0 +1,31 @@
+use tokio::sync::mpsc;
+
+async fn process_events() {
+    let (tx, mut rx) = mpsc::unbounded_channel();
+
+    tokio::spawn(async move {
+        for i in 0..100000 {
+            tx.send(i).unwrap();
+        }
+    });
+
+    while let Some(msg) = rx.recv().await {
+        handle_message(msg);
+    }
+}
+
+fn handle_message(_msg: u64) {}
+
+async fn produce_items(tx: &mpsc::UnboundedSender<String>, items: &[String]) {
+    for item in items {
+        tx.send(item.clone()).unwrap();
+    }
+}
+
+async fn broadcast(tx: &mpsc::UnboundedSender<Event>, count: usize) {
+    for i in 0..count {
+        tx.send(Event { id: i }).unwrap();
+    }
+}
+
+struct Event { id: usize }

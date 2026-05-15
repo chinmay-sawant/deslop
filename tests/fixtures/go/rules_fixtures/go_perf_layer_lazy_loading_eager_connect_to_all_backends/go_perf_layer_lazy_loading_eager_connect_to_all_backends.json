@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_lazy_loading_eager_connect_to_all_backends",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Lazy loading. Flag services connecting to every optional backend at startup instead of lazy initialization.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

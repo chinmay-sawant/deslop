@@ -1,0 +1,44 @@
+class TaskManager:
+    def __init__(self, mode="batch"):
+        self.mode = mode
+        self.results = []
+
+    def run(self, data):
+        if self.mode == "batch":
+            return self._process_batch(data)
+        elif self.mode == "stream":
+            return self._process_stream(data)
+        elif self.mode == "validate":
+            return self._validate_only(data)
+        elif self.mode == "export":
+            return self._export(data)
+        elif self.mode == "import":
+            return self._import(data)
+
+    def _process_batch(self, data):
+        for item in data:
+            self.results.append(transform(item))
+        return self.results
+
+    def _process_stream(self, data):
+        for item in data:
+            yield transform(item)
+
+    def _validate_only(self, data):
+        return all(validate(item) for item in data)
+
+    def _export(self, data):
+        with open("output.json", "w") as f:
+            json.dump(data, f)
+
+    def _import(self, data):
+        with open(data, "r") as f:
+            return json.load(f)
+
+    def configure(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    def reset(self):
+        self.results.clear()
+        self.mode = "batch"

@@ -1,0 +1,14 @@
+{
+  "id": "errgroup_fanout_without_limit_in_handler",
+  "language": "go",
+  "family": "gin",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "errgroup goroutine fanout without a visible concurrency limit in handlers.",
+  "binding_location": "src/heuristics/go/framework_patterns/gin.rs"
+}

@@ -1,0 +1,19 @@
+use std::fmt::Write;
+
+fn build_csv(rows: &[Row]) -> String {
+    let mut output = String::new();
+    for row in rows {
+        // GOOD: write! reuses the existing buffer
+        writeln!(output, "{},{},{},{}", row.id, row.name, row.value, row.ts).unwrap();
+    }
+    output
+}
+
+fn build_log_line(entries: &[LogEntry]) -> String {
+    let mut result = String::new();
+    for entry in entries {
+        // GOOD: push_str and write! avoid intermediate allocations
+        write!(result, " | {}: {}", entry.timestamp, entry.message).unwrap();
+    }
+    result
+}

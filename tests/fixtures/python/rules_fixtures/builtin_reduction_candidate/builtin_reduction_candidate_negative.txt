@@ -1,0 +1,18 @@
+def calculate_total(items: list) -> float:
+    return sum(item.price for item in items)
+
+
+def has_active_subscription(users: list) -> bool:
+    return any(user.is_active for user in users)
+
+
+def all_orders_shipped(orders: list) -> bool:
+    return all(order.shipped for order in orders)
+
+
+def count_valid_items(items: list) -> int:
+    return sum(1 for item in items if item.is_valid)
+
+
+def find_max_price(products: list) -> float:
+    return max(product.price for product in products)

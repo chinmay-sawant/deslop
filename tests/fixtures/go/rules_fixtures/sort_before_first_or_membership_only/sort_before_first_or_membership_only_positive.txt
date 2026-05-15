@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"sort"
+)
+
+// scenario for sort_before_first_or_membership_only: Sorting a collection when only the first element or min/max is needed.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario365Positive(values []string) string {
+	for range values {
+		sort.Sort(sort.StringSlice(values))
+	}
+	if len(values) == 0 { return "" }
+	return values[0]
+}

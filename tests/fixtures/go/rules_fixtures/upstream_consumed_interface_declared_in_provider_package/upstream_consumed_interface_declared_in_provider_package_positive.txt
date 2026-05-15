@@ -1,0 +1,21 @@
+package rulefixtures
+
+// scenario for upstream_consumed_interface_declared_in_provider_package: Provider packages that declare an interface even though upstream packages appear to own the abstraction seam.
+// fixture polarity: positive; family: architecture; severity: info.
+type UserRepository interface {
+	FindByID(id int) (*User, error)
+	Save(user *User) error
+}
+
+type User struct {
+	ID   int
+	Name string
+}
+
+type userService struct {
+	repo UserRepository
+}
+
+func (s *userService) GetUser(id int) (*User, error) {
+	return s.repo.FindByID(id)
+}

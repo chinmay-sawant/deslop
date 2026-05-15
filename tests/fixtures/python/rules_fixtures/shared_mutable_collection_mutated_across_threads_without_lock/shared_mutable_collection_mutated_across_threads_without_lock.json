@@ -1,0 +1,14 @@
+{
+  "id": "shared_mutable_collection_mutated_across_threads_without_lock",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Shared mutable collection such as a list or dict is mutated from multiple threads without a lock.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

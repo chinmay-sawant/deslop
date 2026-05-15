@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for model_package_depends_on_transport_or_gin: `model` or `models` packages that import transport-facing libraries or handler DTO packages.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule098NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule098NegativeService interface {
+	Run(context.Context, Rule098NegativeRecord) error
+}
+
+func scenario098Negative(ctx context.Context, service Rule098NegativeService, input Rule098NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,14 @@
+pub fn workspace_manifest_with_resolver() -> &'static str {
+    r#"[workspace]
+resolver = \"2\"
+members = [
+    \"crates/core\",
+    \"crates/cli\",
+    \"crates/server\",
+]
+"#
+}
+
+pub fn resolver_is_explicit() -> bool {
+    workspace_manifest_with_resolver().contains("resolver = \"2\"")
+}

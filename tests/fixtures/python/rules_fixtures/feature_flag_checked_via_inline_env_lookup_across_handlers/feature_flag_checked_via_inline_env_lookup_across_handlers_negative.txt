@@ -1,0 +1,43 @@
+import os
+from functools import lru_cache
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+
+@lru_cache(maxsize=1)
+def flags() -> dict:
+    return {
+        "new_dashboard": os.environ.get("FEATURE_NEW_DASHBOARD", "false") == "true",
+        "enhanced_users": os.environ.get("FEATURE_ENHANCED_USERS", "false") == "true",
+    }
+
+
+@app.route("/dashboard")
+def dashboard():
+    if flags()["new_dashboard"]:
+        return render_new_dashboard()
+    return render_old_dashboard()
+
+
+@app.route("/settings")
+def settings():
+    if flags()["new_dashboard"]:
+        return render_new_settings()
+    return render_old_settings()
+
+
+@app.route("/api/users")
+def list_users():
+    if flags()["enhanced_users"]:
+        users = fetch_users_v2()
+    else:
+        users = fetch_users_v1()
+    return jsonify(users)
+
+
+@app.route("/api/reports")
+def reports():
+    if flags()["enhanced_users"]:
+        return generate_enhanced_report()
+    return generate_basic_report()

@@ -1,0 +1,14 @@
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Product
+
+
+class FeaturedProductsView(View):
+    def get(self, request):
+        products = Product.objects.filter(featured=True)[:20]
+        data = [
+            {"id": p.id, "name": p.name, "price": str(p.price)}
+            for p in products
+        ]
+        return JsonResponse({"products": data})

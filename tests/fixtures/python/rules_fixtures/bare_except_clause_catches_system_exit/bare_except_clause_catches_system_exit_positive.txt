@@ -1,0 +1,31 @@
+import sys
+
+
+def run_pipeline():
+    try:
+        result = execute_pipeline()
+        return result
+    except:
+        return None
+
+
+def load_config(path: str):
+    try:
+        with open(path) as f:
+            return parse_config(f.read())
+    except:
+        return {}
+
+
+def execute_with_fallback(primary_fn, fallback_fn):
+    try:
+        return primary_fn()
+    except:
+        return fallback_fn()
+
+
+def safe_divide(a: float, b: float):
+    try:
+        return a / b
+    except:
+        return 0.0

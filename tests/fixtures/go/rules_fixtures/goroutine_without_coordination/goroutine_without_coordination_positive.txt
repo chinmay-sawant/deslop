@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"time"
+)
+
+// scenario for goroutine_without_coordination: Raw go statements without an obvious context or WaitGroup-like coordination signal.
+// fixture polarity: positive; family: concurrency; severity: contextual.
+func scenario224Positive(items []string) chan int {
+	results := make(chan int)
+	for _, item := range items {
+		go func() {
+			time.Sleep(time.Millisecond)
+			results <- len(item)
+		}()
+	}
+	return results
+}

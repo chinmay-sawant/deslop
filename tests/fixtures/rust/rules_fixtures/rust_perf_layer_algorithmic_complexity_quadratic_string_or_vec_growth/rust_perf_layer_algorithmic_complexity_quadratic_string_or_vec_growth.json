@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_algorithmic_complexity_quadratic_string_or_vec_growth",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag algorithms that repeatedly grow and rescan accumulated String or Vec state.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

@@ -165,30 +165,38 @@ pub(crate) struct ParsedFunction {
     pub body_text: String,
     pub local_strings: Vec<NamedLiteral>,
     pub test_summary: Option<TestFunctionSummary>,
-    // Language-specific evidence — exactly one of these is populated per function.
-    pub go: Option<GoFunctionEvidence>,
-    pub python: Option<PythonFunctionEvidence>,
-    pub rust: Option<RustFunctionEvidence>,
+    /// Language-specific function data. Exactly one variant is populated.
+    pub lang: LanguageFunctionData,
+}
+
+/// Language-specific function evidence. This keeps impossible states out of
+/// `ParsedFunction`, such as a function containing both Go and Rust evidence.
+#[derive(Debug, Clone)]
+pub(crate) enum LanguageFunctionData {
+    Go(GoFunctionEvidence),
+    Python(Box<PythonFunctionEvidence>),
+    Rust(RustFunctionEvidence),
 }
 
 impl ParsedFunction {
     pub(crate) fn go_evidence(&self) -> GoFunctionEvidenceView<'_> {
-        self.go
-            .as_ref()
-            .map_or_else(GoFunctionEvidenceView::empty, GoFunctionEvidence::as_view)
+        match &self.lang {
+            LanguageFunctionData::Go(evidence) => evidence.as_view(),
+            _ => GoFunctionEvidenceView::empty(),
+        }
     }
 
     pub(crate) fn python_evidence(&self) -> PythonFunctionEvidenceView<'_> {
-        self.python.as_ref().map_or_else(
-            PythonFunctionEvidenceView::empty,
-            PythonFunctionEvidence::as_view,
-        )
+        match &self.lang {
+            LanguageFunctionData::Python(evidence) => evidence.as_view(),
+            _ => PythonFunctionEvidenceView::empty(),
+        }
     }
 
     pub(crate) fn rust_evidence(&self) -> RustFunctionEvidenceView<'_> {
-        self.rust.as_ref().map_or_else(
-            RustFunctionEvidenceView::empty,
-            RustFunctionEvidence::as_view,
-        )
+        match &self.lang {
+            LanguageFunctionData::Rust(evidence) => evidence.as_view(),
+            _ => RustFunctionEvidenceView::empty(),
+        }
     }
 }

@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_lazy_loading_optional_model_loaded_at_startup",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Lazy loading. Flag optional ML/model assets loaded at startup before any route or job needs them.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

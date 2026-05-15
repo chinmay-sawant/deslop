@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for context_key_uses_exported_or_builtin_type: context.WithValue keys or exported key declarations that use built-in scalar types instead of unexported key types.
+// fixture polarity: positive; family: context; severity: warning.
+type Rule236PositiveRecord struct {
+	Name string
+}
+
+func scenario236Positive(ctx context.Context, value Rule236PositiveRecord) context.Context {
+	return context.WithValue(ctx, "dependency", value)
+}

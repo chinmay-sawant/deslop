@@ -1,0 +1,30 @@
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ServerConfig {
+    host: String,
+    port: u16,
+    max_connections: usize,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct AppConfig {
+    name: String,
+    version: String,
+    debug: bool,
+    database_url: String,
+}
+
+fn load_config(path: &str) -> Result<ServerConfig, Box<dyn std::error::Error>> {
+    let data = std::fs::read_to_string(path)?;
+    let config: ServerConfig = serde_json::from_str(&data)?;
+    Ok(config)
+}
+
+fn load_app_config(path: &str) -> Result<AppConfig, Box<dyn std::error::Error>> {
+    let data = std::fs::read_to_string(path)?;
+    let config: AppConfig = serde_json::from_str(&data)?;
+    Ok(config)
+}

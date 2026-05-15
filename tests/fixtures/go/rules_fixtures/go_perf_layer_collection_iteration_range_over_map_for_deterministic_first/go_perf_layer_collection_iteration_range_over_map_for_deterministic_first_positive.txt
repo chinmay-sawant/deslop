@@ -1,0 +1,11 @@
+package rulefixtures
+
+// scenario for go_perf_layer_collection_iteration_range_over_map_for_deterministic_first: Layer: Collection iteration. Flag map iteration used to pick a deterministic first value, causing unstable work and extra sorting later.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func scenario518Positive(m map[string]int) int {
+	for _, v := range m {
+		return v
+	}
+	return 0
+}

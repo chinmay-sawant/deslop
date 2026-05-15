@@ -1,0 +1,14 @@
+{
+  "id": "template_render_in_loop",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Template rendering appears inside loops instead of rendering once over prepared data.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

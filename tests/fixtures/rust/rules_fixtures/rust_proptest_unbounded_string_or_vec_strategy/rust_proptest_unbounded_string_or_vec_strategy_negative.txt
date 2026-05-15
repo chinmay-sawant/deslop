@@ -1,0 +1,21 @@
+use proptest::prelude::*;
+
+fn parse_json(input: &str) -> Result<serde_json::Value, serde_json::Error> {
+    serde_json::from_str(input)
+}
+
+proptest! {
+    // GOOD: bounded string strategy with size cap
+    #[test]
+    fn test_parse_roundtrip(input in "[a-zA-Z0-9 ,.]{0,1024}") {
+        let result = parse_json(&input);
+        // Controlled input size
+    }
+
+    // GOOD: bounded vec strategy
+    #[test]
+    fn test_process_items(items in vec(any::<u64>(), 0..1000)) {
+        let sum: u64 = items.iter().sum();
+        prop_assert!(sum >= 0);
+    }
+}

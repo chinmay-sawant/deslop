@@ -1,0 +1,21 @@
+use tokio::select;
+
+async fn run_loop(mut rx: tokio::sync::mpsc::Receiver<Msg>, mut interval: tokio::time::Interval) {
+    loop {
+        let msg = rx.recv();
+        let tick = interval.tick();
+        select! {
+            Some(m) = msg => {
+                handle_message(m).await;
+            }
+            _ = tick => {
+                heartbeat().await;
+            }
+            else => break,
+        }
+    }
+}
+
+async fn handle_message(_msg: Msg) { todo!() }
+async fn heartbeat() { todo!() }
+enum Msg { Ping, Shutdown }

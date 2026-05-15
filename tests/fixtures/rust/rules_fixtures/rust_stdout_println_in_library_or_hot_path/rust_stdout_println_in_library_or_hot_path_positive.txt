@@ -1,0 +1,29 @@
+pub fn scan_target(url: &str) -> Result<String, Box<dyn std::error::Error>> {
+    let response = make_request(url)?;
+    println!("Scanning {}", url);
+    println!("Response length: {}", response.len());
+    Ok(response)
+}
+
+pub fn process_items(items: &[String]) {
+    for item in items {
+        println!("Processing: {}", item);
+        let result = transform(item);
+        println!("Result: {}", result);
+    }
+}
+
+fn transform(s: &str) -> String { s.to_uppercase() }
+fn make_request(_url: &str) -> Result<String, Box<dyn std::error::Error>> { Ok("ok".into()) }
+
+pub struct Scanner;
+
+impl Scanner {
+    pub fn run(&self, targets: &[String]) {
+        for target in targets {
+            eprintln!("[SCAN] {}", target);
+            let _ = scan_target(target);
+            eprintln!("[DONE] {}", target);
+        }
+    }
+}

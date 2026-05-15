@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for range_copy_large_struct: `for _, v := range largeStructSlice` where the struct is > 64 bytes
+// fixture polarity: negative; family: performance; severity: info.
+type Rule628NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario628Negative(records []Rule628NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

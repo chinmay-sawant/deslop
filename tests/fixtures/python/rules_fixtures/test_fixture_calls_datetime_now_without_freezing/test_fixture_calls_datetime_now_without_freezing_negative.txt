@@ -1,0 +1,31 @@
+import pytest
+from datetime import datetime, timezone
+from freezegun import freeze_time
+from myapp.orders import OrderService
+
+@pytest.fixture
+def order_service():
+    return OrderService()
+
+@freeze_time("2025-06-15 10:30:00")
+def test_order_has_timestamp(order_service):
+    order = order_service.create({"item": "widget", "qty": 2})
+    assert order["created_at"] is not None
+    assert order["created_at"] == datetime(2025, 6, 15, 10, 30, 0)
+
+@freeze_time("2025-06-15 10:30:00")
+def test_invoice_date_is_today(order_service):
+    order = order_service.create({"item": "gadget", "qty": 1})
+    invoice = order_service.generate_invoice(order["id"])
+    assert invoice["date"] == "2025-06-15"
+
+@freeze_time("2025-06-15 10:30:00")
+def test_session_expiry(order_service):
+    session = order_service.start_session()
+    expected = datetime(2025, 6, 15, 11, 30, 0, tzinfo=timezone.utc)
+    assert session["expires_at"] == expected
+
+@freeze_time("2025-06-15 10:30:00")
+def test_report_period(order_service):
+    report = order_service.monthly_report()
+    assert report["period"] == "2025-06"

@@ -1,0 +1,41 @@
+fn process_names(names: &[&str]) {
+    let mut results = Vec::new();
+    for name in names {
+        let owned = name.to_string();
+        results.push(owned);
+    }
+    println!("{:?}", results);
+}
+
+fn match_names(names: &[String], pattern: &str) -> Vec<String> {
+    let mut matched = Vec::new();
+    for name in names {
+        let name_str = name.to_string();
+        if name_str.contains(pattern) {
+            matched.push(name_str);
+        }
+    }
+    matched
+}
+
+fn collect_tags(items: &[Item]) -> Vec<String> {
+    let mut tags = Vec::new();
+    for item in items {
+        let tag = item.tag.to_string();
+        tags.push(tag);
+    }
+    tags
+}
+
+fn format_entries(entries: &[Entry]) -> String {
+    let mut output = String::new();
+    for entry in entries {
+        let s = entry.name.to_string();
+        output.push_str(&s);
+        output.push('\n');
+    }
+    output
+}
+
+struct Item { tag: String }
+struct Entry { name: String }

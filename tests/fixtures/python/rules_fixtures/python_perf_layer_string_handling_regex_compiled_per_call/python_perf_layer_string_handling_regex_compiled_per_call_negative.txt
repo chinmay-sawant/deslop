@@ -1,0 +1,25 @@
+import re
+
+EMAIL_PATTERN = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+URL_PATTERN = re.compile(r"https?://[^\s]+")
+SANITIZE_PATTERN = re.compile(r"[<>&\"']")
+CODE_PATTERN = re.compile(r"^[A-Z]{2}\d{4}$")
+
+
+def validate_email(email: str) -> bool:
+    return bool(EMAIL_PATTERN.match(email))
+
+
+def extract_urls(text: str) -> list[str]:
+    return URL_PATTERN.findall(text)
+
+
+def sanitize_input(user_input: str) -> str:
+    return SANITIZE_PATTERN.sub("", user_input)
+
+
+def process_batch(items: list[str]) -> list[bool]:
+    results = []
+    for item in items:
+        results.append(bool(CODE_PATTERN.match(item)))
+    return results

@@ -1,0 +1,14 @@
+{
+  "id": "float_equality_controls_branching_on_computed_values",
+  "language": "python",
+  "family": "quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag control flow that depends on exact float equality after computation.",
+  "binding_location": "src/heuristics/python/quality/mod.rs"
+}

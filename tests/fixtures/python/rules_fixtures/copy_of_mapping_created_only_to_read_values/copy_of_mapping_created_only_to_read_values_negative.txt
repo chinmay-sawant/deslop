@@ -1,0 +1,18 @@
+def get_user_name(config):
+    return config["user"]["name"]
+
+
+def get_setting(settings):
+    return settings["database"]["host"]
+
+
+def lookup_value(data, key):
+    return data[key]["nested"]["value"]
+
+
+def extract_headers(request):
+    return request.headers["Authorization"]
+
+
+def read_config(config):
+    return f"{config['host']}:{config['port']}"

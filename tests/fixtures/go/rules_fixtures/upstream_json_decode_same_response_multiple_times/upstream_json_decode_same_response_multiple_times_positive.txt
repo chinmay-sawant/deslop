@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"io"
+	"net/http"
+	"strings"
+)
+
+// scenario for upstream_json_decode_same_response_multiple_times: One upstream HTTP response body decoded into multiple targets in the same handler.
+// fixture polarity: positive; family: gin; severity: contextual.
+func scenario340Positive() error {
+	resp, err := http.Get("https://api.example.com/data")
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+	var users []string
+	json.Unmarshal(body, &users)
+	var config map[string]any
+	json.Unmarshal(body, &config)
+	_ = strings.Join(users, ",")
+	return nil
+}

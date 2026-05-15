@@ -1,0 +1,32 @@
+import asyncio
+
+lock = asyncio.Lock()
+
+
+async def transfer_funds(sender_id: int, recipient_id: int, amount: int):
+    async with lock:
+        sender = await fetch_account(sender_id)
+        recipient = await fetch_account(recipient_id)
+
+        if sender.balance < amount:
+            raise ValueError("Insufficient funds")
+
+        await deduct_balance(sender_id, amount)
+        await log_transaction(sender_id, recipient_id, amount)
+        await send_notification(sender_id, "Funds deducted")
+
+        await add_balance(recipient_id, amount)
+        await log_transaction(recipient_id, sender_id, amount)
+        await send_notification(recipient_id, "Funds received")
+
+
+async def update_inventory(product_id: int, quantity: int):
+    async with lock:
+        product = await fetch_product(product_id)
+        if product.stock < quantity:
+            raise ValueError("Insufficient stock")
+
+        await reduce_stock(product_id, quantity)
+        await notify_warehouse(product_id, quantity)
+        await update_search_index(product_id)
+        await publish_event("inventory.updated", product_id)

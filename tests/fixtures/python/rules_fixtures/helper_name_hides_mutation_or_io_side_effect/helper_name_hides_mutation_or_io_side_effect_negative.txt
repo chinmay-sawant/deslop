@@ -1,0 +1,23 @@
+def format_user(user):
+    return f"{user.name} <{user.email}>"
+
+def calculate_total(items):
+    return sum(item.price * item.qty for item in items)
+
+def get_display_name(record):
+    return f"{record.first_name} {record.last_name}"
+
+def parse_settings(raw_text):
+    return json.loads(raw_text)
+
+def update_user_access(user):
+    user.last_accessed = datetime.utcnow()
+    db.session.add(user)
+    db.session.commit()
+
+def record_total_calculation(total):
+    audit_log.record("total_calculated", total=total)
+
+def build_header(user):
+    token = jwt.encode({"sub": user.id}, SECRET_KEY)
+    return {"Authorization": f"Bearer {token}"}

@@ -1,0 +1,20 @@
+import random
+
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Song
+
+
+class RandomSongView(View):
+    def get(self, request):
+        count = Song.objects.count()
+        if count == 0:
+            return JsonResponse({"songs": []})
+        indices = random.sample(range(count), min(5, count))
+        songs = []
+        for idx in sorted(indices):
+            song = Song.objects.all()[idx:idx + 1].first()
+            if song:
+                songs.append({"id": song.id, "title": song.title, "artist": song.artist})
+        return JsonResponse({"songs": songs})

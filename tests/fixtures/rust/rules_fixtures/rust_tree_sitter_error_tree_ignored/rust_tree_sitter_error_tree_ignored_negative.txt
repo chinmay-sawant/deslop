@@ -1,0 +1,32 @@
+use tree_sitter::Parser;
+
+fn parse_and_use(source: &str) -> Result<(), String> {
+    let mut parser = Parser::new();
+    parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+    let tree = parser.parse(source, None).unwrap();
+    let root = tree.root_node();
+
+    if root.has_error() {
+        return Err("syntax errors in source".into());
+    }
+
+    let text = &source[root.start_byte()..root.end_byte()];
+    process(text);
+    Ok(())
+}
+
+fn parse_source(source: &str) -> Result<String, String> {
+    let mut parser = Parser::new();
+    parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+    let tree = parser.parse(source, None).ok_or("parse failed")?;
+    let root = tree.root_node();
+
+    if root.is_error() || root.has_error() {
+        return Err("syntax errors detected".into());
+    }
+
+    let text = &source[root.start_byte()..root.end_byte()];
+    Ok(text.to_string())
+}
+
+fn process(_text: &str) {}

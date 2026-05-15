@@ -1,0 +1,14 @@
+{
+  "id": "gin_handler_runs_authorization_business_rules_inline",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that contain complex permission matrices instead of delegating to policy or service logic.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

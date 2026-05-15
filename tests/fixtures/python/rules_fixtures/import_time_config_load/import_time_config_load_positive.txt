@@ -1,0 +1,21 @@
+import os
+import yaml
+
+with open("config.yaml") as f:
+    CONFIG = yaml.safe_load(f)
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+SECRET_KEY = os.environ["SECRET_KEY"]
+
+FEATURE_FLAGS = {
+    "new_ui": os.environ.get("FEATURE_NEW_UI", "false").lower() == "true",
+    "beta_api": os.environ.get("FEATURE_BETA_API", "false").lower() == "true",
+}
+
+
+def get_config(key: str):
+    return CONFIG.get(key)
+
+
+def is_feature_enabled(flag: str) -> bool:
+    return FEATURE_FLAGS.get(flag, False)

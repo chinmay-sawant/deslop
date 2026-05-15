@@ -192,9 +192,30 @@ fn constant_iv_nonce(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let literal_nonce_vars = lines
+        .iter()
+        .filter_map(|line| {
+            let text = line.text.trim();
+            if !(text.contains(":=") && text.contains("[]byte(\"")) {
+                return None;
+            }
+            text.split(":=").next().map(str::trim).and_then(|name| {
+                name
+                    .chars()
+                    .next()
+                    .is_some_and(|ch| ch.is_ascii_alphabetic() || ch == '_')
+                    .then_some(name.to_string())
+            })
+        })
+        .collect::<Vec<_>>();
+
     for bl in lines {
+        let uses_literal_nonce_var = literal_nonce_vars
+            .iter()
+            .any(|name| bl.text.contains(&format!(", {name},")));
         if (bl.text.contains(".Seal(") || bl.text.contains("NewCBCEncrypter("))
-            && (bl.text.contains("make([]byte,")
+            && (uses_literal_nonce_var
+                || bl.text.contains("make([]byte,")
                 || bl.text.contains("var iv")
                 || bl.text.contains("[16]byte{}")
                 || bl.text.contains("[]byte{0"))

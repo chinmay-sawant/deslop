@@ -1,0 +1,22 @@
+use axum::{extract::Extension, Json, Router, routing::get};
+
+#[derive(Clone)]
+struct HeavyState {
+    large_data: Vec<u8>,
+    cache: std::collections::HashMap<String, String>,
+}
+
+// BAD: Extension clones HeavyState per request - large_data Vec is fully cloned each time
+async fn handler(Extension(state): Extension<HeavyState>) -> Json<serde_json::Value> {
+    Json(serde_json::json!({ "len": state.large_data.len() }))
+}
+
+fn app() -> Router {
+    let state = HeavyState {
+        large_data: vec![0u8; 10_000_000],
+        cache: Default::default(),
+    };
+    Router::new()
+        .route("/", get(handler))
+        .layer(Extension(state))
+}

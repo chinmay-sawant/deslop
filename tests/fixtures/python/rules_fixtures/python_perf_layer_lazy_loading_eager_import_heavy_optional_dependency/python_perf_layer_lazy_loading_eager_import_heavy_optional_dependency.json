@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_lazy_loading_eager_import_heavy_optional_dependency",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Lazy loading. Flag heavy optional dependencies imported at module import time for rarely used features.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

@@ -1,0 +1,28 @@
+use rayon::prelude::*;
+use std::collections::BTreeMap;
+use std::sync::Mutex;
+
+// BAD: Mutex<BTreeMap> to preserve ordering in parallel output
+fn process_ordered(items: &[Item]) -> Vec<(usize, Output)> {
+    let results = Mutex::new(BTreeMap::new());
+
+    items.par_iter().enumerate().for_each(|(i, item)| {
+        let output = process(item);
+        results.lock().unwrap().insert(i, output);
+    });
+
+    results.into_inner().unwrap().into_iter().collect()
+}
+
+fn rank_documents(docs: &[Document]) -> Vec<(usize, Score)> {
+    let scores = Mutex::new(Vec::new());
+
+    docs.par_iter().enumerate().for_each(|(i, doc)| {
+        let score = compute_score(doc);
+        scores.lock().unwrap().push((i, score));
+    });
+
+    let mut results = scores.into_inner().unwrap();
+    results.sort_by_key(|&(i, _)| i);
+    results
+}

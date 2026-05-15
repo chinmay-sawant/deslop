@@ -1,0 +1,14 @@
+{
+  "id": "helper_requires_caller_to_know_hidden_ordering_constraints",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag helpers whose correctness depends on the caller invoking them in a specific undocumented order.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

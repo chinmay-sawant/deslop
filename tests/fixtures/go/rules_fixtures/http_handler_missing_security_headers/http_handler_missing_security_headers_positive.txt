@@ -1,0 +1,24 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for http_handler_missing_security_headers: HTTP handler functions that write responses without setting `X-Content-Type-Options`, `X-Frame-Options`, or `Content-Security-Policy` headers (or without security header middleware)
+// fixture polarity: positive; family: security; severity: warning.
+func handlerDashboard(w http.ResponseWriter, r *http.Request) {
+	type Dashboard struct {
+		User    string `json:"user"`
+		Revenue int    `json:"revenue"`
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(Dashboard{User: "admin", Revenue: 15000})
+}
+
+func handlerSettings(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("<html><body>Settings page</body></html>"))
+}

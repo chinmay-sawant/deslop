@@ -1,0 +1,17 @@
+package rulefixtures
+
+// scenario for interface_slice_allocation: `[]interface{}` or `[]any` used to pass homogeneous typed data
+// fixture polarity: negative; family: performance; severity: info.
+type Rule604NegativeRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario604Negative(records []Rule604NegativeRecord) int {
+	total := 0
+	for _, record := range records {
+		total += record.ID + len(record.Values)
+	}
+	return total
+}

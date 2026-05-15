@@ -1,0 +1,14 @@
+{
+  "id": "gorm_locking_clauses_built_outside_repository",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`FOR UPDATE` or similar locking behavior built in handlers or services instead of repository-owned methods.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

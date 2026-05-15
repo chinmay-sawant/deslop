@@ -1,0 +1,23 @@
+from typing import Any, Dict, List
+
+
+def find_matching_users(users: List[Dict[str, Any]], filters: Dict[str, Any]) -> List[Dict[str, Any]]:
+    results = []
+    filter_items = filters.items()
+    for user in users:
+        match = True
+        for key, value in filter_items:
+            if user.get(key) != value:
+                match = False
+                break
+        if match:
+            results.append(user)
+    return results
+
+
+def summarize_metrics(metrics: List[Dict[str, float]]) -> Dict[str, float]:
+    totals: Dict[str, float] = {}
+    for metric in metrics:
+        for key, value in metric.items():
+            totals[key] = totals.get(key, 0) + value
+    return totals

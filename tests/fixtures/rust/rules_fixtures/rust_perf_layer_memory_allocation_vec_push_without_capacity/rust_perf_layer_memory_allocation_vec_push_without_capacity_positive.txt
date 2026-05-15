@@ -1,0 +1,12 @@
+fn build_matrix(rows: usize, cols: usize) -> Vec<Vec<f64>> {
+    let mut matrix = Vec::new();
+    // BAD: Vec::push without capacity hint causes repeated reallocation
+    for r in 0..rows {
+        let mut row = Vec::new();
+        for c in 0..cols {
+            row.push((r * cols + c) as f64);
+        }
+        matrix.push(row);
+    }
+    matrix
+}

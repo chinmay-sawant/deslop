@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for save_in_loop_full_model: GORM Save(...) writes full models inside loops.
+// fixture polarity: negative; family: data_access; severity: contextual.
+type Rule295NegativeRecord struct { ID int }
+
+func scenario295Negative(db *gorm.DB, ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return db.Where("id IN ?", ids).Limit(len(ids)).Find(&[]Rule295NegativeRecord{}).Error
+}

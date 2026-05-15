@@ -1,0 +1,22 @@
+import pandas as pd
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_data(df):
+    print(df)
+    return df.dropna()
+
+
+def analyze_results(df):
+    summary = df.describe()
+    print(summary)
+    return summary
+
+
+def generate_report(df, output_path):
+    print("Full dataset:")
+    print(df)
+    df.to_csv(output_path)
+    print(f"Saved to {output_path}")

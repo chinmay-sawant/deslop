@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for bootstrap_builds_clients_inside_route_registration: Startup code that hides dependency construction inside route registration functions.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule010NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule010NegativeService interface {
+	Run(context.Context, Rule010NegativeRecord) error
+}
+
+func scenario010Negative(ctx context.Context, service Rule010NegativeService, input Rule010NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

@@ -1,0 +1,23 @@
+use std::fs::File;
+use std::os::unix::io::AsRawFd;
+
+struct Connection {
+    fd: libc::c_int,
+}
+
+impl Connection {
+    fn new(file: &File) -> Self {
+        Connection { fd: file.as_raw_fd() }
+    }
+
+    fn send(&self, data: &[u8]) -> isize {
+        unsafe {
+            libc::write(self.fd, data.as_ptr() as *const libc::c_void, data.len())
+        }
+    }
+}
+
+fn make_conn(path: &str) -> Connection {
+    let file = File::open(path).unwrap();
+    Connection::new(&file)
+}

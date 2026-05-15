@@ -1,0 +1,23 @@
+use regex::Regex;
+
+// BAD: regex compiled inside loop
+fn validate_entries(entries: &[Entry]) -> Vec<&Entry> {
+    let pattern = r"^\d{4}-\d{2}-\d{2}$";
+    entries.iter()
+        .filter(|entry| {
+            let re = Regex::new(pattern).unwrap();
+            re.is_match(&entry.date)
+        })
+        .collect()
+}
+
+fn extract_fields(text: &str, patterns: &[&str]) -> Vec<String> {
+    let mut results = Vec::new();
+    for pattern in patterns {
+        let re = Regex::new(pattern).unwrap();
+        if let Some(caps) = re.captures(text) {
+            results.push(caps[1].to_string());
+        }
+    }
+    results
+}

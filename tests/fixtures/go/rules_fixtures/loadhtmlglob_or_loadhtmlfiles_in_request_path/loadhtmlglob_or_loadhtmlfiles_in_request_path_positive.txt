@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for loadhtmlglob_or_loadhtmlfiles_in_request_path: LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization.
+// fixture polarity: positive; family: gin; severity: contextual.
+func scenario323Positive(c *gin.Context) {
+	engine := gin.New()
+	engine.LoadHTMLGlob("templates/*")
+	c.HTML(http.StatusOK, "index.tmpl", nil)
+}

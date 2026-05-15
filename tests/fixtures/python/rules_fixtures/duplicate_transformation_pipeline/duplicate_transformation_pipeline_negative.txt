@@ -1,0 +1,22 @@
+import re
+from typing import List
+
+
+def _normalize_person(record: dict) -> dict | None:
+    name = record["name"].strip().title()
+    email = re.sub(r"\s+", record["email"].strip().lower())
+    if not re.match(r"^[^@]+@[^@]+\.[^@]+$", email):
+        return None
+    return {"name": name, "email": email}
+
+
+def normalize_users(raw_users: List[dict]) -> List[dict]:
+    return [r for u in raw_users if (r := _normalize_person(u)) is not None]
+
+
+def normalize_contacts(raw_contacts: List[dict]) -> List[dict]:
+    return [r for c in raw_contacts if (r := _normalize_person(c)) is not None]
+
+
+def normalize_leads(raw_leads: List[dict]) -> List[dict]:
+    return [r for l in raw_leads if (r := _normalize_person(l)) is not None]

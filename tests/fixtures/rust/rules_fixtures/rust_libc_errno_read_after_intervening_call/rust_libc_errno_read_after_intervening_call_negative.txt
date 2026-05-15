@@ -1,0 +1,8 @@
+fn read_with_errno(fd: libc::c_int, buf: &mut [u8]) -> Result<isize, std::io::Error> {
+    let result = unsafe { libc::read(fd, buf.as_mut_ptr() as *mut libc::c_void, buf.len()) };
+    if result == -1 {
+        let err = std::io::Error::last_os_error();
+        return Err(err);
+    }
+    Ok(result)
+}

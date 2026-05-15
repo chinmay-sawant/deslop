@@ -1,0 +1,26 @@
+from sqlalchemy.orm import Session, joinedload
+from .models import Order, Customer, Product
+
+def serialize_order(order):
+    return {
+        "id": order.id,
+        "total": order.total,
+        "customer_name": order.customer.name,
+        "customer_email": order.customer.email,
+        "items": [
+            {
+                "product_name": item.product.name,
+                "product_sku": item.product.sku,
+                "quantity": item.quantity,
+            }
+            for item in order.items
+        ],
+    }
+
+def list_orders(db: Session):
+    orders = (
+        db.query(Order)
+        .options(joinedload(Order.customer), joinedload(Order.items).joinedload("product"))
+        .all()
+    )
+    return [serialize_order(o) for o in orders]

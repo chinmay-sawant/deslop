@@ -1,0 +1,41 @@
+package rulefixtures
+
+import (
+	"database/sql"
+	"sort"
+	"strings"
+)
+
+// scenario for slow_work_inside_transaction_scope: Loop-heavy or slow work performed while a transaction appears open.
+// fixture polarity: positive; family: idioms; severity: warning.
+func scenario397Positive(db *sql.DB) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.Query("SELECT id, data FROM items")
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	var payloads []string
+	for rows.Next() {
+		var data string
+		rows.Scan(nil, &data)
+		payloads = append(payloads, data)
+	}
+
+	sort.Strings(payloads)
+	for i := range payloads {
+		payloads[i] = strings.ToUpper(strings.TrimSpace(payloads[i]))
+	}
+
+	_, err = tx.Exec("UPDATE items SET processed = true")
+	if err != nil {
+		return err
+	}
+	return tx.Commit()
+}

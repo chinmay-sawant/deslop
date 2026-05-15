@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_memory_allocation_append_without_known_capacity",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag slice appends in builders where an obvious count is available for make capacity.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

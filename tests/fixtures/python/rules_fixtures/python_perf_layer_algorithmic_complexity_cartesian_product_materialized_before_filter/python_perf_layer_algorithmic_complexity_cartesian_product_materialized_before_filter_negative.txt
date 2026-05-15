@@ -1,0 +1,31 @@
+import itertools
+
+
+def find_matching_pairs(users, products):
+    results = []
+    for user in users:
+        for product in products:
+            if user.region == product.region and user.age >= product.min_age:
+                results.append((user, product))
+    return results
+
+
+def cross_join_filter(orders, inventory):
+    inventory_by_sku = {item.sku: item for item in inventory}
+    matched = []
+    for order in orders:
+        item = inventory_by_sku.get(order.sku)
+        if item and order.quantity <= item.stock:
+            matched.append((order, item))
+    return matched
+
+
+def generate_combinations(items_a, items_b):
+    items_b_by_type = {}
+    for b in items_b:
+        items_b_by_type.setdefault(b.type, []).append(b)
+    valid = []
+    for a in items_a:
+        for b in items_b_by_type.get(a.type, []):
+            valid.append((a, b))
+    return valid

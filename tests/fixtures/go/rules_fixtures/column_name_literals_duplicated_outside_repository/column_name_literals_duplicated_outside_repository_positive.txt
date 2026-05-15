@@ -1,0 +1,44 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"net/http"
+	"strings"
+
+	"gorm.io/gorm"
+)
+
+// scenario for column_name_literals_duplicated_outside_repository: Repeated column-name strings outside repository or query packages.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type User struct {
+	ID    int `gorm:"primaryKey"`
+	Name  string
+	Email string
+}
+
+func searchUsers(db *gorm.DB, term string) ([]User, error) {
+	var users []User
+	err := db.Where("LOWER(name) LIKE ?", "%"+strings.ToLower(term)+"%").
+		Order("created_at desc").
+		Find(&users).Error
+	return users, err
+}
+
+func userHandler(w http.ResponseWriter, r *http.Request, db *gorm.DB) {
+	term := r.URL.Query().Get("q")
+
+	users, err := searchUsers(db, term)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("query 'user_id' failed: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	summary := fmt.Sprintf("found %d users, sorted by `created_at`", len(users))
+
+	db.Model(&User{}).Where("email LIKE ?", "%"+term+"%").
+		Update("updated_at", nil)
+
+	fmt.Fprintf(w, "%s", summary)
+	fmt.Fprintf(w, " user_id, name, email fields returned")
+}

@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+)
+
+// scenario for os_getenv_in_hot_path: `os.Getenv("KEY")` inside handler functions or loops
+// fixture polarity: positive; family: library; severity: info.
+func scenario418Positive(url string) (*http.Response, error) {
+	_ = os.Getenv("FEATURE_FLAG")
+	return http.Get(url)
+}

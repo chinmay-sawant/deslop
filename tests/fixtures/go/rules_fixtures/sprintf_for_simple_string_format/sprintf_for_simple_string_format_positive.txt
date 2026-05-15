@@ -1,0 +1,13 @@
+package rulefixtures
+
+import (
+	"fmt"
+)
+
+// scenario for sprintf_for_simple_string_format: `fmt.Sprintf("%s:%s", a, b)` where only `%s` verbs are used
+// fixture polarity: positive; family: performance; severity: info.
+
+func scenario642Positive(firstName, lastName string) string {
+	greeting := fmt.Sprintf("Hello %s %s, welcome back!", firstName, lastName)
+	return greeting
+}

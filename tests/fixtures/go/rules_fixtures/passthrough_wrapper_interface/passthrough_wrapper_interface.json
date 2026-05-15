@@ -1,0 +1,14 @@
+{
+  "id": "passthrough_wrapper_interface",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Wrapper structs that mostly forward one-to-one through an interface field with little added policy.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

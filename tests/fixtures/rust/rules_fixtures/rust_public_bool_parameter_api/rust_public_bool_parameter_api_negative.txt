@@ -1,0 +1,44 @@
+// GOOD: use enums or builder pattern instead of raw booleans
+pub enum Compression {
+    None,
+    Gzip,
+    Zstd,
+}
+
+pub enum Encryption {
+    None,
+    Aes256,
+}
+
+pub struct ProcessOptions {
+    pub compression: Compression,
+    pub encryption: Encryption,
+}
+
+pub fn process_data(data: &[u8], options: &ProcessOptions) -> Vec<u8> {
+    let mut result = data.to_vec();
+    match options.compression {
+        Compression::None => {}
+        Compression::Gzip => result = compress_gzip(&result),
+        Compression::Zstd => result = compress_zstd(&result),
+    }
+    match options.encryption {
+        Encryption::None => {}
+        Encryption::Aes256 => result = encrypt_aes256(&result),
+    }
+    result
+}
+
+pub enum TlsMode {
+    None,
+    Verified,
+    Unverified,
+}
+
+pub fn connect(host: &str, tls: TlsMode) -> Connection {
+    match tls {
+        TlsMode::None => connect_plain(host),
+        TlsMode::Verified => connect_tls_verified(host),
+        TlsMode::Unverified => connect_tls_unverified(host),
+    }
+}

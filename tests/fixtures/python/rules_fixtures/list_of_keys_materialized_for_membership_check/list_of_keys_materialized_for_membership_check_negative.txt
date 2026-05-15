@@ -1,0 +1,16 @@
+def lookup_user(config: dict, username: str) -> dict | None:
+    if username in config:
+        return config[username]
+    return None
+
+
+def find_matching_config(settings: dict, target_key: str) -> str | None:
+    return settings.get(target_key)
+
+
+def validate_permissions(user_roles: dict, required_role: str) -> bool:
+    return required_role in user_roles
+
+
+def check_feature_flags(flags: dict, feature_name: str) -> bool:
+    return flags.get(feature_name, False)

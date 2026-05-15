@@ -1,0 +1,14 @@
+{
+  "id": "rust_serde_borrow_missing_for_large_readonly_payload",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag large readonly payload structs that deserialize owned `String` or `Vec<u8>` in hot paths where `Cow<'de, str>` or borrowed fields could avoid copies.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

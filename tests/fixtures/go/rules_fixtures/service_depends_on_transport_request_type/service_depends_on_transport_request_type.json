@@ -1,0 +1,14 @@
+{
+  "id": "service_depends_on_transport_request_type",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Service signatures that accept request DTOs declared in handler or transport packages.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

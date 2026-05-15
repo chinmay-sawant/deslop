@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_lazy_loading_optional_crate_init_on_default_path",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Lazy loading. Flag optional crate initialization on the default path when feature-gated initialization would avoid cost.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

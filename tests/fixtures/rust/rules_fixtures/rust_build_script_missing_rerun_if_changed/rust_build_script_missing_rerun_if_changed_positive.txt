@@ -1,0 +1,12 @@
+fn main() {
+    let proto_path = std::env::var("PROTO_FILE").unwrap();
+    let contents = std::fs::read_to_string(&proto_path).unwrap();
+    let code = generate_code(&contents);
+    let out_dir = std::env::var("OUT_DIR").unwrap();
+    let out_path = format!("{out_dir}/generated.rs");
+    std::fs::write(&out_path, code).unwrap();
+}
+
+fn generate_code(_proto: &str) -> String {
+    "// generated".into()
+}

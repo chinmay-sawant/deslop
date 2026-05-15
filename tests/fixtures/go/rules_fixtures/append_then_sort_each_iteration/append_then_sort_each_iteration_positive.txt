@@ -1,0 +1,15 @@
+package rulefixtures
+
+import (
+	"sort"
+)
+
+// scenario for append_then_sort_each_iteration: Slice sorting observed inside loops - often cheaper to sort once after the loop.
+// fixture polarity: positive; family: hot_path; severity: info.
+func scenario341Positive(values []string) string {
+	for range values {
+		sort.Sort(sort.StringSlice(values))
+	}
+	if len(values) == 0 { return "" }
+	return values[0]
+}

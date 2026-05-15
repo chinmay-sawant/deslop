@@ -1,0 +1,14 @@
+{
+  "id": "file_handle_without_close",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "File handles opened via os.Open, os.Create, or os.OpenFile without an observed Close() path.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

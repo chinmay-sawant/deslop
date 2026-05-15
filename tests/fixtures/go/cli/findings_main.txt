@@ -1,9 +1,0 @@
-package main
-
-import "fmt"
-
-func HandleCalculateAndProcessUserDataFromExternalSource() {
-	for i := 0; i < 100; i++ {
-		fmt.Sprintf("item %d", i)
-	}
-}

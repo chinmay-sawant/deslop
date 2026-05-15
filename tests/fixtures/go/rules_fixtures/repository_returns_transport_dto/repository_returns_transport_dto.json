@@ -1,0 +1,14 @@
+{
+  "id": "repository_returns_transport_dto",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Repositories that know about response contracts instead of returning persistence or domain results.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

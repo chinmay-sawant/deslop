@@ -1,0 +1,14 @@
+{
+  "id": "unbuffered_channel_for_known_producer_count",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "project_exception_class_not_inheriting_shared_base",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Custom exception class defined without inheriting from the project-wide base exception class.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

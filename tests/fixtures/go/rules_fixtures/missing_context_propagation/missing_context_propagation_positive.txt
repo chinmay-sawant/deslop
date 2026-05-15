@@ -1,0 +1,16 @@
+package rulefixtures
+
+import (
+	"context"
+	"net/http"
+)
+
+// scenario for missing_context_propagation: Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.
+// fixture polarity: positive; family: context; severity: contextual.
+func scenario242Positive(url string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return http.DefaultClient.Do(req)
+}

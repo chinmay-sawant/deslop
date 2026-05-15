@@ -1,0 +1,30 @@
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+@app.post("/api/search")
+async def search_documents(request: Request):
+    body = await request.json()
+    from chromadb import Client
+    client = Client()
+    collection = client.get_collection("documents")
+    results = collection.query(query_texts=[body["query"]], n_results=10)
+    return {"results": results}
+
+@app.post("/api/similarity")
+async def find_similar(request: Request):
+    body = await request.json()
+    import pinecone
+    index = pinecone.Index("my-index")
+    vector = get_embedding(body["text"])
+    results = index.query(vector=vector, top_k=5)
+    return {"matches": results["matches"]}
+
+@app.post("/api/recommend")
+async def recommend(request: Request):
+    body = await request.json()
+    from qdrant_client import QdrantClient
+    client = QdrantClient(host="localhost", port=6333)
+    vector = get_embedding(body["item"])
+    results = client.search(collection_name="items", query_vector=vector, limit=10)
+    return {"recommendations": results}

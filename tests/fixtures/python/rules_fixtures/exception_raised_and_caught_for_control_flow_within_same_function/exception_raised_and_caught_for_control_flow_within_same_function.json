@@ -1,0 +1,14 @@
+{
+  "id": "exception_raised_and_caught_for_control_flow_within_same_function",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Exception raised and immediately caught within the same function as an alternative to a conditional return.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

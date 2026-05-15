@@ -1,0 +1,33 @@
+from typing import TypeVar, Generic, List
+
+T = TypeVar("T")
+
+class Repository(Generic[T]):
+    def __init__(self):
+        self._items: List = []
+
+    def add(self, item):
+        self._items.append(item)
+
+    def get_all(self):
+        return list(self._items)
+
+class Cache(Generic):
+    def __init__(self):
+        self._store = {}
+
+    def get(self, key):
+        return self._store.get(key)
+
+    def set(self, key, value):
+        self._store[key] = value
+
+class Stack(Generic):
+    def __init__(self):
+        self._data = []
+
+    def push(self, item):
+        self._data.append(item)
+
+    def pop(self):
+        return self._data.pop()

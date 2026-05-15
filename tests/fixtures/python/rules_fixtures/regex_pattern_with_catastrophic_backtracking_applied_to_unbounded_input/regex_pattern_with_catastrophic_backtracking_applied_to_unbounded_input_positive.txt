@@ -1,0 +1,16 @@
+import re
+
+
+def validate_email_list(emails: list[str]) -> list[str]:
+    pattern = re.compile(r"^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)+$")
+    return [e for e in emails if pattern.match(e)]
+
+
+def parse_nested_brackets(text: str) -> list[str]:
+    pattern = re.compile(r"(\[([^\[\]]*)\])+")
+    return pattern.findall(text)
+
+
+def match_complex_string(input_str: str) -> bool:
+    pattern = re.compile(r"^(a+)+b$")
+    return bool(pattern.match(input_str))

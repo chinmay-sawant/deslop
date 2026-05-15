@@ -1,0 +1,39 @@
+from dataclasses import dataclass, field
+from typing import Optional
+
+@dataclass
+class Address:
+    line1: str = ""
+    line2: str = ""
+    city: str = ""
+    state: str = ""
+    zip_code: str = ""
+    country: str = ""
+
+@dataclass
+class UserPreferences:
+    timezone: str = ""
+    language: str = ""
+    theme: str = "light"
+    notifications_enabled: bool = True
+    two_factor_enabled: bool = False
+
+@dataclass
+class UserProfile:
+    user_id: int
+    first_name: str = ""
+    last_name: str = ""
+    email: str = ""
+    phone: str = ""
+    address: Address = field(default_factory=Address)
+    avatar_url: str = ""
+    bio: str = ""
+    preferences: UserPreferences = field(default_factory=UserPreferences)
+    role: str = "user"
+    is_active: bool = True
+    login_count: int = 0
+
+    def update_profile(self, data: dict):
+        for key in ("first_name", "last_name", "email", "phone", "avatar_url", "bio", "role"):
+            if key in data:
+                setattr(self, key, data[key])

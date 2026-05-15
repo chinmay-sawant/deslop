@@ -1,0 +1,23 @@
+package rulefixtures
+
+import "fmt"
+
+// scenario for go_perf_layer_error_handling_cost_panic_recover_for_control_flow: Layer: Error handling cost. Flag panic/recover used for expected branch control in performance-sensitive code.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func ProcessBatch(items []string) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("batch aborted: %v", r)
+		}
+	}()
+	for _, item := range items {
+		if item == "" {
+			panic(fmt.Errorf("empty item"))
+		}
+		if len(item) > 100 {
+			panic(fmt.Errorf("item too long: %d", len(item)))
+		}
+	}
+	return nil
+}

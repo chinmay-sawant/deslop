@@ -1,0 +1,21 @@
+use std::path::Path;
+
+fn write_files(base: &Path, entries: &[(String, Vec<u8>)]) -> std::io::Result<()> {
+    for (name, data) in entries {
+        std::fs::create_dir_all(base)?;
+        let path = base.join(name);
+        std::fs::write(path, data)?;
+    }
+    Ok(())
+}
+
+fn export_results(output_dir: &Path, results: &[Result]) -> std::io::Result<()> {
+    for result in results {
+        std::fs::create_dir_all(output_dir)?;
+        let filename = format!("{}.txt", result.id);
+        std::fs::write(output_dir.join(filename), &result.data)?;
+    }
+    Ok(())
+}
+
+struct Result { id: u64, data: Vec<u8> }

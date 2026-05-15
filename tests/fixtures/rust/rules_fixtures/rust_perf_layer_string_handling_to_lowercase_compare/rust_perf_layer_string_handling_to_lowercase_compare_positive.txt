@@ -1,0 +1,16 @@
+// BAD: to_lowercase() allocation for comparison
+fn find_user(users: &[User], name: &str) -> Option<&User> {
+    let lower_name = name.to_lowercase();
+    users.iter().find(|u| u.name.to_lowercase() == lower_name)
+}
+
+fn matches_header(headers: &[Header], key: &str) -> Option<&str> {
+    let lower_key = key.to_lowercase();
+    headers.iter()
+        .find(|h| h.name.to_lowercase() == lower_key)
+        .map(|h| h.value.as_str())
+}
+
+fn is_content_type(response: &Response, expected: &str) -> bool {
+    response.content_type.to_lowercase() == expected.to_lowercase()
+}

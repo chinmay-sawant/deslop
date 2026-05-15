@@ -1,0 +1,18 @@
+import logging
+import json
+
+logger = logging.getLogger(__name__)
+tracer = None
+
+def process_event(event):
+    result = handle(event)
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug("Event payload: %s", json.dumps(event["payload"]))
+    if tracer:
+        with tracer.start_span("process") as span:
+            if span.is_recording():
+                span.set_attribute("payload", json.dumps(event["payload"]))
+    return result
+
+def handle(event):
+    return {"status": "processed", "id": event["id"]}

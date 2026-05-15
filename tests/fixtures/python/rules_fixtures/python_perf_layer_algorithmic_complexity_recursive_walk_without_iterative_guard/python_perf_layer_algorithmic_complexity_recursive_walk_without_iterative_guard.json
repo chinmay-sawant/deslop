@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_algorithmic_complexity_recursive_walk_without_iterative_guard",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Algorithmic complexity. Flag recursive traversals over untrusted depth without iterative fallback or visited tracking.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

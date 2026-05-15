@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for repository_logs_with_http_status_or_route_labels: Repositories that log transport metadata instead of persistence-domain details.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule128NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule128NegativeService interface {
+	Run(context.Context, Rule128NegativeRecord) error
+}
+
+func scenario128Negative(ctx context.Context, service Rule128NegativeService, input Rule128NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

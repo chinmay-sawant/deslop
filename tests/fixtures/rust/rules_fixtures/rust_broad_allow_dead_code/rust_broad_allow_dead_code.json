@@ -1,0 +1,14 @@
+{
+  "id": "rust_broad_allow_dead_code",
+  "language": "rust",
+  "family": "module_surface",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Broad dead_code suppression that can hide real wiring or maintenance gaps.",
+  "binding_location": "src/heuristics/rust/module_surface.rs"
+}

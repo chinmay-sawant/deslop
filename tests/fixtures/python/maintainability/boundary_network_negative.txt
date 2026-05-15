@@ -1,5 +1,0 @@
-import requests
-
-def sync_reports(url):
-    response = requests.get(url, timeout=5)
-    return response.json()

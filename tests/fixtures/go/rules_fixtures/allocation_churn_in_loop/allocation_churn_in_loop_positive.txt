@@ -1,0 +1,14 @@
+package rulefixtures
+
+// scenario for allocation_churn_in_loop: Obvious make, new, or buffer-construction calls inside loops.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+func scenario437Positive(items []string) []string {
+	var out []string
+	for _, item := range items {
+		buf := make([]byte, 0, 256)
+		buf = append(buf, item...)
+		out = append(out, string(buf))
+	}
+	return out
+}

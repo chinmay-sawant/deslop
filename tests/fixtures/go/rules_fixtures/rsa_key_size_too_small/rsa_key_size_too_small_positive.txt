@@ -1,0 +1,12 @@
+package rulefixtures
+
+import (
+	crand "crypto/rand"
+	"crypto/rsa"
+)
+
+// scenario for rsa_key_size_too_small: `rsa.GenerateKey(rand, bits)` where `bits` is literally `< 2048`
+// fixture polarity: positive; family: security; severity: warning.
+func scenario730Positive() (*rsa.PrivateKey, error) {
+	return rsa.GenerateKey(crand.Reader, 1024)
+}

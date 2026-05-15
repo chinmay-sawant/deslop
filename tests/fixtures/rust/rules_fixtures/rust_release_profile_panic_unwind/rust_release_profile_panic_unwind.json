@@ -1,0 +1,14 @@
+{
+  "id": "rust_release_profile_panic_unwind",
+  "language": "rust",
+  "family": "security_footguns",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Release profiles that still explicitly use panic = \"unwind\".",
+  "binding_location": "src/heuristics/rust/security_footguns.rs"
+}

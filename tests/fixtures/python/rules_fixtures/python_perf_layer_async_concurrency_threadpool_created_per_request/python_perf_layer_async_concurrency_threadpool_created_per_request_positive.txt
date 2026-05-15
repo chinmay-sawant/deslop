@@ -1,0 +1,20 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
+
+async def handle_request(request):
+    executor = ThreadPoolExecutor(max_workers=4)
+    result = await asyncio.get_event_loop().run_in_executor(
+        executor, cpu_intensive_task, request.data
+    )
+    return result
+
+
+async def process_batch(items):
+    executor = ThreadPoolExecutor(max_workers=8)
+    loop = asyncio.get_event_loop()
+    tasks = [
+        loop.run_in_executor(executor, process_item, item)
+        for item in items
+    ]
+    return await asyncio.gather(*tasks)

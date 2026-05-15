@@ -1,0 +1,32 @@
+from collections import deque
+
+
+class TaskQueue:
+    def __init__(self):
+        self.queue = deque()
+
+    def enqueue(self, item):
+        self.queue.append(item)
+
+    def dequeue(self):
+        return self.queue.popleft()
+
+    def is_empty(self):
+        return len(self.queue) == 0
+
+
+def process_queue(queue: TaskQueue):
+    while not queue.is_empty():
+        task = queue.dequeue()
+        handle(task)
+
+
+def bfs_traversal(root):
+    queue = deque([root])
+    results = []
+    while queue:
+        node = queue.popleft()
+        results.append(node.value)
+        for child in node.children:
+            queue.append(child)
+    return results

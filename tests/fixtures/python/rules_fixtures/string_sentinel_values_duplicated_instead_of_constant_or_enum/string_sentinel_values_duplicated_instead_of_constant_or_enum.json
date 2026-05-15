@@ -1,0 +1,14 @@
+{
+  "id": "string_sentinel_values_duplicated_instead_of_constant_or_enum",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag repeated mode or status strings that should be centralized.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

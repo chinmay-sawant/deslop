@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for route_setup_scattered_without_router_package: Route registration split across unrelated files without a clear `router`, `routes`, or `transport` home.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule153NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule153NegativeService interface {
+	Run(context.Context, Rule153NegativeRecord) error
+}
+
+func scenario153Negative(ctx context.Context, service Rule153NegativeService, input Rule153NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

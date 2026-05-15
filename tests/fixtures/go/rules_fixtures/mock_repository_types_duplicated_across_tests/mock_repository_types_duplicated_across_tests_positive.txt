@@ -1,0 +1,27 @@
+package rulefixtures
+
+import "errors"
+
+// scenario for mock_repository_types_duplicated_across_tests: Many copy-pasted mock repository structs with the same method sets.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type MockUserRepository struct {
+	users  map[int]string
+	onFind func(int) (string, error)
+}
+
+func (m *MockUserRepository) FindByID(id int) (string, error) {
+	if m.onFind != nil {
+		return m.onFind(id)
+	}
+	name, ok := m.users[id]
+	if !ok {
+		return "", errors.New("user not found")
+	}
+	return name, nil
+}
+
+func (m *MockUserRepository) Save(id int, name string) error {
+	m.users[id] = name
+	return nil
+}

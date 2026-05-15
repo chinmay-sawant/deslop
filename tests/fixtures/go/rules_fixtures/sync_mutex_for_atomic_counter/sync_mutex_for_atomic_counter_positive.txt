@@ -1,0 +1,26 @@
+package rulefixtures
+
+import (
+	"sync"
+)
+
+// scenario for sync_mutex_for_atomic_counter: `mu.Lock(); count++; mu.Unlock()` for simple integer counters
+// fixture polarity: positive; family: performance; severity: warning.
+
+type RequestCounter struct {
+	mu    sync.Mutex
+	count int64
+}
+
+func (rc *RequestCounter) Increment() {
+	rc.mu.Lock()
+	rc.count++
+	rc.mu.Unlock()
+}
+
+func (rc *RequestCounter) Value() int64 {
+	rc.mu.Lock()
+	val := rc.count
+	rc.mu.Unlock()
+	return val
+}

@@ -1,0 +1,14 @@
+{
+  "id": "dns_lookup_for_access_control",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`net.LookupHost` or `net.LookupAddr` results used in access control decisions",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

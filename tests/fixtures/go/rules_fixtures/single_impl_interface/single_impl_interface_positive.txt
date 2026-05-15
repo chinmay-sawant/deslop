@@ -1,0 +1,25 @@
+package rulefixtures
+
+// scenario for single_impl_interface: Repository-local interfaces with one obvious implementation and a very small consumer surface.
+// fixture polarity: positive; family: idioms; severity: info.
+
+type PaymentGateway interface {
+	Charge(amount float64, currency string) (string, error)
+	Refund(transactionID string, amount float64) error
+}
+
+type StripeGateway struct {
+	apiKey string
+}
+
+func (s *StripeGateway) Charge(amount float64, currency string) (string, error) {
+	return "txn_stripe_001", nil
+}
+
+func (s *StripeGateway) Refund(transactionID string, amount float64) error {
+	return nil
+}
+
+func NewPaymentProcessor() PaymentGateway {
+	return &StripeGateway{apiKey: "sk_test_..."}
+}

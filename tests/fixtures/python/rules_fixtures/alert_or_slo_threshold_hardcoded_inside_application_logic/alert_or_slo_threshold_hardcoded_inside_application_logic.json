@@ -1,0 +1,14 @@
+{
+  "id": "alert_or_slo_threshold_hardcoded_inside_application_logic",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "SLO error rate or latency threshold hardcoded in application code instead of external configuration.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

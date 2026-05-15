@@ -1,0 +1,14 @@
+{
+  "id": "repeated_open_same_file_in_function",
+  "language": "python",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same file appears to be opened multiple times within one function.",
+  "binding_location": "src/heuristics/python/hotpath.rs"
+}

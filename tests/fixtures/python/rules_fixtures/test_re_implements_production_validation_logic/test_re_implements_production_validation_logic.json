@@ -1,0 +1,14 @@
+{
+  "id": "test_re_implements_production_validation_logic",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test contains a hard-coded reimplementation of production validation logic instead of invoking it.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

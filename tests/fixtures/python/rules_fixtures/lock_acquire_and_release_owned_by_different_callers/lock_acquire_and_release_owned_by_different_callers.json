@@ -1,0 +1,14 @@
+{
+  "id": "lock_acquire_and_release_owned_by_different_callers",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag APIs that require one caller to acquire a lock and another caller to release it.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

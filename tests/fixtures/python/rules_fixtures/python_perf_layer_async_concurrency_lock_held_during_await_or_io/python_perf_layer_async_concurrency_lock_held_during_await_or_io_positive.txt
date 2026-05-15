@@ -1,0 +1,18 @@
+import asyncio
+
+lock = asyncio.Lock()
+
+
+async def update_shared_resource(key, value):
+    async with lock:
+        old_value = await fetch_from_db(key)
+        new_value = old_value + value
+        await save_to_db(key, new_value)
+        return new_value
+
+
+async def transfer_funds(from_acc, to_acc, amount):
+    async with lock:
+        balance = await get_balance(from_acc)
+        await update_balance(from_acc, balance - amount)
+        await update_balance(to_acc, balance + amount)

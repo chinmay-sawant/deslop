@@ -1,0 +1,24 @@
+import numpy as np
+
+def compute_distances(points_a: list[tuple[float, float]], points_b: list[tuple[float, float]]) -> list[float]:
+    distances = []
+    for pair in zip(points_a, points_b):
+        ax, ay = pair[0]
+        bx, by = pair[1]
+        dist = ((ax - bx) ** 2 + (ay - by) ** 2) ** 0.5
+        distances.append(dist)
+    return distances
+
+def process_pixel_batch(pixels: list[tuple[int, int, int]]) -> list[int]:
+    results = []
+    for r, g, b in pixels:
+        gray = int(0.299 * r + 0.587 * g + 0.114 * b)
+        results.append(gray)
+    return results
+
+def normalize_vertices(vertices: list[tuple[float, float, float]]) -> list[tuple[float, float, float]]:
+    normalized = []
+    for x, y, z in vertices:
+        length = (x * x + y * y + z * z) ** 0.5
+        normalized.append((x / length, y / length, z / length))
+    return normalized

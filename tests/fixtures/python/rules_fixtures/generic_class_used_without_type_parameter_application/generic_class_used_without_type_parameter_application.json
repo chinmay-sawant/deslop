@@ -1,0 +1,14 @@
+{
+  "id": "generic_class_used_without_type_parameter_application",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Generic class subclassed or instantiated without supplying the required type parameters.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

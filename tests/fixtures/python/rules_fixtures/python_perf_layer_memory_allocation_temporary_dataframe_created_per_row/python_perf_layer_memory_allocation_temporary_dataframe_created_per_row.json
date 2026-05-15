@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_memory_allocation_temporary_dataframe_created_per_row",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag DataFrame construction per row or per record instead of vectorized batch construction.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

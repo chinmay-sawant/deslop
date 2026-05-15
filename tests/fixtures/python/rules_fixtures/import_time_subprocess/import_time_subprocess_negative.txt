@@ -1,0 +1,22 @@
+import subprocess
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1)
+def get_git_commit_hash() -> str:
+    result = subprocess.run(
+        ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+    )
+    return result.stdout.strip()
+
+
+@lru_cache(maxsize=1)
+def get_current_user() -> str:
+    result = subprocess.run(["whoami"], capture_output=True, text=True)
+    return result.stdout.strip()
+
+
+@lru_cache(maxsize=1)
+def get_openssl_version() -> str:
+    result = subprocess.run(["openssl", "version"], capture_output=True, text=True)
+    return result.stdout.strip()

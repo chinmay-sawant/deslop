@@ -1,0 +1,39 @@
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+struct Credentials {
+    username: String,
+    #[serde(deserialize_with = "validate_password")]
+    password: String,
+    #[serde(deserialize_with = "validate_token")]
+    api_token: String,
+}
+
+fn validate_password<'de, D: serde::Deserializer<'de>>(d: D) -> Result<String, D::Error> {
+    let s = String::deserialize(d)?;
+    if s.len() < 8 {
+        return Err(serde::de::Error::custom("password too short"));
+    }
+    Ok(s)
+}
+
+fn validate_token<'de, D: serde::Deserializer<'de>>(d: D) -> Result<String, D::Error> {
+    let s = String::deserialize(d)?;
+    if s.is_empty() {
+        return Err(serde::de::Error::custom("token cannot be empty"));
+    }
+    Ok(s)
+}
+
+#[derive(Debug)]
+struct SecretKey(String);
+
+impl<'de> Deserialize<'de> for SecretKey {
+    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        let raw = String::deserialize(d)?;
+        if raw.len() < 32 {
+            return Err(serde::de::Error::custom("key too short"));
+        }
+        Ok(SecretKey(raw))
+    }
+}

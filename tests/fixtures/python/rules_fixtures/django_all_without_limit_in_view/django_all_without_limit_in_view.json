@@ -1,0 +1,14 @@
+{
+  "id": "django_all_without_limit_in_view",
+  "language": "python",
+  "family": "framework",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Django views call .all() without visible pagination, slicing, or limiting.",
+  "binding_location": "src/heuristics/python/framework.rs"
+}

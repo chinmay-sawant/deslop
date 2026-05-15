@@ -1,0 +1,17 @@
+package rulefixtures
+
+import "strings"
+
+// scenario for builder_write_string_single_byte_literal: `strings.Builder.WriteString("x")` for single-byte literals instead of `WriteByte`.
+// fixture polarity: positive; family: performance; severity: info.
+
+func scenario445Positive(items []string) string {
+	var b strings.Builder
+	for i, item := range items {
+		if i > 0 {
+			b.WriteString(",")
+		}
+		b.WriteString(item)
+	}
+	return b.String()
+}

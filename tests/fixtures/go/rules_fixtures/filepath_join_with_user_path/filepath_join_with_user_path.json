@@ -1,0 +1,14 @@
+{
+  "id": "filepath_join_with_user_path",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`filepath.Join(baseDir, userInput)` without subsequent `filepath.Rel` or path-containment validation",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

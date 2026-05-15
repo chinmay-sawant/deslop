@@ -1,0 +1,25 @@
+async fn transfer_funds(
+    accounts: &std::sync::Mutex<AccountStore>,
+    from: u64,
+    to: u64,
+    amount: i64,
+) {
+    {
+        let mut store = accounts.lock().unwrap();
+        let from_balance = store.get_balance(from);
+        store.set_balance(from, from_balance - amount);
+        let to_balance = store.get_balance(to);
+        store.set_balance(to, to_balance + amount);
+    }
+    save_to_database(from, to, amount).await;
+    notify_transfer(from, to, amount).await;
+}
+
+async fn save_to_database(_from: u64, _to: u64, _amount: i64) { todo!() }
+async fn notify_transfer(_from: u64, _to: u64, _amount: i64) { todo!() }
+
+struct AccountStore;
+impl AccountStore {
+    fn get_balance(&self, _id: u64) -> i64 { todo!() }
+    fn set_balance(&mut self, _id: u64, _balance: i64) { todo!() }
+}

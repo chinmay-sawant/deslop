@@ -1,0 +1,14 @@
+package rulefixtures
+
+// scenario for unnecessary_map_for_set_of_ints: `map[int]bool` or `map[int]struct{}` used as a set for small dense integer ranges
+// fixture polarity: positive; family: performance; severity: info.
+func scenario691Positive(val int) bool {
+	allowed := map[int]bool{
+		1: true,
+		2: true,
+		3: true,
+		4: true,
+		5: true,
+	}
+	return allowed[val]
+}

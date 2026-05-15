@@ -1,0 +1,14 @@
+{
+  "id": "rust_axum_router_built_in_handler",
+  "language": "rust",
+  "family": "runtime_boundary",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Axum routers assembled inside handler call paths instead of startup wiring.",
+  "binding_location": "src/heuristics/rust/runtime_boundary.rs"
+}

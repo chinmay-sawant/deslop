@@ -1,0 +1,14 @@
+{
+  "id": "audit_logging_executed_in_handler_before_service_success",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Audit writes that happen before the service has confirmed success.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

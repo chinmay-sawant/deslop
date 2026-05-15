@@ -1,0 +1,14 @@
+{
+  "id": "cursor_based_pagination_missing_stable_sort_tiebreaker",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Cursor-based pagination implemented without a stable unique sort key tiebreaker.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

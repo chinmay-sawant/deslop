@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_runtime_configuration_debug_mode_enabled_in_perf_sensitive_path",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Build and runtime configuration. Flag framework debug or reload mode enabled in performance-sensitive runtime config.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

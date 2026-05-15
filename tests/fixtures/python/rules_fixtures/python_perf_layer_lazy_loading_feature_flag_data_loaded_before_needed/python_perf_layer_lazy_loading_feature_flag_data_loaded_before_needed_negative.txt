@@ -1,0 +1,20 @@
+import json
+
+_feature_flags = None
+
+def get_feature_flags():
+    global _feature_flags
+    if _feature_flags is None:
+        with open("flags.json") as f:
+            _feature_flags = json.load(f)
+    return _feature_flags
+
+def handle_request(request):
+    flags = get_feature_flags()
+    if flags.get("new_ui"):
+        return render_new_ui(request)
+    return render_old_ui(request)
+
+def get_ab_tests():
+    with open("ab_tests.json") as f:
+        return json.load(f)

@@ -1,0 +1,29 @@
+struct FileHandle {
+    path: String,
+}
+
+impl Drop for FileHandle {
+    fn drop(&mut self) {
+        std::fs::remove_file(&self.path).unwrap();
+        std::fs::write(format!("{}.archive", self.path), b"archived").unwrap();
+    }
+}
+
+struct DatabasePool {
+    connections: Vec<Connection>,
+}
+
+impl Drop for DatabasePool {
+    fn drop(&mut self) {
+        for conn in &self.connections {
+            conn.drain_and_close();
+        }
+    }
+}
+
+struct Connection;
+impl Connection {
+    fn drain_and_close(&self) {
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+}

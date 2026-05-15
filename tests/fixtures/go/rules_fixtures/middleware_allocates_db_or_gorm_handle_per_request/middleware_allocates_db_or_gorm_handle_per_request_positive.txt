@@ -1,0 +1,32 @@
+package rulefixtures
+
+import (
+	"log"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
+// scenario for middleware_allocates_db_or_gorm_handle_per_request: Database or GORM connections opened inside handlers or middleware instead of process-level setup.
+// fixture polarity: positive; family: gin; severity: contextual.
+
+func DBCreateMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+		if err != nil {
+			c.AbortWithStatusJSON(500, gin.H{"error": "db connect failed"})
+			return
+		}
+		sqlDB, _ := db.DB()
+		defer sqlDB.Close()
+
+		var result map[string]interface{}
+		db.Raw("SELECT 1").Scan(&result)
+
+		c.Set("db", db)
+		c.Next()
+	}
+}
+
+var _ = log.Println

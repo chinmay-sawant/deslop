@@ -1,0 +1,27 @@
+def has_active_users(db):
+    row = db.execute("SELECT 1 FROM users WHERE active = 1 LIMIT 1").fetchone()
+    return row is not None
+
+def count_valid_records(records):
+    count = 0
+    for r in records:
+        if r["status"] == "ok":
+            count += 1
+    return count
+
+def any_errors(log_lines):
+    for line in log_lines:
+        if "ERROR" in line:
+            return True
+    return False
+
+def get_result_count(generator):
+    count = 0
+    for _ in generator:
+        count += 1
+    return count
+
+def has_items(data_source):
+    for _ in data_source.iterate():
+        return True
+    return False

@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_query_compiled_per_call",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `tree_sitter::Query::new(...)` inside functions called per file or per node, where query compilation should be cached.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

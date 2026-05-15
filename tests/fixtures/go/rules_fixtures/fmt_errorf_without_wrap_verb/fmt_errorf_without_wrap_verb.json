@@ -1,0 +1,14 @@
+{
+  "id": "fmt_errorf_without_wrap_verb",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`fmt.Errorf(\"context: %v\", err)` instead of `%w`",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

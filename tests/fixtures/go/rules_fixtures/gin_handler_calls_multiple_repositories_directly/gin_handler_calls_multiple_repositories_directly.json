@@ -1,0 +1,14 @@
+{
+  "id": "gin_handler_calls_multiple_repositories_directly",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Handlers that coordinate several repositories directly, which usually signals missing service orchestration.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

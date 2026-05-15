@@ -1,9 +1,0 @@
-package sample
-
-import (
-    "github.com/acme/widgets"
-    "fmt"
-    "strings"
-)
-
-func Run() {}

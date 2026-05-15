@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_data_structure_choice_hashmap_for_tiny_static_set",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Data structure choice. Flag HashMap use for tiny static sets where match, arrays, or phf-like tables may avoid hashing cost.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

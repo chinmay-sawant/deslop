@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_collection_iteration_manual_index_loop_over_slice",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag manual index loops over slices where iterators or chunks avoid repeated indexing.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}

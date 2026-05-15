@@ -1,0 +1,43 @@
+from dataclasses import dataclass, field
+from typing import List
+
+
+@dataclass
+class AppConfig:
+    timezone: str = "UTC"
+    locale: str = "en_US"
+    currency: str = "USD"
+    tax_rate: float = 0.08
+    max_order_qty: int = 100
+    invoice_prefix: str = "INV"
+    invoice_format: str = "pdf"
+
+
+@dataclass
+class User:
+    name: str
+    email: str
+    timezone: str = "UTC"
+    locale: str = "en_US"
+
+
+@dataclass
+class Order:
+    user: User
+    items: List[dict]
+    currency: str = "USD"
+    tax_rate: float = 0.08
+
+
+@dataclass
+class Product:
+    name: str
+    price: float
+    max_quantity: int = 100
+
+
+@dataclass
+class Invoice:
+    order: Order
+    prefix: str = "INV"
+    format: str = "pdf"

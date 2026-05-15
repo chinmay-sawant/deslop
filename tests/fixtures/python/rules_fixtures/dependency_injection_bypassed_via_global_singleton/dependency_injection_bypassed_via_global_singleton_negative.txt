@@ -1,0 +1,29 @@
+from typing import Protocol
+
+
+class ObjectStorage(Protocol):
+    def put_object(self, bucket: str, key: str, body: bytes) -> None: ...
+    def get_object(self, bucket: str, key: str) -> dict: ...
+    def list_objects_v2(self, bucket: str, prefix: str) -> dict: ...
+
+
+class DocumentService:
+    def __init__(self, storage: ObjectStorage):
+        self._storage = storage
+
+    def upload(self, bucket: str, key: str, data: bytes) -> str:
+        self._storage.put_object(Bucket=bucket, Key=key, Body=data)
+        return f"s3://{bucket}/{key}"
+
+    def download(self, bucket: str, key: str) -> bytes:
+        response = self._storage.get_object(Bucket=bucket, Key=key)
+        return response["Body"].read()
+
+
+class ReportGenerator:
+    def __init__(self, storage: ObjectStorage):
+        self._storage = storage
+
+    def generate(self, report_type: str) -> str:
+        data = self._storage.list_objects_v2(Bucket="reports-bucket", Prefix=report_type)
+        return f"Generated report with {data.get('KeyCount', 0)} items"

@@ -1,0 +1,31 @@
+import click
+import httpx
+
+
+@click.command()
+@click.option("--user-id", required=True)
+def fetch_user(user_id):
+    client = httpx.Client(base_url="https://api.example.com", timeout=30)
+    response = client.get(f"/users/{user_id}")
+    click.echo(response.json())
+    client.close()
+
+
+@click.command()
+@click.option("--repo", required=True)
+def check_repo(repo):
+    client = httpx.Client(base_url="https://api.github.com", timeout=30)
+    response = client.get(f"/repos/{repo}")
+    click.echo(response.status_code)
+    client.close()
+
+
+@click.command()
+@click.option("--query", required=True)
+def search(query):
+    client = httpx.Client(base_url="https://search.example.com", timeout=30)
+    response = client.get("/search", params={"q": query})
+    results = response.json()
+    for item in results["hits"]:
+        click.echo(item["title"])
+    client.close()

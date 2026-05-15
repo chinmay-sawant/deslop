@@ -1,0 +1,32 @@
+use std::cell::UnsafeCell;
+
+struct MyCell<T> {
+    value: UnsafeCell<T>,
+}
+
+impl<T: Copy> MyCell<T> {
+    fn get(&self) -> T {
+        unsafe { *self.value.get() }
+    }
+
+    fn set(&self, val: T) {
+        unsafe { *self.value.get() = val; }
+    }
+}
+
+fn aliasing_violation() {
+    let cell = MyCell { value: UnsafeCell::new(42i32) };
+    let ref1 = &cell;
+    let ptr = ref1.value.get();
+    let ref2 = unsafe { &*ptr };
+    let val = cell.get();
+    println!("{} {}", ref2, val);
+}
+
+unsafe fn mutate_through_alias(data: &mut [u8], idx1: usize, idx2: usize) {
+    let ptr = data.as_mut_ptr();
+    let a = &mut *ptr.add(idx1);
+    let b = &mut *ptr.add(idx2);
+    *a = 1;
+    *b = 2;
+}

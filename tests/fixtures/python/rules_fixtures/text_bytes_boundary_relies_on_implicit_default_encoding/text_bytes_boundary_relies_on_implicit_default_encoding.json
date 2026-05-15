@@ -1,0 +1,14 @@
+{
+  "id": "text_bytes_boundary_relies_on_implicit_default_encoding",
+  "language": "python",
+  "family": "boundaries",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that crosses text and bytes boundaries without an explicit encoding contract.",
+  "binding_location": "src/heuristics/python/boundaries.rs"
+}

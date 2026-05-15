@@ -1,0 +1,27 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"log"
+)
+
+// scenario for log_level_check_after_format: expensive formatting happens regardless of log level
+// fixture polarity: positive; family: library; severity: info.
+
+var currentLogLevel = "info"
+
+func scenario415Positive(userID int, details []string) {
+	msg := fmt.Sprintf("user=%d details=%v metadata=%d", userID, details, len(details))
+	if currentLogLevel == "debug" {
+		log.Print(msg)
+	}
+}
+
+func workerLoop(ids []int) {
+	for _, id := range ids {
+		formatted := fmt.Sprintf("processing id=%d with batch_size=%d", id, len(ids))
+		if currentLogLevel == "debug" {
+			log.Print(formatted)
+		}
+	}
+}

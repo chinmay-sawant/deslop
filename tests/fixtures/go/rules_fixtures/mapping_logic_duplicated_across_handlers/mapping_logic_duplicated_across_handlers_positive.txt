@@ -1,0 +1,42 @@
+package rulefixtures
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// scenario for mapping_logic_duplicated_across_handlers: Repeated field mapping blocks across multiple handlers.
+// fixture polarity: positive; family: architecture; severity: info.
+
+type ProductRecord struct {
+	ID       int
+	Title    string
+	Price    float64
+	InStock  bool
+}
+
+type ProductDTO struct {
+	ID        int     `json:"id"`
+	Name      string  `json:"name"`
+	Cost      float64 `json:"cost"`
+	Available bool    `json:"available"`
+}
+
+func ListProductsHandler(w http.ResponseWriter, r *http.Request) {
+	rows := []ProductRecord{{ID: 1, Title: "Widget", Price: 9.99, InStock: true}}
+	var resp []ProductDTO
+	for _, p := range rows {
+		resp = append(resp, ProductDTO{
+			ID: p.ID, Name: p.Title, Cost: p.Price, Available: p.InStock,
+		})
+	}
+	json.NewEncoder(w).Encode(resp)
+}
+
+func GetProductHandler(w http.ResponseWriter, r *http.Request) {
+	record := ProductRecord{ID: 2, Title: "Gadget", Price: 19.99, InStock: false}
+	dto := ProductDTO{
+		ID: record.ID, Name: record.Title, Cost: record.Price, Available: record.InStock,
+	}
+	json.NewEncoder(w).Encode(dto)
+}

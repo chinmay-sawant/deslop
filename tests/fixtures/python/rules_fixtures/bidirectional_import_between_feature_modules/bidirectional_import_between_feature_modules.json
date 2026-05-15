@@ -1,0 +1,14 @@
+{
+  "id": "bidirectional_import_between_feature_modules",
+  "language": "python",
+  "family": "structure",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag feature modules that depend on each other directly.",
+  "binding_location": "src/heuristics/python/structure.rs"
+}

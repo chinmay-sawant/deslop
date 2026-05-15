@@ -1,0 +1,17 @@
+def process_text(text):
+    return text.upper()
+
+def resize_image(path, size):
+    from PIL import Image
+    img = Image.open(path)
+    return img.resize(size)
+
+def analyze_video(path):
+    import cv2
+    cap = cv2.VideoCapture(path)
+    return cap.get(cv2.CAP_PROP_FRAME_COUNT)
+
+def load_model():
+    import torch
+    from transformers import AutoModel
+    return AutoModel.from_pretrained("bert-base-uncased")

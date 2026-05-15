@@ -1,0 +1,14 @@
+{
+  "id": "sorted_list_maintained_with_insert_instead_of_bisect_insort",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Sorted list maintained by appending then calling .sort(); use bisect.insort() instead.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

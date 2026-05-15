@@ -1,0 +1,14 @@
+{
+  "id": "rust_tree_sitter_parser_created_per_file_without_reuse",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `tree_sitter::Parser::new()` construction inside per-file or per-function loops where a language-specific parser could be reused per worker.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

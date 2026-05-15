@@ -1,0 +1,22 @@
+import requests
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/users/{user_id}")
+async def get_user(user_id: int):
+    response = requests.get(f"https://api.example.com/users/{user_id}")
+    return response.json()
+
+
+@app.post("/webhook")
+async def handle_webhook(payload: dict):
+    response = requests.post("https://external.service/hook", json=payload)
+    return {"status": response.status_code}
+
+
+@app.get("/data")
+async def get_data():
+    resp = requests.get("https://data.provider.com/api/query", timeout=30)
+    return resp.json()

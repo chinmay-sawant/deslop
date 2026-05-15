@@ -1,0 +1,53 @@
+import os
+import json
+from dataclasses import dataclass
+from typing import List, Optional
+
+MAX_RETRIES = 3
+DEFAULT_TIMEOUT = 30
+API_BASE_URL = "https://api.example.com"
+
+@dataclass
+class UserProfile:
+    user_id: int
+    name: str
+    email: str
+
+@dataclass
+class Order:
+    order_id: int
+    amount: float
+    status: str
+
+def validate_email(email: str) -> bool:
+    return "@" in email and "." in email
+
+def format_currency(amount: float) -> str:
+    return f"${amount:,.2f}"
+
+def calculate_discount(amount: float, rate: float) -> float:
+    return amount * (1 - rate)
+
+def process_user_orders(user_id: int) -> List[dict]:
+    import requests
+    response = requests.get(f"{API_BASE_URL}/users/{user_id}/orders", timeout=DEFAULT_TIMEOUT)
+    orders = response.json()
+    results = []
+    for order_data in orders:
+        order = Order(
+            order_id=order_data["id"],
+            amount=order_data["total"],
+            status=order_data["state"]
+        )
+        discounted = calculate_discount(order.amount, 0.1)
+        results.append({
+            "order_id": order.order_id,
+            "formatted_amount": format_currency(discounted),
+            "status": order.status
+        })
+    return results
+
+if __name__ == "__main__":
+    import sys
+    user_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+    print(json.dumps(process_user_orders(user_id), indent=2))

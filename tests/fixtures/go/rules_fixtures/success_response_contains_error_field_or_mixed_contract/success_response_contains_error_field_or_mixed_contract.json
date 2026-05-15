@@ -1,0 +1,14 @@
+{
+  "id": "success_response_contains_error_field_or_mixed_contract",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Endpoints that blend success and error shapes into one ambiguous contract.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

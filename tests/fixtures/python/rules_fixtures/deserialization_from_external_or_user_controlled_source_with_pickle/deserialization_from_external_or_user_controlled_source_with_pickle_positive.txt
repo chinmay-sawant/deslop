@@ -1,0 +1,16 @@
+import pickle
+import socket
+
+
+def load_user_session(data: bytes) -> dict:
+    return pickle.loads(data)
+
+
+def handle_client_request(conn: socket.socket):
+    raw = conn.recv(65536)
+    session_data = pickle.loads(raw)
+    return session_data
+
+
+def read_uploaded_object(upload_bytes: bytes):
+    return pickle.loads(upload_bytes)

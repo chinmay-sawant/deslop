@@ -1,0 +1,14 @@
+{
+  "id": "thread_pool_or_process_pool_created_and_destroyed_per_call",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag per-call executor allocation for repeatable work.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

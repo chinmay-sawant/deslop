@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for helper_or_utils_package_contains_domain_logic: Generic `helper`, `common`, or `utils` packages that host concrete domain decisions.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule076NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule076NegativeService interface {
+	Run(context.Context, Rule076NegativeRecord) error
+}
+
+func scenario076Negative(ctx context.Context, service Rule076NegativeService, input Rule076NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

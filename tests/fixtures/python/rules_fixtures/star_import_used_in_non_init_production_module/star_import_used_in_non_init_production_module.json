@@ -1,0 +1,14 @@
+{
+  "id": "star_import_used_in_non_init_production_module",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Star import (from x import *) used in a production module other than __init__.py.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

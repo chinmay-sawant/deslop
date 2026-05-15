@@ -1,0 +1,37 @@
+class PaymentError(Exception):
+    def __init__(self, code, message):
+        self.code = code
+        self.message = message
+        super().__init__(message)
+
+
+class ValidationError(Exception):
+    def __init__(self, field, code, message):
+        self.field = field
+        self.code = code
+        self.message = message
+        super().__init__(message)
+
+
+class APIError(Exception):
+    def __init__(self, status_code, error_code, detail):
+        self.status_code = status_code
+        self.error_code = error_code
+        self.detail = detail
+        super().__init__(detail)
+
+
+class AuthError(Exception):
+    def __init__(self, reason_code, message):
+        self.reason_code = reason_code
+        self.message = message
+        super().__init__(message)
+
+
+try:
+    process_payment(order)
+except PaymentError as e:
+    if e.code == "INSUFFICIENT_FUNDS":
+        notify_user(user, "Payment failed")
+    elif e.code == "CARD_EXPIRED":
+        prompt_update_card(user)

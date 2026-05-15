@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for not_found_semantics_implemented_by_nil_nil_return: Repository or service APIs that encode missing records as `nil, nil` with no explicit result contract.
+// fixture polarity: negative; family: architecture; severity: info.
+type Rule102NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule102NegativeService interface {
+	Run(context.Context, Rule102NegativeRecord) error
+}
+
+func scenario102Negative(ctx context.Context, service Rule102NegativeService, input Rule102NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

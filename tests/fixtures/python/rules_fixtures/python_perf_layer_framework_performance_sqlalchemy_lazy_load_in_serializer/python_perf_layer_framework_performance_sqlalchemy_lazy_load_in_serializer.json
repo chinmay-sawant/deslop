@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_framework_performance_sqlalchemy_lazy_load_in_serializer",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Framework-specific performance. Flag SQLAlchemy lazy loads triggered from serializers or response mapping loops.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

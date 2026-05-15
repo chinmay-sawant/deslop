@@ -1,0 +1,33 @@
+package rulefixtures
+
+import (
+	"io"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for middleware_allocates_http_client_per_request: HTTP client allocated inside Gin handlers or middleware instead of being shared.
+// fixture polarity: positive; family: gin; severity: contextual.
+
+func HTTPClientMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		client := &http.Client{
+			Timeout: 10 * time.Second,
+		}
+
+		resp, err := client.Get("https://api.example.com/health")
+		if err != nil {
+			c.AbortWithStatusJSON(502, gin.H{"error": "upstream unreachable"})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+		c.Set("health_response", string(body))
+		c.Next()
+	}
+}
+
+var _ = io.Discard

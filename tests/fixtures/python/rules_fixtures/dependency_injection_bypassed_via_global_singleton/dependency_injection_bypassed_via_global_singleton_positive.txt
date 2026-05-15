@@ -1,0 +1,30 @@
+import boto3
+
+
+_s3_client = None
+
+
+def get_s3_client():
+    global _s3_client
+    if _s3_client is None:
+        _s3_client = boto3.client("s3", region_name="us-east-1")
+    return _s3_client
+
+
+class DocumentService:
+    def upload(self, bucket: str, key: str, data: bytes) -> str:
+        client = get_s3_client()
+        client.put_object(Bucket=bucket, Key=key, Body=data)
+        return f"s3://{bucket}/{key}"
+
+    def download(self, bucket: str, key: str) -> bytes:
+        client = get_s3_client()
+        response = client.get_object(Bucket=bucket, Key=key)
+        return response["Body"].read()
+
+
+class ReportGenerator:
+    def generate(self, report_type: str) -> str:
+        client = get_s3_client()
+        data = client.list_objects_v2(Bucket="reports-bucket", Prefix=report_type)
+        return f"Generated report with {data.get('KeyCount', 0)} items"

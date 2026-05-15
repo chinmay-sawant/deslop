@@ -1,0 +1,38 @@
+from typing import List, Optional, Dict, Any
+
+def collect_names(users: List[dict], role: Optional[str] = None, active: Optional[bool] = None) -> List[str]:
+    names = []
+    for user in users:
+        if role is not None and user.get("role") != role:
+            continue
+        if active is not None and user.get("active") != active:
+            continue
+        names.append(user["name"])
+    return names
+
+def find_user(users: List[dict], user_id: int) -> Optional[dict]:
+    for user in users:
+        if user["id"] == user_id:
+            return user
+    return None
+
+def get_setting(config: dict, key: str) -> Optional[Any]:
+    value = config.get(key)
+    if value is None:
+        return config.get("default_" + key)
+    return value
+
+def process_items(items: List[dict]) -> List[dict]:
+    results = []
+    for item in items:
+        if item.get("status") is not None and item["status"] != "active":
+            continue
+        if item.get("amount") is not None and item["amount"] <= 0:
+            continue
+        results.append(item)
+    return results
+
+def filter_by_category(products: List[dict], category: Optional[str]) -> List[dict]:
+    if category is None:
+        return products
+    return [p for p in products if p.get("category") == category]

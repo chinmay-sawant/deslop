@@ -1,0 +1,14 @@
+{
+  "id": "double_close_local_channel",
+  "language": "go",
+  "family": "idioms",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "The same locally created channel appears to be closed more than once in one function body.",
+  "binding_location": "src/heuristics/go/idioms.rs"
+}

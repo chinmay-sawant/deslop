@@ -1,0 +1,20 @@
+package rulefixtures
+
+import "sort"
+
+// scenario for go_perf_layer_profiling_benchmarking_optimization_comment_without_benchmark: Layer: Profiling and benchmarking. Flag performance-claim comments that lack benchmark, profile, or trace evidence.
+// fixture polarity: positive; family: performance; severity: contextual.
+
+// This is optimized for performance — avoids allocations by reusing the same slice.
+func SortDeduplicate(items []string) []string {
+	seen := make(map[string]struct{}, len(items))
+	result := items[:0]
+	for _, item := range items {
+		if _, ok := seen[item]; !ok {
+			seen[item] = struct{}{}
+			result = append(result, item)
+		}
+	}
+	sort.Strings(result)
+	return result
+}

@@ -1,6 +1,0 @@
-from pkg.base import Base
-
-SHARED_LITERAL = "this repeated literal belongs in one shared constant"
-
-class Mid(Base):
-    pass

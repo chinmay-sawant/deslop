@@ -1,0 +1,42 @@
+use tree_sitter::{Parser, Node};
+use std::collections::HashMap;
+
+fn walk_nested(node: Node, source: &str) {
+    for i in 0..node.child_count() {
+        if let Some(child) = node.child(i) {
+            let text = child.utf8_text(source.as_bytes()).unwrap();
+            for j in 0..child.child_count() {
+                if let Some(grandchild) = child.child(j) {
+                    let gt = grandchild.utf8_text(source.as_bytes()).unwrap();
+                    println!("parent: {}, child: {}", text, gt);
+                }
+            }
+        }
+    }
+}
+
+fn collect_texts(node: Node, source: &str) -> Vec<String> {
+    let mut results = Vec::new();
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        let text = child.utf8_text(source.as_bytes()).unwrap();
+        for grandchild in child.named_children(&mut cursor) {
+            let gt = grandchild.utf8_text(source.as_bytes()).unwrap();
+            results.push(format!("{}:{}", text, gt));
+        }
+    }
+    results
+}
+
+fn walk_with_cache(node: Node, source: &str, cache: &mut HashMap<usize, String>) {
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        let id = child.id();
+        let text = cache
+            .entry(id)
+            .or_insert_with(|| child.utf8_text(source.as_bytes()).unwrap().to_string())
+            .clone();
+        println!("{}", text);
+        walk_with_cache(child, source, cache);
+    }
+}

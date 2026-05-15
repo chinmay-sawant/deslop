@@ -1,0 +1,42 @@
+package rulefixtures
+
+import (
+	"fmt"
+	"strings"
+)
+
+// scenario for shared_package_named_common_base_utils_with_mixed_exports: Generic packages that mix services, models, DTOs, validators, and queries behind one broad shared namespace.
+// fixture polarity: positive; family: architecture; severity: info.
+
+const MaxUploadSize = 10 << 20
+const DefaultPageSize = 25
+
+type UserRole string
+
+const (
+	RoleAdmin UserRole = "admin"
+	RoleUser  UserRole = "user"
+)
+
+func IsValidEmail(email string) bool {
+	return strings.Contains(email, "@") && strings.Contains(email, ".")
+}
+
+func FormatCurrency(cents int64) string {
+	return fmt.Sprintf("$%.2f", float64(cents)/100)
+}
+
+type OrderDTO struct {
+	ID     int64  `json:"id"`
+	Status string `json:"status"`
+}
+
+func ProcessOrder(order *OrderDTO) error {
+	if order.Status == "" {
+		order.Status = "pending"
+	}
+	if order.ID <= 0 {
+		return fmt.Errorf("invalid order id: %d", order.ID)
+	}
+	return nil
+}

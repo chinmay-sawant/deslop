@@ -1,0 +1,14 @@
+{
+  "id": "go_perf_layer_collection_iteration_copy_slice_before_readonly_range",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Collection iteration. Flag slice copies made immediately before read-only range loops.",
+  "binding_location": "src/heuristics/go/performance.rs"
+}

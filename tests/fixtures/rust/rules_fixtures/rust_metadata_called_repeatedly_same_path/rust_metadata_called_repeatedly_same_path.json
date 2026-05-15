@@ -1,0 +1,14 @@
+{
+  "id": "rust_metadata_called_repeatedly_same_path",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag repeated `metadata`, `symlink_metadata`, `exists`, or `is_file` checks for the same path in one function.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

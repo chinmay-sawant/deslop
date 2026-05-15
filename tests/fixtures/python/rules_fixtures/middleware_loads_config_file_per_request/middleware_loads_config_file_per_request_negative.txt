@@ -1,0 +1,42 @@
+import yaml
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
+
+def load_config():
+    with open("config/rate_limits.yaml") as f:
+        rate_config = yaml.safe_load(f)
+    with open("config/features.yaml") as f:
+        feature_config = yaml.safe_load(f)
+    return rate_config, feature_config
+
+
+RATE_CONFIG, FEATURE_CONFIG = load_config()
+
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        limit = RATE_CONFIG.get("default_limit", 100)
+        endpoint = request.url.path
+        if endpoint in RATE_CONFIG.get("endpoints", {}):
+            limit = RATE_CONFIG["endpoints"][endpoint]["limit"]
+
+        if get_request_count(request.client.host) > limit:
+            return JSONResponse({"error": "Rate limited"}, status_code=429)
+
+        response = await call_next(request)
+        return response
+
+
+def get_request_count(host: str) -> int:
+    return 0
+
+
+class FeatureFlagMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if not FEATURE_CONFIG.get("maintenance_mode", False):
+            return JSONResponse({"error": "Maintenance"}, status_code=503)
+
+        response = await call_next(request)
+        return response

@@ -1,0 +1,14 @@
+{
+  "id": "sql_query_constants_outside_repository_package",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Raw query templates stored in handlers, services, or DTO packages instead of repository-adjacent files.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

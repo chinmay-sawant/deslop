@@ -1,0 +1,23 @@
+package rulefixtures
+
+import (
+	"context"
+)
+
+// scenario for handler_calls_gorm_directly_outside_repository: Handler packages that import `gorm.io/gorm` and build query chains directly.
+// fixture polarity: negative; family: architecture; severity: warning.
+type Rule070NegativeRecord struct {
+	TenantID string
+	Limit int
+}
+
+type Rule070NegativeService interface {
+	Run(context.Context, Rule070NegativeRecord) error
+}
+
+func scenario070Negative(ctx context.Context, service Rule070NegativeService, input Rule070NegativeRecord) error {
+	if input.Limit <= 0 {
+		input.Limit = 50
+	}
+	return service.Run(ctx, input)
+}

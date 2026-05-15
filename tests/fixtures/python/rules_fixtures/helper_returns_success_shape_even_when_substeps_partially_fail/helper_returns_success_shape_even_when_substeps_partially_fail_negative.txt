@@ -1,0 +1,57 @@
+from dataclasses import dataclass, field
+from enum import Enum
+
+
+class SyncStatus(Enum):
+    SUCCESS = "success"
+    PARTIAL = "partial"
+    FAILED = "failed"
+
+
+@dataclass
+class SyncResult:
+    status: SyncStatus
+    synced_count: int = 0
+    errors: list[str] = field(default_factory=list)
+
+
+def sync_user_data(user_id: int) -> SyncResult:
+    synced = 0
+    errors: list[str] = []
+
+    try:
+        sync_profile(user_id)
+        synced += 1
+    except Exception as e:
+        errors.append(f"profile: {e}")
+
+    try:
+        sync_orders(user_id)
+        synced += 1
+    except Exception as e:
+        errors.append(f"orders: {e}")
+
+    try:
+        sync_preferences(user_id)
+        synced += 1
+    except Exception as e:
+        errors.append(f"preferences: {e}")
+
+    if not errors:
+        status = SyncStatus.SUCCESS
+    elif synced > 0:
+        status = SyncStatus.PARTIAL
+    else:
+        status = SyncStatus.FAILED
+
+    return SyncResult(status=status, synced_count=synced, errors=errors)
+
+
+def process_sync(user_id: int):
+    result = sync_user_data(user_id)
+    if result.status == SyncStatus.SUCCESS:
+        notify_user(user_id, "Sync completed successfully")
+    elif result.status == SyncStatus.PARTIAL:
+        notify_user(user_id, f"Sync partially completed: {result.errors}")
+    else:
+        alert_admin(f"Sync failed for {user_id}: {result.errors}")

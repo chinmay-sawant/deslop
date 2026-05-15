@@ -1,0 +1,14 @@
+{
+  "id": "bun_newdb_per_request",
+  "language": "go",
+  "family": "data_access",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Bun DB handles created directly on request paths instead of reused process-level state.",
+  "binding_location": "src/heuristics/go/framework_patterns/data_access.rs"
+}

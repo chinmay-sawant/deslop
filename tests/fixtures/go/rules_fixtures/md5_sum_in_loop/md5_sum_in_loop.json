@@ -1,0 +1,14 @@
+{
+  "id": "md5_sum_in_loop",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`md5.Sum(...)` inside loops.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

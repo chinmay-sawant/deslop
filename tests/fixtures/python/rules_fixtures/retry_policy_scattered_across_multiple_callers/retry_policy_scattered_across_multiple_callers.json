@@ -1,0 +1,14 @@
+{
+  "id": "retry_policy_scattered_across_multiple_callers",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag repeated retry or backoff loops around the same dependency instead of one owner boundary.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

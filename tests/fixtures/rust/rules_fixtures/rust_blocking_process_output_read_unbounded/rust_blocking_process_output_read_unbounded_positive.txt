@@ -1,0 +1,27 @@
+use std::process::Command;
+
+fn run_script(script: &str) -> String {
+    let output = Command::new("bash")
+        .arg("-c")
+        .arg(script)
+        .output()
+        .expect("failed to run script");
+    let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+    stdout
+}
+
+fn get_git_log() -> String {
+    let output = Command::new("git")
+        .args(["log", "--oneline", "-1000"])
+        .output()
+        .expect("git log failed");
+    String::from_utf8_lossy(&output.stdout).to_string()
+}
+
+fn dump_database() -> Vec<u8> {
+    let output = Command::new("pg_dump")
+        .arg("mydb")
+        .output()
+        .expect("pg_dump failed");
+    output.stdout
+}

@@ -1,0 +1,47 @@
+def process_user_data(user_id: int) -> dict:
+    return Utils.fetch_and_transform(user_id)
+
+
+def calculate_order_total(order_id: str) -> float:
+    return Utils.compute_pricing(order_id)
+
+
+def send_notification(user_id: int, message: str):
+    Common.dispatch_message(user_id, message)
+
+
+class Utils:
+    @staticmethod
+    def fetch_and_transform(user_id: int) -> dict:
+        raw = Database.query(f"SELECT * FROM users WHERE id = {user_id}")
+        return Helpers.normalize_user(raw)
+
+    @staticmethod
+    def compute_pricing(order_id: str) -> float:
+        items = Database.query(f"SELECT * FROM order_items WHERE order_id = {order_id}")
+        return Helpers.apply_discounts(items)
+
+    @staticmethod
+    def dispatch_message(user_id: int, message: str):
+        channel = Helpers.resolve_channel(user_id)
+        channel.send(message)
+
+
+class Common:
+    @staticmethod
+    def dispatch_message(user_id: int, message: str):
+        Utils.dispatch_message(user_id, message)
+
+
+class Helpers:
+    @staticmethod
+    def normalize_user(raw: dict) -> dict:
+        return {"id": raw["id"], "name": raw["name"].strip()}
+
+    @staticmethod
+    def apply_discounts(items: list) -> float:
+        return sum(item["price"] for item in items)
+
+    @staticmethod
+    def resolve_channel(user_id: int):
+        return NotificationService()

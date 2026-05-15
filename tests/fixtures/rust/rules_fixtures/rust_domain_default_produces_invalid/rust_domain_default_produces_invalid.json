@@ -1,0 +1,14 @@
+{
+  "id": "rust_domain_default_produces_invalid",
+  "language": "rust",
+  "family": "domain_modeling",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Default is derived or implemented on a type that likely cannot have a safe default state.",
+  "binding_location": "src/heuristics/rust/domain_modeling.rs"
+}

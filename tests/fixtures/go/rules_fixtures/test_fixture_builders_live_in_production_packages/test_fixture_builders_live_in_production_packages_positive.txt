@@ -1,0 +1,44 @@
+package rulefixtures
+
+import "time"
+
+// scenario for test_fixture_builders_live_in_production_packages: Fixture and factory helpers defined in non-test production files.
+// fixture polarity: positive; family: architecture; severity: info.
+type User struct {
+	ID        int
+	Name      string
+	Email     string
+	CreatedAt time.Time
+}
+
+func NewTestUser() *User {
+	return &User{
+		ID:        1,
+		Name:      "testuser",
+		Email:     "test@example.com",
+		CreatedAt: time.Now(),
+	}
+}
+
+func NewTestUserWithName(name string) *User {
+	return &User{
+		ID:        99,
+		Name:      name,
+		Email:     name + "@example.com",
+		CreatedAt: time.Now(),
+	}
+}
+
+func NewTestOrder() *Order {
+	return &Order{
+		ID:     100,
+		UserID: 1,
+		Total:  42.99,
+	}
+}
+
+type Order struct {
+	ID     int
+	UserID int
+	Total  float64
+}

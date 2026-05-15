@@ -1,0 +1,40 @@
+package service
+
+import (
+	"context"
+	"errors"
+	"strings"
+)
+
+// scenario for service_returns_preformatted_client_message: Services that return final client-facing message strings instead of typed domain errors.
+// fixture polarity: positive; family: architecture; severity: info.
+type RegistrationService struct {
+	repo UserRepository
+}
+
+var (
+	ErrEmailTaken = errors.New("This email address is already registered. Please use a different email or try logging in.")
+	ErrWeakPass   = errors.New("Password must be at least 8 characters and include a number and a special character.")
+)
+
+func (s *RegistrationService) SignUp(ctx context.Context, email, password string) error {
+	if strings.TrimSpace(email) == "" {
+		return errors.New("Email address is required.")
+	}
+	if len(password) < 8 {
+		return ErrWeakPass
+	}
+	exists, err := s.repo.EmailExists(ctx, email)
+	if err != nil {
+		return errors.New("We encountered a problem creating your account. Please try again later.")
+	}
+	if exists {
+		return ErrEmailTaken
+	}
+	return s.repo.Insert(ctx, email, password)
+}
+
+type UserRepository interface {
+	EmailExists(ctx context.Context, email string) (bool, error)
+	Insert(ctx context.Context, email, password string) error
+}

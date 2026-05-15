@@ -1,0 +1,16 @@
+fn find_by_index(items: &[String], indices: &[usize]) -> Vec<&str> {
+    let mut results = Vec::new();
+    for &idx in indices {
+        if let Some(item) = items.iter().nth(idx) {
+            results.push(item.as_str());
+        }
+    }
+    results
+}
+
+fn pick_elements(data: &[u64], positions: &[usize]) -> Vec<u64> {
+    positions.iter()
+        .filter_map(|&i| data.iter().nth(i))
+        .copied()
+        .collect()
+}

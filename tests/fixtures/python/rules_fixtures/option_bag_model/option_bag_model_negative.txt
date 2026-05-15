@@ -1,0 +1,42 @@
+from dataclasses import dataclass
+from typing import Optional, List
+from enum import Enum
+
+class SortOrder(Enum):
+    ASC = "asc"
+    DESC = "desc"
+
+class OutputFormat(Enum):
+    JSON = "json"
+    CSV = "csv"
+    XML = "xml"
+
+@dataclass
+class Pagination:
+    limit: int = 50
+    offset: int = 0
+
+@dataclass
+class Sorting:
+    field: str = "created_at"
+    order: SortOrder = SortOrder.DESC
+
+@dataclass
+class Filters:
+    status: Optional[str] = None
+    type: Optional[str] = None
+    category: Optional[str] = None
+
+@dataclass
+class QueryOptions:
+    pagination: Pagination = field(default_factory=Pagination)
+    sorting: Sorting = field(default_factory=Sorting)
+    filters: Filters = field(default_factory=Filters)
+    include_deleted: bool = False
+    search: Optional[str] = None
+
+@dataclass
+class ExportConfig:
+    format: OutputFormat = OutputFormat.CSV
+    include_headers: bool = True
+    encoding: str = "utf-8"

@@ -1,0 +1,14 @@
+package rulefixtures
+
+// scenario for string_to_byte_for_single_char_check: `[]byte(s)[0]` or `string(b) == "x"` for single-character comparisons
+// fixture polarity: positive; family: performance; severity: info.
+
+func scenario648Positive(input string) string {
+	if []byte(input)[0] == '\n' {
+		return input[1:]
+	}
+	if len(input) > 1 && []byte(input)[len(input)-1] == '\n' {
+		return input[:len(input)-1]
+	}
+	return input
+}

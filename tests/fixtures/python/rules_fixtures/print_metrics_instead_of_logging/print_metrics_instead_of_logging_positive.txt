@@ -1,0 +1,32 @@
+def train_model(data):
+    loss = compute_loss(data)
+    accuracy = compute_accuracy(data)
+    print(f"Loss: {loss:.4f}")
+    print(f"Accuracy: {accuracy:.2%}")
+    return loss, accuracy
+
+
+def evaluate(model, test_data):
+    precision = compute_precision(model, test_data)
+    recall = compute_recall(model, test_data)
+    f1 = 2 * precision * recall / (precision + recall)
+    print(f"Precision: {precision:.4f}")
+    print(f"Recall: {recall:.4f}")
+    print(f"F1: {f1:.4f}")
+    return f1
+
+
+def compute_loss(data):
+    return 0.5
+
+
+def compute_accuracy(data):
+    return 0.95
+
+
+def compute_precision(model, data):
+    return 0.92
+
+
+def compute_recall(model, data):
+    return 0.88

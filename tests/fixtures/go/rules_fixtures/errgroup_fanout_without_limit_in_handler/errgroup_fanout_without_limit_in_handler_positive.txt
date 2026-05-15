@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"golang.org/x/sync/errgroup"
+)
+
+// scenario for errgroup_fanout_without_limit_in_handler: errgroup goroutine fanout without a visible concurrency limit in handlers.
+// fixture polarity: positive; family: gin; severity: contextual.
+func handlerFanout(w http.ResponseWriter, r *http.Request) {
+	urls := r.URL.Query()["url"]
+	var g errgroup.Group
+	for _, url := range urls {
+		url := url
+		g.Go(func() error {
+			resp, err := http.Get(url)
+			if err != nil {
+				return err
+			}
+			resp.Body.Close()
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"fetched":true}`))
+}

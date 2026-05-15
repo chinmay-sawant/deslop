@@ -1,0 +1,31 @@
+def get_orders_with_users(order_ids: list[int]) -> list[dict]:
+    orders = (
+        session.query(Order)
+        .filter(Order.id.in_(order_ids))
+        .options(selectinload(Order.user))
+        .all()
+    )
+    return [{"order": o, "user": o.user} for o in orders]
+
+
+def enrich_products(category_ids: list[int]) -> list[dict]:
+    categories = (
+        session.query(Category)
+        .filter(Category.id.in_(category_ids))
+        .options(selectinload(Category.products))
+        .all()
+    )
+    return [{"category": c, "products": c.products} for c in categories]
+
+
+def build_invoice(order_id: int) -> dict:
+    order = (
+        session.query(Order)
+        .filter(Order.id == order_id)
+        .options(
+            selectinload(Order.items),
+            selectinload(Order.customer),
+        )
+        .first()
+    )
+    return {"order": order, "items": order.items, "customer": order.customer}

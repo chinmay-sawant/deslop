@@ -1,0 +1,26 @@
+from concurrent.futures import ProcessPoolExecutor
+import os
+
+
+def process_chunk(data: list[int]) -> list[int]:
+    return [x * 2 for x in data]
+
+
+def run_parallel(data: list[int]) -> list[int]:
+    executor = ProcessPoolExecutor(max_workers=os.cpu_count())
+    chunks = [data[i:i+1000] for i in range(0, len(data), 1000)]
+    futures = [executor.submit(process_chunk, chunk) for chunk in chunks]
+    results = []
+    for f in futures:
+        results.extend(f.result())
+    return results
+
+
+def run_batch(items: list[dict]) -> list[dict]:
+    executor = ProcessPoolExecutor(max_workers=4)
+    futures = [executor.submit(process_item, item) for item in items]
+    return [f.result() for f in futures]
+
+
+def process_item(item: dict) -> dict:
+    return {k: str(v).upper() for k, v in item.items()}

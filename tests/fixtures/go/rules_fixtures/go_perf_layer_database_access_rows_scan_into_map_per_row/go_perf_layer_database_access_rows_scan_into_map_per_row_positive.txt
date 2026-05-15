@@ -1,0 +1,19 @@
+package rulefixtures
+
+// scenario for go_perf_layer_database_access_rows_scan_into_map_per_row: Layer: Database access. Flag row scans into map[string]any where typed structs or column slices would reduce allocation.
+// fixture polarity: positive; family: performance; severity: contextual.
+type Rule526PositiveRecord struct {
+	ID int
+	Name string
+	Values []string
+}
+
+func scenario526Positive(records []Rule526PositiveRecord) int {
+	total := 0
+	for _, record := range records {
+		for _, value := range record.Values {
+			total += len(value) + record.ID
+		}
+	}
+	return total
+}

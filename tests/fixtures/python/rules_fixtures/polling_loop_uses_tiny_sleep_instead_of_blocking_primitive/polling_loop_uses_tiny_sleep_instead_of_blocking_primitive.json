@@ -1,0 +1,14 @@
+{
+  "id": "polling_loop_uses_tiny_sleep_instead_of_blocking_primitive",
+  "language": "python",
+  "family": "hot_path_ext",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag loops that wake repeatedly on a tiny sleep interval instead of a blocking queue, event, or condition.",
+  "binding_location": "src/heuristics/python/hotpath_ext.rs"
+}

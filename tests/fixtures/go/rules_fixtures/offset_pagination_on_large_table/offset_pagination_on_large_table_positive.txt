@@ -1,0 +1,25 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for offset_pagination_on_large_table: Request-path GORM Find(...) chains that page with Offset(...), which often scales poorly on large lists.
+// fixture polarity: positive; family: data_access; severity: contextual.
+
+type LogEntry struct {
+	ID        int
+	Message   string
+	CreatedAt string
+}
+
+func ListLogs(db *gorm.DB, page, perPage int) ([]LogEntry, error) {
+	var entries []LogEntry
+	offset := (page - 1) * perPage
+	err := db.Model(&LogEntry{}).
+		Offset(offset).
+		Limit(perPage).
+		Order("created_at desc").
+		Find(&entries).Error
+	return entries, err
+}

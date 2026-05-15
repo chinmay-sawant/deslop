@@ -1,0 +1,14 @@
+{
+  "id": "readme_claims_seeding_but_seed_entrypoint_is_placeholder",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "README seeding guidance that points to seed code which is still placeholder-like.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

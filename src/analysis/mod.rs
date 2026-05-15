@@ -20,8 +20,8 @@ pub(crate) use error::Result as AnalysisResult;
 // Shared / cross-language types
 pub(crate) use types::{
     BlockFingerprint, CallSite, CommentSummary, DeclaredSymbol, FormattedErrorCall, ImportSpec,
-    LanguageFileData, NamedLiteral, ParsedFile, ParsedFunction, TestFunctionSummary,
-    TopLevelBindingSummary, TopLevelCallSummary,
+    LanguageFileData, LanguageFunctionData, NamedLiteral, ParsedFile, ParsedFunction,
+    TestFunctionSummary, TopLevelBindingSummary, TopLevelCallSummary,
 };
 // Go-specific evidence types
 pub(crate) use types::{

@@ -1,0 +1,14 @@
+{
+  "id": "test_mutates_module_global_without_restore",
+  "language": "python",
+  "family": "discipline",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Test mutates a module-level global variable without restoring it in teardown, leaking state.",
+  "binding_location": "src/heuristics/python/discipline.rs"
+}

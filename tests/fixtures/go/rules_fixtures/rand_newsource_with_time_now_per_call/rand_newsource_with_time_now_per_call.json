@@ -1,0 +1,14 @@
+{
+  "id": "rand_newsource_with_time_now_per_call",
+  "language": "go",
+  "family": "performance",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`rand.NewSource(...)` seeded from wall clock on each call path.",
+  "binding_location": "src/heuristics/go/performance_extra.rs"
+}

@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"net/http"
+)
+
+// scenario for cookie_without_httponly: `http.Cookie{...}` for session/auth cookies without `HttpOnly: true`
+// fixture polarity: positive; family: security; severity: warning.
+func scenario701Positive(token string) *http.Cookie {
+	return &http.Cookie{Name: "session", Value: token, Path: "/"}
+}

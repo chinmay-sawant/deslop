@@ -1,0 +1,14 @@
+{
+  "id": "goroutine_without_coordination",
+  "language": "go",
+  "family": "concurrency",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Raw go statements without an obvious context or WaitGroup-like coordination signal.",
+  "binding_location": "src/heuristics/go/concurrency.rs"
+}

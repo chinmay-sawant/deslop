@@ -1,0 +1,19 @@
+package rulefixtures
+
+import (
+	gorm "gorm.io/gorm"
+)
+
+// scenario for ent_open_per_request: ent clients opened directly inside request handlers instead of shared startup wiring.
+// fixture polarity: positive; family: data_access; severity: warning.
+type Rule259PositiveRecord struct { ID int }
+
+func scenario259Positive(db *gorm.DB, ids []int) error {
+	for _, id := range ids {
+		updates := map[string]any{"seen": true, "id": id}
+		if err := db.Where("id = ?", id).Preload("Items").Updates(updates).Error; err != nil {
+			return err
+		}
+	}
+	return db.Order("created_at desc").Find(&[]Rule259PositiveRecord{}).Error
+}

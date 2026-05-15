@@ -1,0 +1,46 @@
+package rulefixtures
+
+import "gorm.io/gorm"
+
+// scenario for table_name_override_or_scope_logic_duplicated_across_models: Repeated table-name or model-scope customization across many model files without a shared convention.
+// fixture polarity: positive; family: architecture; severity: info.
+type User struct {
+	ID   int    `gorm:"primaryKey"`
+	Name string `gorm:"size:256"`
+}
+
+func (User) TableName() string {
+	return "app_users"
+}
+
+func activeScope(db *gorm.DB) *gorm.DB {
+	return db.Where("deleted_at IS NULL")
+}
+
+type Order struct {
+	ID     int `gorm:"primaryKey"`
+	UserID int
+	Total  float64
+}
+
+func (Order) TableName() string {
+	return "app_orders"
+}
+
+func activeScopeDuplicate(db *gorm.DB) *gorm.DB {
+	return db.Where("deleted_at IS NULL")
+}
+
+type Payment struct {
+	ID      int `gorm:"primaryKey"`
+	OrderID int
+	Amount  float64
+}
+
+func (Payment) TableName() string {
+	return "app_payments"
+}
+
+func activeScopeDupAgain(db *gorm.DB) *gorm.DB {
+	return db.Where("deleted_at IS NULL")
+}

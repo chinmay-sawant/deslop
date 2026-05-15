@@ -1,0 +1,14 @@
+{
+  "id": "tuple_return_with_three_or_more_positional_fields_in_public_api",
+  "language": "python",
+  "family": "maintainability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag public APIs that return positional tuples too wide to be self-documenting.",
+  "binding_location": "src/heuristics/python/maintainability.rs"
+}

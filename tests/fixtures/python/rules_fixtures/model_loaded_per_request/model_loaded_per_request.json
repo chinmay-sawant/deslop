@@ -1,0 +1,14 @@
+{
+  "id": "model_loaded_per_request",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Models are loaded on request paths instead of once during application startup.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "append_then_sort_each_iteration",
+  "language": "go",
+  "family": "hot_path",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Slice sorting observed inside loops \u2014 often cheaper to sort once after the loop.",
+  "binding_location": "src/heuristics/go/framework_patterns/hot_path.rs"
+}

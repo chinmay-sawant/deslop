@@ -1,0 +1,14 @@
+{
+  "id": "adapter_boundary_missing_for_external_payload_shape",
+  "language": "python",
+  "family": "architecture",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Flag code that lets raw third-party dicts, tuples, or response objects spread through unrelated modules without normalization.",
+  "binding_location": "src/heuristics/python/architecture.rs"
+}

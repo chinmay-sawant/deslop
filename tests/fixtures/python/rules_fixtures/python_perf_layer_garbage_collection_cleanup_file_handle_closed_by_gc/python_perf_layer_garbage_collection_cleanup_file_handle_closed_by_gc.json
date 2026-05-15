@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_garbage_collection_cleanup_file_handle_closed_by_gc",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Garbage collection and cleanup. Flag file or socket resources relying on garbage collection instead of context-managed close.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

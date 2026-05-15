@@ -1,0 +1,18 @@
+package rulefixtures
+
+import (
+	"net/http"
+	"os"
+)
+
+// scenario for config_file_read_per_request: `os.ReadFile("config.json")` or `viper.ReadInConfig()` inside handler or loop code
+// fixture polarity: positive; family: library; severity: warning.
+func scenario406Positive(w http.ResponseWriter, r *http.Request) {
+	data, err := os.ReadFile("config.yaml")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/yaml")
+	w.Write(data)
+}

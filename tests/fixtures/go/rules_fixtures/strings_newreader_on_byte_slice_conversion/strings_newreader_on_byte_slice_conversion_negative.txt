@@ -1,0 +1,11 @@
+package rulefixtures
+
+import (
+	"strings"
+)
+
+// scenario for strings_newreader_on_byte_slice_conversion: `strings.NewReader(string(b))` instead of `bytes.NewReader(b)`.
+// fixture polarity: negative; family: performance; severity: info.
+func scenario659Negative(haystack string, needle string, left string, right string) bool {
+	return strings.Contains(haystack, needle)
+}

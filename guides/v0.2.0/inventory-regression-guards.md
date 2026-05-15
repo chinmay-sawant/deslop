@@ -9,7 +9,7 @@ The source rule-id guard lives in `src/rules.rs` as `EXPECTED_SOURCE_RULE_ID_COU
 
 Current intentional source rule-id count:
 
-- `543`
+- `546`
 
 When it fails:
 1. Review the diff under `src/` and confirm that rule-id additions or removals are intentional.

@@ -1,0 +1,14 @@
+{
+  "id": "gorm_model_contains_binding_or_validate_tags",
+  "language": "go",
+  "family": "architecture",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "GORM models that accumulate transport validation and binding concerns.",
+  "binding_location": "src/heuristics/go/architecture.rs"
+}

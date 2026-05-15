@@ -1,0 +1,14 @@
+{
+  "id": "header_injection_via_user_input",
+  "language": "go",
+  "family": "security",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "`w.Header().Set(name, userInput)` or `w.Header().Add(name, userInput)` where the value contains unvalidated user input that could contain `\\r\\n`",
+  "binding_location": "src/heuristics/go/library_misuse/security.rs"
+}

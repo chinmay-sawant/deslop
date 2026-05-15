@@ -1,0 +1,14 @@
+{
+  "id": "python_perf_layer_caching_cache_key_uses_json_dumps_in_hot_path",
+  "language": "python",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Caching. Flag cache keys built with json.dumps in hot paths when tuple or stable string keys would work.",
+  "binding_location": "src/heuristics/python/performance.rs"
+}

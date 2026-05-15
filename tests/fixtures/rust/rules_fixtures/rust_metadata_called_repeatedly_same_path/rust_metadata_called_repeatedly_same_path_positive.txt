@@ -1,0 +1,16 @@
+fn check_and_read(path: &str) -> String {
+    if std::path::Path::new(path).exists() {
+        if std::path::Path::new(path).is_file() {
+            let meta = std::fs::metadata(path).unwrap();
+            if meta.len() > 0 {
+                std::fs::read_to_string(path).unwrap()
+            } else {
+                String::new()
+            }
+        } else {
+            String::new()
+        }
+    } else {
+        String::new()
+    }
+}

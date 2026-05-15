@@ -1,0 +1,14 @@
+{
+  "id": "rust_tempfile_persist_without_cleanup_assertion",
+  "language": "rust",
+  "family": "bad_practices",
+  "default_severity": "warning",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "flag `persist`, `keep`, or `into_temp_path().keep()` in tests without cleanup or an assertion that the file must survive.",
+  "binding_location": "src/heuristics/rust/bad_practices.rs"
+}

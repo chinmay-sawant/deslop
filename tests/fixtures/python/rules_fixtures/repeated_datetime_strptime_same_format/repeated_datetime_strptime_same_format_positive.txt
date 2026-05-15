@@ -1,0 +1,19 @@
+from datetime import datetime
+
+
+def parse_log_entry(line):
+    parts = line.split(" | ")
+    ts = datetime.strptime(parts[0], "%Y-%m-%d %H:%M:%S")
+    return {"timestamp": ts, "message": parts[1]}
+
+
+def parse_access_log(line):
+    fields = line.split(",")
+    ts = datetime.strptime(fields[0], "%Y-%m-%d %H:%M:%S")
+    return {"timestamp": ts, "ip": fields[1], "path": fields[2]}
+
+
+def parse_audit_record(line):
+    segments = line.split(";")
+    ts = datetime.strptime(segments[0], "%Y-%m-%d %H:%M:%S")
+    return {"timestamp": ts, "user": segments[1], "action": segments[2]}

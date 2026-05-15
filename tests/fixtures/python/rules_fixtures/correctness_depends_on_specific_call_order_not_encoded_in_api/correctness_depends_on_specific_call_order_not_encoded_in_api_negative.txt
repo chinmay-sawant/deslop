@@ -1,0 +1,51 @@
+from contextlib import contextmanager
+
+
+class Connection:
+    def __init__(self):
+        self._connected = False
+        self._data = None
+
+    @contextmanager
+    def session(self):
+        self._connected = True
+        try:
+            yield self
+        finally:
+            self._connected = False
+
+    def send(self, data):
+        if not self._connected:
+            raise RuntimeError("Not in a session")
+        self._data = data
+
+    def recv(self):
+        if not self._connected:
+            raise RuntimeError("Not in a session")
+        return self._data
+
+
+class Builder:
+    def __init__(self, name):
+        self._result = {"name": name}
+
+    def with_value(self, value):
+        self._result["value"] = value
+        return self
+
+    def build(self):
+        return self._result
+
+
+class Pipeline:
+    def __init__(self, stages=None):
+        self._stages = list(stages or [])
+
+    def add_stage(self, fn):
+        return Pipeline(self._stages + [fn])
+
+    def execute(self, data):
+        result = data
+        for stage in self._stages:
+            result = stage(result)
+        return result

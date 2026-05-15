@@ -1,0 +1,31 @@
+package rulefixtures
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// scenario for gin_handler_mixes_html_json_and_file_responses: Handlers that serve fundamentally different transport modes from one function.
+// fixture polarity: positive; family: architecture; severity: info.
+
+func ReportHandler(c *gin.Context) {
+	format := c.Query("format")
+
+	switch format {
+	case "json":
+		c.JSON(http.StatusOK, gin.H{
+			"report": "summary",
+			"count":  42,
+		})
+	case "html":
+		c.HTML(http.StatusOK, "report.tmpl", gin.H{
+			"title": "Monthly Report",
+			"data":  "summary data",
+		})
+	case "pdf":
+		c.File("./reports/summary.pdf")
+	default:
+		c.File("./reports/summary.pdf")
+	}
+}

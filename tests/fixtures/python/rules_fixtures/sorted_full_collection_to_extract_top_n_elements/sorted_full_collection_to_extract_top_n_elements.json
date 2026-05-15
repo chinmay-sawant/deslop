@@ -1,0 +1,14 @@
+{
+  "id": "sorted_full_collection_to_extract_top_n_elements",
+  "language": "python",
+  "family": "observability",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "sorted() called on a full collection just to slice the first N elements; use heapq.nsmallest/nlargest.",
+  "binding_location": "src/heuristics/python/observability.rs"
+}

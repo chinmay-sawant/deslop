@@ -1,0 +1,14 @@
+{
+  "id": "model_to_device_in_loop",
+  "language": "python",
+  "family": "mlops",
+  "default_severity": "info",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Models or tensors are moved to a device repeatedly inside loops.",
+  "binding_location": "src/heuristics/python/mlops.rs"
+}

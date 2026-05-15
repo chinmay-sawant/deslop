@@ -1,0 +1,14 @@
+{
+  "id": "rust_perf_layer_memory_allocation_format_allocates_for_writer",
+  "language": "rust",
+  "family": "performance",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Layer: Memory allocation. Flag format! used before write!/push_str where direct writing avoids temporary allocation.",
+  "binding_location": "src/heuristics/rust/performance.rs"
+}
