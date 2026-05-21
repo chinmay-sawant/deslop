@@ -222,47 +222,89 @@ fn repeated_strconv_findings(
     }
 
     let mut findings = Vec::new();
-    for (argument, calls) in groups {
+    for (argument, mut calls) in groups {
         if calls.len() < 2 {
             continue;
         }
 
-        let distinct_helpers = calls
-            .iter()
-            .map(|(_, label)| label.as_str())
-            .collect::<BTreeSet<_>>();
-        // Precision guard: only flag repeated same-helper conversion, or heavy (3+) repeated parsing.
-        if distinct_helpers.len() > 1 && calls.len() < 3 {
-            continue;
+        calls.sort_by_key(|(line, _)| *line);
+
+        let mut sub_sequences = Vec::new();
+        let mut current_sub_seq = vec![calls[0].clone()];
+
+        for call in calls.iter().skip(1) {
+            let (prev_line, _) = current_sub_seq.last().unwrap();
+            let (curr_line, _) = call;
+
+            let mutated = lines.iter().any(|body_line| {
+                body_line.line > *prev_line
+                    && body_line.line < *curr_line
+                    && is_variable_mutated_in_line(&body_line.text, &argument)
+            });
+
+            if mutated {
+                if current_sub_seq.len() >= 2 {
+                    sub_sequences.push(current_sub_seq);
+                }
+                current_sub_seq = vec![call.clone()];
+            } else {
+                current_sub_seq.push(call.clone());
+            }
+        }
+        if current_sub_seq.len() >= 2 {
+            sub_sequences.push(current_sub_seq);
         }
 
-        let call_lines = calls.iter().map(|(line, _)| *line).collect::<Vec<_>>();
-        let operations = calls
-            .iter()
-            .map(|(line, label)| format!("{label} at line {line}"))
-            .collect::<Vec<_>>()
-            .join(", ");
-        let anchor_line = call_lines[1];
-        findings.push(Finding {
-            rule_id: "strconv_repeat_on_same_binding".to_string(),
-            severity: Severity::Info,
-            path: file.path.clone(),
-            function_name: Some(function.fingerprint.name.clone()),
-            start_line: anchor_line,
-            end_line: anchor_line,
-            message: format!(
-                "function {} converts the same string input with strconv multiple times",
-                function.fingerprint.name
-            ),
-            evidence: vec![
-                format!("argument reused by strconv helpers at lines {}", join_lines(&call_lines)),
-                format!("first argument: {argument}"),
-                format!("operations: {operations}"),
-            ],
-        });
+        for sub_seq in sub_sequences {
+            let distinct_helpers = sub_seq
+                .iter()
+                .map(|(_, label)| label.as_str())
+                .collect::<std::collections::BTreeSet<_>>();
+            // Precision guard: only flag repeated same-helper conversion, or heavy (3+) repeated parsing.
+            if distinct_helpers.len() > 1 && sub_seq.len() < 3 {
+                continue;
+            }
+
+            let call_lines = sub_seq.iter().map(|(line, _)| *line).collect::<Vec<_>>();
+            let operations = sub_seq
+                .iter()
+                .map(|(line, label)| format!("{label} at line {line}"))
+                .collect::<Vec<_>>()
+                .join(", ");
+            let anchor_line = call_lines[1];
+            findings.push(Finding {
+                rule_id: "strconv_repeat_on_same_binding".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: anchor_line,
+                end_line: anchor_line,
+                message: format!(
+                    "function {} converts the same string input with strconv multiple times",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("argument reused by strconv helpers at lines {}", join_lines(&call_lines)),
+                    format!("first argument: {argument}"),
+                    format!("operations: {operations}"),
+                ],
+            });
+        }
     }
 
     findings
+}
+
+fn is_variable_mutated_in_line(text: &str, var_name: &str) -> bool {
+    if let Some((left, _)) = crate::heuristics::go::framework_patterns::split_assignment(text)
+        && left.split(',').map(|s| s.trim()).any(|s| s == var_name) {
+            return true;
+        }
+    let trimmed = text.trim();
+    trimmed.starts_with(&format!("{var_name}++"))
+        || trimmed.starts_with(&format!("{var_name}--"))
+        || trimmed.starts_with(&format!("{var_name} +="))
+        || trimmed.starts_with(&format!("{var_name} -="))
 }
 
 fn read_then_decode_duplicate_materialization_findings(
@@ -367,8 +409,8 @@ fn slice_append_without_prealloc_findings(
             let known_bound_nearby = has_nearby_known_bound_loop(lines, body_line.line);
             let target_seeded_as_empty =
                 has_target_seeded_as_empty_slice(lines, &target, body_line.line);
-            if !has_prealloc && !reuses_existing_capacity {
-                if known_bound_nearby && target_seeded_as_empty {
+            if !has_prealloc && !reuses_existing_capacity
+                && known_bound_nearby && target_seeded_as_empty {
                     findings.push(Finding {
                         rule_id: "slice_append_without_prealloc_known_bound".to_string(),
                         severity: Severity::Info,
@@ -386,7 +428,6 @@ fn slice_append_without_prealloc_findings(
                         ],
                     });
                 }
-            }
         }
     }
 

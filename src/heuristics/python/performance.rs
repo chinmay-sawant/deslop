@@ -444,7 +444,10 @@ pub(super) fn project_agnostic_performance_findings(
         &["read()", "read_text()", "read_bytes()", "readlines()"],
     ) && !contains_any(body, &["for line in", "iter(", "yield"])
         && !contains_any(&lower_body, &["subprocess", "popen", "command"])
-        && !contains_any(&lower_body, &["return content", "return data", ".count(", "len(content)"])
+        && !contains_any(
+            &lower_body,
+            &["return content", "return data", ".count(", "len(content)"],
+        )
         && (lower_body.contains("for ")
             || lower_body.contains("while ")
             || lower_body.contains("json.loads(")
@@ -477,8 +480,16 @@ pub(super) fn project_agnostic_performance_findings(
     if body.contains("+=")
         && contains_any(body, &["\"", "'"])
         && (body.contains("for ") || body.contains("while "))
-        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/sampledata/")
-        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/testdata/")
+        && !file
+            .path
+            .to_string_lossy()
+            .to_ascii_lowercase()
+            .contains("/sampledata/")
+        && !file
+            .path
+            .to_string_lossy()
+            .to_ascii_lowercase()
+            .contains("/testdata/")
         && !function
             .fingerprint
             .name
@@ -513,10 +524,18 @@ pub(super) fn project_agnostic_performance_findings(
 
     if contains_any(&lower_body, &["json.dumps(", "csv.writer(", "bytesio("])
         && !contains_any(&lower_body, &["yield ", "yield\\n", "yield\t", "stream_"])
-        && contains_any(&lower_body, &["fetchall(", ".append(", "getvalue()", "join("])
         && contains_any(
             &lower_body,
-            &["return output.getvalue()", "return json.dumps(", "return \"\\\\n\".join(", "return '\\\\n'.join("],
+            &["fetchall(", ".append(", "getvalue()", "join("],
+        )
+        && contains_any(
+            &lower_body,
+            &[
+                "return output.getvalue()",
+                "return json.dumps(",
+                "return \"\\\\n\".join(",
+                "return '\\\\n'.join(",
+            ],
         )
     {
         findings.push(push(
@@ -655,8 +674,7 @@ pub(super) fn project_agnostic_performance_findings(
         ));
     }
 
-    if performs_expensive_transform_before_cheap_reject(body)
-    {
+    if performs_expensive_transform_before_cheap_reject(body) {
         findings.push(push(
             "compression_hashing_or_encoding_performed_before_cheap_reject_checks",
             Severity::Info,
@@ -684,8 +702,16 @@ pub(super) fn project_agnostic_performance_findings(
         && lower_body.matches("for ").count() >= 1
         && !contains_any(&lower_body, &[".extend(", "buffer", "chunk", "flush"])
         && function.fingerprint.line_count >= 10
-        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/sampledata/")
-        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/testdata/")
+        && !file
+            .path
+            .to_string_lossy()
+            .to_ascii_lowercase()
+            .contains("/sampledata/")
+        && !file
+            .path
+            .to_string_lossy()
+            .to_ascii_lowercase()
+            .contains("/testdata/")
         && !function
             .fingerprint
             .name
@@ -838,9 +864,11 @@ fn performs_expensive_transform_before_cheap_reject(body: &str) -> bool {
     let first_expensive = lines
         .iter()
         .position(|line| expensive_markers.iter().any(|marker| line.contains(marker)));
-    let first_reject = lines
-        .iter()
-        .position(|line| cheap_reject_markers.iter().any(|marker| line.contains(marker)));
+    let first_reject = lines.iter().position(|line| {
+        cheap_reject_markers
+            .iter()
+            .any(|marker| line.contains(marker))
+    });
 
     matches!((first_expensive, first_reject), (Some(exp), Some(rej)) if exp < rej)
 }

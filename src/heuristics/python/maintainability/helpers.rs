@@ -2,19 +2,80 @@ use crate::analysis::{ParsedFile, ParsedFunction};
 
 pub(super) fn should_skip_print_rule(file: &ParsedFile, function: &ParsedFunction) -> bool {
     let name = &function.fingerprint.name;
-    name == "main"
+    let name_lower = name.to_ascii_lowercase();
+
+    // Skip if name matches common logging/stdout patterns
+    if name == "main"
         || name.starts_with("print_")
         || name.starts_with("log_")
         || name.starts_with("display_")
         || name.starts_with("show_")
         || name.starts_with("report_")
         || name.starts_with("dump_")
+        || name_lower.contains("stdout")
+        || name_lower.contains("stderr")
+        || name_lower.contains("write")
+        || name_lower.contains("handler")
+        || name_lower.contains("render")
+        || name_lower.contains("formatter")
+        || name_lower.contains("print")
+        || name_lower.contains("output")
         || looks_like_tooling_context(file, function)
         || file
             .path
             .file_name()
             .and_then(|n| n.to_str())
             .is_some_and(|n| n == "__main__.py")
+    {
+        return true;
+    }
+
+    // Exclude files importing logging, click, typer, or argparse
+    let has_ignored_import = file.imports.iter().any(|import| {
+        matches!(
+            import.path.as_str(),
+            "logging" | "click" | "typer" | "argparse"
+        )
+    });
+    if has_ignored_import {
+        return true;
+    }
+
+    // Exclude functions with CLI/framework decorators (like @click, @typer, @command, @app)
+    let sig_lower = function.signature_text.to_ascii_lowercase();
+    let has_ignored_decorator = sig_lower.contains("@click")
+        || sig_lower.contains("@typer")
+        || sig_lower.contains("@command")
+        || sig_lower.contains("@app");
+    if has_ignored_decorator {
+        return true;
+    }
+
+    // Exclude functions with active logger calls
+    let has_logger_call = function.calls.iter().any(|call| {
+        let call_name_lower = call.name.to_ascii_lowercase();
+        let rec_lower = call.receiver.as_deref().unwrap_or("").to_ascii_lowercase();
+        rec_lower.contains("log")
+            || rec_lower.contains("logger")
+            || call_name_lower.contains("log")
+            || call_name_lower.contains("logger")
+            || matches!(
+                call_name_lower.as_str(),
+                "info"
+                    | "warn"
+                    | "warning"
+                    | "error"
+                    | "debug"
+                    | "critical"
+                    | "fatal"
+                    | "exception"
+            )
+    });
+    if has_logger_call {
+        return true;
+    }
+
+    false
 }
 
 pub(super) fn is_sample_demo_smoke_integration_context(

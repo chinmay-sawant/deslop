@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::BTreeMap;
 
 use tree_sitter::Node;
 
@@ -12,17 +12,17 @@ use super::general::{
 pub(super) fn collect_concat_loops(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let string_variables = collect_string_vars(body_node, source);
     let mut lines = Vec::new();
-    visit_concat_loops(body_node, source, &string_variables, false, &mut lines);
+    visit_concat_loops(body_node, source, &string_variables, None, &mut lines);
     lines
 }
 
-fn collect_string_vars(body_node: Node<'_>, source: &str) -> BTreeSet<String> {
-    let mut names = BTreeSet::new();
+fn collect_string_vars(body_node: Node<'_>, source: &str) -> BTreeMap<String, usize> {
+    let mut names = BTreeMap::new();
     visit_string_vars(body_node, source, &mut names);
     names
 }
 
-fn visit_string_vars(node: Node<'_>, source: &str, names: &mut BTreeSet<String>) {
+fn visit_string_vars(node: Node<'_>, source: &str, names: &mut BTreeMap<String, usize>) {
     match node.kind() {
         "var_spec" => {
             let Some(type_node) = node.child_by_field_name("type") else {
@@ -34,7 +34,7 @@ fn visit_string_vars(node: Node<'_>, source: &str, names: &mut BTreeSet<String>)
                 && let Some(name_node) = find_var_name_node(node)
             {
                 for (name, _) in collect_identifiers(name_node, source) {
-                    names.insert(name);
+                    names.entry(name).or_insert(node.start_byte());
                 }
             }
         }
@@ -44,7 +44,7 @@ fn visit_string_vars(node: Node<'_>, source: &str, names: &mut BTreeSet<String>)
             {
                 let left = left.trim();
                 if is_identifier_name(left) && contains_string_literal(right) {
-                    names.insert(left.to_string());
+                    names.entry(left.to_string()).or_insert(node.start_byte());
                 }
             }
         }
@@ -60,44 +60,62 @@ fn visit_string_vars(node: Node<'_>, source: &str, names: &mut BTreeSet<String>)
 fn visit_concat_loops(
     node: Node<'_>,
     source: &str,
-    string_variables: &BTreeSet<String>,
-    inside_loop: bool,
+    string_variables: &BTreeMap<String, usize>,
+    current_loop: Option<Node<'_>>,
     lines: &mut Vec<usize>,
 ) {
-    let next_inside_loop = inside_loop || node.kind() == "for_statement";
+    let next_loop = if node.kind() == "for_statement" {
+        Some(node)
+    } else {
+        current_loop
+    };
 
-    if next_inside_loop
+    if next_loop.is_some()
         && node.kind() == "assignment_statement"
         && let Some(text) = source.get(node.byte_range())
-        && is_concat_assign(text, string_variables)
+        && let Some(var_name) = get_concat_var(text, string_variables)
     {
-        lines.push(node.start_position().row + 1);
+        let mut flag = true;
+        if let Some(decl_pos) = string_variables.get(&var_name)
+            && let Some(loop_node) = next_loop
+            && *decl_pos >= loop_node.start_byte()
+            && *decl_pos < loop_node.end_byte()
+        {
+            flag = false;
+        }
+        if flag {
+            lines.push(node.start_position().row + 1);
+        }
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_concat_loops(child, source, string_variables, next_inside_loop, lines);
+        visit_concat_loops(child, source, string_variables, next_loop, lines);
     }
 }
 
-fn is_concat_assign(text: &str, string_variables: &BTreeSet<String>) -> bool {
+fn get_concat_var(text: &str, string_variables: &BTreeMap<String, usize>) -> Option<String> {
     let compact = text.split_whitespace().collect::<String>();
 
-    if let Some((left, right)) = compact.split_once("+=") {
-        return is_identifier_name(left)
-            && (string_variables.contains(left) || contains_string_literal(right));
+    if let Some((left, right)) = compact.split_once("+=")
+        && is_identifier_name(left)
+        && (string_variables.contains_key(left) || contains_string_literal(right))
+    {
+        return Some(left.to_string());
     }
 
-    let Some((left, right)) = compact.split_once('=') else {
-        return false;
-    };
-    if !is_identifier_name(left) || !string_variables.contains(left) {
-        return false;
+    let (left, right) = compact.split_once('=')?;
+    if !is_identifier_name(left) || !string_variables.contains_key(left) {
+        return None;
     }
 
-    right.starts_with(&format!("{left}+"))
+    if right.starts_with(&format!("{left}+"))
         || right.contains(&"+\"".to_string())
         || right.contains("+`")
+    {
+        return Some(left.to_string());
+    }
+    None
 }
 
 fn contains_string_literal(text: &str) -> bool {

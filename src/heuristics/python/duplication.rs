@@ -79,7 +79,7 @@ pub(super) fn repeated_string_literal_findings(file: &ParsedFile) -> Vec<Finding
                 })
                 .collect::<std::collections::BTreeSet<_>>()
                 .len();
-            distinct_functions >= 2 || lines.len() >= REPEATED_LITERAL_THRESHOLD + 1
+            distinct_functions >= 2 || lines.len() > REPEATED_LITERAL_THRESHOLD
         })
         .map(|(value, mut lines)| {
             lines.sort_unstable();

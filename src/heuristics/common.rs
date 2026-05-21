@@ -382,7 +382,10 @@ pub(super) fn is_title_doc(line: &str) -> bool {
 
 pub(super) fn is_tutorial_doc(comment: &str) -> bool {
     let normalized = comment.to_ascii_lowercase();
-    let line_count = comment.lines().filter(|line| !line.trim().is_empty()).count();
+    let line_count = comment
+        .lines()
+        .filter(|line| !line.trim().is_empty())
+        .count();
     let tutorial_markers = normalized.contains("this function")
         || normalized.contains("this method")
         || normalized.contains("example:")

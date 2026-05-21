@@ -591,15 +591,31 @@ pub(super) fn project_agnostic_hotpath_findings(
     }
 
     if body.contains("import ")
-        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/sampledata/")
-        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/testdata/")
-        && !function.fingerprint.name.to_ascii_lowercase().starts_with("test")
+        && !file
+            .path
+            .to_string_lossy()
+            .to_ascii_lowercase()
+            .contains("/sampledata/")
+        && !file
+            .path
+            .to_string_lossy()
+            .to_ascii_lowercase()
+            .contains("/testdata/")
+        && !function
+            .fingerprint
+            .name
+            .to_ascii_lowercase()
+            .starts_with("test")
         && !function
             .fingerprint
             .name
             .to_ascii_lowercase()
             .starts_with("benchmark")
-        && !function.fingerprint.name.to_ascii_lowercase().starts_with("example")
+        && !function
+            .fingerprint
+            .name
+            .to_ascii_lowercase()
+            .starts_with("example")
         && (lower_body.contains("for ")
             || lower_body.contains("while ")
             || contains_any(

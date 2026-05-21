@@ -543,8 +543,7 @@ fn logging_findings(
 
     // C5 error_logged_and_returned
     for (i, bl) in lines.iter().enumerate() {
-        if is_error_logging_line(&bl.text)
-        {
+        if is_error_logging_line(&bl.text) {
             for next in lines.iter().skip(i + 1).take(3) {
                 if returns_error_binding(&next.text) {
                     findings.push(Finding {
@@ -584,9 +583,7 @@ fn is_error_logging_line(text: &str) -> bool {
 
 fn returns_error_binding(text: &str) -> bool {
     let trimmed = text.trim_start();
-    trimmed.starts_with("return")
-        && trimmed.contains("err")
-        && !trimmed.ends_with("nil")
+    trimmed.starts_with("return") && trimmed.contains("err") && !trimmed.ends_with("nil")
 }
 
 // ── Section D — Config And CLI ──

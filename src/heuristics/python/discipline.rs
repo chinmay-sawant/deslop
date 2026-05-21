@@ -1728,8 +1728,7 @@ pub(super) fn project_agnostic_discipline_findings(
         ));
     }
 
-    if expensive_work_before_validation(body)
-    {
+    if expensive_work_before_validation(body) {
         findings.push(make_finding(
             "expensive_work_starts_before_input_validation",
             Severity::Warning,
@@ -1979,9 +1978,11 @@ fn expensive_work_before_validation(body: &str) -> bool {
     let first_expensive = lines
         .iter()
         .position(|line| expensive_markers.iter().any(|marker| line.contains(marker)));
-    let first_validation = lines
-        .iter()
-        .position(|line| validation_markers.iter().any(|marker| line.contains(marker)));
+    let first_validation = lines.iter().position(|line| {
+        validation_markers
+            .iter()
+            .any(|marker| line.contains(marker))
+    });
     matches!(
         (first_expensive, first_validation),
         (Some(exp), Some(val)) if exp < val

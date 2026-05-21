@@ -1230,21 +1230,20 @@ pub(super) fn project_agnostic_structure_repo_findings(
                 continue;
             }
 
-                findings.push(Finding {
-                    rule_id: "sibling_modules_depend_on_private_helpers_from_each_other"
-                        .to_string(),
-                    severity: Severity::Info,
-                    path: file.path.clone(),
-                    function_name: None,
-                    start_line: import.line,
-                    end_line: import.line,
-                    message: format!(
-                        "module imports private helpers from sibling module {}",
-                        import.path
-                    ),
-                    evidence: vec![format!("import={}", import.path)],
-                });
-                break;
+            findings.push(Finding {
+                rule_id: "sibling_modules_depend_on_private_helpers_from_each_other".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: import.line,
+                end_line: import.line,
+                message: format!(
+                    "module imports private helpers from sibling module {}",
+                    import.path
+                ),
+                evidence: vec![format!("import={}", import.path)],
+            });
+            break;
         }
     }
 

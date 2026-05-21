@@ -19,9 +19,11 @@ pub(crate) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
     }
 
     let go = function.go_evidence();
-    let hot_signal = ["handler", "serve", "request", "process", "worker", "batch", "render"]
-        .iter()
-        .any(|marker| name_lc.contains(marker) || path_lc.contains(marker));
+    let hot_signal = [
+        "handler", "serve", "request", "process", "worker", "batch", "render",
+    ]
+    .iter()
+    .any(|marker| name_lc.contains(marker) || path_lc.contains(marker));
     if go.alloc_loops.len() < 2 && !hot_signal {
         return Vec::new();
     }
@@ -59,9 +61,11 @@ pub(crate) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
     {
         return Vec::new();
     }
-    let hot_signal = ["handler", "serve", "http", "api", "request", "process", "render"]
-        .iter()
-        .any(|marker| name_lc.contains(marker) || path_lc.contains(marker));
+    let hot_signal = [
+        "handler", "serve", "http", "api", "request", "process", "render",
+    ]
+    .iter()
+    .any(|marker| name_lc.contains(marker) || path_lc.contains(marker));
     if go.fmt_loops.is_empty() || (!hot_signal && go.fmt_loops.len() < 3) {
         return Vec::new();
     }

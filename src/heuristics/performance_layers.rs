@@ -135,7 +135,9 @@ fn is_non_production_benchmark_path(path_lc: &str) -> bool {
         "/example.py",
     ];
 
-    NON_PROD_SEGMENTS.iter().any(|segment| path_lc.contains(segment))
+    NON_PROD_SEGMENTS
+        .iter()
+        .any(|segment| path_lc.contains(segment))
         || NON_PROD_FILE_MARKERS
             .iter()
             .any(|marker| path_lc.contains(marker))
@@ -206,8 +208,10 @@ fn rule_matches(
     if rule.rule_id == "go_perf_layer_memory_allocation_map_recreated_for_static_lookup"
         && !body_lc.contains("_ = 1")
     {
-        let has_map_literal = body_lc.contains("map[") && body_lc.contains("{") && body_lc.contains("}");
-        let has_lookup = body_lc.contains("return ") && body_lc.contains('[') && body_lc.contains(']');
+        let has_map_literal =
+            body_lc.contains("map[") && body_lc.contains("{") && body_lc.contains("}");
+        let has_lookup =
+            body_lc.contains("return ") && body_lc.contains('[') && body_lc.contains(']');
         let has_static_literal_entries = body_lc.contains(": \"") || body_lc.contains(": '");
         let mutates_map = body_lc.contains("] =") || body_lc.contains("delete(");
         let looks_parsed_or_dynamic = body_lc.contains("unmarshal")
@@ -383,9 +387,9 @@ fn rule_matches(
         && !body_lc.contains("_ = 1")
         && !(has_loop_signal(body_lc)
             && (body_lc.contains("copy(")
-            || body_lc.contains("clone(")
-            || body_lc.contains("to_owned")
-            || body_lc.contains("append([]")))
+                || body_lc.contains("clone(")
+                || body_lc.contains("to_owned")
+                || body_lc.contains("append([]")))
     {
         return false;
     }
@@ -402,11 +406,12 @@ fn rule_matches(
         return false;
     }
 
-    if rule.rule_id == "go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate"
+    if rule.rule_id
+        == "go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate"
         && !body_lc.contains("_ = 1")
     {
-        let has_truncate_to_zero = body_lc.contains("= ")
-            && (body_lc.contains("[:0]") || body_lc.contains("[: 0]"));
+        let has_truncate_to_zero =
+            body_lc.contains("= ") && (body_lc.contains("[:0]") || body_lc.contains("[: 0]"));
         let has_large_backing_signal = body_lc.contains("make([]")
             && (body_lc.contains("1<<")
                 || body_lc.contains("1024")
@@ -444,7 +449,11 @@ fn rule_matches(
     if rule.rule_id == "go_perf_layer_hot_path_optimization_invariant_parse_inside_handler"
         && !body_lc.contains("_ = 1")
     {
-        let has_handler_signal = function.fingerprint.name.to_ascii_lowercase().contains("handler")
+        let has_handler_signal = function
+            .fingerprint
+            .name
+            .to_ascii_lowercase()
+            .contains("handler")
             || body_lc.contains("http.responsewriter")
             || body_lc.contains("*http.request")
             || body_lc.contains("gin.context")
@@ -508,9 +517,8 @@ fn rule_matches(
             && body_lc.contains(":= 0")
             && body_lc.contains("< len(")
             && body_lc.contains("++");
-        let has_index_access = body_lc.contains("[i]")
-            || body_lc.contains("[idx]")
-            || body_lc.contains("[index]");
+        let has_index_access =
+            body_lc.contains("[i]") || body_lc.contains("[idx]") || body_lc.contains("[index]");
         if !has_manual_index_loop || !has_index_access {
             return false;
         }
@@ -550,8 +558,7 @@ fn rule_matches(
             return false;
         }
     }
-    if rule.rule_id
-        == "go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report"
+    if rule.rule_id == "go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report"
         && !body_lc.contains("_ = 1")
     {
         let name_lc = function.fingerprint.name.to_ascii_lowercase();
@@ -575,10 +582,8 @@ fn rule_matches(
     {
         let has_fifo_pop = body_lc.contains(".pop(0)")
             || body_lc.contains("pop(0)")
-            || body_lc.contains("del ")
-                && body_lc.contains("[0]");
-        let has_queue_like_name = body_lc.contains("queue")
-            || body_lc.contains("fifo");
+            || body_lc.contains("del ") && body_lc.contains("[0]");
+        let has_queue_like_name = body_lc.contains("queue") || body_lc.contains("fifo");
         let uses_deque = body_lc.contains(".popleft(")
             || (body_lc.contains("from collections import deque") && body_lc.contains("deque("));
         if !(has_fifo_pop && has_queue_like_name) || uses_deque {
@@ -640,7 +645,9 @@ fn rule_matches(
     }
     if rule.rule_id == "python_perf_layer_string_handling_lowercase_compare_allocates"
         && !body_lc.contains("_ = 1")
-        && !((body_lc.contains(".lower(") || body_lc.contains(".upper(") || body_lc.contains(".casefold("))
+        && !((body_lc.contains(".lower(")
+            || body_lc.contains(".upper(")
+            || body_lc.contains(".casefold("))
             && (body_lc.matches(".lower(").count() >= 2
                 || body_lc.contains(".casefold(")
                 || body_lc.contains("alloc"))
@@ -678,8 +685,7 @@ fn rule_matches(
     {
         return false;
     }
-    if rule.rule_id
-        == "python_perf_layer_memory_allocation_deepcopy_before_readonly_transform"
+    if rule.rule_id == "python_perf_layer_memory_allocation_deepcopy_before_readonly_transform"
         && !body_lc.contains("_ = 1")
         && !(body_lc.contains("deepcopy(")
             && (body_lc.contains("return ")
@@ -692,9 +698,7 @@ fn rule_matches(
     if rule.rule_id == "python_perf_layer_collection_iteration_enumerate_list_materialized"
         && !body_lc.contains("_ = 1")
         && !((body_lc.contains("list(enumerate(")
-            && (body_lc.contains("for ")
-                || body_lc.contains("if ")
-                || body_lc.contains("len(")))
+            && (body_lc.contains("for ") || body_lc.contains("if ") || body_lc.contains("len(")))
             || (body_lc.contains("enumerate")
                 && body_lc.contains("list")
                 && body_lc.contains("collect")))
@@ -729,9 +733,7 @@ fn rule_matches(
             || body_lc.contains("lru_cache")
             || body_lc.contains("popitem(")
             || body_lc.contains("cachetools");
-        if (!(has_cache_container && has_cache_write) && !has_marker_mode)
-            || (!has_marker_mode && has_eviction_bound)
-        {
+        if (has_eviction_bound || !has_cache_write || !has_cache_container) && !has_marker_mode {
             return false;
         }
     }
@@ -798,14 +800,12 @@ fn rule_matches(
     if rule.rule_id == "go_perf_layer_algorithmic_complexity_sort_before_linear_dedup"
         && !body_lc.contains("_ = 1")
     {
-        let has_sort = body_lc.contains("sort.")
-            || body_lc.contains("slices.sort");
+        let has_sort = body_lc.contains("sort.") || body_lc.contains("slices.sort");
         let has_adjacent_dedup = (body_lc.contains("i > 0") || body_lc.contains("idx > 0"))
             && (body_lc.contains("[i-1]") || body_lc.contains("[idx-1]"))
             && (body_lc.contains("!=") || body_lc.contains("=="));
-        let has_seen_set_dedup = body_lc.contains("seen")
-            && body_lc.contains("map[")
-            && body_lc.contains("continue");
+        let has_seen_set_dedup =
+            body_lc.contains("seen") && body_lc.contains("map[") && body_lc.contains("continue");
         if !has_sort || !(has_adjacent_dedup || has_seen_set_dedup) {
             return false;
         }
@@ -813,9 +813,8 @@ fn rule_matches(
     if rule.rule_id == "python_perf_layer_algorithmic_complexity_full_sort_for_top_n"
         && !body_lc.contains("_ = 1")
     {
-        let full_sort = body_lc.contains("sorted(")
-            || body_lc.contains(".sort(")
-            || body_lc.contains("sort(");
+        let full_sort =
+            body_lc.contains("sorted(") || body_lc.contains(".sort(") || body_lc.contains("sort(");
         let marker_mode_top_n = body_lc.contains("top") && body_lc.contains("n");
         let top_n_slice = body_lc.contains("[:n]")
             || body_lc.contains("[:k]")
@@ -871,8 +870,8 @@ fn rule_matches(
     if rule.rule_id == "python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records"
         && !body_lc.contains("_ = 1")
     {
-        let has_nested_dict_literal = body_lc.contains("= {")
-            && (body_lc.contains(": {") || body_lc.contains(":{"));
+        let has_nested_dict_literal =
+            body_lc.contains("= {") && (body_lc.contains(": {") || body_lc.contains(":{"));
         let has_dict_index_write = body_lc.contains("][") || body_lc.contains("] = {");
         let has_fixed_record_markers = body_lc.contains("dict(")
             && body_lc.contains("fixed")
@@ -976,44 +975,85 @@ fn has_len_after_materialized_channel(body_lc: &str) -> bool {
         return false;
     }
 
-    // Require channel-ish range source before considering append+len pattern.
-    let has_channel_range = body_lc.lines().any(|line| {
-        if !line.contains("for ") || !line.contains(" range ") {
-            return false;
+    let mut brace_depth = 0;
+    let mut loop_brace_depth: Option<usize> = None;
+    let mut loop_append_target: Option<String> = None;
+
+    for line in body_lc.lines() {
+        let open_braces = line.chars().filter(|&c| c == '{').count();
+        let close_braces = line.chars().filter(|&c| c == '}').count();
+
+        // 1. Check if line starts a channel draining loop
+        if loop_brace_depth.is_none()
+            && line.contains("for ")
+            && line.contains(" range ")
+            && let Some((_, right)) = line.split_once(" range ")
+        {
+            let source = right.trim().trim_end_matches('{').trim();
+            if is_channel_range_source(source) {
+                loop_brace_depth = Some(brace_depth + 1);
+            }
         }
-        let Some((_, right)) = line.split_once(" range ") else {
-            return false;
-        };
-        let source = right.trim().trim_end_matches('{').trim();
-        source.contains("ch")
-            || source.contains("chan")
-            || source.contains("stream")
-            || source.contains("queue")
-            || source.contains("<-")
-    });
-    if !has_channel_range {
-        return false;
+
+        // 2. Update brace depth
+        brace_depth = brace_depth
+            .saturating_add(open_braces)
+            .saturating_sub(close_braces);
+
+        // 3. If inside a channel draining loop, check for append and len
+        if let Some(depth) = loop_brace_depth {
+            if let Some(append_pos) = line.find("append(") {
+                let after = &line[append_pos + "append(".len()..];
+                if let Some(target_raw) = after.split(',').next() {
+                    let target = target_raw.trim();
+                    let is_identifier = target
+                        .chars()
+                        .next()
+                        .is_some_and(|first| first == '_' || first.is_ascii_alphabetic())
+                        && target
+                            .chars()
+                            .all(|character| character == '_' || character.is_ascii_alphanumeric());
+                    if is_identifier {
+                        loop_append_target = Some(target.to_string());
+                    }
+                }
+            }
+
+            if let Some(ref target) = loop_append_target
+                && line.contains(&format!("len({target})"))
+            {
+                return true;
+            }
+
+            // Exit the loop if brace depth falls below loop start depth
+            if brace_depth < depth {
+                loop_brace_depth = None;
+                loop_append_target = None;
+            }
+        }
     }
 
-    // Look for: target = append(target, <chan item>) then len(target)
-    body_lc.lines().any(|line| {
-        let Some(append_pos) = line.find("append(") else {
-            return false;
-        };
-        let after = &line[append_pos + "append(".len()..];
-        let Some(target_raw) = after.split(',').next() else {
-            return false;
-        };
-        let target = target_raw.trim();
-        let mut chars = target.chars();
-        let is_identifier = if let Some(first) = chars.next() {
-            (first == '_' || first.is_ascii_alphabetic())
-                && chars.all(|character| character == '_' || character.is_ascii_alphanumeric())
-        } else {
-            false
-        };
-        !target.is_empty() && is_identifier && body_lc.contains(&format!("len({target})"))
-    })
+    false
+}
+
+fn is_channel_range_source(source: &str) -> bool {
+    if source.contains("<-") {
+        return true;
+    }
+    let clean = source.replace(|c: char| !c.is_alphanumeric() && c != '_', " ");
+    for word in clean.split_whitespace() {
+        let w_lower = word.to_ascii_lowercase();
+        if w_lower == "ch" || w_lower == "c" || w_lower == "chan" || w_lower == "channel" {
+            return true;
+        }
+        if w_lower.contains("chan") || w_lower.contains("stream") || w_lower.contains("queue") {
+            if w_lower.contains("change") || w_lower.contains("exchange") {
+                continue;
+            }
+            return true;
+        }
+    }
+    false
 }
 
 fn has_gzip_writer_for_small_payload(body_lc: &str) -> bool {

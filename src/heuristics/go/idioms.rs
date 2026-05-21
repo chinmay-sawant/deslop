@@ -690,7 +690,10 @@ fn timeoutless_http_helper_findings(
                 function.fingerprint.name
             ),
             evidence: vec![
-                format!("observed timeout-less client call at line {}", body_line.line),
+                format!(
+                    "observed timeout-less client call at line {}",
+                    body_line.line
+                ),
                 "http.Client without Timeout can block indefinitely".to_string(),
             ],
         });
@@ -932,10 +935,34 @@ fn mutable_package_global_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for package_var in file.package_vars() {
+        let name_lower = package_var.name.to_ascii_lowercase();
+        if name_lower.contains("once")
+            || name_lower.contains("mutex")
+            || name_lower.contains("lock")
+            || name_lower.contains("mu")
+            || name_lower.contains("wg")
+            || name_lower.contains("waitgroup")
+            || name_lower.contains("registry")
+            || name_lower.contains("config")
+            || name_lower.contains("settings")
+            || name_lower.contains("err")
+        {
+            continue;
+        }
+
         let mut mutation_lines = Vec::new();
         let mut mutated_by_init_only = true;
         for function in &file.functions {
             if function.is_test_function {
+                continue;
+            }
+            let body_lower = function.body_text.to_ascii_lowercase();
+            if body_lower.contains("sync.once")
+                || body_lower.contains(".do(")
+                || body_lower.contains("lock()")
+                || body_lower.contains("unlock()")
+                || body_lower.contains("atomic.")
+            {
                 continue;
             }
             if let Some(line) = mutation_line(function, &package_var.name) {
@@ -1228,13 +1255,24 @@ fn mutation_line(function: &ParsedFunction, name: &str) -> Option<usize> {
     body_lines(function)
         .into_iter()
         .find(|body_line| {
+            let has_indexing_mutation =
+                if let Some(idx_pos) = body_line.text.find(&format!("{name}[")) {
+                    if let Some(eq_pos) = body_line.text.find('=') {
+                        idx_pos < eq_pos
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                };
+
             body_line.text.starts_with(&format!("{name} ="))
                 || body_line.text.starts_with(&format!("{name} :="))
                 || body_line.text.starts_with(&format!("{name} +="))
                 || body_line.text.starts_with(&format!("{name} -="))
                 || body_line.text.starts_with(&format!("{name}++"))
                 || body_line.text.starts_with(&format!("{name}--"))
-                || body_line.text.contains(&format!("{name}[")) && body_line.text.contains('=')
+                || has_indexing_mutation
         })
         .map(|body_line| body_line.line)
 }

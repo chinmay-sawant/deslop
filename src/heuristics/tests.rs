@@ -46,7 +46,7 @@ fn test_title_doc() {
 #[test]
 fn test_tutorial_doc() {
     assert!(is_tutorial_doc(
-        "Run Processes Incoming Payloads\nThis function does X by doing Y because Z"
+        "Run Processes Incoming Payloads\nThis function does X by doing Y because Z\nExample: run()"
     ));
     assert!(!is_tutorial_doc("Run validates invoices."));
 }

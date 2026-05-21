@@ -534,8 +534,7 @@ fn circular_import_hidden_by_function_local_import_findings(files: &[&ParsedFile
                 || body_lc.contains("importerror")
                 || body_lc.contains("avoid import cycle")
                 || body_lc.contains("lazy import");
-            if has_local_import && hot_path_signal && circular_signal
-            {
+            if has_local_import && hot_path_signal && circular_signal {
                 findings.push(Finding {
                     rule_id: "circular_import_hidden_by_function_local_import_on_hot_path"
                         .to_string(),

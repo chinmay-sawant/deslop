@@ -163,7 +163,9 @@ def test_demo_checkout_flow():
             .expect("function should exist");
         let findings = test_findings(&file, function);
         assert!(
-            !findings.iter().any(|finding| finding.rule_id == "happy_path_only_test"),
+            !findings
+                .iter()
+                .any(|finding| finding.rule_id == "happy_path_only_test"),
             "demo/integration test context should skip happy_path_only_test"
         );
     }
@@ -184,7 +186,9 @@ def test_checkout_flow():
             .expect("function should exist");
         let findings = test_findings(&file, function);
         assert!(
-            findings.iter().any(|finding| finding.rule_id == "happy_path_only_test"),
+            findings
+                .iter()
+                .any(|finding| finding.rule_id == "happy_path_only_test"),
             "non-demo test context should still emit happy_path_only_test"
         );
     }

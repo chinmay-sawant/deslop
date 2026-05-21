@@ -242,9 +242,11 @@ pub(super) fn project_agnostic_maintainability_findings(
         ));
     }
 
-    let cache_declared = lower_body
-        .lines()
-        .any(|line| line.contains("cache") && line.contains('=') && (line.contains("{}") || line.contains("dict(")));
+    let cache_declared = lower_body.lines().any(|line| {
+        line.contains("cache")
+            && line.contains('=')
+            && (line.contains("{}") || line.contains("dict("))
+    });
     let cache_mutated = contains_any(
         &lower_body,
         &[
@@ -258,7 +260,9 @@ pub(super) fn project_agnostic_maintainability_findings(
     );
     let policy_signaled = contains_any(
         &lower_body,
-        &["ttl", "maxsize", "evict", "lru", "expires", "capacity", "bounded"],
+        &[
+            "ttl", "maxsize", "evict", "lru", "expires", "capacity", "bounded",
+        ],
     ) || function
         .doc_comment
         .as_deref()
@@ -266,7 +270,9 @@ pub(super) fn project_agnostic_maintainability_findings(
             let doc_lc = doc.to_ascii_lowercase();
             contains_any(
                 &doc_lc,
-                &["ttl", "maxsize", "evict", "lru", "expires", "capacity", "bounded"],
+                &[
+                    "ttl", "maxsize", "evict", "lru", "expires", "capacity", "bounded",
+                ],
             )
         })
         .unwrap_or(false);

@@ -1,23 +1,23 @@
-use std::collections::BTreeSet;
+use std::collections::BTreeMap;
 
 use tree_sitter::Node;
 
 pub(super) fn collect_concat_loops(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let string_like_names = collect_string_like_names(body_node, source);
     let mut lines = Vec::new();
-    visit_concat_loops(body_node, source, &string_like_names, false, &mut lines);
+    visit_concat_loops(body_node, source, &string_like_names, None, &mut lines);
     lines.sort_unstable();
     lines.dedup();
     lines
 }
 
-fn collect_string_like_names(node: Node<'_>, source: &str) -> BTreeSet<String> {
-    let mut names = BTreeSet::new();
+fn collect_string_like_names(node: Node<'_>, source: &str) -> BTreeMap<String, usize> {
+    let mut names = BTreeMap::new();
     visit_string_like_names(node, source, &mut names);
     names
 }
 
-fn visit_string_like_names(node: Node<'_>, source: &str, names: &mut BTreeSet<String>) {
+fn visit_string_like_names(node: Node<'_>, source: &str, names: &mut BTreeMap<String, usize>) {
     if should_skip_nested_scope(node) {
         return;
     }
@@ -32,7 +32,7 @@ fn visit_string_like_names(node: Node<'_>, source: &str, names: &mut BTreeSet<St
                 || left.contains(":str"))
         {
             for name in assignment_targets(left) {
-                names.insert(name);
+                names.entry(name).or_insert(node.start_byte());
             }
         }
     }
@@ -46,66 +46,77 @@ fn visit_string_like_names(node: Node<'_>, source: &str, names: &mut BTreeSet<St
 fn visit_concat_loops(
     node: Node<'_>,
     source: &str,
-    string_like_names: &BTreeSet<String>,
-    inside_loop: bool,
+    string_like_names: &BTreeMap<String, usize>,
+    current_loop: Option<Node<'_>>,
     lines: &mut Vec<usize>,
 ) {
     if should_skip_nested_scope(node) {
         return;
     }
 
-    let next_inside_loop =
-        inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
+    let next_loop = if matches!(node.kind(), "for_statement" | "while_statement") {
+        Some(node)
+    } else {
+        current_loop
+    };
 
-    if next_inside_loop && is_concat_assignment(node, source, string_like_names) {
-        lines.push(node.start_position().row + 1);
+    if next_loop.is_some()
+        && let Some(var_name) = get_concat_assignment_target(node, source, string_like_names)
+    {
+        let mut flag = true;
+        if let Some(decl_pos) = string_like_names.get(&var_name)
+            && let Some(loop_node) = next_loop
+            && *decl_pos >= loop_node.start_byte()
+            && *decl_pos < loop_node.end_byte()
+        {
+            flag = false;
+        }
+        if flag {
+            lines.push(node.start_position().row + 1);
+        }
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_concat_loops(child, source, string_like_names, next_inside_loop, lines);
+        visit_concat_loops(child, source, string_like_names, next_loop, lines);
     }
 }
 
-fn is_concat_assignment(
+fn get_concat_assignment_target(
     node: Node<'_>,
     source: &str,
-    string_like_names: &BTreeSet<String>,
-) -> bool {
-    let Some(text) = source.get(node.byte_range()) else {
-        return false;
-    };
+    string_like_names: &BTreeMap<String, usize>,
+) -> Option<String> {
+    let text = source.get(node.byte_range())?;
     let trimmed = text.trim();
 
     if node.kind() == "augmented_assignment"
         && trimmed.contains("+=")
         && let Some((left, _)) = trimmed.split_once("+=")
     {
-        return assignment_targets(left)
-            .into_iter()
-            .any(|name| string_like_names.contains(&name));
+        for name in assignment_targets(left) {
+            if string_like_names.contains_key(&name) {
+                return Some(name);
+            }
+        }
     }
 
-    if !matches!(node.kind(), "assignment" | "annotated_assignment") {
-        return false;
+    if matches!(node.kind(), "assignment" | "annotated_assignment")
+        && let Some((left, right)) = trimmed.split_once('=')
+    {
+        let names = assignment_targets(left);
+        if names.len() == 1
+            && let Some(target_name) = names.first()
+            && string_like_names.contains_key(target_name)
+        {
+            let normalized_right = right.replace(' ', "");
+            if normalized_right.starts_with(&format!("{target_name}+")) {
+                return Some(target_name.clone());
+            }
+        }
     }
 
-    let Some((left, right)) = trimmed.split_once('=') else {
-        return false;
-    };
-    let names = assignment_targets(left);
-    if names.len() != 1 {
-        return false;
-    }
-    let Some(target_name) = names.first() else {
-        return false;
-    };
-    if !string_like_names.contains(target_name) {
-        return false;
-    }
-
-    let normalized_right = right.replace(' ', "");
-    normalized_right.starts_with(&format!("{target_name}+"))
+    None
 }
 
 fn assignment_targets(text: &str) -> Vec<String> {
