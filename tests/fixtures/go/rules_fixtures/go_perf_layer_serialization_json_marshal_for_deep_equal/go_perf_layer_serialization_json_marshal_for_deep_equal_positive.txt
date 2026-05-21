@@ -1,6 +1,7 @@
 package rulefixtures
 
 import (
+	"bytes"
 	"encoding/json"
 )
 
@@ -10,10 +11,14 @@ type Rule592PositiveRecord struct { Name string `json:"name"`; Count int `json:"
 
 func scenario592Positive(values []Rule592PositiveRecord) (int, error) {
 	total := 0
-	for _, value := range values {
-		data, err := json.Marshal(value)
+	for i := 1; i < len(values); i++ {
+		left, err := json.Marshal(values[i-1])
 		if err != nil { return 0, err }
-		total += len(data)
+		right, err := json.Marshal(values[i])
+		if err != nil { return 0, err }
+		if bytes.Equal(left, right) {
+			total++
+		}
 	}
 	return total, nil
 }

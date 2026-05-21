@@ -1,4 +1,5 @@
 def process_order(order_id):
+    # avoid import cycle with service bootstrap module
     from myapp.services.payment import PaymentProcessor
     from myapp.services.inventory import InventoryManager
 
@@ -9,6 +10,7 @@ def process_order(order_id):
 
 
 def build_report(user_id):
+    # lazy import to avoid circular dependency
     from myapp.services.analytics import AnalyticsEngine
     from myapp.services.export import ReportExporter
 
@@ -19,6 +21,7 @@ def build_report(user_id):
 
 
 def handle_webhook(event):
+    # import inside function to avoid import cycle
     from myapp.integrations.slack import SlackNotifier
     from myapp.integrations.email import EmailService
 
@@ -29,6 +32,7 @@ def handle_webhook(event):
 
 
 def sync_user_data(user_id):
+    # avoid circular imports during module initialization
     from myapp.adapters.crm import CRMAdapter
     from myapp.adapters.caching import CacheAdapter
 

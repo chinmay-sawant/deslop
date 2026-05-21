@@ -6,6 +6,14 @@ pub(crate) const BINDING_LOCATION: &str = file!();
 pub(crate) fn error_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
     let mut findings = Vec::new();
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    let bootstrappy_context = name_lc == "main"
+        || name_lc == "init"
+        || path_lc.contains("/cmd/")
+        || path_lc.contains("/sampledata/")
+        || path_lc.contains("/examples/")
+        || path_lc.contains("/testdata/");
 
     for line in go.dropped_errors {
         findings.push(Finding {
@@ -24,6 +32,9 @@ pub(crate) fn error_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
     }
 
     for line in go.panic_errors {
+        if bootstrappy_context {
+            continue;
+        }
         findings.push(Finding {
             rule_id: "panic_on_error".to_string(),
             severity: Severity::Warning,

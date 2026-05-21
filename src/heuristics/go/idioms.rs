@@ -933,16 +933,23 @@ fn mutable_package_global_findings(file: &ParsedFile) -> Vec<Finding> {
 
     for package_var in file.package_vars() {
         let mut mutation_lines = Vec::new();
+        let mut mutated_by_init_only = true;
         for function in &file.functions {
             if function.is_test_function {
                 continue;
             }
             if let Some(line) = mutation_line(function, &package_var.name) {
                 mutation_lines.push(line);
+                if function.fingerprint.name != "init" {
+                    mutated_by_init_only = false;
+                }
             }
         }
 
         if mutation_lines.is_empty() {
+            continue;
+        }
+        if mutated_by_init_only && !package_var.is_pub {
             continue;
         }
 

@@ -10,3 +10,10 @@ def concatenate_log_entries(entries: list[str]) -> str:
 def build_sql_values(rows: list[tuple]) -> str:
     parts = [f"({row[0]}, '{row[1]}')" for row in rows]
     return ",".join(parts)
+
+
+def benchmark_concat(chunks: list[str]) -> str:
+    out = ""
+    for chunk in chunks:
+        out += chunk
+    return out

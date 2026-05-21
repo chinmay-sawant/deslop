@@ -2,18 +2,20 @@ package rulefixtures
 
 import (
 	"encoding/json"
+	"io"
 )
 
 // scenario for go_perf_layer_serialization_json_decoder_without_reuse_for_stream: Layer: Serialization and deserialization. Flag JSON decoders created for each element of a stream instead of decoding the stream once.
 // fixture polarity: positive; family: performance; severity: contextual.
 type Rule591PositiveRecord struct { Name string `json:"name"`; Count int `json:"count"` }
 
-func scenario591Positive(values []Rule591PositiveRecord) (int, error) {
+func scenario591Positive(chunks []io.Reader) (int, error) {
 	total := 0
-	for _, value := range values {
-		data, err := json.Marshal(value)
-		if err != nil { return 0, err }
-		total += len(data)
+	for _, chunk := range chunks {
+		dec := json.NewDecoder(chunk)
+		var rec Rule591PositiveRecord
+		if err := dec.Decode(&rec); err != nil { return 0, err }
+		total += rec.Count
 	}
 	return total, nil
 }

@@ -74,6 +74,15 @@ fn option_bag_model_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file {
         return Vec::new();
     }
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    if path_lc.contains("/sampledata/")
+        || path_lc.contains("/samples/")
+        || path_lc.contains("/examples/")
+        || path_lc.contains("/benchmarks/")
+        || path_lc.contains("/testdata/")
+    {
+        return Vec::new();
+    }
     let file_name_lc = file
         .path
         .file_name()
@@ -96,7 +105,10 @@ fn option_bag_model_findings(file: &ParsedFile) -> Vec<Finding> {
                 || model_name_lc.ends_with("options")
                 || model_name_lc.ends_with("params")
                 || model_name_lc.ends_with("payload");
-            if dtoish_module && dtoish_model_name && model.method_names.is_empty() {
+            if dtoish_module
+                && dtoish_model_name
+                && (model.method_names.is_empty() || model.method_names.len() <= 1)
+            {
                 return None;
             }
 
@@ -116,6 +128,16 @@ fn option_bag_model_findings(file: &ParsedFile) -> Vec<Finding> {
             if model.fields.len() < OPTION_BAG_FIELD_THRESHOLD
                 || optional_fields.len() + boolean_fields.len() < OPTION_BAG_SIGNAL_THRESHOLD
                 || (optional_fields.len() < 3 && boolean_fields.len() < 2)
+            {
+                return None;
+            }
+
+            // Typical request/response DTOs can legitimately expose many optional fields
+            // without being option-bag anti-patterns.
+            if dtoish_model_name
+                && model.method_names.len() <= 1
+                && model.fields.len() <= OPTION_BAG_FIELD_THRESHOLD + 6
+                && boolean_fields.len() <= 2
             {
                 return None;
             }

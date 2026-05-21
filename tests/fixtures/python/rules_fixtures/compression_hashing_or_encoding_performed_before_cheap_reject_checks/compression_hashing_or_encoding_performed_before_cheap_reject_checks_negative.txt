@@ -1,6 +1,8 @@
 import hashlib
 import gzip
 import base64
+import json
+import hmac
 
 
 def process_upload(file_data, max_size=1024):

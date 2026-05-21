@@ -1533,9 +1533,23 @@ pub(super) fn test_imports_private_module_findings(
     if !function.is_test_function && !file.is_test_file {
         return Vec::new();
     }
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    if path_lc.contains("/sampledata/")
+        || path_lc.contains("/examples/")
+        || path_lc.contains("/benchmarks/")
+    {
+        return Vec::new();
+    }
     let imports: Vec<&str> = file.imports.iter().map(|i| i.path.as_str()).collect();
     for imp in imports {
-        if imp.contains("._") || imp.contains("._impl") || imp.contains("._internal") {
+        // Test suites for bindings often need internal module access by design.
+        if imp.starts_with("pypdfsuit._")
+            || imp.starts_with("bindings.")
+            || imp.contains(".pypdfsuit._")
+        {
+            continue;
+        }
+        if is_private_production_import(imp) {
             return vec![Finding {
                 rule_id: "test_imports_private_production_module".to_string(),
                 severity: Severity::Info,
@@ -1552,6 +1566,33 @@ pub(super) fn test_imports_private_module_findings(
         }
     }
     Vec::new()
+}
+
+fn is_private_production_import(imp: &str) -> bool {
+    let import_lc = imp.to_ascii_lowercase();
+    if import_lc.starts_with("tests.")
+        || import_lc.contains(".tests.")
+        || import_lc.contains(".testing.")
+        || import_lc.starts_with("test.")
+    {
+        return false;
+    }
+
+    if import_lc.contains(".conftest")
+        || import_lc.contains(".fixtures.")
+        || import_lc.contains(".mocks.")
+        || import_lc.ends_with(".fixtures")
+        || import_lc.ends_with(".mocks")
+        || import_lc.contains("._test")
+    {
+        return false;
+    }
+
+    import_lc.split('.').any(|segment| {
+        segment.starts_with('_')
+            && segment.len() > 1
+            && !matches!(segment, "__future__" | "__main__" | "__init__")
+    })
 }
 
 pub(super) fn mock_return_incompatible_type_findings(
@@ -1687,10 +1728,7 @@ pub(super) fn project_agnostic_discipline_findings(
         ));
     }
 
-    if contains_any(
-        body,
-        &["requests.", "httpx.", "open(", "subprocess.", ".read_text("],
-    ) && contains_any(&lower_body, &["if not ", "raise valueerror", "assert "])
+    if expensive_work_before_validation(body)
     {
         findings.push(make_finding(
             "expensive_work_starts_before_input_validation",
@@ -1854,8 +1892,19 @@ pub(super) fn project_agnostic_discipline_findings(
         ));
     }
 
-    if body.contains("return (")
-        || (body.contains("return {") && lower_body.matches("return ").count() >= 2)
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    let return_count = lower_body.matches("return ").count();
+    let likely_non_production = path_lc.contains("/sampledata/")
+        || path_lc.contains("/testdata/")
+        || name_lc.starts_with("test")
+        || name_lc.starts_with("benchmark")
+        || name_lc.starts_with("example");
+    let tuple_and_dict_mix = body.contains("return (") && body.contains("return {");
+    let dict_variant_count = body.matches("return {").count();
+    if !likely_non_production
+        && return_count >= 2
+        && (tuple_and_dict_mix || dict_variant_count >= 2)
     {
         findings.push(make_finding(
             "function_returns_multiple_unlabeled_shape_variants",
@@ -1901,6 +1950,42 @@ pub(super) fn project_agnostic_discipline_findings(
     }
 
     findings
+}
+
+fn expensive_work_before_validation(body: &str) -> bool {
+    let lines = body
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .collect::<Vec<_>>();
+    let expensive_markers = [
+        "requests.",
+        "httpx.",
+        "open(",
+        "subprocess.",
+        ".read_text(",
+        "json.loads(",
+        "load_template(",
+        "load_dataset(",
+    ];
+    let validation_markers = [
+        "if not ",
+        "if ",
+        "raise valueerror",
+        "assert ",
+        "required",
+        "invalid",
+    ];
+    let first_expensive = lines
+        .iter()
+        .position(|line| expensive_markers.iter().any(|marker| line.contains(marker)));
+    let first_validation = lines
+        .iter()
+        .position(|line| validation_markers.iter().any(|marker| line.contains(marker)));
+    matches!(
+        (first_expensive, first_validation),
+        (Some(exp), Some(val)) if exp < val
+    )
 }
 
 fn loop_with_recovery_logging_line(body: &str, start_line: usize) -> Option<usize> {

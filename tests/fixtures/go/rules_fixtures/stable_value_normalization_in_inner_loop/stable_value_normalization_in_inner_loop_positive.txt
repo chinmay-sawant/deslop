@@ -7,24 +7,16 @@ import (
 // scenario for stable_value_normalization_in_inner_loop: Stable value normalization (ToLower, TrimSpace, etc.) repeated inside inner loops.
 // fixture polarity: positive; family: hot_path; severity: info.
 
-type Assignee struct {
-	Name string
-	Dept string
+type Rule366PositiveTask struct {
+	Owner string
+	Tag   string
 }
 
-type Task struct {
-	Assignee string
-	Owner    string
-}
-
-func scenario366Positive(tasks []Task, assignees []Assignee) []string {
+func scenario366Positive(owner string, tasks []Rule366PositiveTask) []string {
 	var matched []string
 	for _, task := range tasks {
-		for _, assignee := range assignees {
-			if strings.ToLower(task.Owner) == strings.ToLower(assignee.Name) {
-				matched = append(matched, task.Assignee)
-				break
-			}
+		if strings.ToLower(owner) == strings.ToLower(task.Owner) {
+			matched = append(matched, task.Tag)
 		}
 	}
 	return matched

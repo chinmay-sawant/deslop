@@ -1,11 +1,14 @@
 package rulefixtures
 
 import (
+	"regexp"
 	"strings"
 )
+
+var scenario596CompiledWord = regexp.MustCompile(`\\w+`)
 
 // scenario for go_perf_layer_string_handling_regexp_compile_in_request_path: Layer: String handling. Flag regexp.Compile or MustCompile inside handlers, loops, or repeated functions.
 // fixture polarity: negative; family: performance; severity: contextual.
 func scenario596Negative(haystack string, needle string, left string, right string) bool {
-	return strings.Contains(haystack, needle)
+	return strings.Contains(haystack, needle) && scenario596CompiledWord.MatchString(left+right)
 }

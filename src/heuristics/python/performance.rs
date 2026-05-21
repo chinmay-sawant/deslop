@@ -18,6 +18,16 @@ pub(super) fn string_concat_findings(file: &ParsedFile, function: &ParsedFunctio
     if function.is_test_function {
         return Vec::new();
     }
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    if path_lc.contains("/sampledata/")
+        || path_lc.contains("/testdata/")
+        || name_lc.starts_with("test")
+        || name_lc.starts_with("benchmark")
+        || name_lc.starts_with("example")
+    {
+        return Vec::new();
+    }
 
     let python = function.python_evidence();
 
@@ -434,6 +444,12 @@ pub(super) fn project_agnostic_performance_findings(
         &["read()", "read_text()", "read_bytes()", "readlines()"],
     ) && !contains_any(body, &["for line in", "iter(", "yield"])
         && !contains_any(&lower_body, &["subprocess", "popen", "command"])
+        && !contains_any(&lower_body, &["return content", "return data", ".count(", "len(content)"])
+        && (lower_body.contains("for ")
+            || lower_body.contains("while ")
+            || lower_body.contains("json.loads(")
+            || lower_body.contains("split(\"\\n\")")
+            || lower_body.contains("splitlines("))
     {
         findings.push(push(
             "eager_full_file_or_stream_read_when_incremental_iteration_suffices",
@@ -461,6 +477,18 @@ pub(super) fn project_agnostic_performance_findings(
     if body.contains("+=")
         && contains_any(body, &["\"", "'"])
         && (body.contains("for ") || body.contains("while "))
+        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/sampledata/")
+        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/testdata/")
+        && !function
+            .fingerprint
+            .name
+            .to_ascii_lowercase()
+            .starts_with("benchmark")
+        && !function
+            .fingerprint
+            .name
+            .to_ascii_lowercase()
+            .starts_with("example")
     {
         findings.push(push(
             "quadratic_string_building_via_plus_equals",
@@ -484,8 +512,12 @@ pub(super) fn project_agnostic_performance_findings(
     }
 
     if contains_any(&lower_body, &["json.dumps(", "csv.writer(", "bytesio("])
-        && !contains_any(&lower_body, &["yield", "stream"])
-        && contains_any(&lower_body, &["fetchall(", "read()", ".append(", "getvalue()", "join("])
+        && !contains_any(&lower_body, &["yield ", "yield\\n", "yield\t", "stream_"])
+        && contains_any(&lower_body, &["fetchall(", ".append(", "getvalue()", "join("])
+        && contains_any(
+            &lower_body,
+            &["return output.getvalue()", "return json.dumps(", "return \"\\\\n\".join(", "return '\\\\n'.join("],
+        )
     {
         findings.push(push(
             "full_response_or_export_buffered_before_incremental_consumer_use",
@@ -623,8 +655,7 @@ pub(super) fn project_agnostic_performance_findings(
         ));
     }
 
-    if contains_any(&lower_body, &["compress(", "hashlib.", ".encode("])
-        && contains_any(&lower_body, &["if not", "if value is none", "return"])
+    if performs_expensive_transform_before_cheap_reject(body)
     {
         findings.push(push(
             "compression_hashing_or_encoding_performed_before_cheap_reject_checks",
@@ -653,6 +684,19 @@ pub(super) fn project_agnostic_performance_findings(
         && lower_body.matches("for ").count() >= 1
         && !contains_any(&lower_body, &[".extend(", "buffer", "chunk", "flush"])
         && function.fingerprint.line_count >= 10
+        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/sampledata/")
+        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/testdata/")
+        && !function
+            .fingerprint
+            .name
+            .to_ascii_lowercase()
+            .starts_with("benchmark")
+        && !function
+            .fingerprint
+            .name
+            .to_ascii_lowercase()
+            .starts_with("example")
+        && (lower_body.matches(".write(").count() + lower_body.matches("send(").count() >= 2)
     {
         findings.push(push(
             "repeated_small_writes_without_buffering_or_join",
@@ -664,7 +708,8 @@ pub(super) fn project_agnostic_performance_findings(
         ));
     }
 
-    if contains_any(&lower_body, &["dict(", ".copy("])
+    if (contains_any(&lower_body, &[" = dict(", "=dict(", " = copy(", "=copy("])
+        || lower_body.contains(".copy()"))
         && !contains_any(
             &lower_body,
             &["update(", "pop(", "setdefault(", "del ", "hydrat"],
@@ -681,6 +726,7 @@ pub(super) fn project_agnostic_performance_findings(
                 "row_factory",
             ],
         )
+        && contains_any(&lower_body, &["[", ".get(", ".items(", ".values("])
     {
         findings.push(push(
             "copy_of_mapping_created_only_to_read_values",
@@ -760,6 +806,43 @@ fn repeated_normalization_on_same_dataset(body: &str) -> bool {
     }
 
     false
+}
+
+fn performs_expensive_transform_before_cheap_reject(body: &str) -> bool {
+    let lines = body
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .collect::<Vec<_>>();
+
+    let expensive_markers = [
+        "gzip.compress(",
+        "zlib.compress(",
+        "bz2.compress(",
+        "lzma.compress(",
+        "hashlib.",
+        "base64.b64encode(",
+        "base64.urlsafe_b64encode(",
+        ".encode(",
+    ];
+    let cheap_reject_markers = [
+        "if len(",
+        "if not ",
+        "if value is none",
+        "if payload.get(",
+        "raise valueerror(",
+        "return None",
+        "return none",
+    ];
+
+    let first_expensive = lines
+        .iter()
+        .position(|line| expensive_markers.iter().any(|marker| line.contains(marker)));
+    let first_reject = lines
+        .iter()
+        .position(|line| cheap_reject_markers.iter().any(|marker| line.contains(marker)));
+
+    matches!((first_expensive, first_reject), (Some(exp), Some(rej)) if exp < rej)
 }
 
 fn extract_normalizing_loops(body: &str) -> Vec<(String, bool)> {

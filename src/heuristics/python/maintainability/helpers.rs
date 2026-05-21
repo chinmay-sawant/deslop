@@ -21,7 +21,15 @@ pub(super) fn is_sample_demo_smoke_integration_context(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> bool {
-    let context_markers = ["sample", "samples", "demo", "smoke", "integration"];
+    let context_markers = [
+        "sample",
+        "samples",
+        "demo",
+        "smoke",
+        "integration",
+        "benchmark",
+        "bench",
+    ];
     let function_name = function.fingerprint.name.to_ascii_lowercase();
     if contains_marker_token(&function_name, &context_markers) {
         return true;

@@ -10,8 +10,12 @@ type Rule363NegativeRecord struct {
 
 func scenario363Negative(records []Rule363NegativeRecord) int {
 	total := 0
+	selected := make([]Rule363NegativeRecord, 0, len(records))
 	for _, record := range records {
+		if record.ID > 0 {
+			selected = append(selected, record)
+		}
 		total += record.ID + len(record.Values)
 	}
-	return total
+	return total + len(selected)
 }

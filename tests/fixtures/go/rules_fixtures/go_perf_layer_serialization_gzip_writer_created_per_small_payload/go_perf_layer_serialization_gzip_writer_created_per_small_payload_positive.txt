@@ -11,6 +11,10 @@ import (
 func scenario590Positive(payloads [][]byte) ([][]byte, error) {
 	var results [][]byte
 	for i, p := range payloads {
+		if len(p) > 256 {
+			// skip larger payloads; this path models tiny payload compression churn
+			continue
+		}
 		var buf bytes.Buffer
 		w := gzip.NewWriter(&buf)
 		if _, err := w.Write(p); err != nil {

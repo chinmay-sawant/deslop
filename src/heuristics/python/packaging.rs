@@ -520,8 +520,21 @@ fn circular_import_hidden_by_function_local_import_findings(files: &[&ParsedFile
     let mut findings = Vec::new();
     for file in files {
         for function in &file.functions {
-            if function.body_text.contains("import ")
-                && (function.body_text.contains("for ") || function.fingerprint.call_count >= 4)
+            let body_lc = function.body_text.to_ascii_lowercase();
+            let name_lc = function.fingerprint.name.to_ascii_lowercase();
+            let has_local_import =
+                body_lc.contains("\n    import ") || body_lc.contains("\n    from ");
+            let hot_path_signal = body_lc.contains("for ")
+                || function.fingerprint.call_count >= 4
+                || name_lc.starts_with("handle_")
+                || name_lc.starts_with("process_")
+                || name_lc.starts_with("sync_")
+                || name_lc.starts_with("build_");
+            let circular_signal = body_lc.contains("circular")
+                || body_lc.contains("importerror")
+                || body_lc.contains("avoid import cycle")
+                || body_lc.contains("lazy import");
+            if has_local_import && hot_path_signal && circular_signal
             {
                 findings.push(Finding {
                     rule_id: "circular_import_hidden_by_function_local_import_on_hot_path"

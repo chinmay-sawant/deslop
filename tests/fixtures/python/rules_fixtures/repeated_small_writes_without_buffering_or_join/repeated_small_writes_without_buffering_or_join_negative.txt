@@ -11,3 +11,12 @@ def build_csv_string(records):
     for rec in records:
         lines.append(f"{rec['id']},{rec['name']},{rec['value']}")
     return "\n".join(lines) + "\n"
+
+
+def benchmark_emit(path: str, rows: list[dict]):
+    with open(path, "w") as handle:
+        for row in rows:
+            handle.write(str(row["id"]))
+            handle.write(",")
+            handle.write(row["name"])
+            handle.write("\n")

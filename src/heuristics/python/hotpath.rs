@@ -482,7 +482,15 @@ pub(super) fn project_agnostic_hotpath_findings(
         });
     }
 
-    if (lower_body.matches(".split(").count() + lower_body.matches(".join(").count()) >= 3 {
+    let invariant_separator_repetition = body
+        .lines()
+        .filter(|line| line.contains("for ") || line.contains("while "))
+        .count()
+        >= 1
+        && (body.matches(".split(\"").count() + body.matches(".join(\"").count() >= 2);
+    if (lower_body.matches(".split(").count() + lower_body.matches(".join(").count()) >= 3
+        && invariant_separator_repetition
+    {
         findings.push(Finding {
             rule_id: "repeated_split_or_join_on_invariant_separator_inside_loop".to_string(),
             severity: Severity::Info,
@@ -582,7 +590,23 @@ pub(super) fn project_agnostic_hotpath_findings(
         });
     }
 
-    if body.contains("import ") {
+    if body.contains("import ")
+        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/sampledata/")
+        && !file.path.to_string_lossy().to_ascii_lowercase().contains("/testdata/")
+        && !function.fingerprint.name.to_ascii_lowercase().starts_with("test")
+        && !function
+            .fingerprint
+            .name
+            .to_ascii_lowercase()
+            .starts_with("benchmark")
+        && !function.fingerprint.name.to_ascii_lowercase().starts_with("example")
+        && (lower_body.contains("for ")
+            || lower_body.contains("while ")
+            || contains_any(
+                &function.fingerprint.name.to_ascii_lowercase(),
+                &["handle", "process", "render", "serve", "request"],
+            ))
+    {
         findings.push(Finding {
             rule_id: "function_local_import_executed_in_frequent_path".to_string(),
             severity: Severity::Info,

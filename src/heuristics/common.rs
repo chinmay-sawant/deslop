@@ -382,11 +382,16 @@ pub(super) fn is_title_doc(line: &str) -> bool {
 
 pub(super) fn is_tutorial_doc(comment: &str) -> bool {
     let normalized = comment.to_ascii_lowercase();
-    comment.lines().count() >= 2
-        && (normalized.contains("this function")
-            || normalized.contains("this method")
-            || normalized.contains("by doing")
-            || normalized.contains("because"))
+    let line_count = comment.lines().filter(|line| !line.trim().is_empty()).count();
+    let tutorial_markers = normalized.contains("this function")
+        || normalized.contains("this method")
+        || normalized.contains("example:")
+        || normalized.contains("for example")
+        || normalized.contains("step 1")
+        || normalized.contains("step one")
+        || normalized.contains("first,")
+        || normalized.contains("then ");
+    line_count >= 3 && tutorial_markers
 }
 
 pub(super) fn is_blocking_call(call: &CallSite, import_aliases: &BTreeMap<String, String>) -> bool {

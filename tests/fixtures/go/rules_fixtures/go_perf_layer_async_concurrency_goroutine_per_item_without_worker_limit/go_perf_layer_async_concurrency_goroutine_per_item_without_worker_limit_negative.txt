@@ -1,5 +1,7 @@
 package rulefixtures
 
+import "sync"
+
 // scenario for go_perf_layer_async_concurrency_goroutine_per_item_without_worker_limit: Layer: Async and concurrency. Flag unbounded goroutine-per-item fanout without a semaphore or worker pool.
 // fixture polarity: negative; family: performance; severity: contextual.
 type Rule506NegativeRecord struct {
@@ -9,9 +11,19 @@ type Rule506NegativeRecord struct {
 }
 
 func scenario506Negative(records []Rule506NegativeRecord) int {
+	sem := make(chan struct{}, 4)
+	var wg sync.WaitGroup
 	total := 0
 	for _, record := range records {
+		wg.Add(1)
+		sem <- struct{}{}
+		go func(r Rule506NegativeRecord) {
+			defer wg.Done()
+			defer func() { <-sem }()
+			_ = len(r.Name)
+		}(record)
 		total += record.ID + len(record.Values)
 	}
+	wg.Wait()
 	return total
 }

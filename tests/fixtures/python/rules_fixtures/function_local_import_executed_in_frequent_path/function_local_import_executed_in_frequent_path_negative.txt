@@ -20,3 +20,11 @@ def validate_input(data):
 def transform_batch(records):
     df = pd.DataFrame(records)
     return df.to_dict(orient="records")
+
+
+def benchmark_transform(records):
+    import json
+    payload = []
+    for record in records:
+        payload.append(json.dumps(record))
+    return payload

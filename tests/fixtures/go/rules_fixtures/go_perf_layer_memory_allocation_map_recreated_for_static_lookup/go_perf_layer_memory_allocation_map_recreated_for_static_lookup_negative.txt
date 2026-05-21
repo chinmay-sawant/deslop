@@ -2,11 +2,11 @@ package rulefixtures
 
 // scenario for go_perf_layer_memory_allocation_map_recreated_for_static_lookup: Layer: Memory allocation. Flag static lookup maps rebuilt inside functions instead of package-level immutable tables.
 // fixture polarity: negative; family: performance; severity: contextual.
+var staticStatusText = map[int]string{
+	200: "OK",
+	404: "Not Found",
+}
+
 func demoStatusLookupNegative(code int) string {
-	// example usage for documentation snippets.
-	statusText := map[int]string{
-		200: "OK",
-		404: "Not Found",
-	}
-	return statusText[code]
+	return staticStatusText[code]
 }

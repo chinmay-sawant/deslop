@@ -6,10 +6,17 @@ import (
 
 // scenario for go_perf_layer_algorithmic_complexity_sort_before_linear_dedup: Layer: Algorithmic complexity. Flag full sorts used only to remove duplicates where map-backed membership would scale better.
 // fixture polarity: positive; family: performance; severity: contextual.
-func scenario503Positive(values []string) string {
-	for range values {
-		sort.Sort(sort.StringSlice(values))
+func scenario503Positive(values []string) []string {
+	if len(values) == 0 {
+		return nil
 	}
-	if len(values) == 0 { return "" }
-	return values[0]
+	sort.Strings(values)
+	unique := make([]string, 0, len(values))
+	for i, value := range values {
+		if i > 0 && value == values[i-1] {
+			continue
+		}
+		unique = append(unique, value)
+	}
+	return unique
 }

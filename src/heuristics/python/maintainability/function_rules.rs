@@ -642,6 +642,9 @@ pub(crate) fn api_type_hint_findings(file: &ParsedFile, function: &ParsedFunctio
         || path_lc.contains("/sampledata/")
         || path_lc.contains("/examples/")
         || path_lc.contains("/scripts/")
+        || path_lc.ends_with("/setup.py")
+        || path_lc.contains("/tests/")
+        || function.fingerprint.name.starts_with("pytest_")
     {
         return Vec::new();
     }

@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 fn slice_membership_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
@@ -210,18 +212,57 @@ fn repeated_strconv_findings(
         })
         .collect::<Vec<_>>();
 
-    repeated_argument_group_findings(
-        file,
-        function,
-        lines,
-        &markers,
-        false,
-        RepeatedArgumentGroupSpec {
-            rule_id: "strconv_repeat_on_same_binding",
-            message_tail: "converts the same string input with strconv multiple times",
-            helper_label: "strconv helpers",
-        },
-    )
+    if markers.is_empty() {
+        return Vec::new();
+    }
+
+    let mut groups = BTreeMap::<String, Vec<(usize, String)>>::new();
+    for (line, label, argument) in collect_labeled_first_argument_calls(lines, &markers, false) {
+        groups.entry(argument).or_default().push((line, label));
+    }
+
+    let mut findings = Vec::new();
+    for (argument, calls) in groups {
+        if calls.len() < 2 {
+            continue;
+        }
+
+        let distinct_helpers = calls
+            .iter()
+            .map(|(_, label)| label.as_str())
+            .collect::<BTreeSet<_>>();
+        // Precision guard: only flag repeated same-helper conversion, or heavy (3+) repeated parsing.
+        if distinct_helpers.len() > 1 && calls.len() < 3 {
+            continue;
+        }
+
+        let call_lines = calls.iter().map(|(line, _)| *line).collect::<Vec<_>>();
+        let operations = calls
+            .iter()
+            .map(|(line, label)| format!("{label} at line {line}"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let anchor_line = call_lines[1];
+        findings.push(Finding {
+            rule_id: "strconv_repeat_on_same_binding".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: anchor_line,
+            end_line: anchor_line,
+            message: format!(
+                "function {} converts the same string input with strconv multiple times",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("argument reused by strconv helpers at lines {}", join_lines(&call_lines)),
+                format!("first argument: {argument}"),
+                format!("operations: {operations}"),
+            ],
+        });
+    }
+
+    findings
 }
 
 fn read_then_decode_duplicate_materialization_findings(
@@ -321,14 +362,13 @@ fn slice_append_without_prealloc_findings(
                 prior.line < body_line.line
                     && prior.text.contains("make([]")
                     && prior.text.contains(&target)
+                    && (prior.text.contains("len(") || prior.text.contains("cap("))
             });
+            let known_bound_nearby = has_nearby_known_bound_loop(lines, body_line.line);
+            let target_seeded_as_empty =
+                has_target_seeded_as_empty_slice(lines, &target, body_line.line);
             if !has_prealloc && !reuses_existing_capacity {
-                let has_range_bound = lines.iter().any(|prior| {
-                    prior.line < body_line.line
-                        && prior.text.contains("range ")
-                        && prior.text.contains("for ")
-                });
-                if has_range_bound {
+                if known_bound_nearby && target_seeded_as_empty {
                     findings.push(Finding {
                         rule_id: "slice_append_without_prealloc_known_bound".to_string(),
                         severity: Severity::Info,
@@ -351,6 +391,29 @@ fn slice_append_without_prealloc_findings(
     }
 
     findings
+}
+
+fn has_nearby_known_bound_loop(lines: &[BodyLine], line: usize) -> bool {
+    lines.iter().any(|prior| {
+        prior.line < line
+            && line - prior.line <= 8
+            && prior.text.contains("for ")
+            && prior.text.contains("len(")
+    })
+}
+
+fn has_target_seeded_as_empty_slice(lines: &[BodyLine], target: &str, line: usize) -> bool {
+    let var_decl = format!("var {target} []");
+    let empty_lit = format!("{target} := []");
+    let make_no_cap = format!("{target} := make([]");
+    lines.iter().any(|prior| {
+        prior.line < line
+            && (prior.text.contains(&var_decl)
+                || prior.text.contains(&empty_lit)
+                || (prior.text.contains(&make_no_cap)
+                    && !prior.text.contains("len(")
+                    && !prior.text.contains("cap(")))
+    })
 }
 
 fn append_reuses_existing_slice_capacity(

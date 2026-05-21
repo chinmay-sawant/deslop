@@ -24,6 +24,44 @@ fn contains_any(text: &str, needles: &[&str]) -> bool {
     needles.iter().any(|needle| text.contains(needle))
 }
 
+fn repeated_contextmanager_pattern(body: &str) -> bool {
+    let mut contexts = Vec::new();
+    for line in body.lines() {
+        let trimmed = line.trim_start();
+        if !(trimmed.starts_with("with ") || trimmed.starts_with("async with ")) {
+            continue;
+        }
+        let raw = trimmed
+            .trim_start_matches("async ")
+            .trim_start_matches("with ")
+            .split(" as ")
+            .next()
+            .unwrap_or_default()
+            .trim_end_matches(':')
+            .trim();
+        if !raw.is_empty() {
+            contexts.push(raw.to_ascii_lowercase());
+        }
+    }
+    if contexts.len() < 2 {
+        return false;
+    }
+
+    // Look for repeated manager family usage instead of unrelated one-offs.
+    let mut families = std::collections::BTreeMap::<String, usize>::new();
+    for context in contexts {
+        let family = context
+            .split(|ch: char| !ch.is_ascii_alphanumeric() && ch != '_' && ch != '.')
+            .find(|part| !part.is_empty())
+            .unwrap_or_default()
+            .to_string();
+        if !family.is_empty() {
+            *families.entry(family).or_default() += 1;
+        }
+    }
+    families.values().any(|count| *count >= 2)
+}
+
 fn maintainability_finding(
     file: &ParsedFile,
     function: &ParsedFunction,
@@ -146,7 +184,7 @@ pub(super) fn project_agnostic_maintainability_findings(
         ));
     }
 
-    if body.matches("with ").count() >= 2
+    if repeated_contextmanager_pattern(body)
         && contains_any(&lower_body, &["open(", "lock", "session"])
     {
         findings.push(maintainability_finding(
@@ -204,9 +242,36 @@ pub(super) fn project_agnostic_maintainability_findings(
         ));
     }
 
-    if contains_any(&lower_body, &["cache", "memo"])
-        && !contains_any(&lower_body, &["ttl", "maxsize", "evict", "lru"])
-    {
+    let cache_declared = lower_body
+        .lines()
+        .any(|line| line.contains("cache") && line.contains('=') && (line.contains("{}") || line.contains("dict(")));
+    let cache_mutated = contains_any(
+        &lower_body,
+        &[
+            "cache[",
+            ".setdefault(",
+            ".get(",
+            "memo[",
+            "memoize",
+            "memo[",
+        ],
+    );
+    let policy_signaled = contains_any(
+        &lower_body,
+        &["ttl", "maxsize", "evict", "lru", "expires", "capacity", "bounded"],
+    ) || function
+        .doc_comment
+        .as_deref()
+        .map(|doc| {
+            let doc_lc = doc.to_ascii_lowercase();
+            contains_any(
+                &doc_lc,
+                &["ttl", "maxsize", "evict", "lru", "expires", "capacity", "bounded"],
+            )
+        })
+        .unwrap_or(false);
+
+    if cache_declared && cache_mutated && !policy_signaled {
         findings.push(maintainability_finding(
             file,
             function,

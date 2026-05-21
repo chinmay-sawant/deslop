@@ -1,5 +1,7 @@
 package rulefixtures
 
+import "testing"
+
 // scenario for allocation_churn_in_loop: Obvious make, new, or buffer-construction calls inside loops.
 // fixture polarity: negative; family: performance; severity: contextual.
 type Rule437NegativeRecord struct {
@@ -14,4 +16,11 @@ func scenario437Negative(records []Rule437NegativeRecord) int {
 		total += record.ID + len(record.Values)
 	}
 	return total
+}
+
+func benchmarkScenario437Negative(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		tmp := make([]byte, 0, 64)
+		_ = append(tmp, byte(i%26))
+	}
 }

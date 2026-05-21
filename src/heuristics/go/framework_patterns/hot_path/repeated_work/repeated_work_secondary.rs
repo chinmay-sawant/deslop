@@ -95,6 +95,9 @@ fn stable_value_normalization_findings(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let mut seen_by_argument: std::collections::BTreeMap<String, Vec<(usize, &str)>> =
+        std::collections::BTreeMap::new();
+    let loop_variant_receivers = loop_receiver_bindings(lines);
 
     let normalization_markers: Vec<(String, &str)> = import_aliases_for(file, "strings")
         .into_iter()
@@ -127,36 +130,84 @@ fn stable_value_normalization_findings(
             if body_line.text.contains(marker)
                 && let Some(argument) = first_argument_after_marker_simple(&body_line.text, marker)
                 && simple_local_binding(&argument).is_some()
+                && !argument_depends_on_loop_receiver(&argument, &loop_variant_receivers)
                 && !lines
                     .iter()
                     .any(|other| other.in_loop && other.text.contains(&format!("{argument} =")))
             {
-                findings.push(Finding {
-                    rule_id: "stable_value_normalization_in_inner_loop".to_string(),
-                    severity: Severity::Info,
-                    path: file.path.clone(),
-                    function_name: Some(function.fingerprint.name.clone()),
-                    start_line: body_line.line,
-                    end_line: body_line.line,
-                    message: format!(
-                        "function {} normalizes a stable value inside a loop",
-                        function.fingerprint.name
-                    ),
-                    evidence: vec![
-                        format!(
-                            "{method}({argument}) observed inside a loop at line {}",
-                            body_line.line
-                        ),
-                        "normalizing an invariant value before the loop avoids repeated work"
-                            .to_string(),
-                    ],
-                });
+                seen_by_argument
+                    .entry(argument)
+                    .or_default()
+                    .push((body_line.line, *method));
                 break;
             }
         }
     }
 
+    for (argument, events) in seen_by_argument {
+        if events.len() < 2 {
+            continue;
+        }
+        let (line, method) = events[0];
+        findings.push(Finding {
+            rule_id: "stable_value_normalization_in_inner_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} normalizes a stable value inside a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("{method}({argument}) observed repeatedly in loop"),
+                format!("repetitions={}", events.len()),
+                "normalizing an invariant value before the loop avoids repeated work".to_string(),
+            ],
+        });
+    }
+
     findings
+}
+
+fn loop_receiver_bindings(lines: &[BodyLine]) -> std::collections::BTreeSet<String> {
+    let mut receivers = std::collections::BTreeSet::new();
+    for body_line in lines.iter().filter(|line| line.text.contains("for ")) {
+        let text = body_line.text.trim();
+        if let Some((left, right)) = text.split_once(":= range")
+            && right.contains('{')
+        {
+            for token in left.split(',') {
+                let name = token.trim().trim_start_matches("for ").trim();
+                if !name.is_empty() && name != "_" && is_identifier(name) {
+                    receivers.insert(name.to_string());
+                }
+            }
+        }
+    }
+    receivers
+}
+
+fn argument_depends_on_loop_receiver(
+    argument: &str,
+    loop_receivers: &std::collections::BTreeSet<String>,
+) -> bool {
+    if let Some((base, _)) = argument.split_once('.') {
+        return loop_receivers.contains(base.trim());
+    }
+    false
+}
+
+fn is_identifier(name: &str) -> bool {
+    let mut chars = name.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+    if !(first == '_' || first.is_ascii_alphabetic()) {
+        return false;
+    }
+    chars.all(|ch| ch == '_' || ch.is_ascii_alphanumeric())
 }
 
 fn bufio_missing_findings(

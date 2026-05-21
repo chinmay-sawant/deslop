@@ -597,8 +597,18 @@ fn dense_int_set_map(
     let mut findings = Vec::new();
     for bl in lines {
         let lower = bl.text.to_lowercase();
+        let has_dense_range_signal = lower.contains("0:")
+            || lower.contains("1:")
+            || lower.contains("2:")
+            || lower.contains("3:")
+            || lower.contains("4:")
+            || lower.contains("5:")
+            || lower.contains("for i :=")
+            || lower.contains("for idx :=")
+            || lower.contains("for n :=");
         if (bl.text.contains("map[int]bool") || bl.text.contains("map[int]struct{}"))
             && (lower.contains("seen") || lower.contains("set") || lower.contains("visited"))
+            && has_dense_range_signal
         {
             findings.push(Finding {
                 rule_id: "unnecessary_map_for_set_of_ints".into(),

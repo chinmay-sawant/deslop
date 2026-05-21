@@ -33,3 +33,12 @@ def generate_reports(users: list):
             "INSERT INTO reports (user_id, pdf_data) VALUES (?, ?)",
             pdf_data,
         )
+
+
+def load_template_then_process(records: list):
+    with open("/tmp/template.txt", "r", encoding="utf-8") as handle:
+        template = handle.read()
+    outputs = []
+    for record in records:
+        outputs.append(f"{template}:{record['id']}")
+    return outputs

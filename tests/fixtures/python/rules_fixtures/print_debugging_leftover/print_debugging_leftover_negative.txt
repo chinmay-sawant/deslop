@@ -20,6 +20,11 @@ def render_demo_table(rows):
         print("demo row:", row)
 
 
+def benchmark_report_generation(records):
+    for record in records:
+        print("bench:", record)
+
+
 def sync_inventory(products):
     for product in products:
         logger.info("Syncing %s", product["name"])

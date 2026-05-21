@@ -9,6 +9,15 @@ import (
 // fixture polarity: negative; family: performance; severity: contextual.
 type Rule591NegativeRecord struct { Name string `json:"name"`; Count int `json:"count"` }
 
-func scenario591Negative(writer io.Writer, value Rule591NegativeRecord) error {
-	return json.NewEncoder(writer).Encode(value)
+func scenario591Negative(stream io.Reader) (int, error) {
+	dec := json.NewDecoder(stream)
+	total := 0
+	for {
+		var rec Rule591NegativeRecord
+		if err := dec.Decode(&rec); err != nil {
+			if err == io.EOF { return total, nil }
+			return 0, err
+		}
+		total += rec.Count
+	}
 }

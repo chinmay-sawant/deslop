@@ -34,3 +34,9 @@ def fetch_record_detail(record_id: int) -> Optional[RecordDetail]:
 
 def get_config(key: str) -> str:
     return config_store.read(key)
+
+
+def benchmark_pick_shape(raw: str):
+    if raw:
+        return {"value": raw}
+    return (None, "empty")

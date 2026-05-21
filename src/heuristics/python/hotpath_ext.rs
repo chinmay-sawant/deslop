@@ -819,6 +819,35 @@ fn contains_any(text: &str, needles: &[&str]) -> bool {
     needles.iter().any(|needle| text.contains(needle))
 }
 
+fn has_blocking_io_inside_loop(body: &str) -> bool {
+    let blocking_markers = ["requests.get(", "httpx.get(", "open(", "subprocess.run("];
+    let lines = body.lines().collect::<Vec<_>>();
+    for (idx, line) in lines.iter().enumerate() {
+        let trimmed = line.trim_start();
+        if !trimmed.starts_with("for ") || !trimmed.ends_with(':') {
+            continue;
+        }
+        let indent = line.len() - trimmed.len();
+        for follow in lines.iter().skip(idx + 1).take(8) {
+            let follow_trimmed = follow.trim_start();
+            if follow_trimmed.is_empty() {
+                continue;
+            }
+            let follow_indent = follow.len() - follow_trimmed.len();
+            if follow_indent <= indent {
+                break;
+            }
+            if blocking_markers
+                .iter()
+                .any(|marker| follow_trimmed.contains(marker))
+            {
+                return true;
+            }
+        }
+    }
+    false
+}
+
 pub(super) fn project_agnostic_hotpath_ext_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
@@ -843,11 +872,7 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         evidence: vec![format!("function={}", function.fingerprint.name)],
     };
 
-    if contains_any(
-        body,
-        &["requests.get(", "httpx.get(", "open(", "subprocess.run("],
-    ) && lower_body.matches("for ").count() >= 1
-    {
+    if has_blocking_io_inside_loop(body) {
         findings.push(push(
             "blocking_io_call_executed_per_item_without_batching",
             format!(
@@ -869,9 +894,10 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if lower_body.matches("for ").count() >= 3
-        && contains_any(&lower_body, &["len(", "sorted(", ".lower()", "path("])
-        && function.fingerprint.line_count >= 15
+    if lower_body.matches("for ").count() >= 2
+        && lower_body.matches("for ").count() <= 4
+        && has_invariant_like_compute_inside_inner_loop(body)
+        && function.fingerprint.line_count >= 12
     {
         findings.push(push(
             "invariant_computation_not_hoisted_out_of_nested_loop",
@@ -1085,6 +1111,55 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
     }
 
     findings
+}
+
+fn has_invariant_like_compute_inside_inner_loop(body: &str) -> bool {
+    let expensive_markers = [
+        "math.sqrt(",
+        ".lower().strip()",
+        ".strip().lower()",
+        "datetime.strptime(",
+        "re.compile(",
+    ];
+    let lines = body.lines().collect::<Vec<_>>();
+    for (idx, line) in lines.iter().enumerate() {
+        let trimmed = line.trim_start();
+        if !trimmed.starts_with("for ") {
+            continue;
+        }
+        let outer_indent = line.len() - trimmed.len();
+        let mut inner_indent: Option<usize> = None;
+        for next in lines.iter().skip(idx + 1) {
+            let next_trimmed = next.trim_start();
+            let next_indent = next.len() - next_trimmed.len();
+            if next_trimmed.starts_with("for ") && next_indent <= outer_indent {
+                break;
+            }
+            if inner_indent.is_none()
+                && next_trimmed.starts_with("for ")
+                && next_indent > outer_indent
+            {
+                inner_indent = Some(next_indent);
+                continue;
+            }
+            if let Some(current_inner_indent) = inner_indent {
+                if next_indent <= current_inner_indent {
+                    if next_trimmed.starts_with("for ") && next_indent > outer_indent {
+                        inner_indent = Some(next_indent);
+                        continue;
+                    }
+                    continue;
+                }
+                if expensive_markers
+                    .iter()
+                    .any(|marker| next_trimmed.contains(marker))
+                {
+                    return true;
+                }
+            }
+        }
+    }
+    false
 }
 
 fn has_expensive_per_item_logging(body: &str) -> bool {

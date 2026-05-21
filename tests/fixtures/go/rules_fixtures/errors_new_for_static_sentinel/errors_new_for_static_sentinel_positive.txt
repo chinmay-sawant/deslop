@@ -5,22 +5,14 @@ import "errors"
 // scenario for errors_new_for_static_sentinel: `errors.New("some error")` called repeatedly in hot paths instead of a package-level sentinel
 // fixture polarity: positive; family: performance; severity: info.
 
-var ErrTimeout = errors.New("operation timed out")
-var ErrUnavailable = errors.New("service unavailable")
-var ErrRateLimited = errors.New("rate limit exceeded")
-var ErrInvalidInput = errors.New("invalid input")
-
-func checkService() error {
-	return ErrTimeout
-}
-
-func connect() error {
-	return ErrUnavailable
-}
-
-func validate(data string) error {
-	if data == "" {
-		return ErrInvalidInput
+func processRequest(records []string) error {
+	for _, record := range records {
+		if record == "" {
+			return errors.New("invalid input")
+		}
+		if record == "timeout" {
+			return errors.New("operation timed out")
+		}
 	}
 	return nil
 }

@@ -33,3 +33,8 @@ def process_if_valid(data: dict):
 def sample_cleanup_probe(payload: dict) -> None:
     if not payload:
         return None
+
+
+def benchmark_cleanup_probe(payload: dict) -> None:
+    if payload.get("skip"):
+        return None

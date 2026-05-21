@@ -56,9 +56,31 @@ pub(super) fn repeated_string_literal_findings(file: &ParsedFile) -> Vec<Finding
         }
     }
 
+    let function_starts = file
+        .functions
+        .iter()
+        .map(|function| function.fingerprint.start_line)
+        .collect::<Vec<_>>();
+
     occurrences
         .into_iter()
-        .filter(|(_, lines)| lines.len() >= REPEATED_LITERAL_THRESHOLD)
+        .filter(|(_, lines)| {
+            if lines.len() < REPEATED_LITERAL_THRESHOLD {
+                return false;
+            }
+            let distinct_functions = lines
+                .iter()
+                .filter_map(|line| {
+                    function_starts
+                        .iter()
+                        .filter(|start| **start <= *line)
+                        .max()
+                        .copied()
+                })
+                .collect::<std::collections::BTreeSet<_>>()
+                .len();
+            distinct_functions >= 2 || lines.len() >= REPEATED_LITERAL_THRESHOLD + 1
+        })
         .map(|(value, mut lines)| {
             lines.sort_unstable();
             Finding {

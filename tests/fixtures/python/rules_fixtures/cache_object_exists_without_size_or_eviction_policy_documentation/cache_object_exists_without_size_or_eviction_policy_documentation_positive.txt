@@ -1,13 +1,6 @@
-import functools
-
 user_cache = {}
 product_cache = {}
 session_cache = {}
-
-
-@functools.lru_cache(maxsize=1000)
-def get_user(user_id: int):
-    return fetch_user_from_db(user_id)
 
 
 class ProductCatalog:

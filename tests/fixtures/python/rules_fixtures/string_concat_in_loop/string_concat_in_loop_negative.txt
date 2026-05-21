@@ -21,3 +21,10 @@ def format_messages(messages: list[dict]) -> str:
 def build_html_list(items: list[str]) -> str:
     html = "".join(f"<li>{item}</li>" for item in items)
     return f"<ul>{html}</ul>"
+
+
+def benchmark_string_builder(chunks: list[str]) -> str:
+    output = ""
+    for chunk in chunks:
+        output += chunk
+    return output

@@ -7,7 +7,24 @@ use super::super::performance_layers::{PerfLayerLanguage, performance_layer_find
 pub(crate) const BINDING_LOCATION: &str = file!();
 
 pub(crate) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    if path_lc.contains("/sampledata/")
+        || path_lc.contains("/testdata/")
+        || name_lc.starts_with("test")
+        || name_lc.starts_with("benchmark")
+        || name_lc.starts_with("example")
+    {
+        return Vec::new();
+    }
+
     let go = function.go_evidence();
+    let hot_signal = ["handler", "serve", "request", "process", "worker", "batch", "render"]
+        .iter()
+        .any(|marker| name_lc.contains(marker) || path_lc.contains(marker));
+    if go.alloc_loops.len() < 2 && !hot_signal {
+        return Vec::new();
+    }
 
     go.alloc_loops
         .iter()
@@ -95,6 +112,17 @@ pub(crate) fn reflect_findings(file: &ParsedFile, function: &ParsedFunction) -> 
 }
 
 pub(crate) fn concat_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    if path_lc.contains("/sampledata/")
+        || path_lc.contains("/testdata/")
+        || name_lc.starts_with("test")
+        || name_lc.starts_with("benchmark")
+        || name_lc.starts_with("example")
+    {
+        return Vec::new();
+    }
+
     let go = function.go_evidence();
 
     go.concat_loops

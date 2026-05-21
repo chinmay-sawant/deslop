@@ -10,3 +10,9 @@ def normalize_bytes(raw: bytes) -> bytes:
 
 def transform(data: bytes) -> bytes:
     return data.replace(b"old", b"new")
+
+
+def benchmark_decode_encode(raw: bytes) -> bytes:
+    text = raw.decode("utf-8")
+    normalized = text.strip().lower()
+    return normalized.encode("utf-8")

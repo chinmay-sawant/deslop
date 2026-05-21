@@ -123,7 +123,10 @@ fn scratch_container_churn_findings(
     let mut findings = Vec::new();
 
     for body_line in lines.iter().filter(|body_line| body_line.in_loop) {
-        if body_line.text.contains("make([]") {
+        if body_line.text.contains("make([]")
+            && line_has_stable_shape_make_slice(&body_line.text)
+            && !line_contains_capacity_hint_for_input_sized_data(&body_line.text)
+        {
             findings.push(Finding {
                 rule_id: "make_slice_inside_hot_loop_same_shape".to_string(),
                 severity: Severity::Info,
@@ -165,6 +168,21 @@ fn scratch_container_churn_findings(
     }
 
     findings
+}
+
+fn line_has_stable_shape_make_slice(line: &str) -> bool {
+    let lower = line.to_ascii_lowercase();
+    lower.contains("make([]")
+        && (lower.contains(", 0,")
+            || lower.contains(",0,")
+            || lower.contains("[]byte,")
+            || lower.contains("[]int,")
+            || lower.contains("[]string,"))
+}
+
+fn line_contains_capacity_hint_for_input_sized_data(line: &str) -> bool {
+    let lower = line.to_ascii_lowercase();
+    lower.contains("len(") || lower.contains("cap(")
 }
 
 fn repeated_slice_clone_findings(

@@ -13,7 +13,11 @@ pub(super) fn overlong_finding(file: &ParsedFile, function: &ParsedFunction) -> 
     }
 
     let token_count = identifier_token_count(&function.fingerprint.name);
-    if function.fingerprint.name.len() < 28 || token_count < 5 {
+    let name_len = function.fingerprint.name.len();
+    // Keep this rule focused on truly unwieldy names.
+    // We require either a very long identifier or many tokens.
+    let exceeds_threshold = name_len >= 44 || (name_len >= 36 && token_count >= 7);
+    if !exceeds_threshold {
         return None;
     }
 
@@ -104,6 +108,16 @@ pub(super) fn generic_finding(file: &ParsedFile, function: &ParsedFunction) -> O
 
 pub(super) fn weak_finding(file: &ParsedFile, function: &ParsedFunction) -> Option<Finding> {
     if !function.fingerprint.contains_any_type && !function.fingerprint.contains_empty_interface {
+        return None;
+    }
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    if path_lc.contains("/sampledata/")
+        || path_lc.contains("/testdata/")
+        || name_lc.starts_with("test")
+        || name_lc.starts_with("benchmark")
+        || name_lc.starts_with("example")
+    {
         return None;
     }
     if should_skip_python_weak_typing(file, function) {

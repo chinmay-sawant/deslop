@@ -543,13 +543,10 @@ fn logging_findings(
 
     // C5 error_logged_and_returned
     for (i, bl) in lines.iter().enumerate() {
-        if (bl.text.contains("log.Error(")
-            || bl.text.contains("logger.Error(")
-            || bl.text.contains(".Errorf("))
-            && bl.text.contains("err")
+        if is_error_logging_line(&bl.text)
         {
             for next in lines.iter().skip(i + 1).take(3) {
-                if next.text.starts_with("return") && next.text.contains("err") {
+                if returns_error_binding(&next.text) {
                     findings.push(Finding {
                         rule_id: "error_logged_and_returned".into(),
                         severity: Severity::Info,
@@ -573,6 +570,23 @@ fn logging_findings(
     }
 
     findings
+}
+
+fn is_error_logging_line(text: &str) -> bool {
+    let log_like = text.contains("log.Printf(")
+        || text.contains("log.Println(")
+        || text.contains("log.Error(")
+        || text.contains("logger.Error(")
+        || text.contains("logger.Errorf(")
+        || text.contains("slog.Error(");
+    log_like && text.contains("err")
+}
+
+fn returns_error_binding(text: &str) -> bool {
+    let trimmed = text.trim_start();
+    trimmed.starts_with("return")
+        && trimmed.contains("err")
+        && !trimmed.ends_with("nil")
 }
 
 // ── Section D — Config And CLI ──

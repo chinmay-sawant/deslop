@@ -9,9 +9,15 @@ type Rule502NegativeRecord struct {
 }
 
 func scenario502Negative(records []Rule502NegativeRecord) int {
+	index := make(map[int]Rule502NegativeRecord, len(records))
+	for _, record := range records {
+		index[record.ID] = record
+	}
 	total := 0
 	for _, record := range records {
-		total += record.ID + len(record.Values)
+		if matched, ok := index[record.ID]; ok {
+			total += matched.ID + len(matched.Values)
+		}
 	}
 	return total
 }

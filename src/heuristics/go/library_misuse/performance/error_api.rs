@@ -113,14 +113,22 @@ fn errors_new_hot_path(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    let hot_path_signal = ["handle", "serve", "request", "process", "render", "route"]
+        .iter()
+        .any(|marker| name_lc.contains(marker));
     for alias in import_aliases_for(file, "errors") {
         let mut error_new_lines: Vec<usize> = Vec::new();
+        let mut loop_lines: Vec<usize> = Vec::new();
         for bl in lines {
             if bl.text.contains(&format!("{alias}.New(\"")) {
                 error_new_lines.push(bl.line);
+                if bl.in_loop {
+                    loop_lines.push(bl.line);
+                }
             }
         }
-        if error_new_lines.len() >= 2 {
+        if error_new_lines.len() >= 2 && (!loop_lines.is_empty() || hot_path_signal) {
             findings.push(Finding {
                 rule_id: "errors_new_for_static_sentinel".into(),
                 severity: Severity::Info,
@@ -137,6 +145,11 @@ fn errors_new_hot_path(
                         "{}.New called at lines {}",
                         alias,
                         join_lines(&error_new_lines)
+                    ),
+                    format!(
+                        "loop_lines={} hot_path_signal={}",
+                        loop_lines.len(),
+                        hot_path_signal
                     ),
                     "package-level sentinel errors avoid repeated allocations".into(),
                 ],

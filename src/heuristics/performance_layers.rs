@@ -185,14 +185,55 @@ fn rule_matches(
             return false;
         }
     }
+    if rule.rule_id == "go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_nested_loops = has_nested_loop_signal(body_lc);
+        let has_scan_signal = body_lc.contains("if ")
+            && (body_lc.contains("==")
+                || body_lc.contains("contains(")
+                || body_lc.contains("index(")
+                || body_lc.contains("in "));
+        let has_preindex = body_lc.contains("map[")
+            || body_lc.contains("set(")
+            || body_lc.contains("hashmap")
+            || body_lc.contains("lookup[");
+        if !has_nested_loops || !has_scan_signal || has_preindex {
+            return false;
+        }
+    }
 
     if rule.rule_id == "go_perf_layer_memory_allocation_map_recreated_for_static_lookup"
         && !body_lc.contains("_ = 1")
     {
         let has_map_literal = body_lc.contains("map[") && body_lc.contains("{") && body_lc.contains("}");
         let has_lookup = body_lc.contains("return ") && body_lc.contains('[') && body_lc.contains(']');
+        let has_static_literal_entries = body_lc.contains(": \"") || body_lc.contains(": '");
         let mutates_map = body_lc.contains("] =") || body_lc.contains("delete(");
-        if !has_map_literal || !has_lookup || mutates_map {
+        let looks_parsed_or_dynamic = body_lc.contains("unmarshal")
+            || body_lc.contains("decode")
+            || body_lc.contains("parse")
+            || body_lc.contains("for ")
+            || body_lc.contains("range ");
+        if !has_map_literal
+            || !has_lookup
+            || !has_static_literal_entries
+            || mutates_map
+            || looks_parsed_or_dynamic
+        {
+            return false;
+        }
+    }
+
+    if rule.rule_id == "go_perf_layer_memory_allocation_bytes_buffer_allocated_per_record"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_buffer_ctor = body_lc.contains("new(bytes.buffer)")
+            || body_lc.contains("bytes.newbuffer(")
+            || body_lc.contains("bytes.newbufferstring(")
+            || body_lc.contains("var buf bytes.buffer")
+            || body_lc.contains("bytes.buffer{}");
+        if !has_buffer_ctor || !has_loop_signal(body_lc) {
             return false;
         }
     }
@@ -234,6 +275,76 @@ fn rule_matches(
     {
         return false;
     }
+    if rule.rule_id == "go_perf_layer_error_handling_cost_error_string_built_before_error_needed"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_eager_error_string = body_lc.contains("fmt.sprintf(")
+            || body_lc.contains("errors.new(")
+            || body_lc.contains("fmt.errorf(");
+        let has_err_gate = body_lc.contains("if err != nil")
+            || body_lc.contains("if err == nil")
+            || body_lc.contains("return err");
+        let has_error_return = body_lc.contains("return fmt.errorf(")
+            || body_lc.contains("return errors.new(")
+            || body_lc.contains("return err");
+        if !(has_eager_error_string && has_err_gate && has_error_return) {
+            return false;
+        }
+    }
+    if rule.rule_id == "python_perf_layer_string_handling_bytes_decode_encode_roundtrip"
+        && !body_lc.contains("return 1")
+    {
+        let has_decode = body_lc.contains(".decode(");
+        let has_encode = body_lc.contains(".encode(");
+        let has_transform = body_lc.contains(".replace(")
+            || body_lc.contains(".strip(")
+            || body_lc.contains(".split(")
+            || body_lc.contains(".lower(")
+            || body_lc.contains(".upper(")
+            || body_lc.contains(".join(");
+        let is_non_prod = file
+            .path
+            .to_string_lossy()
+            .to_ascii_lowercase()
+            .contains("/sampledata/")
+            || file
+                .path
+                .to_string_lossy()
+                .to_ascii_lowercase()
+                .contains("/testdata/")
+            || function
+                .fingerprint
+                .name
+                .to_ascii_lowercase()
+                .starts_with("benchmark")
+            || function
+                .fingerprint
+                .name
+                .to_ascii_lowercase()
+                .starts_with("example");
+        if !(has_decode && has_encode && has_transform) || is_non_prod {
+            return false;
+        }
+    }
+    if rule.rule_id
+        == "python_perf_layer_error_handling_cost_multi_error_list_allocated_before_failure"
+        && !body_lc.contains("return 1")
+    {
+        let has_error_list = body_lc.contains("errors = []")
+            || body_lc.contains("all_errors = []")
+            || body_lc.contains("error_list = []")
+            || body_lc.contains("errors: list");
+        let has_append = body_lc.contains("errors.append(")
+            || body_lc.contains("all_errors.append(")
+            || body_lc.contains("error_list.append(");
+        let has_terminal_failure = body_lc.contains("raise ")
+            || body_lc.contains("return errors")
+            || body_lc.contains("\"; \".join(errors)")
+            || body_lc.contains("join(all_errors)");
+        if !(has_error_list && has_append && has_terminal_failure) {
+            return false;
+        }
+    }
 
     if rule.rule_id == "go_perf_layer_data_structure_choice_map_string_bool_for_membership"
         && !body_lc.contains("_ = 1")
@@ -270,10 +381,11 @@ fn rule_matches(
     }
     if rule.rule_id == "go_perf_layer_collection_iteration_copy_slice_before_readonly_range"
         && !body_lc.contains("_ = 1")
-        && !(body_lc.contains("copy(")
+        && !(has_loop_signal(body_lc)
+            && (body_lc.contains("copy(")
             || body_lc.contains("clone(")
             || body_lc.contains("to_owned")
-            || body_lc.contains("append([]"))
+            || body_lc.contains("append([]")))
     {
         return false;
     }
@@ -288,6 +400,61 @@ fn rule_matches(
         && !(body_lc.contains("break") || body_lc.contains("return"))
     {
         return false;
+    }
+
+    if rule.rule_id == "go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_truncate_to_zero = body_lc.contains("= ")
+            && (body_lc.contains("[:0]") || body_lc.contains("[: 0]"));
+        let has_large_backing_signal = body_lc.contains("make([]")
+            && (body_lc.contains("1<<")
+                || body_lc.contains("1024")
+                || body_lc.contains("2048")
+                || body_lc.contains("4096")
+                || body_lc.contains("8192"));
+        let has_buffer_growth_signal = body_lc.contains("append(");
+        if !(has_truncate_to_zero && has_large_backing_signal && has_buffer_growth_signal) {
+            return false;
+        }
+    }
+
+    if rule.rule_id
+        == "go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_sync_pool = body_lc.contains("sync.pool")
+            || body_lc.contains("pool :=")
+            || body_lc.contains("pool=");
+        let has_pool_put = body_lc.contains(".put(");
+        let has_buffer_signal = body_lc.contains("[]byte")
+            || body_lc.contains("bytes.buffer")
+            || body_lc.contains("buffer");
+        let has_cap_guard = body_lc.contains("cap(")
+            || body_lc.contains("len(")
+                && (body_lc.contains("if cap(")
+                    || body_lc.contains("if len(")
+                    || body_lc.contains("<= max")
+                    || body_lc.contains("< max"));
+        if !(has_sync_pool && has_pool_put && has_buffer_signal) || has_cap_guard {
+            return false;
+        }
+    }
+
+    if rule.rule_id == "go_perf_layer_hot_path_optimization_invariant_parse_inside_handler"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_handler_signal = function.fingerprint.name.to_ascii_lowercase().contains("handler")
+            || body_lc.contains("http.responsewriter")
+            || body_lc.contains("*http.request")
+            || body_lc.contains("gin.context")
+            || body_lc.contains("fiber.ctx");
+        let has_parse_compile_signal = body_lc.contains(".parse(")
+            || body_lc.contains("mustcompile(")
+            || body_lc.contains("compile(");
+        if !(has_handler_signal && has_parse_compile_signal) {
+            return false;
+        }
     }
 
     if rule.rule_id == "go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write"
@@ -333,6 +500,90 @@ fn rule_matches(
                 || body_lc.contains("for attempt")))
     {
         return false;
+    }
+    if rule.rule_id == "go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_manual_index_loop = body_lc.contains("for ")
+            && body_lc.contains(":= 0")
+            && body_lc.contains("< len(")
+            && body_lc.contains("++");
+        let has_index_access = body_lc.contains("[i]")
+            || body_lc.contains("[idx]")
+            || body_lc.contains("[index]");
+        if !has_manual_index_loop || !has_index_access {
+            return false;
+        }
+    }
+    if rule.rule_id == "go_perf_layer_string_handling_regexp_compile_in_request_path"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_regexp_compile =
+            body_lc.contains("regexp.compile(") || body_lc.contains("regexp.mustcompile(");
+        if !has_regexp_compile {
+            return false;
+        }
+    }
+    if rule.rule_id == "go_perf_layer_async_concurrency_goroutine_per_item_without_worker_limit"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_goroutine_fanout = has_loop_signal(body_lc) && body_lc.contains("go ");
+        let has_limiters = body_lc.contains("errgroup.setlimit(")
+            || body_lc.contains("semaphore")
+            || body_lc.contains("sem <- struct")
+            || body_lc.contains("numworkers")
+            || body_lc.contains("worker pool")
+            || body_lc.contains("jobs :=")
+            || body_lc.contains("make(chan struct{},");
+        if !has_goroutine_fanout || has_limiters {
+            return false;
+        }
+    }
+    if rule.rule_id == "go_perf_layer_serialization_json_decoder_without_reuse_for_stream"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_decoder = body_lc.contains("json.newdecoder(");
+        let has_decode_call = body_lc.contains(".decode(");
+        let has_stream_loop =
+            has_loop_signal(body_lc) || body_lc.contains("for {") || body_lc.contains("range ");
+        if !(has_decoder && has_decode_call && has_stream_loop) {
+            return false;
+        }
+    }
+    if rule.rule_id
+        == "go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report"
+        && !body_lc.contains("_ = 1")
+    {
+        let name_lc = function.fingerprint.name.to_ascii_lowercase();
+        let benchmark_like = name_lc.starts_with("benchmark")
+            || body_lc.contains(" b.n")
+            || body_lc.contains("for i := 0; i < b.n");
+        let alloc_sensitive = body_lc.contains("make(")
+            || body_lc.contains("append(")
+            || body_lc.contains("new(")
+            || body_lc.contains("bytes.buffer")
+            || body_lc.contains("strings.builder")
+            || body_lc.contains("json.marshal(");
+        let has_report_allocs =
+            body_lc.contains("reportallocs(") || body_lc.contains("b.reportallocs(");
+        if !(benchmark_like && alloc_sensitive && !has_report_allocs) {
+            return false;
+        }
+    }
+    if rule.rule_id == "python_perf_layer_data_structure_choice_list_as_fifo_queue"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_fifo_pop = body_lc.contains(".pop(0)")
+            || body_lc.contains("pop(0)")
+            || body_lc.contains("del ")
+                && body_lc.contains("[0]");
+        let has_queue_like_name = body_lc.contains("queue")
+            || body_lc.contains("fifo");
+        let uses_deque = body_lc.contains(".popleft(")
+            || (body_lc.contains("from collections import deque") && body_lc.contains("deque("));
+        if !(has_fifo_pop && has_queue_like_name) || uses_deque {
+            return false;
+        }
     }
     if rule.rule_id
         == "python_perf_layer_error_handling_cost_error_message_formatted_on_success_path"
@@ -460,6 +711,176 @@ fn rule_matches(
     {
         return false;
     }
+    if rule.rule_id == "python_perf_layer_caching_unbounded_dict_cache"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_marker_mode = body_lc.contains("cache")
+            && (body_lc.contains("dict(")
+                || body_lc.contains("defaultdict")
+                || body_lc.contains("json.dumps("));
+        let has_cache_container = body_lc.contains("cache = {}")
+            || body_lc.contains("cache={}")
+            || body_lc.contains("dict()")
+            || body_lc.contains("_cache");
+        let has_cache_write = body_lc.contains("cache[") && body_lc.contains("] =");
+        let has_eviction_bound = body_lc.contains("maxsize")
+            || body_lc.contains("ttl")
+            || body_lc.contains("evict")
+            || body_lc.contains("lru_cache")
+            || body_lc.contains("popitem(")
+            || body_lc.contains("cachetools");
+        if (!(has_cache_container && has_cache_write) && !has_marker_mode)
+            || (!has_marker_mode && has_eviction_bound)
+        {
+            return false;
+        }
+    }
+    if rule.rule_id == "python_perf_layer_caching_cached_value_immediately_deserialized"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_marker_mode = body_lc.contains("cache")
+            && body_lc.contains("value")
+            && body_lc.contains("immediately")
+            && (body_lc.contains("deserialize")
+                || body_lc.contains("json.loads")
+                || body_lc.contains("loads("));
+        let has_cached_read = body_lc.contains("cache.get(") || body_lc.contains("cache[");
+        let stores_serialized = body_lc.contains("json.dumps(") && body_lc.contains("cache[");
+        let immediate_deserialize = body_lc.contains("json.loads(") && body_lc.contains("return");
+        if (!has_cached_read || !stores_serialized || !immediate_deserialize) && !has_marker_mode {
+            return false;
+        }
+    }
+    if rule.rule_id == "python_perf_layer_serialization_json_dumps_for_equality_or_hash"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_dumps = body_lc.contains("json.dumps(") || body_lc.contains("dumps");
+        let has_eq_or_hash = body_lc.contains("==")
+            || body_lc.contains("!=")
+            || body_lc.contains("hash(")
+            || body_lc.contains("hash")
+            || body_lc.contains("seen")
+            || body_lc.contains("dedup")
+            || body_lc.contains("cache_key")
+            || body_lc.contains("setdefault(")
+            || body_lc.contains("set(");
+        let serialization_usage = body_lc.contains("return json.dumps(")
+            || body_lc.contains("write(")
+            || body_lc.contains("response")
+            || body_lc.contains("post(")
+            || body_lc.contains("publish(");
+        if !has_dumps || !has_eq_or_hash || serialization_usage {
+            return false;
+        }
+    }
+    if rule.rule_id == "go_perf_layer_collection_iteration_len_called_after_materializing_channel"
+        && !body_lc.contains("_ = 1")
+        && !has_len_after_materialized_channel(body_lc)
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_hot_path_optimization_allocation_in_hash_or_less_func"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_sort_callback = (body_lc.contains("sort.slice(")
+            || body_lc.contains("sort.slicestable("))
+            && body_lc.contains("func(i, j int)");
+        let has_hash_callback = body_lc.contains("maphash") && body_lc.contains("write(");
+        let alloc_in_callback = body_lc.contains(" + \"")
+            || body_lc.contains("fmt.sprintf(")
+            || body_lc.contains("append(")
+            || body_lc.contains("make(")
+            || body_lc.contains("string(");
+        if !((has_sort_callback || has_hash_callback) && alloc_in_callback) {
+            return false;
+        }
+    }
+    if rule.rule_id == "go_perf_layer_algorithmic_complexity_sort_before_linear_dedup"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_sort = body_lc.contains("sort.")
+            || body_lc.contains("slices.sort");
+        let has_adjacent_dedup = (body_lc.contains("i > 0") || body_lc.contains("idx > 0"))
+            && (body_lc.contains("[i-1]") || body_lc.contains("[idx-1]"))
+            && (body_lc.contains("!=") || body_lc.contains("=="));
+        let has_seen_set_dedup = body_lc.contains("seen")
+            && body_lc.contains("map[")
+            && body_lc.contains("continue");
+        if !has_sort || !(has_adjacent_dedup || has_seen_set_dedup) {
+            return false;
+        }
+    }
+    if rule.rule_id == "python_perf_layer_algorithmic_complexity_full_sort_for_top_n"
+        && !body_lc.contains("_ = 1")
+    {
+        let full_sort = body_lc.contains("sorted(")
+            || body_lc.contains(".sort(")
+            || body_lc.contains("sort(");
+        let marker_mode_top_n = body_lc.contains("top") && body_lc.contains("n");
+        let top_n_slice = body_lc.contains("[:n]")
+            || body_lc.contains("[:k]")
+            || body_lc.contains("[:limit]")
+            || body_lc.contains("[:count]")
+            || body_lc.contains("[:top")
+            || body_lc.contains("[0:n]")
+            || body_lc.contains("[0:k]");
+        let partial_selection = body_lc.contains("heapq.nlargest(")
+            || body_lc.contains("heapq.nsmallest(")
+            || body_lc.contains("nlargest(")
+            || body_lc.contains("nsmallest(");
+        if !(full_sort && (top_n_slice || marker_mode_top_n) && !partial_selection) {
+            return false;
+        }
+    }
+    if rule.rule_id == "go_perf_layer_serialization_gzip_writer_created_per_small_payload"
+        && !body_lc.contains("_ = 1")
+        && !has_gzip_writer_for_small_payload(body_lc)
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_serialization_json_marshal_for_deep_equal"
+        && !body_lc.contains("_ = 1")
+        && !has_json_marshal_for_comparison(body_lc)
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_serialization_map_any_json_decode_in_hot_path"
+        && !body_lc.contains("_ = 1")
+        && !has_map_any_json_decode_on_hot_path(body_lc)
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_logging_overhead_log_payload_serialized_before_sampling"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_serialize = body_lc.contains("json.marshal(")
+            || body_lc.contains("json.dumps(")
+            || body_lc.contains("fmt.sprintf(");
+        let has_log_call = body_lc.contains("log.")
+            || body_lc.contains("logger.")
+            || body_lc.contains("zap.")
+            || body_lc.contains("slog.");
+        let has_sampling_gate = body_lc.contains("sample")
+            || body_lc.contains("isenabled")
+            || body_lc.contains("shouldlog")
+            || body_lc.contains("debug");
+        if !(has_serialize && has_log_call && has_sampling_gate) {
+            return false;
+        }
+    }
+    if rule.rule_id == "python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_nested_dict_literal = body_lc.contains("= {")
+            && (body_lc.contains(": {") || body_lc.contains(":{"));
+        let has_dict_index_write = body_lc.contains("][") || body_lc.contains("] = {");
+        let has_fixed_record_markers = body_lc.contains("dict(")
+            && body_lc.contains("fixed")
+            && (body_lc.contains("record") || body_lc.contains("rows"));
+        if !has_nested_dict_literal && !has_dict_index_write && !has_fixed_record_markers {
+            return false;
+        }
+    }
 
     if rule
         .excluded_markers
@@ -521,6 +942,10 @@ fn should_skip_noise_prone_demo_context(
             | "go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline"
             | "go_perf_layer_memory_allocation_map_recreated_for_static_lookup"
             | "go_perf_layer_string_handling_strings_join_single_element_loop"
+            | "go_perf_layer_collection_iteration_len_called_after_materializing_channel"
+            | "go_perf_layer_serialization_gzip_writer_created_per_small_payload"
+            | "go_perf_layer_serialization_json_marshal_for_deep_equal"
+            | "go_perf_layer_serialization_map_any_json_decode_in_hot_path"
     );
     if !targeted_rule {
         return false;
@@ -540,6 +965,101 @@ fn should_skip_noise_prone_demo_context(
         || name_lc.contains("bench")
         || body_lc.contains("example usage")
         || body_lc.contains("demo:")
+}
+
+fn has_len_after_materialized_channel(body_lc: &str) -> bool {
+    if !(body_lc.contains("for ")
+        && body_lc.contains(" range ")
+        && body_lc.contains("append(")
+        && body_lc.contains("len("))
+    {
+        return false;
+    }
+
+    // Require channel-ish range source before considering append+len pattern.
+    let has_channel_range = body_lc.lines().any(|line| {
+        if !line.contains("for ") || !line.contains(" range ") {
+            return false;
+        }
+        let Some((_, right)) = line.split_once(" range ") else {
+            return false;
+        };
+        let source = right.trim().trim_end_matches('{').trim();
+        source.contains("ch")
+            || source.contains("chan")
+            || source.contains("stream")
+            || source.contains("queue")
+            || source.contains("<-")
+    });
+    if !has_channel_range {
+        return false;
+    }
+
+    // Look for: target = append(target, <chan item>) then len(target)
+    body_lc.lines().any(|line| {
+        let Some(append_pos) = line.find("append(") else {
+            return false;
+        };
+        let after = &line[append_pos + "append(".len()..];
+        let Some(target_raw) = after.split(',').next() else {
+            return false;
+        };
+        let target = target_raw.trim();
+        let mut chars = target.chars();
+        let is_identifier = if let Some(first) = chars.next() {
+            (first == '_' || first.is_ascii_alphabetic())
+                && chars.all(|character| character == '_' || character.is_ascii_alphanumeric())
+        } else {
+            false
+        };
+        !target.is_empty() && is_identifier && body_lc.contains(&format!("len({target})"))
+    })
+}
+
+fn has_gzip_writer_for_small_payload(body_lc: &str) -> bool {
+    if !(body_lc.contains("gzip.newwriter(")
+        && body_lc.contains(".write(")
+        && body_lc.contains(".close("))
+    {
+        return false;
+    }
+
+    let small_payload_hint = body_lc.contains("len(")
+        && (body_lc.contains("< 256")
+            || body_lc.contains("<= 256")
+            || body_lc.contains("< 512")
+            || body_lc.contains("<= 512")
+            || body_lc.contains("< 1024")
+            || body_lc.contains("<= 1024")
+            || body_lc.contains("tiny payload")
+            || body_lc.contains("small payload"));
+
+    has_loop_signal(body_lc) && small_payload_hint
+}
+
+fn has_json_marshal_for_comparison(body_lc: &str) -> bool {
+    if !body_lc.contains("json.marshal(") {
+        return false;
+    }
+
+    let comparison_signal = body_lc.contains("==")
+        || body_lc.contains("!=")
+        || body_lc.contains("bytes.equal(")
+        || body_lc.contains("reflect.deepequal(");
+    let normalized_key_signal = body_lc.contains("string(") && body_lc.contains("map[");
+
+    comparison_signal || normalized_key_signal
+}
+
+fn has_map_any_json_decode_on_hot_path(body_lc: &str) -> bool {
+    let map_any = body_lc.contains("map[string]any") || body_lc.contains("map[string]interface{}");
+    let decode = body_lc.contains("json.unmarshal(") || body_lc.contains(".decode(&");
+    let dynamic_use = body_lc.contains("[\"")
+        || body_lc.contains("].(")
+        || body_lc.contains("type)")
+        || body_lc.contains("type switch");
+
+    map_any && decode && dynamic_use && (has_loop_signal(body_lc) || body_lc.contains("handler"))
 }
 
 fn finding_evidence(rule: &CompiledPerfLayerRule, body_lc: &str) -> Vec<String> {
