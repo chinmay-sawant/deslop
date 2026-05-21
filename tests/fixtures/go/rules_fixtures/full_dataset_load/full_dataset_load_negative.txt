@@ -2,16 +2,11 @@ package rulefixtures
 
 // scenario for full_dataset_load: Calls that load an entire payload into memory instead of streaming.
 // fixture polarity: negative; family: performance; severity: info.
-type Rule498NegativeRecord struct {
-	ID int
-	Name string
-	Values []string
-}
-
-func scenario498Negative(records []Rule498NegativeRecord) int {
+func scenario498Negative(chunks [][]byte) int {
 	total := 0
-	for _, record := range records {
-		total += record.ID + len(record.Values)
+	for _, chunk := range chunks {
+		// Process already-streamed chunks incrementally.
+		total += len(chunk)
 	}
 	return total
 }

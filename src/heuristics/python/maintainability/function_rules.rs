@@ -4,8 +4,9 @@ use crate::model::{Finding, Severity};
 use super::helpers::{
     collect_branch_literals, count_prefixed_lines, has_validation_markers, http_boundary_calls,
     is_env_lookup_line, is_input_boundary, is_magic_literal, is_policy_literal,
-    looks_like_boundary_context, looks_like_business_context, looks_like_hardcoded_path,
-    looks_like_startup_context, should_skip_print_rule,
+    is_sample_demo_smoke_integration_context, looks_like_boundary_context,
+    looks_like_business_context, looks_like_hardcoded_path, looks_like_startup_context,
+    should_skip_print_rule,
 };
 
 pub(crate) fn exception_swallowed_findings(
@@ -73,7 +74,10 @@ pub(crate) fn print_debugging_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.is_test_function || should_skip_print_rule(file, function) {
+    if function.is_test_function
+        || should_skip_print_rule(file, function)
+        || is_sample_demo_smoke_integration_context(file, function)
+    {
         return Vec::new();
     }
 
@@ -163,7 +167,7 @@ pub(crate) fn redundant_return_none_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.is_test_function {
+    if function.is_test_function || is_sample_demo_smoke_integration_context(file, function) {
         return Vec::new();
     }
     if function.fingerprint.name.starts_with("_safe_") {
@@ -548,7 +552,7 @@ pub(crate) fn broad_exception_handler_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.is_test_function {
+    if function.is_test_function || is_sample_demo_smoke_integration_context(file, function) {
         return Vec::new();
     }
 
@@ -630,10 +634,14 @@ pub(crate) fn missing_context_manager_findings(
 
 pub(crate) fn api_type_hint_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let python = function.python_evidence();
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
 
     if function.is_test_function
         || function.fingerprint.name.starts_with('_')
         || python.has_complete_type_hints
+        || path_lc.contains("/sampledata/")
+        || path_lc.contains("/examples/")
+        || path_lc.contains("/scripts/")
     {
         return Vec::new();
     }

@@ -1,22 +1,9 @@
 package rulefixtures
 
-import "fmt"
-
-// scenario for go_perf_layer_data_structure_choice_interface_map_for_typed_values: Layer: Data structure choice. Flag map[string]any used for homogeneous hot-path values where typed structs avoid assertions.
+// scenario for go_perf_layer_data_structure_choice_interface_map_for_typed_values: Layer: Data structure choice. Flag map[string]any used for typed internal values.
 // fixture polarity: positive; family: performance; severity: contextual.
-type scenario519Profile struct {
-	ID   int
-	Name string
-}
-
-func scenario519Positive(attrs map[string]any) (*scenario519Profile, error) {
-	id, ok := attrs["id"].(int)
-	if !ok {
-		return nil, fmt.Errorf("missing id")
-	}
-	name, ok := attrs["name"].(string)
-	if !ok {
-		return nil, fmt.Errorf("missing name")
-	}
-	return &scenario519Profile{ID: id, Name: name}, nil
+func scenario515Positive() map[string]any {
+	m := map[string]any{"id": 1, "name": "alice"}
+	m["active"] = true
+	return m
 }

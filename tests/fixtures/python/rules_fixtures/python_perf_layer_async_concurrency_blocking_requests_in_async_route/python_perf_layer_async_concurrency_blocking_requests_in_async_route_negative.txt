@@ -1,4 +1,5 @@
 import httpx
+import requests
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -22,3 +23,8 @@ async def handle_webhook(payload: dict):
 async def get_data():
     resp = await client.get("https://data.provider.com/api/query", timeout=30)
     return resp.json()
+
+
+async def benchmark_route():
+    response = requests.get("https://api.example.com/benchmark")
+    return response.status_code

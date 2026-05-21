@@ -1,17 +1,13 @@
 package rulefixtures
 
+import "bytes"
+
 // scenario for go_perf_layer_io_operations_small_writes_without_bufio_writer: Layer: I/O operations. Flag many Write calls to files or network connections without bufio buffering.
 // fixture polarity: negative; family: performance; severity: contextual.
-type Rule551NegativeRecord struct {
-	ID int
-	Name string
-	Values []string
-}
-
-func scenario551Negative(records []Rule551NegativeRecord) int {
-	total := 0
-	for _, record := range records {
-		total += record.ID + len(record.Values)
+func scenario551Negative(records []string) int {
+	var buf bytes.Buffer
+	for _, rec := range records {
+		_, _ = buf.WriteString(rec)
 	}
-	return total
+	return buf.Len()
 }

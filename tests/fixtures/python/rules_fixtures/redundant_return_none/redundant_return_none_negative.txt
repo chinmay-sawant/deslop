@@ -28,3 +28,8 @@ def process_if_valid(data: dict):
     if value < 0:
         return
     print(f"Processing {value}")
+
+
+def sample_cleanup_probe(payload: dict) -> None:
+    if not payload:
+        return None

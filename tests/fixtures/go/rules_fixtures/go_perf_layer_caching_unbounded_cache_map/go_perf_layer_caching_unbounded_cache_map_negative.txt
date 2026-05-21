@@ -2,16 +2,15 @@ package rulefixtures
 
 // scenario for go_perf_layer_caching_unbounded_cache_map: Layer: Caching. Flag package-level cache maps without size, TTL, or eviction policy.
 // fixture polarity: negative; family: performance; severity: contextual.
-type Rule513NegativeRecord struct {
-	ID int
-	Name string
-	Values []string
-}
-
-func scenario513Negative(records []Rule513NegativeRecord) int {
+func scenario513Negative(items []int) int {
+	seen := make(map[int]bool, len(items))
 	total := 0
-	for _, record := range records {
-		total += record.ID + len(record.Values)
+	for _, item := range items {
+		if seen[item] {
+			continue
+		}
+		seen[item] = true
+		total += item
 	}
 	return total
 }

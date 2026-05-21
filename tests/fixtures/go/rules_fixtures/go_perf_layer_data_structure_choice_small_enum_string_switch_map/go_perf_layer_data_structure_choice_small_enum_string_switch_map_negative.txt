@@ -1,17 +1,16 @@
 package rulefixtures
 
-// scenario for go_perf_layer_data_structure_choice_small_enum_string_switch_map: Layer: Data structure choice. Flag map lookups for tiny static enum-like string sets where switch can avoid allocation and hashing.
+// scenario for go_perf_layer_data_structure_choice_small_enum_string_switch_map: Layer: Data structure choice. Flag tiny enum-like domains represented by map lookups in hot paths.
 // fixture polarity: negative; family: performance; severity: contextual.
-type Rule523NegativeRecord struct {
-	ID int
-	Name string
-	Values []string
-}
-
-func scenario523Negative(records []Rule523NegativeRecord) int {
-	total := 0
-	for _, record := range records {
-		total += record.ID + len(record.Values)
+func scenario516Negative(kind string) int {
+	if kind == "small" {
+		return 1
 	}
-	return total
+	if kind == "medium" {
+		return 2
+	}
+	if kind == "large" {
+		return 3
+	}
+	return 0
 }

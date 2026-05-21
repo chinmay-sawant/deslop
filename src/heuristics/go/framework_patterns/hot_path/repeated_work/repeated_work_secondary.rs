@@ -432,10 +432,23 @@ fn filter_count_iterate_findings(
     function: &ParsedFunction,
     lines: &[BodyLine],
 ) -> Vec<Finding> {
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    if path_lc.contains("/sampledata/")
+        || path_lc.contains("/testdata/")
+        || name_lc.starts_with("test")
+        || name_lc.starts_with("benchmark")
+        || name_lc.starts_with("example")
+    {
+        return Vec::new();
+    }
+
     let mut range_blocks = Vec::new();
+    let mut range_targets = Vec::new();
     for body_line in lines {
         if body_line.text.contains("for ") && body_line.text.contains("range ") {
             range_blocks.push(body_line.line);
+            range_targets.push(range_target(&body_line.text).unwrap_or_default());
         }
     }
 
@@ -443,10 +456,27 @@ fn filter_count_iterate_findings(
         return Vec::new();
     }
 
-    let has_filter_count_iterate_pattern = range_blocks.windows(3).any(|window| {
+    let has_filter_count_iterate_pattern = range_blocks.windows(3).enumerate().any(|(idx, window)| {
         let gap1 = window[1] - window[0];
         let gap2 = window[2] - window[1];
-        gap1 < 15 && gap2 < 15
+        if !(gap1 < 20 && gap2 < 20) {
+            return false;
+        }
+
+        let t1 = range_targets.get(idx).cloned().unwrap_or_default();
+        let t2 = range_targets.get(idx + 1).cloned().unwrap_or_default();
+        let t3 = range_targets.get(idx + 2).cloned().unwrap_or_default();
+        let repeated_target = !t1.is_empty() && (t1 == t2 || t1 == t3 || t2 == t3);
+        if !repeated_target {
+            return false;
+        }
+
+        let lower = function.body_text.to_ascii_lowercase();
+        lower.contains("len(")
+            || lower.contains("count")
+            || lower.contains("append(")
+            || lower.contains("filtered")
+            || lower.contains("sum")
     });
 
     if has_filter_count_iterate_pattern {
@@ -470,6 +500,26 @@ fn filter_count_iterate_findings(
     } else {
         Vec::new()
     }
+}
+
+fn range_target(text: &str) -> Option<String> {
+    let (_, right) = text.split_once("range ")?;
+    let mut target = right.trim();
+    if let Some((lhs, _)) = target.split_once('{') {
+        target = lhs.trim();
+    }
+    if let Some((lhs, _)) = target.split_once(':') {
+        target = lhs.trim();
+    }
+    if let Some((lhs, _)) = target.split_once(';') {
+        target = lhs.trim();
+    }
+    let target = target
+        .trim_end_matches('{')
+        .trim()
+        .trim_end_matches(')')
+        .trim();
+    (!target.is_empty()).then(|| target.to_string())
 }
 
 fn append_target(text: &str) -> Option<String> {

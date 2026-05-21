@@ -2,15 +2,17 @@ package rulefixtures
 
 // scenario for filter_then_count_then_iterate: Same collection traversed multiple times for filter, count, and process steps.
 // fixture polarity: positive; family: hot_path; severity: info.
-
 func scenario350Positive(items []int) (int, int) {
-	var filtered []int
+	filtered := make([]int, 0, len(items))
 	for _, item := range items {
 		if item > 0 {
 			filtered = append(filtered, item)
 		}
 	}
-	count := len(filtered)
+	count := 0
+	for range filtered {
+		count++
+	}
 	sum := 0
 	for _, item := range filtered {
 		sum += item

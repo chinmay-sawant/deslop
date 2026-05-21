@@ -1,0 +1,14 @@
+{
+  "id": "happy_path_only_test",
+  "language": "common",
+  "family": "test_quality",
+  "default_severity": "contextual",
+  "status": "stable",
+  "configurability": [
+    "disable",
+    "ignore",
+    "severity_override"
+  ],
+  "description": "Tests that assert success expectations without any obvious negative-path signal.",
+  "binding_location": "src/heuristics/test_quality.rs"
+}

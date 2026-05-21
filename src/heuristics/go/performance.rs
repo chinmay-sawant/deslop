@@ -32,6 +32,22 @@ pub(crate) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
 
 pub(crate) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    if path_lc.contains("/sampledata/")
+        || path_lc.contains("/testdata/")
+        || name_lc.starts_with("test")
+        || name_lc.starts_with("benchmark")
+        || name_lc.starts_with("example")
+    {
+        return Vec::new();
+    }
+    let hot_signal = ["handler", "serve", "http", "api", "request", "process", "render"]
+        .iter()
+        .any(|marker| name_lc.contains(marker) || path_lc.contains(marker));
+    if go.fmt_loops.is_empty() || (!hot_signal && go.fmt_loops.len() < 3) {
+        return Vec::new();
+    }
 
     go.fmt_loops
         .iter()
@@ -392,6 +408,17 @@ fn contains_keyword(line: &str, keyword: &str) -> bool {
 }
 
 pub(crate) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if file.is_test_file
+        || function.is_test_function
+        || file
+            .path
+            .to_string_lossy()
+            .to_ascii_lowercase()
+            .contains("/sampledata/")
+    {
+        return Vec::new();
+    }
+
     let import_aliases = import_alias_lookup(&file.imports);
 
     function

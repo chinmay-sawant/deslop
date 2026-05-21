@@ -41,6 +41,7 @@ pub(super) fn test_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
         && summary.error_assertion_calls == 0
         && summary.production_calls > 0
         && summary.skip_calls == 0
+        && !is_sample_demo_smoke_integration_test_context(file, function)
     {
         findings.push(Finding {
             rule_id: "happy_path_only_test".to_string(),
@@ -110,4 +111,81 @@ fn is_suite_runner_wrapper_test(function: &ParsedFunction) -> bool {
                 .is_some_and(|receiver| receiver.to_ascii_lowercase().ends_with("suite")))
             || call.name == "new"
     })
+}
+
+fn is_sample_demo_smoke_integration_test_context(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> bool {
+    let context_markers = ["sample", "samples", "demo", "smoke", "integration"];
+    let function_name = function.fingerprint.name.to_ascii_lowercase();
+    if contains_marker_token(&function_name, &context_markers) {
+        return true;
+    }
+
+    file.path.components().any(|component| {
+        let part = component.as_os_str().to_string_lossy().to_ascii_lowercase();
+        contains_marker_token(&part, &context_markers)
+    })
+}
+
+fn contains_marker_token(text: &str, markers: &[&str]) -> bool {
+    let tokens = text
+        .split(|character: char| !character.is_ascii_alphanumeric())
+        .filter(|token| !token.is_empty())
+        .collect::<Vec<_>>();
+    tokens
+        .iter()
+        .any(|token| markers.iter().any(|marker| token == marker))
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    use crate::analysis::parse_source_file;
+
+    use super::test_findings;
+
+    #[test]
+    fn happy_path_only_test_skips_precise_demo_context() {
+        let src = r#"
+def test_demo_checkout_flow():
+    result = checkout()
+    assert result["status"] == "ok"
+"#;
+        let file = parse_source_file(Path::new("tests/integration/demo_checkout_test.py"), src)
+            .expect("fixture should parse");
+        let function = file
+            .functions
+            .iter()
+            .find(|f| f.fingerprint.name == "test_demo_checkout_flow")
+            .expect("function should exist");
+        let findings = test_findings(&file, function);
+        assert!(
+            !findings.iter().any(|finding| finding.rule_id == "happy_path_only_test"),
+            "demo/integration test context should skip happy_path_only_test"
+        );
+    }
+
+    #[test]
+    fn happy_path_only_test_still_flags_normal_test_context() {
+        let src = r#"
+def test_checkout_flow():
+    result = checkout()
+    assert result["status"] == "ok"
+"#;
+        let file = parse_source_file(Path::new("tests/unit/checkout_test.py"), src)
+            .expect("fixture should parse");
+        let function = file
+            .functions
+            .iter()
+            .find(|f| f.fingerprint.name == "test_checkout_flow")
+            .expect("function should exist");
+        let findings = test_findings(&file, function);
+        assert!(
+            findings.iter().any(|finding| finding.rule_id == "happy_path_only_test"),
+            "non-demo test context should still emit happy_path_only_test"
+        );
+    }
 }

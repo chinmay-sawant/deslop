@@ -1,17 +1,11 @@
 package rulefixtures
 
-// scenario for go_perf_layer_collection_iteration_copy_slice_before_readonly_range: Layer: Collection iteration. Flag slice copies made immediately before read-only range loops.
+// scenario for go_perf_layer_collection_iteration_copy_slice_before_readonly_range: Layer: Collection iteration. Flag copying slices immediately before readonly iteration.
 // fixture polarity: negative; family: performance; severity: contextual.
-type Rule514NegativeRecord struct {
-	ID int
-	Name string
-	Values []string
-}
-
-func scenario514Negative(records []Rule514NegativeRecord) int {
+func scenario519Negative(items []int) int {
 	total := 0
-	for _, record := range records {
-		total += record.ID + len(record.Values)
+	for _, v := range items {
+		total += v
 	}
 	return total
 }

@@ -3,6 +3,7 @@ package rulefixtures
 import (
 	"context"
 	"net/http"
+	"testing"
 )
 
 // scenario for go_perf_layer_network_calls_http_client_created_per_call: Layer: Network calls. Flag http.Client construction per call instead of reusing clients and transports.
@@ -14,4 +15,11 @@ func scenario570Negative(ctx context.Context, client *http.Client, urls []string
 		if err == nil && req != nil { total += len(url) }
 	}
 	return total
+}
+
+func BenchmarkClientCreation(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		client := &http.Client{}
+		_ = client
+	}
 }

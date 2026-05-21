@@ -74,11 +74,32 @@ fn option_bag_model_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file {
         return Vec::new();
     }
+    let file_name_lc = file
+        .path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    let dtoish_module = matches!(
+        file_name_lc.as_str(),
+        "types.py" | "type_defs.py" | "schemas.py" | "schema.py" | "dto.py" | "dtos.py"
+    );
 
     file.python_models()
         .iter()
         .filter(|model| (model.is_dataclass || model.is_typed_dict) && !model.name.starts_with('_'))
         .filter_map(|model| {
+            let model_name_lc = model.name.to_ascii_lowercase();
+            let dtoish_model_name = model_name_lc.ends_with("request")
+                || model_name_lc.ends_with("response")
+                || model_name_lc.ends_with("config")
+                || model_name_lc.ends_with("options")
+                || model_name_lc.ends_with("params")
+                || model_name_lc.ends_with("payload");
+            if dtoish_module && dtoish_model_name && model.method_names.is_empty() {
+                return None;
+            }
+
             let optional_fields = model
                 .fields
                 .iter()

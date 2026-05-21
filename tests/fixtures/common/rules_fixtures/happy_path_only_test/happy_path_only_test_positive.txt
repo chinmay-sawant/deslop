@@ -1,0 +1,5 @@
+# scenario for happy_path_only_test
+
+def test_checkout_happy_path_only():
+    result = checkout_service("basic")
+    assert result["status"] == "ok"

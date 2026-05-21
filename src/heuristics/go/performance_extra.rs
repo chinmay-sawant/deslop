@@ -811,6 +811,9 @@ fn alias_rule_findings(
         }
 
         if let Some(line) = matched_line {
+            if !should_emit_alias_rule(spec.id, lines, line) {
+                continue;
+            }
             findings.push(performance_finding(
                 file,
                 function,
@@ -822,6 +825,31 @@ fn alias_rule_findings(
     }
 
     findings
+}
+
+fn should_emit_alias_rule(rule_id: &str, lines: &[BodyLine], line: usize) -> bool {
+    if rule_id != "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call" {
+        return true;
+    }
+
+    let mut has_retry_signal = false;
+    let mut has_loop_context = false;
+    for body_line in lines {
+        if body_line.line == line {
+            has_loop_context = body_line.in_loop;
+        }
+        let text = body_line.text.to_ascii_lowercase();
+        if text.contains("retry")
+            || text.contains("attempt")
+            || text.contains("backoff")
+            || text.contains("for retry")
+            || text.contains("for attempt")
+        {
+            has_retry_signal = true;
+        }
+    }
+
+    has_loop_context && has_retry_signal
 }
 
 fn plain_rule_findings(

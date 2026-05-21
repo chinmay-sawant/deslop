@@ -1,19 +1,24 @@
 package rulefixtures
 
+import "database/sql"
+
 // scenario for go_perf_layer_database_access_rows_scan_into_map_per_row: Layer: Database access. Flag row scans into map[string]any where typed structs or column slices would reduce allocation.
 // fixture polarity: positive; family: performance; severity: contextual.
-type Rule526PositiveRecord struct {
-	ID int
-	Name string
-	Values []string
-}
-
-func scenario526Positive(records []Rule526PositiveRecord) int {
-	total := 0
-	for _, record := range records {
-		for _, value := range record.Values {
-			total += len(value) + record.ID
-		}
+func scenario526Positive(db *sql.DB) ([]map[string]any, error) {
+	rows, err := db.Query("SELECT id, name FROM users")
+	if err != nil {
+		return nil, err
 	}
-	return total
+	defer rows.Close()
+
+	out := make([]map[string]any, 0)
+	for rows.Next() {
+		var id int64
+		var name string
+		if err := rows.Scan(&id, &name); err != nil {
+			return nil, err
+		}
+		out = append(out, map[string]any{"id": id, "name": name})
+	}
+	return out, rows.Err()
 }

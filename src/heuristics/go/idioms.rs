@@ -30,7 +30,16 @@ pub(crate) fn go_file_findings(file: &ParsedFile) -> Vec<Finding> {
 }
 
 pub(crate) fn go_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    if file.is_test_file || function.is_test_function {
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    if file.is_test_file
+        || function.is_test_function
+        || path_lc.contains("/sampledata/")
+        || path_lc.contains("/testdata/")
+        || name_lc.starts_with("test")
+        || name_lc.starts_with("benchmark")
+        || name_lc.starts_with("example")
+    {
         return Vec::new();
     }
 
@@ -1238,16 +1247,18 @@ fn http_response_bindings(
             ]
         })
         .collect::<Vec<_>>();
-    patterns.extend([
-        ".Get(".to_string(),
-        ".Head(".to_string(),
-        ".Post(".to_string(),
-        ".PostForm(".to_string(),
-    ]);
     patterns.push(".Do(".to_string());
 
     let string_patterns = patterns.iter().map(String::as_str).collect::<Vec<_>>();
     binding_matches(lines, &string_patterns)
+        .into_iter()
+        .filter(|(_, _, target)| {
+            target.contains("http.")
+                || target.contains("net/http")
+                || target.contains("client.Do(")
+                || target == ".Do("
+        })
+        .collect()
 }
 
 fn binding_matches(lines: &[BodyLine], patterns: &[&str]) -> Vec<(String, usize, String)> {

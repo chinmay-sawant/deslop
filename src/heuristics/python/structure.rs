@@ -1211,8 +1211,25 @@ pub(super) fn project_agnostic_structure_repo_findings(
     }
 
     for file in files {
+        if file.is_test_file {
+            continue;
+        }
         for import in &file.imports {
-            if import.path.contains("._") || import.path.contains(".private") {
+            if !import.path.contains("._") && !import.path.contains(".private") {
+                continue;
+            }
+
+            let import_lc = import.path.to_ascii_lowercase();
+            let is_binding_adapter = import_lc.ends_with("._bindings")
+                || import_lc.contains("._bindings.")
+                || import_lc.ends_with("._native")
+                || import_lc.contains("._native.")
+                || import_lc.ends_with("._compat")
+                || import_lc.contains("._compat.");
+            if is_binding_adapter {
+                continue;
+            }
+
                 findings.push(Finding {
                     rule_id: "sibling_modules_depend_on_private_helpers_from_each_other"
                         .to_string(),
@@ -1228,7 +1245,6 @@ pub(super) fn project_agnostic_structure_repo_findings(
                     evidence: vec![format!("import={}", import.path)],
                 });
                 break;
-            }
         }
     }
 

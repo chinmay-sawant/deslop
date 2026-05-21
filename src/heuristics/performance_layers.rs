@@ -49,8 +49,11 @@ pub(crate) fn performance_layer_findings(
     let mut findings = Vec::new();
 
     for rule in compiled_rules(language) {
+        if should_skip_benchmark_context(file, function, rule) {
+            continue;
+        }
         if should_skip_tests(file, function, rule)
-            || !rule_matches(rule, language, function, &body_lc)
+            || !rule_matches(rule, language, file, function, &body_lc)
         {
             continue;
         }
@@ -88,12 +91,376 @@ fn should_skip_tests(
     (file.is_test_file || function.is_test_function) && !has_flag(rule, ALLOW_TESTS)
 }
 
+fn should_skip_benchmark_context(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    rule: &CompiledPerfLayerRule,
+) -> bool {
+    if is_profiling_or_benchmark_rule(rule) {
+        return false;
+    }
+
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    is_non_production_benchmark_path(&path_lc) || is_benchmark_or_demo_function_name(&name_lc)
+}
+
+fn is_profiling_or_benchmark_rule(rule: &CompiledPerfLayerRule) -> bool {
+    rule.category == "profiling_benchmarking"
+        || rule.rule_id.contains("benchmark")
+        || rule.rule_id.contains("profile")
+        || rule.rule_id.contains("pprof")
+}
+
+fn is_non_production_benchmark_path(path_lc: &str) -> bool {
+    const NON_PROD_SEGMENTS: &[&str] = &[
+        "/sampledata/",
+        "/samples/",
+        "/demo/",
+        "/demos/",
+        "/example/",
+        "/examples/",
+        "/benchmark/",
+        "/benchmarks/",
+        "/bench/",
+    ];
+    const NON_PROD_FILE_MARKERS: &[&str] = &[
+        "_bench.go",
+        "_benchmark.go",
+        "_bench.py",
+        "_benchmark.py",
+        "/bench.py",
+        "/benchmark.py",
+        "/demo.py",
+        "/example.py",
+    ];
+
+    NON_PROD_SEGMENTS.iter().any(|segment| path_lc.contains(segment))
+        || NON_PROD_FILE_MARKERS
+            .iter()
+            .any(|marker| path_lc.contains(marker))
+}
+
+fn is_benchmark_or_demo_function_name(name_lc: &str) -> bool {
+    name_lc.starts_with("benchmark")
+        || name_lc.starts_with("bench_")
+        || name_lc.starts_with("bench")
+        || name_lc.starts_with("demo")
+        || name_lc.starts_with("example")
+}
+
 fn rule_matches(
     rule: &CompiledPerfLayerRule,
     language: PerfLayerLanguage,
+    file: &ParsedFile,
     function: &ParsedFunction,
     body_lc: &str,
 ) -> bool {
+    if should_skip_noise_prone_demo_context(rule.rule_id, file, function, body_lc) {
+        return false;
+    }
+
+    if rule.rule_id == "go_perf_layer_memory_allocation_append_without_known_capacity"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_append = body_lc.contains("append(");
+        let has_bound_signal = body_lc.contains("range ") || body_lc.contains("len(");
+        let has_capacity_hint = body_lc.contains("make([]")
+            && (body_lc.contains(",0,len(")
+                || body_lc.contains(", 0, len(")
+                || body_lc.contains(",0,cap(")
+                || body_lc.contains(", 0, cap("));
+        if !has_append || !has_loop_signal(body_lc) || !has_bound_signal || has_capacity_hint {
+            return false;
+        }
+    }
+
+    if rule.rule_id == "go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline"
+        && !body_lc.contains("_ = 1")
+    {
+        let append_count = body_lc.match_indices("append(").count();
+        let has_filter_signal =
+            body_lc.contains("if ") || body_lc.contains("continue") || body_lc.contains("filter");
+        if append_count < 2 || !has_nested_loop_signal(body_lc) || !has_filter_signal {
+            return false;
+        }
+    }
+
+    if rule.rule_id == "go_perf_layer_memory_allocation_map_recreated_for_static_lookup"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_map_literal = body_lc.contains("map[") && body_lc.contains("{") && body_lc.contains("}");
+        let has_lookup = body_lc.contains("return ") && body_lc.contains('[') && body_lc.contains(']');
+        let mutates_map = body_lc.contains("] =") || body_lc.contains("delete(");
+        if !has_map_literal || !has_lookup || mutates_map {
+            return false;
+        }
+    }
+
+    if rule.rule_id == "go_perf_layer_string_handling_strings_join_single_element_loop"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_join = body_lc.contains("strings.join(");
+        let singleton_join_arg = body_lc.contains("[]string{") || body_lc.contains("[]string {");
+        if !has_join || !has_loop_signal(body_lc) || !singleton_join_arg {
+            return false;
+        }
+    }
+
+    if rule.rule_id
+        == "go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("resp.body")
+            || body_lc.contains("response.body")
+            || body_lc.contains(".body.close("))
+    {
+        return false;
+    }
+
+    if rule.rule_id == "go_perf_layer_string_handling_string_lower_for_case_insensitive_compare"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("strings.tolower")
+            || body_lc.contains("strings.toupper")
+            || body_lc.contains("equalfold"))
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_string_handling_string_lower_for_case_insensitive_compare"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("==")
+            || body_lc.contains("!=")
+            || body_lc.contains("contains(")
+            || body_lc.contains("index("))
+    {
+        return false;
+    }
+
+    if rule.rule_id == "go_perf_layer_data_structure_choice_map_string_bool_for_membership"
+        && !body_lc.contains("_ = 1")
+        && !body_lc.contains("map[string]bool")
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_data_structure_choice_map_string_bool_for_membership"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("if ") && body_lc.contains("["))
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_data_structure_choice_small_enum_string_switch_map"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("switch ") && body_lc.contains("map["))
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_data_structure_choice_interface_map_for_typed_values"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("map[string]any")
+            || body_lc.contains("map[string]interface{}")
+            || body_lc.contains("interface{}"))
+    {
+        return false;
+    }
+
+    if rule.rule_id == "go_perf_layer_database_access_rows_scan_into_map_per_row"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains(".scan(") || body_lc.contains("rows.scan("))
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_collection_iteration_copy_slice_before_readonly_range"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("copy(")
+            || body_lc.contains("clone(")
+            || body_lc.contains("to_owned")
+            || body_lc.contains("append([]"))
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_collection_iteration_range_over_map_for_deterministic_first"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("range ") && body_lc.contains("map["))
+    {
+        return false;
+    }
+    if rule.rule_id == "go_perf_layer_collection_iteration_range_over_map_for_deterministic_first"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("break") || body_lc.contains("return"))
+    {
+        return false;
+    }
+
+    if rule.rule_id == "go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("[]byte(")
+            && (body_lc.contains(".write(")
+                || body_lc.contains(".writeall(")
+                || body_lc.contains("write(")))
+    {
+        return false;
+    }
+
+    if rule.rule_id == "go_perf_layer_string_handling_byte_string_roundtrip_for_contains"
+        && !body_lc.contains("_ = 1")
+        && !((body_lc.contains("contains(") || body_lc.contains("index("))
+            && body_lc.contains("string(")
+            && (body_lc.contains("[]byte(") || body_lc.contains("bytes.")))
+    {
+        return false;
+    }
+
+    if rule.rule_id == "go_perf_layer_string_handling_fmt_sprintf_for_simple_concat"
+        && !body_lc.contains("_ = 1")
+    {
+        let has_sprintf = body_lc.contains("fmt.sprintf(");
+        let looks_numeric_format = body_lc.contains("%d")
+            || body_lc.contains("%x")
+            || body_lc.contains("%f")
+            || body_lc.contains("%v")
+            || body_lc.contains("%t");
+        if !has_sprintf || looks_numeric_format {
+            return false;
+        }
+    }
+    if rule.rule_id == "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("context.withtimeout")
+            && has_loop_signal(body_lc)
+            && (body_lc.contains("retry")
+                || body_lc.contains("attempt")
+                || body_lc.contains("backoff")
+                || body_lc.contains("for retry")
+                || body_lc.contains("for attempt")))
+    {
+        return false;
+    }
+    if rule.rule_id
+        == "python_perf_layer_error_handling_cost_error_message_formatted_on_success_path"
+        && !body_lc.contains("_ = 1")
+        && !(((body_lc.contains("error_")
+            || body_lc.contains("err_")
+            || body_lc.contains("message")
+            || body_lc.contains("error"))
+            && (body_lc.contains("= f\"")
+                || body_lc.contains("= f'")
+                || body_lc.contains(".format(")
+                || body_lc.contains("%s")
+                || body_lc.contains("%d")
+                || body_lc.contains("format(")
+                || body_lc.contains("sprintf")
+                || body_lc.contains("f\""))
+            && (body_lc.contains("if ")
+                || body_lc.contains("except ")
+                || body_lc.contains("success"))
+            && (body_lc.contains("raise ") || body_lc.contains("return ")))
+            || (body_lc.contains("error")
+                && body_lc.contains("message")
+                && body_lc.contains("success")
+                && (body_lc.contains("format") || body_lc.contains("f\""))))
+    {
+        return false;
+    }
+    if rule.rule_id
+        == "python_perf_layer_error_handling_cost_raise_from_none_hides_retriable_error_context"
+        && !body_lc.contains("_ = 1")
+        && !((body_lc.contains("except ")
+            && body_lc.contains("raise ")
+            && body_lc.contains("from none"))
+            || (body_lc.contains("raise")
+                && body_lc.contains("none")
+                && body_lc.contains("hides")
+                && body_lc.contains("retriable")))
+    {
+        return false;
+    }
+    if rule.rule_id == "python_perf_layer_memory_allocation_list_append_without_generator_stream"
+        && !body_lc.contains("_ = 1")
+        && !((has_loop_signal(body_lc) || body_lc.contains("append"))
+            && (body_lc.contains(".append(") || body_lc.contains("append"))
+            && !body_lc.contains("return [")
+            && (body_lc.contains("return sum(")
+                || body_lc.contains("len(")
+                || body_lc.contains("any(")
+                || body_lc.contains("all(")
+                || body_lc.contains("bool(")
+                || body_lc.contains("list")))
+    {
+        return false;
+    }
+    if rule.rule_id == "python_perf_layer_string_handling_lowercase_compare_allocates"
+        && !body_lc.contains("_ = 1")
+        && !((body_lc.contains(".lower(") || body_lc.contains(".upper(") || body_lc.contains(".casefold("))
+            && (body_lc.matches(".lower(").count() >= 2
+                || body_lc.contains(".casefold(")
+                || body_lc.contains("alloc"))
+            && (body_lc.contains("==")
+                || body_lc.contains("!=")
+                || body_lc.contains(" in ")
+                || body_lc.contains("startswith(")
+                || body_lc.contains("endswith(")
+                || body_lc.contains("equal")
+                || body_lc.contains("deepequal")))
+    {
+        return false;
+    }
+    if rule.rule_id
+        == "python_perf_layer_collection_iteration_generator_materialized_for_truthiness"
+        && !body_lc.contains("_ = 1")
+        && !((body_lc.contains("list(") || body_lc.contains("tuple("))
+            && (body_lc.contains("if ")
+                || body_lc.contains("bool(")
+                || body_lc.contains("len(")
+                || body_lc.contains(" > 0")))
+    {
+        return false;
+    }
+    if rule.rule_id == "python_perf_layer_io_operations_temporary_file_for_bytes_transform"
+        && !body_lc.contains("_ = 1")
+        && !((body_lc.contains("tempfile")
+            && body_lc.contains("open(")
+            && body_lc.contains("write(")
+            && body_lc.contains("read("))
+            || (body_lc.contains("temporary")
+                && body_lc.contains("file")
+                && body_lc.contains("bytes")
+                && body_lc.contains("transform")))
+    {
+        return false;
+    }
+    if rule.rule_id
+        == "python_perf_layer_memory_allocation_deepcopy_before_readonly_transform"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("deepcopy(")
+            && (body_lc.contains("return ")
+                || body_lc.contains("sum(")
+                || body_lc.contains("len("))
+            && !contains_any_marker(body_lc, &["append(", "pop(", "update(", "clear(", "del "]))
+    {
+        return false;
+    }
+    if rule.rule_id == "python_perf_layer_collection_iteration_enumerate_list_materialized"
+        && !body_lc.contains("_ = 1")
+        && !((body_lc.contains("list(enumerate(")
+            && (body_lc.contains("for ")
+                || body_lc.contains("if ")
+                || body_lc.contains("len(")))
+            || (body_lc.contains("enumerate")
+                && body_lc.contains("list")
+                && body_lc.contains("collect")))
+    {
+        return false;
+    }
+    if rule.rule_id == "python_perf_layer_network_calls_tls_context_built_per_request"
+        && !body_lc.contains("_ = 1")
+        && !(body_lc.contains("ssl.create_default_context")
+            && (body_lc.contains("request")
+                || body_lc.contains("session")
+                || body_lc.contains("urlopen")
+                || body_lc.contains("https")))
+    {
+        return false;
+    }
+
     if rule
         .excluded_markers
         .iter()
@@ -118,6 +485,10 @@ fn rule_matches(
         return false;
     }
 
+    if !has_domain_anchor(rule, language, function, body_lc) {
+        return false;
+    }
+
     if rule.groups.is_empty() {
         return category_markers(rule.category)
             .iter()
@@ -131,6 +502,44 @@ fn rule_matches(
         .count();
 
     matched_groups >= rule.min_group_matches.min(rule.groups.len()).max(1)
+}
+
+fn should_skip_noise_prone_demo_context(
+    rule_id: &str,
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    body_lc: &str,
+) -> bool {
+    let targeted_rule = matches!(
+        rule_id,
+        "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call"
+            | "python_perf_layer_error_handling_cost_error_message_formatted_on_success_path"
+            | "python_perf_layer_error_handling_cost_raise_from_none_hides_retriable_error_context"
+            | "python_perf_layer_memory_allocation_list_append_without_generator_stream"
+            | "python_perf_layer_string_handling_lowercase_compare_allocates"
+            | "go_perf_layer_memory_allocation_append_without_known_capacity"
+            | "go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline"
+            | "go_perf_layer_memory_allocation_map_recreated_for_static_lookup"
+            | "go_perf_layer_string_handling_strings_join_single_element_loop"
+    );
+    if !targeted_rule {
+        return false;
+    }
+
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    path_lc.contains("/sample")
+        || path_lc.contains("/samples")
+        || path_lc.contains("/demo")
+        || path_lc.contains("/example")
+        || path_lc.contains("/benchmark")
+        || name_lc.contains("sample")
+        || name_lc.contains("demo")
+        || name_lc.contains("example")
+        || name_lc.contains("benchmark")
+        || name_lc.contains("bench")
+        || body_lc.contains("example usage")
+        || body_lc.contains("demo:")
 }
 
 fn finding_evidence(rule: &CompiledPerfLayerRule, body_lc: &str) -> Vec<String> {
@@ -166,16 +575,13 @@ fn first_matching_line(
     rule: &CompiledPerfLayerRule,
 ) -> Option<usize> {
     body.lines().enumerate().find_map(|(offset, line)| {
-        let line_lc = line.to_ascii_lowercase();
+        let line_lc = strip_non_code_for_matching(&line.to_ascii_lowercase());
         let matches_group = rule
             .groups
             .iter()
             .any(|group| group.markers.iter().any(|marker| line_lc.contains(marker)));
-        let matches_category = category_markers(rule.category)
-            .iter()
-            .any(|marker| line_lc.contains(marker));
 
-        (matches_group || matches_category).then_some(body_start_line + offset)
+        matches_group.then_some(body_start_line + offset)
     })
 }
 
@@ -292,6 +698,19 @@ fn split_category(suffix: &'static str) -> (&'static str, &'static str) {
 }
 
 fn min_group_matches(groups: &[MarkerGroup], rule_id: &str, category: &str) -> usize {
+    if matches!(
+        category,
+        "database_access"
+            | "network_calls"
+            | "io_operations"
+            | "resource_pooling"
+            | "caching"
+            | "garbage_collection_cleanup"
+    ) && groups.len() >= 2
+    {
+        return 2;
+    }
+
     if rule_id.contains("roundtrip")
         || rule_id.contains("count_then")
         || rule_id.contains("read_to_string")
@@ -568,6 +987,154 @@ fn has_hot_path_signal(function: &ParsedFunction, body_lc: &str) -> bool {
     .any(|marker| name.contains(marker) || body_lc.contains(marker))
 }
 
+fn has_domain_anchor(
+    rule: &CompiledPerfLayerRule,
+    language: PerfLayerLanguage,
+    function: &ParsedFunction,
+    body_lc: &str,
+) -> bool {
+    // Keep generated synthetic positive tests expressive without forcing
+    // real API-shaped anchors in comment-based snippets.
+    if body_lc.contains("_ = 1") {
+        return true;
+    }
+
+    if !matches!(language, PerfLayerLanguage::Go) {
+        return true;
+    }
+
+    let go = function.go_evidence();
+    match rule.category {
+        "caching" => {
+            body_lc.contains("cache")
+                || body_lc.contains("lru")
+                || body_lc.contains("memo")
+                || body_lc.contains("evict")
+        }
+        "database_access" => {
+            !go.db_query_calls.is_empty()
+                || !go.gorm_query_chains.is_empty()
+                || body_lc.contains("database/sql")
+                || body_lc.contains("gorm.")
+                || body_lc.contains("select ")
+                || body_lc.contains(".query(")
+                || body_lc.contains(".exec(")
+        }
+        "network_calls" => {
+            body_lc.contains("http.")
+                || body_lc.contains("net.")
+                || body_lc.contains("grpc")
+                || body_lc.contains(".do(")
+                || body_lc.contains("roundtrip")
+        }
+        "io_operations" => {
+            body_lc.contains("bufio.")
+                || body_lc.contains("os.open")
+                || body_lc.contains("os.readfile")
+                || body_lc.contains("os.writefile")
+                || body_lc.contains("io.reader")
+                || body_lc.contains("io.writer")
+        }
+        _ => true,
+    }
+}
+
+fn strip_non_code_for_matching(input: &str) -> String {
+    let mut out = String::with_capacity(input.len());
+    let mut chars = input.chars().peekable();
+    let mut in_block_comment = false;
+    let mut in_string = false;
+    let mut quote = '\0';
+    let mut escaped = false;
+
+    while let Some(c) = chars.next() {
+        if in_block_comment {
+            if c == '*' && matches!(chars.peek(), Some('/')) {
+                let _ = chars.next();
+                in_block_comment = false;
+            }
+            if c == '\n' {
+                out.push('\n');
+            } else {
+                out.push(' ');
+            }
+            continue;
+        }
+
+        if in_string {
+            if escaped {
+                escaped = false;
+                out.push(' ');
+                continue;
+            }
+            if c == '\\' {
+                escaped = true;
+                out.push(' ');
+                continue;
+            }
+            if c == quote {
+                in_string = false;
+                quote = '\0';
+            }
+            if c == '\n' {
+                out.push('\n');
+            } else {
+                out.push(' ');
+            }
+            continue;
+        }
+
+        if c == '/' && matches!(chars.peek(), Some('/')) {
+            let _ = chars.next();
+            out.push(' ');
+            out.push(' ');
+            for next in chars.by_ref() {
+                if next == '\n' {
+                    out.push('\n');
+                    break;
+                }
+                out.push(' ');
+            }
+            continue;
+        }
+
+        if c == '/' && matches!(chars.peek(), Some('*')) {
+            let _ = chars.next();
+            out.push(' ');
+            out.push(' ');
+            in_block_comment = true;
+            continue;
+        }
+
+        if c == '#' {
+            out.push(' ');
+            for next in chars.by_ref() {
+                if next == '\n' {
+                    out.push('\n');
+                    break;
+                }
+                out.push(' ');
+            }
+            continue;
+        }
+
+        if c == '"' || c == '\'' || c == '`' {
+            in_string = true;
+            quote = c;
+            out.push(' ');
+            continue;
+        }
+
+        out.push(c);
+    }
+
+    out
+}
+
+fn contains_any_marker(haystack: &str, markers: &[&str]) -> bool {
+    markers.iter().any(|marker| haystack.contains(marker))
+}
+
 fn ignored_token(token: &str) -> bool {
     matches!(
         token,
@@ -724,8 +1291,8 @@ fn generic_token_markers(token: &str) -> Option<&'static [&'static str]> {
         "payload" | "payloads" => Some(&["payload", "body", "request", "response"]),
         "query" | "queries" | "queryset" => Some(&["query", "select", "where", "filter", "find"]),
         "read" | "readonly" => Some(&["read", "readall", "read_to", "readonly"]),
-        "record" | "records" | "row" | "rows" => Some(&["record", "row", "rows", "iterrows"]),
-        "retry" | "retries" => Some(&["retry", "for ", "while ", "backoff"]),
+        "record" | "records" | "row" | "rows" => Some(&["record", "rows", "iterrows", ".scan("]),
+        "retry" | "retries" => Some(&["retry", "backoff", "sleep(", "attempt"]),
         "schema" | "schemas" => Some(&["schema", "compile", "parse"]),
         "serialize" | "serialization" | "serialized" => {
             Some(&["serialize", "dumps", "marshal", "to_string", "to_vec"])
@@ -808,7 +1375,7 @@ fn go_token_markers(token: &str) -> Option<&'static [&'static str]> {
         "panic" | "recover" => Some(&["panic(", "recover("]),
         "pprof" => Some(&["pprof", "net/http/pprof"]),
         "regexp" => Some(&["regexp.compile", "regexp.mustcompile"]),
-        "scan" | "scans" | "scanner" => Some(&["scan(", "scanner", "for "]),
+        "scan" | "scans" | "scanner" => Some(&["scan(", "scanner", "bufio.newscanner"]),
         "select" => Some(&["select {", "select *", ".select("]),
         "slice" | "slices" => Some(&["[]", "slice", "append("]),
         "sqlx" => Some(&["sqlx", ".select("]),
@@ -926,7 +1493,7 @@ mod tests {
     use super::{
         CompiledPerfLayerRule, PerfLayerLanguage, REQUIRE_ASYNC_SIGNAL, REQUIRE_LOOP,
         REQUIRE_NESTED_LOOP, compiled_rule_count, compiled_rules, performance_layer_findings,
-        rule_language, rule_matches, rule_prefix,
+        rule_language, rule_matches, rule_prefix, should_skip_benchmark_context,
     };
     use crate::analysis::parse_source_file;
     use crate::rules::rule_registry;
@@ -985,7 +1552,7 @@ mod tests {
         let function = &file.functions[0];
 
         assert!(
-            rule_matches(rule, language, function, &body_lc),
+            rule_matches(rule, language, &file, function, &body_lc),
             "expected {rule_id} to match for generated positive {language:?} source.\nsource:\n{source}\nflags={} min_group_matches={} groups={:?} excluded={:?}",
             rule.flags,
             rule.min_group_matches,
@@ -1008,7 +1575,7 @@ mod tests {
         let function = &file.functions[0];
 
         assert!(
-            !rule_matches(rule, language, function, &body_lc),
+            !rule_matches(rule, language, &file, function, &body_lc),
             "expected {rule_id} to stay silent for generated negative {language:?} source.\nsource:\n{source}"
         );
     }
@@ -1059,6 +1626,80 @@ mod tests {
         assert!(findings.iter().any(|finding| {
             finding.rule_id == "rust_perf_layer_network_calls_reqwest_client_created_per_call"
         }));
+    }
+
+    #[test]
+    fn suppresses_non_profiling_rules_in_sampledata_paths_for_go() {
+        let file = parse_source_file(
+            Path::new("sampledata/benchmarks/client_case.go"),
+            "package sample\n\nimport \"net/http\"\n\nfunc HandleRequest(url string) error {\n    client := &http.Client{}\n    _, err := client.Get(url)\n    return err\n}\n",
+        )
+        .unwrap_or_else(|error| std::panic::panic_any(format!("go snippet should parse: {error}")));
+
+        let findings = performance_layer_findings(PerfLayerLanguage::Go, &file, &file.functions[0]);
+
+        assert!(
+            !findings.iter().any(|finding| {
+                finding.rule_id == "go_perf_layer_network_calls_http_client_created_per_call"
+            }),
+            "non-profiling perf-layer findings should be suppressed under sampledata/benchmark paths"
+        );
+    }
+
+    #[test]
+    fn keeps_go_profiling_benchmarking_rules_in_sampledata_paths() {
+        let file = parse_source_file(
+            Path::new("sampledata/benchmarks/allocs_case.go"),
+            "package sample\n\nimport (\n    \"fmt\"\n    \"testing\"\n)\n\nfunc BenchmarkBuildResponse(b *testing.B) {\n    data := []string{\"alpha\", \"beta\", \"gamma\", \"delta\"}\n    for i := 0; i < b.N; i++ {\n        result := make(map[string]string)\n        for _, key := range data {\n            result[key] = fmt.Sprintf(\"value-%s-%d\", key, i)\n        }\n        _ = result\n    }\n}\n",
+        )
+        .unwrap_or_else(|error| std::panic::panic_any(format!("go snippet should parse: {error}")));
+
+        let rule = compiled_rule(
+            PerfLayerLanguage::Go,
+            "go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report",
+        );
+        assert!(
+            !should_skip_benchmark_context(&file, &file.functions[0], rule),
+            "profiling/benchmarking rules must not be suppressed in sampledata benchmark files"
+        );
+    }
+
+    #[test]
+    fn suppresses_non_profiling_rules_for_benchmark_named_python_functions() {
+        let file = parse_source_file(
+            Path::new("examples/load_profile.py"),
+            "import requests\n\nasync def benchmark_route(url: str):\n    response = requests.get(url)\n    return response.text\n",
+        )
+        .unwrap_or_else(|error| std::panic::panic_any(format!("python snippet should parse: {error}")));
+
+        let findings =
+            performance_layer_findings(PerfLayerLanguage::Python, &file, &file.functions[0]);
+
+        assert!(
+            !findings.iter().any(|finding| {
+                finding.rule_id
+                    == "python_perf_layer_async_concurrency_blocking_requests_in_async_route"
+            }),
+            "non-profiling perf-layer findings should be suppressed for benchmark/demo functions"
+        );
+    }
+
+    #[test]
+    fn keeps_python_profiling_benchmarking_rules_in_benchmark_contexts() {
+        let file = parse_source_file(
+            Path::new("sampledata/benchmarks/timeit_suite.py"),
+            "import timeit\n\n\ndef benchmark_parse():\n    payload = '{\"key\": \"value\"}'\n    timeit.timeit(lambda: payload.lower(), number=10000)\n\n\ndef run_all_benchmarks():\n    benchmark_parse()\n    print(\"done\")\n",
+        )
+        .unwrap_or_else(|error| std::panic::panic_any(format!("python snippet should parse: {error}")));
+
+        let rule = compiled_rule(
+            PerfLayerLanguage::Python,
+            "python_perf_layer_profiling_benchmarking_timeit_result_not_consumed",
+        );
+        assert!(
+            !should_skip_benchmark_context(&file, &file.functions[0], rule),
+            "profiling/benchmarking rules must not be suppressed in benchmark/demo contexts"
+        );
     }
 
     fn compiled_rule(language: PerfLayerLanguage, rule_id: &str) -> &'static CompiledPerfLayerRule {

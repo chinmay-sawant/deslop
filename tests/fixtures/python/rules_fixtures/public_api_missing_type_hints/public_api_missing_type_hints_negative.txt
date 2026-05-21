@@ -26,3 +26,7 @@ class UserService:
 
     def create(self, data: dict) -> dict:
         return data
+
+
+def parse_sampledata_row(row: dict[str, str]) -> tuple[str, int]:
+    return row.get("name", ""), int(row.get("count", "0"))

@@ -17,6 +17,22 @@ pub(super) fn should_skip_print_rule(file: &ParsedFile, function: &ParsedFunctio
             .is_some_and(|n| n == "__main__.py")
 }
 
+pub(super) fn is_sample_demo_smoke_integration_context(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> bool {
+    let context_markers = ["sample", "samples", "demo", "smoke", "integration"];
+    let function_name = function.fingerprint.name.to_ascii_lowercase();
+    if contains_marker_token(&function_name, &context_markers) {
+        return true;
+    }
+
+    file.path.components().any(|component| {
+        let part = component.as_os_str().to_string_lossy().to_ascii_lowercase();
+        contains_marker_token(&part, &context_markers)
+    })
+}
+
 fn looks_like_tooling_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
     let name = function.fingerprint.name.to_ascii_lowercase();
     let tool_name_markers = [
@@ -32,6 +48,16 @@ fn looks_like_tooling_context(file: &ParsedFile, function: &ParsedFunction) -> b
             "argparse" | "json" | "shutil" | "subprocess" | "sys" | "pathlib"
         )
     })
+}
+
+fn contains_marker_token(text: &str, markers: &[&str]) -> bool {
+    let tokens = text
+        .split(|character: char| !character.is_ascii_alphanumeric())
+        .filter(|token| !token.is_empty())
+        .collect::<Vec<_>>();
+    tokens
+        .iter()
+        .any(|token| markers.iter().any(|marker| token == marker))
 }
 
 pub(super) fn looks_like_hardcoded_path(value: &str) -> bool {

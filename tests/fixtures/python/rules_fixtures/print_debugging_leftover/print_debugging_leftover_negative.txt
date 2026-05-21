@@ -15,6 +15,11 @@ def calculate_total(order):
     return sum(item["price"] for item in order.get("items", []))
 
 
+def render_demo_table(rows):
+    for row in rows:
+        print("demo row:", row)
+
+
 def sync_inventory(products):
     for product in products:
         logger.info("Syncing %s", product["name"])

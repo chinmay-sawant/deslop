@@ -13,3 +13,9 @@ def parse_event(raw):
 
 def count_valid(source):
     return sum(1 for item in source if item["status"] == "active")
+
+def collect_for_later_use(source):
+    events = []
+    for raw in source:
+        events.append(parse_event(raw))
+    return events

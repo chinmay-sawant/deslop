@@ -34,3 +34,11 @@ def fetch_user_data(user_id: int):
         preferences = {}
 
     return {**profile, "orders": orders, "preferences": preferences}
+
+
+def integration_payment_probe(order_id: str):
+    try:
+        return charge_payment(order_id)
+    except Exception as error:
+        logger.info("integration probe captured error: %s", error)
+        return {"status": "probe-failed"}

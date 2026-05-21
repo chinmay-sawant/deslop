@@ -485,6 +485,7 @@ pub(super) fn project_agnostic_performance_findings(
 
     if contains_any(&lower_body, &["json.dumps(", "csv.writer(", "bytesio("])
         && !contains_any(&lower_body, &["yield", "stream"])
+        && contains_any(&lower_body, &["fetchall(", "read()", ".append(", "getvalue()", "join("])
     {
         findings.push(push(
             "full_response_or_export_buffered_before_incremental_consumer_use",

@@ -1,0 +1,5 @@
+# scenario for happy_path_only_test
+
+def test_integration_checkout_probe():
+    result = checkout_service("basic")
+    assert result["status"] == "ok"

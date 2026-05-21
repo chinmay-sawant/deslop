@@ -22,8 +22,22 @@ fn type_assertion_no_comma(
     function: &ParsedFunction,
     lines: &[BodyLine],
 ) -> Vec<Finding> {
+    let path_lc = file.path.to_string_lossy().to_ascii_lowercase();
+    let name_lc = function.fingerprint.name.to_ascii_lowercase();
+    if path_lc.contains("/sampledata/")
+        || path_lc.contains("/testdata/")
+        || name_lc.starts_with("test")
+        || name_lc.starts_with("benchmark")
+        || name_lc.starts_with("example")
+    {
+        return Vec::new();
+    }
+
     let mut findings = Vec::new();
     for bl in lines {
+        if bl.text.contains(".Get().(") && bl.text.to_ascii_lowercase().contains("pool") {
+            continue;
+        }
         if bl.text.contains(".(")
             && !bl.text.contains(", ok")
             && !bl.text.contains(",ok")
