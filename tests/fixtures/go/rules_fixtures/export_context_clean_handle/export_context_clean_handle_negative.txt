@@ -1,0 +1,5 @@
+package main
+
+// scenario for export_context_clean_handle: minimal repo with no findings for export opt-out checks.
+// fixture polarity: negative; family: export; severity: info.
+func Handle() {}

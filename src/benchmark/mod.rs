@@ -42,7 +42,7 @@ pub fn benchmark_repository_with_experimentals(
     let mut runs = Vec::new();
 
     for iteration in 0..options.repeats {
-        let report = scan_repository_with_experimentals(
+        let output = scan_repository_with_experimentals(
             &ScanOptions {
                 root: options.root.clone(),
                 respect_ignore: options.respect_ignore,
@@ -50,6 +50,7 @@ pub fn benchmark_repository_with_experimentals(
             enable_go_semantic,
             enable_rust_async,
         )?;
+        let report = output.report;
 
         runs.push(BenchmarkRun {
             iteration: iteration + 1,

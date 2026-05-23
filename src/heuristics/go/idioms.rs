@@ -681,7 +681,10 @@ fn timeoutless_http_helper_findings(
                 function.fingerprint.name
             ),
             evidence: vec![
-                format!("observed timeout-less client call at line {}", body_line.line),
+                format!(
+                    "observed timeout-less client call at line {}",
+                    body_line.line
+                ),
                 "http.Client without Timeout can block indefinitely".to_string(),
             ],
         });

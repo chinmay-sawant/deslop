@@ -371,6 +371,23 @@ deslop scan --json . > results.json
 # Full detail output
 deslop scan --details --json .`} />
 
+          <h3 className="docs-h3">Context export</h3>
+          <p className="docs-p">
+            By default, scan also writes review-ready function context files to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>scripts/findings/functions/</code> and batched chunk files to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>scripts/chunks/</code>.
+            Use <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>--no-context</code> or <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>--no-chunks</code> to skip either export. The default chunk size is 25 findings per file.
+          </p>
+          <CodeBlock code={`# Export context and chunks (default)
+deslop scan . --no-fail
+
+# Skip export
+deslop scan . --no-context --no-chunks
+
+# Custom chunk size and output directories
+deslop scan . --chunk-size 50 --context-output-dir /tmp/functions --chunks-output-dir /tmp/chunks`} />
+          <p className="docs-p">
+            The findings visualizer still requires a separate JSON export step after scan. See the repository README for the Python JSON generator workflow.
+          </p>
+
           <h2 className="docs-h2">Build from source</h2>
           <p className="docs-p">
             Build a native release binary for your current platform:

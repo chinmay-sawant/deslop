@@ -93,6 +93,12 @@ pub struct FileReport {
     pub functions: Vec<FunctionFingerprint>,
 }
 
+#[derive(Debug, Clone)]
+pub struct ScanOutput {
+    pub report: ScanReport,
+    pub(crate) parsed_files: Vec<crate::analysis::ParsedFile>,
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct ScanReport {
     pub root: PathBuf,

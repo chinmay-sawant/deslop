@@ -8,7 +8,7 @@ use std::time::Instant;
 
 use crate::analysis::{AnalysisConfig, supported_extensions};
 use crate::index::build_repository_index;
-use crate::model::{ScanOptions, ScanReport, TimingBreakdown};
+use crate::model::{ScanOptions, ScanOutput, ScanReport, TimingBreakdown};
 use crate::scan::walker::discover_source_files;
 use crate::{Result, load_repository_config};
 
@@ -22,14 +22,14 @@ use self::reporting::file_reports;
 #[cfg(test)]
 use self::suppression::{next_code_line, parse_rule_ids};
 
-pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
+pub fn scan_repository(options: &ScanOptions) -> Result<ScanOutput> {
     scan_repository_with_go_semantic(options, false)
 }
 
 pub fn scan_repository_with_go_semantic(
     options: &ScanOptions,
     enable_go_semantic: bool,
-) -> Result<ScanReport> {
+) -> Result<ScanOutput> {
     scan_repository_with_experimentals(options, enable_go_semantic, false)
 }
 
@@ -37,7 +37,7 @@ pub fn scan_repository_with_experimentals(
     options: &ScanOptions,
     enable_go_semantic: bool,
     enable_rust_async: bool,
-) -> Result<ScanReport> {
+) -> Result<ScanOutput> {
     let total_start = Instant::now();
     let canonical_root = options
         .root
@@ -84,22 +84,25 @@ pub fn scan_repository_with_experimentals(
     let functions_found = parsed_files.iter().map(|file| file.functions.len()).sum();
     let files = file_reports(&parsed_files);
 
-    Ok(ScanReport {
-        root: canonical_root,
-        files_discovered: discovered_files.len(),
-        files_analyzed,
-        functions_found,
-        files,
-        findings,
-        index_summary,
-        parse_failures,
-        timings: TimingBreakdown {
-            discover_ms,
-            parse_ms,
-            index_ms,
-            heuristics_ms,
-            total_ms: total_start.elapsed().as_millis(),
+    Ok(ScanOutput {
+        report: ScanReport {
+            root: canonical_root,
+            files_discovered: discovered_files.len(),
+            files_analyzed,
+            functions_found,
+            files,
+            findings,
+            index_summary,
+            parse_failures,
+            timings: TimingBreakdown {
+                discover_ms,
+                parse_ms,
+                index_ms,
+                heuristics_ms,
+                total_ms: total_start.elapsed().as_millis(),
+            },
         },
+        parsed_files,
     })
 }
 #[cfg(test)]

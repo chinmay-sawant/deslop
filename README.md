@@ -60,6 +60,30 @@ cargo run -- scan --details /path/to/repo
 cargo run -- scan --json --details /path/to/repo
 ```
 
+By default, scan also exports review-ready function context files and batched chunk files:
+
+```bash
+cargo run -- scan /path/to/repo --no-fail
+```
+
+Output locations (created automatically):
+
+- `scripts/findings/functions/1.txt`, `2.txt`, ...
+- `scripts/chunks/Chunk_1_25.txt`, `Chunk_26_50.txt`, ...
+
+Opt out of export:
+
+```bash
+cargo run -- scan /path/to/repo --no-context --no-chunks
+```
+
+Customize chunk size or output directories:
+
+```bash
+cargo run -- scan /path/to/repo --no-fail --chunk-size 50
+cargo run -- scan /path/to/repo --context-output-dir /tmp/functions --chunks-output-dir /tmp/chunks
+```
+
 Write scan output directly to a file:
 
 ```bash
@@ -217,21 +241,23 @@ python3 scripts/corpus_harness.py run --target gopdfsuit --scan
 python3 scripts/corpus_harness.py run --target gopdfsuit --bench
 ```
 
-Expand a saved findings report into review-ready code context:
+Expand a saved findings report into review-ready function context:
 
 ```bash
-python3 scripts/extract_finding_context.py temp_gopdfsuit.txt
+cargo run -- scan /path/to/repo --no-fail
 ```
+
+Each exported block includes `Source`, `Rule`, `Rule description`, `Auto triage note`, and the full enclosing `Function`. Pass `--details` for richer metadata blocks.
 
 ### Generate the findings visualizer dataset here with:
 ```bash
-cargo run -- scan /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/swarms --no-fail > temp.txt
-python3 scripts/extract_finding_context.py temp.txt
-python3 scripts/extract_function_context.py temp.txt
+cargo run -- scan /path/to/repo --no-fail > temp.txt
 python3 scripts/extract_function_context_json.py temp.txt \
   --output-dir frontend/public/findings \
   --include-function-text
 ```
+
+Function context files and chunks are written automatically during the scan step above. Only the JSON dataset step still uses Python.
 
 If you run the temp workflow above, make sure you start the frontend server from the `frontend` folder:
 
@@ -240,17 +266,17 @@ cd frontend
 npm run dev
 ```
 
-Those commands read the `path:line` entries from `temp.txt`, extract the requested code context, and rewrite the generated findings data under `frontend/public/findings`. By default each block only includes:
+Those commands read the `path:line` entries from `temp.txt` and rewrite the generated findings data under `frontend/public/findings`. The scan step also writes per-finding review files under `scripts/findings/functions/` and batched chunks under `scripts/chunks/`. By default each exported block includes:
 
 - `Source`
 - `Rule description`
 - `Auto triage note`
-- `Code`
+- `Function`
 
-If you want the full metadata-rich output again, pass `--details`:
+If you want the full metadata-rich output again, pass `--details` to scan:
 
 ```bash
-python3 scripts/extract_finding_context.py temp_gopdfsuit.txt --details
+cargo run -- scan /path/to/repo --no-fail --details
 ```
 
 Run the repo-local scripts through one shared entrypoint:

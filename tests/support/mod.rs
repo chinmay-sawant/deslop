@@ -27,6 +27,14 @@ impl FixtureWorkspace {
         write_fixture(self.root.path(), relative_path, contents);
     }
 
+    pub(crate) fn write_fixture_file(
+        &self,
+        fixture_relative_path: &str,
+        target_relative_path: &str,
+    ) {
+        self.write_file(target_relative_path, &load_fixture(fixture_relative_path));
+    }
+
     pub(crate) fn write_files(&self, files: &[(&str, &str)]) {
         write_files(self.root.path(), files);
     }
@@ -113,6 +121,7 @@ pub(crate) fn scan_root_with_options(root: PathBuf, respect_ignore: bool) -> Sca
         respect_ignore,
     })
     .expect("scan should succeed")
+    .report
 }
 
 #[allow(dead_code)]
@@ -125,6 +134,7 @@ pub(crate) fn scan_root_with_go_semantic(root: PathBuf, go_semantic: bool) -> Sc
         go_semantic,
     )
     .expect("scan should succeed")
+    .report
 }
 
 #[allow(dead_code)]
