@@ -5,7 +5,7 @@ Functions fingerprinted: 876
 Findings: 4098
 Index summary: packages=63 symbols=1129 imports=755
 Parse failures: 0
-Timings: discover=43ms parse=438ms index=4ms heuristics=1718ms total=2221ms
+Timings: discover=47ms parse=479ms index=3ms heuristics=1915ms total=2445ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/handlers/handlers.go:34 feature flag or config lookup happens inline [feature_flag_lookup_without_config_abstraction / architecture / stable]
