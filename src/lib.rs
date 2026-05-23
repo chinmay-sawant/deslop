@@ -16,6 +16,7 @@ mod analysis;
 pub mod benchmark;
 mod config;
 mod error;
+mod export;
 mod heuristics;
 mod index;
 mod io;
@@ -33,10 +34,11 @@ pub use benchmark::{
 pub use config::Error as ConfigError;
 pub(crate) use config::{RepoConfig, load_repository_config};
 pub use error::{Error, Result};
+pub use export::{ExportOptions, ExportSummary};
 pub use io::{DEFAULT_MAX_BYTES, read_to_string_limited};
 pub use model::{
     BenchmarkReport, FileReport, Finding, FunctionFingerprint, IndexSummary, ParseFailure,
-    ScanOptions, ScanReport, Severity, StageStats, TimingBreakdown,
+    ScanOptions, ScanOutput, ScanReport, Severity, StageStats, TimingBreakdown,
 };
 pub use rules::{
     RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleMetadata, RuleStatus,

@@ -268,10 +268,7 @@ fn assert_python_rule_fixture_batch(start: usize, end: usize) {
                 path.display()
             );
 
-            let relative_path = format!(
-                "internal/rule_coverage/{}_{}.py",
-                metadata.id, polarity
-            );
+            let relative_path = format!("internal/rule_coverage/{}_{}.py", metadata.id, polarity);
             workspace.write_file(&relative_path, &fixture);
             expectations.push((
                 metadata.id,
@@ -307,27 +304,29 @@ fn assert_python_rule_fixture_batch(start: usize, end: usize) {
 
     let polarity_mismatches = expectations
         .iter()
-        .filter_map(|(rule_id, relative_path, source_fixture_path, should_flag)| {
-            let found = report.findings.iter().any(|finding| {
-                finding.rule_id == *rule_id && finding.path.ends_with(relative_path)
-            });
-            if found == *should_flag {
-                None
-            } else {
-                Some(format!(
-                    "{} expected {} for source fixture {} (generated {}) but observed {}",
-                    rule_id,
-                    if *should_flag {
-                        "a finding"
-                    } else {
-                        "no finding"
-                    },
-                    source_fixture_path.display(),
-                    relative_path.display(),
-                    if found { "a finding" } else { "no finding" }
-                ))
-            }
-        })
+        .filter_map(
+            |(rule_id, relative_path, source_fixture_path, should_flag)| {
+                let found = report.findings.iter().any(|finding| {
+                    finding.rule_id == *rule_id && finding.path.ends_with(relative_path)
+                });
+                if found == *should_flag {
+                    None
+                } else {
+                    Some(format!(
+                        "{} expected {} for source fixture {} (generated {}) but observed {}",
+                        rule_id,
+                        if *should_flag {
+                            "a finding"
+                        } else {
+                            "no finding"
+                        },
+                        source_fixture_path.display(),
+                        relative_path.display(),
+                        if found { "a finding" } else { "no finding" }
+                    ))
+                }
+            },
+        )
         .collect::<Vec<_>>();
     assert!(
         polarity_mismatches.is_empty(),

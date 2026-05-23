@@ -5,8 +5,9 @@ mod cli;
 
 use std::path::PathBuf;
 
-use crate::cli::{ScanCommandOptions, execute_bench, execute_rules, execute_scan};
 use deslop::{RuleLanguage, RuleStatus};
+
+use crate::cli::{ScanCommandOptions, execute_bench, execute_rules, execute_scan};
 
 #[derive(Debug, Parser)]
 #[command(
@@ -39,6 +40,21 @@ enum Command {
         /// Exit 0 even when findings are present (useful for informational runs).
         #[arg(long)]
         no_fail: bool,
+        /// Skip per-finding function context export.
+        #[arg(long)]
+        no_context: bool,
+        /// Skip batched chunk export.
+        #[arg(long)]
+        no_chunks: bool,
+        /// Number of findings per chunk file.
+        #[arg(long, default_value_t = 25)]
+        chunk_size: usize,
+        /// Directory for per-finding context files.
+        #[arg(long, default_value = "scripts/findings/functions")]
+        context_output_dir: PathBuf,
+        /// Directory for batched chunk files.
+        #[arg(long, default_value = "scripts/chunks")]
+        chunks_output_dir: PathBuf,
     },
     Bench {
         path: PathBuf,
@@ -79,6 +95,11 @@ fn main() -> Result<()> {
             experimental,
             ignore,
             no_fail,
+            no_context,
+            no_chunks,
+            chunk_size,
+            context_output_dir,
+            chunks_output_dir,
         } => execute_scan(ScanCommandOptions {
             path,
             json,
@@ -88,6 +109,11 @@ fn main() -> Result<()> {
             experimental,
             ignore,
             no_fail,
+            no_context,
+            no_chunks,
+            chunk_size,
+            context_output_dir,
+            chunks_output_dir,
         }),
         Command::Bench {
             path,

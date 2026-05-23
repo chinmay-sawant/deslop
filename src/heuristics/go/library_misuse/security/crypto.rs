@@ -200,8 +200,7 @@ fn constant_iv_nonce(
                 return None;
             }
             text.split(":=").next().map(str::trim).and_then(|name| {
-                name
-                    .chars()
+                name.chars()
                     .next()
                     .is_some_and(|ch| ch.is_ascii_alphabetic() || ch == '_')
                     .then_some(name.to_string())

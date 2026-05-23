@@ -23,7 +23,11 @@ function EmptyDatasetState({ message }: { message: string }) {
     <section className="findings-empty-state">
       <strong>Findings dataset not available yet</strong>
       <p>{message}</p>
-      <pre>{`python3 scripts/extract_function_context_json.py temp.txt \\
+      <pre>{`# Step 1: scan (context + chunks exported automatically)
+cargo run -- scan /path/to/repo --no-fail > temp.txt
+
+# Step 2: generate the visualizer JSON dataset
+python3 scripts/extract_function_context_json.py temp.txt \\
   --output-dir frontend/public/findings \\
   --include-function-text`}</pre>
     </section>

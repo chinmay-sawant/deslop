@@ -6,7 +6,7 @@ pub(crate) use rules::{filtered_rules, format_rules_report, format_rules_report_
 
 use anyhow::{Context, Result};
 use deslop::{
-    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions,
+    BenchmarkOptions, ExportOptions, RuleLanguage, RuleStatus, ScanOptions,
     benchmark_repository_with_experimentals, is_detail_only_rule, rule_metadata_variants,
     scan_repository_with_experimentals,
 };
@@ -21,11 +21,16 @@ pub(crate) struct ScanCommandOptions {
     pub(crate) experimental: bool,
     pub(crate) ignore: Vec<String>,
     pub(crate) no_fail: bool,
+    pub(crate) no_context: bool,
+    pub(crate) no_chunks: bool,
+    pub(crate) chunk_size: usize,
+    pub(crate) context_output_dir: PathBuf,
+    pub(crate) chunks_output_dir: PathBuf,
 }
 
 pub(crate) fn execute_scan(options: ScanCommandOptions) -> Result<()> {
     let scan_root = options.path.clone();
-    let mut report = scan_repository_with_experimentals(
+    let mut scan_output = scan_repository_with_experimentals(
         &ScanOptions {
             root: options.path,
             respect_ignore: !options.no_ignore,
@@ -36,7 +41,7 @@ pub(crate) fn execute_scan(options: ScanCommandOptions) -> Result<()> {
     .with_context(|| format!("scan failed for {}", scan_root.display()))?;
 
     if !options.ignore.is_empty() {
-        report.findings.retain(|finding| {
+        scan_output.report.findings.retain(|finding| {
             !options
                 .ignore
                 .iter()
@@ -44,10 +49,36 @@ pub(crate) fn execute_scan(options: ScanCommandOptions) -> Result<()> {
         });
     }
 
+    if !options.no_context || !options.no_chunks {
+        let summary = scan_output.export_context(
+            &scan_output.report,
+            &ExportOptions {
+                export_context: !options.no_context,
+                export_chunks: !options.no_chunks,
+                chunk_size: options.chunk_size,
+                context_output_dir: options.context_output_dir.clone(),
+                chunks_output_dir: options.chunks_output_dir.clone(),
+                details: options.details,
+            },
+        )?;
+
+        if summary.context_files_written > 0 || summary.chunk_files_written > 0 {
+            eprintln!(
+                "Exported {} context file(s) to {} and {} chunk file(s) to {}",
+                summary.context_files_written,
+                options.context_output_dir.display(),
+                summary.chunk_files_written,
+                options.chunks_output_dir.display()
+            );
+        }
+    }
+
+    let report = &scan_output.report;
+
     if options.json {
-        println!("{}", format_scan_report_json(&report, options.details)?);
+        println!("{}", format_scan_report_json(report, options.details)?);
     } else {
-        print!("{}", format_scan_report(&report, options.details));
+        print!("{}", format_scan_report(report, options.details));
     }
 
     if !options.no_fail {
@@ -56,7 +87,7 @@ pub(crate) fn execute_scan(options: ScanCommandOptions) -> Result<()> {
             .iter()
             .filter(|finding| {
                 options.details
-                    || finding_language(&report, finding).is_none_or(|language| {
+                    || finding_language(report, finding).is_none_or(|language| {
                         !is_detail_only_rule(finding.rule_id.as_str(), language)
                     })
             })

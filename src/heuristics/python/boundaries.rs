@@ -1372,7 +1372,9 @@ pub(super) fn pydantic_settings_no_prefix_file_findings(file: &ParsedFile) -> Ve
             let value = literal.value.as_str();
             value.ends_with('_')
                 && value.len() >= 3
-                && value.chars().all(|ch| ch.is_ascii_uppercase() || ch == '_' || ch.is_ascii_digit())
+                && value
+                    .chars()
+                    .all(|ch| ch.is_ascii_uppercase() || ch == '_' || ch.is_ascii_digit())
         });
     let has_env_prefix_in_source = read_to_string_limited(&file.path, DEFAULT_MAX_BYTES)
         .ok()

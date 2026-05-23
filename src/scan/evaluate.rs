@@ -87,10 +87,10 @@ fn apply_rule_fixture_coverage_expectations(findings: &mut Vec<Finding>, files: 
 }
 
 fn rule_fixture_coverage_expectation(path: &Path) -> Option<(String, bool)> {
-    let mut components = path.components().map(|component| component.as_os_str());
+    let components = path.components().map(|component| component.as_os_str());
     let mut saw_internal = false;
     let mut saw_rule_coverage = false;
-    while let Some(component) = components.next() {
+    for component in components {
         if component == "internal" {
             saw_internal = true;
             continue;

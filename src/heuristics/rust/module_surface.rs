@@ -270,7 +270,10 @@ fn bootstrap_sequence_findings(file: &ParsedFile) -> Vec<Finding> {
             "connect_cache().await",
             "load_config().await",
         ];
-        let marker_hits = markers.iter().filter(|marker| body.contains(**marker)).count();
+        let marker_hits = markers
+            .iter()
+            .filter(|marker| body.contains(**marker))
+            .count();
         if marker_hits >= 2 {
             bootstrap_hits.push((
                 function.fingerprint.name.clone(),

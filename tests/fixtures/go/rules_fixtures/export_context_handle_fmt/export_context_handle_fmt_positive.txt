@@ -1,0 +1,9 @@
+package main
+
+import "fmt"
+
+// scenario for export_context_handle_fmt: single-function repo used to verify context export output.
+// fixture polarity: positive; family: export; severity: info.
+func Handle() {
+	_ = fmt.Sprintf("%s", "x")
+}

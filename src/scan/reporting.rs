@@ -22,9 +22,9 @@ fn file_report(parsed_file: &ParsedFile) -> FileReport {
 }
 
 fn is_rule_fixture_coverage_path(path: &std::path::Path) -> bool {
-    let mut components = path.components().map(|component| component.as_os_str());
+    let components = path.components().map(|component| component.as_os_str());
     let mut saw_internal = false;
-    while let Some(component) = components.next() {
+    for component in components {
         if component == "internal" {
             saw_internal = true;
             continue;

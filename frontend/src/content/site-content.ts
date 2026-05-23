@@ -139,7 +139,7 @@ export const terminalFlow = [
   },
   {
     prompt: 'deslop scan . > results.txt',
-    output: 'Run a repository scan locally and keep the report readable enough for fast human review.',
+    output: 'Run a repository scan locally, save the report, and export review context to scripts/findings/functions plus chunks under scripts/chunks.',
   },
 ]
 
@@ -301,7 +301,7 @@ export const quickStartItems: QuickStartItem[] = [
   {
     label: 'Scan the current repository',
     channel: 'CLI',
-    description: 'Run deslop from the repository root and save a readable report you can review locally or attach to CI output. Add `--enable-semantic` when you want the deeper Go loop heuristics forced on for that run.',
+    description: 'Run deslop from the repository root and save a readable report you can review locally or attach to CI output. Scan also exports function context files and chunks by default. Add `--enable-semantic` when you want the deeper Go loop heuristics forced on for that run.',
     snippet: ['deslop scan . > results.txt'],
     showPrompt: true,
   },

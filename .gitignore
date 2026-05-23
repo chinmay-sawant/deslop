@@ -56,3 +56,4 @@ logs/
 /scripts/findings
 /frontend/public/findings
 /docs/findings
+*chunks*
