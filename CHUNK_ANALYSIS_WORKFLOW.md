@@ -20,6 +20,9 @@ Produce a deterministic CSV with one row per finding.
 - Each finding gets exactly one decision.
 - Allowed decision labels are only `true_positive` and `false_positive`.
 - Output must be machine-readable CSV with stable header.
+- Do not auto-mark findings as `false_positive` when `Function: [FUNCTION_NOT_FOUND]` appears.
+- Always analyze the full finding context in chunk text first, then verify against the referenced source path from `Source: /abs/path/file.ext:line`.
+- Source-file validation is mandatory for adjudication when path is available.
 
 ## Current Dataset Snapshot
 
@@ -74,8 +77,25 @@ Typical false-positive cases:
 - Snippet is benign/intentional
 - Snippet does not include the claimed risky behavior
 - Evidence is insufficient to support defect claim
+- Rule text is generic but source-file inspection disproves the claim for the referenced location
 
 No third category is allowed.
+
+## Mandatory Context-First Rule (Critical)
+
+For every finding:
+
+1. Read the full finding block from chunk file, including:
+   - `Rule`
+   - `Rule description`
+   - `Message`
+   - `Auto triage note`
+   - `Function` block
+2. If function body is missing (`[FUNCTION_NOT_FOUND]`), do **not** stop.
+3. Open the referenced file from `Source:` and inspect around the cited line.
+4. Decide TP/FP only after chunk-context + source-file cross-check.
+
+This rule overrides any earlier shortcut that treated missing function snippets as automatic FP.
 
 ## CSV Output Contract
 
@@ -121,10 +141,12 @@ Each subagent must:
 
 1. Read every assigned chunk file in full.
 2. Parse every finding block.
-3. Review rule intent + snippet manually.
-4. Emit exactly one CSV row per finding.
-5. Use global `subchunk_number` from `Finding X/TOTAL`.
-6. Write only its own part CSV file.
+3. Review rule intent + chunk context manually.
+4. Open referenced source files and inspect cited locations.
+5. If `FUNCTION_NOT_FOUND`, continue adjudication using message/rule/source file context.
+6. Emit exactly one CSV row per finding.
+7. Use global `subchunk_number` from `Finding X/TOTAL`.
+8. Write only its own part CSV file.
 
 ## Merge Target
 

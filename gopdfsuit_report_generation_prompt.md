@@ -5,6 +5,15 @@ Use this prompt to reproduce the same end-to-end process for any repository.
 ## Objective
 Run a 6-subagent adjudication pipeline over a triage markdown table and classify findings into `TP`, `FP`, or `REVIEW_REQUIRED` with evidence-backed reasoning.
 
+## Critical Adjudication Rule Update
+
+- Do not classify a finding as `FP` just because function text is missing in one evidence artifact (for example `Function: [FUNCTION_NOT_FOUND]` in chunk-style inputs).
+- Always combine:
+  - finding/chunk context (`Rule`, `Rule description`, `Message`, `Auto triage note`)
+  - and source-file verification at referenced path/line
+- If a source path exists, inspect the file before final verdict.
+- This rule is mandatory for all six agents (auditors/debaters/provers).
+
 ## Required Agent Roles
 Use exactly 6 subagents:
 1. Auditor-1
@@ -48,6 +57,7 @@ Example placeholders:
 - Do not do heuristic-only classification.
 - Do not use random regex shortcuts to classify.
 - Use explicit row evidence + mapped numbered text-file evidence.
+- When row evidence is incomplete, retrieve and inspect referenced source file paths before deciding.
 
 ## Batch Number Mapping Rule
 For batch index `k` (1-based), start finding number is:
@@ -65,6 +75,7 @@ So starts are: `1, 1001, 2001, 3001, 4001, 5001, ...`
 5. For every row audited, consume:
    - row metadata from batch table
    - mapped evidence file: `<EVIDENCE_DIR>/<global_finding_id>.txt`
+   - referenced source file (if path/line available in row or mapped evidence)
 6. Auditor outputs must include verdict + confidence + short evidence reason.
 7. Debaters cross-review auditor outputs and disagreements, again checking mapped evidence files.
 8. Provers independently generate final verdicts using auditor+debater outputs and evidence checks.
@@ -102,6 +113,7 @@ For `final_adjudication_all_with_text_paths.csv`:
 ## Quality Checks
 - Row coverage must be complete (1..N with no gaps).
 - All batch rows must map to a valid numbered evidence file.
+- For rows with source-path references, verify source-file inspection happened before verdict.
 - Report totals for `TP`, `FP`, `REVIEW_REQUIRED`.
 - Report line counts for all key CSV outputs.
 
