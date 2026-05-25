@@ -162,7 +162,7 @@ pub(super) fn unrelated_heavy_import_findings(file: &ParsedFile) -> Vec<Finding>
 }
 
 pub(super) fn obvious_commentary_findings(file: &ParsedFile) -> Vec<Finding> {
-    if file.is_test_file {
+    if file.is_test_file || !file.has_strong_code_anchors() {
         return Vec::new();
     }
 
@@ -192,7 +192,7 @@ pub(super) fn obvious_commentary_findings(file: &ParsedFile) -> Vec<Finding> {
 }
 
 pub(super) fn enthusiastic_commentary_findings(file: &ParsedFile) -> Vec<Finding> {
-    if file.is_test_file {
+    if file.is_test_file || !file.has_strong_code_anchors() {
         return Vec::new();
     }
 

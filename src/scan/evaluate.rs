@@ -6,6 +6,7 @@ use crate::analysis::{AnalysisConfig, ParsedFile, registered_backends};
 use crate::heuristics::{evaluate_file, evaluate_repo};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
+use crate::model::Severity;
 
 use crate::{
     RuleLanguage, default_finding_severity, is_async_rollout_rule, rule_metadata_variants,
@@ -57,7 +58,65 @@ pub(super) fn evaluate_findings(
     findings.dedup_by(|a, b| {
         a.path == b.path && a.start_line == b.start_line && a.rule_id == b.rule_id
     });
+    findings = apply_burst_cap(findings);
     findings
+}
+
+fn apply_burst_cap(findings: Vec<Finding>) -> Vec<Finding> {
+    const BURST_THRESHOLD: usize = 8;
+    const KEEP_PER_BURST: usize = 4;
+
+    let mut grouped: BTreeMap<(PathBuf, usize), Vec<Finding>> = BTreeMap::new();
+    for finding in findings {
+        grouped
+            .entry((finding.path.clone(), finding.start_line))
+            .or_default()
+            .push(finding);
+    }
+
+    let mut capped = Vec::new();
+    for ((_path, _line), mut group) in grouped {
+        let in_rule_coverage_fixture = group
+            .first()
+            .is_some_and(|finding| finding.path.to_string_lossy().contains("/internal/rule_coverage/"));
+        if in_rule_coverage_fixture {
+            capped.extend(group);
+            continue;
+        }
+
+        if group.len() <= BURST_THRESHOLD {
+            capped.extend(group);
+            continue;
+        }
+
+        group.sort_by(|left, right| {
+            severity_rank(&right.severity)
+                .cmp(&severity_rank(&left.severity))
+                .then(left.rule_id.cmp(&right.rule_id))
+        });
+        capped.extend(group.into_iter().take(KEEP_PER_BURST));
+    }
+
+    capped.sort_by(|left, right| {
+        left.path
+            .cmp(&right.path)
+            .then(left.start_line.cmp(&right.start_line))
+            .then(left.rule_id.cmp(&right.rule_id))
+    });
+    capped
+}
+
+#[cfg(test)]
+pub(super) fn apply_test_burst_cap(findings: Vec<Finding>) -> Vec<Finding> {
+    apply_burst_cap(findings)
+}
+
+const fn severity_rank(severity: &Severity) -> u8 {
+    match severity {
+        Severity::Error => 3,
+        Severity::Warning => 2,
+        Severity::Info => 1,
+    }
 }
 
 fn apply_rule_fixture_coverage_expectations(findings: &mut Vec<Finding>, files: &[ParsedFile]) {

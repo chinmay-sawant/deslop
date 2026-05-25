@@ -19,7 +19,7 @@ pub(crate) fn build_chunk_content(
             parts.push(separator.to_string());
             parts.push(String::new());
         }
-        parts.push(block.text.trim_end().to_string());
+        parts.push(block.text.clone());
     }
 
     format!("{}\n", parts.join("\n"))

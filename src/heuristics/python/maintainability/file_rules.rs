@@ -4,7 +4,7 @@ use crate::model::{Finding, Severity};
 use super::helpers::is_commented_code;
 
 pub(crate) fn commented_out_code_findings(file: &ParsedFile) -> Vec<Finding> {
-    if file.is_test_file {
+    if file.is_test_file || !file.has_strong_code_anchors() {
         return Vec::new();
     }
 

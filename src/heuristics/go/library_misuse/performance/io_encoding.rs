@@ -93,6 +93,24 @@ fn binary_read_single_field(
     for alias in import_aliases_for(file, "encoding/binary") {
         for bl in lines {
             if bl.text.contains(&format!("{alias}.Read(")) && bl.text.contains('&') {
+                if !bl.in_loop {
+                    continue;
+                }
+                let scalar_read_pattern = bl.text.contains("LittleEndian")
+                    || bl.text.contains("BigEndian")
+                    || bl.text.contains("binary.")
+                    || bl.text.contains("order");
+                let likely_struct_or_bulk = bl.text.contains("&struct")
+                    || bl.text.contains("&msg")
+                    || bl.text.contains("&packet")
+                    || bl.text.contains("&header")
+                    || bl.text.contains("&buf")
+                    || bl.text.contains("&v")
+                    || bl.text.contains("[]")
+                    || bl.text.contains("make(");
+                if !scalar_read_pattern || likely_struct_or_bulk {
+                    continue;
+                }
                 findings.push(Finding {
                     rule_id: "binary_read_for_single_field".into(),
                     severity: Severity::Info,

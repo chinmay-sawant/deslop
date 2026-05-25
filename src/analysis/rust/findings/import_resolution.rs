@@ -81,6 +81,10 @@ pub(super) fn rust_import_findings(
             }
             ImportResolution::Ambiguous(_) => continue,
             ImportResolution::Unresolved => {
+                if !import_matches_local_module(index, &file.path, &import_path, &call.name) {
+                    continue;
+                }
+
                 findings.push(Finding {
                     rule_id: "hallucinated_import_call".to_string(),
                     severity: Severity::Warning,

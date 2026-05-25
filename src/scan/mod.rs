@@ -14,6 +14,8 @@ use crate::{Result, load_repository_config};
 
 #[cfg(test)]
 use self::evaluate::apply_repository_config;
+#[cfg(test)]
+use self::evaluate::apply_test_burst_cap;
 use self::evaluate::evaluate_findings;
 use self::file_analysis::analyze_discovered_files;
 #[cfg(test)]

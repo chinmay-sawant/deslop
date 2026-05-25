@@ -680,6 +680,8 @@ pub(super) fn project_agnostic_performance_findings(
                 "row_factory",
             ],
         )
+        && lower_body.contains(".copy(")
+        && (lower_body.contains(".values()") || lower_body.contains(".items()"))
     {
         findings.push(push(
             "copy_of_mapping_created_only_to_read_values",

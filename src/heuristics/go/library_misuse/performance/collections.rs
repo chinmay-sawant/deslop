@@ -256,6 +256,14 @@ fn slice_grow_without_cap_hint(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let append_count_in_loops = lines
+        .iter()
+        .filter(|line| line.in_loop && line.text.contains("append("))
+        .count();
+    if append_count_in_loops < 2 {
+        return findings;
+    }
+
     for bl in lines {
         if !bl.in_loop || !bl.text.contains("append(") {
             continue;
@@ -270,6 +278,20 @@ fn slice_grow_without_cap_hint(
             continue;
         };
         if !is_identifier_name(target) {
+            continue;
+        }
+        let Some(range_var) = nearest_range_loop_var(lines, bl.line) else {
+            continue;
+        };
+        if !bl.text.contains(&range_var) {
+            continue;
+        }
+        let has_bound_nearby = lines.iter().any(|line| {
+            line.line <= bl.line
+                && line.line + 12 >= bl.line
+                && (line.text.contains("len(") || line.text.contains(" range "))
+        });
+        if !has_bound_nearby {
             continue;
         }
         if slice_reuses_existing_capacity(lines, target, bl.line, &bl.text) {
@@ -303,6 +325,28 @@ fn slice_grow_without_cap_hint(
         }
     }
     findings
+}
+
+fn nearest_range_loop_var(lines: &[BodyLine], line: usize) -> Option<String> {
+    let mut found = None;
+    for prior in lines.iter().filter(|l| l.line < line) {
+        if !prior.text.contains("for ") || !prior.text.contains(" range ") {
+            continue;
+        }
+        let distance = line.saturating_sub(prior.line);
+        if distance > 8 {
+            continue;
+        }
+        if let Some((lhs, _rhs)) = prior.text.split_once(":= range ") {
+            let parts = lhs.split(',').map(str::trim).collect::<Vec<_>>();
+            if let Some(last) = parts.last()
+                && is_identifier_name(last)
+            {
+                found = Some((*last).to_string());
+            }
+        }
+    }
+    found
 }
 
 fn slice_reuses_existing_capacity(

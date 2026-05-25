@@ -1535,7 +1535,7 @@ pub(super) fn test_imports_private_module_findings(
     }
     let imports: Vec<&str> = file.imports.iter().map(|i| i.path.as_str()).collect();
     for imp in imports {
-        if imp.contains("._") || imp.contains("._impl") || imp.contains("._internal") {
+        if imp.contains("._internal") || imp.contains("._impl") {
             return vec![Finding {
                 rule_id: "test_imports_private_production_module".to_string(),
                 severity: Severity::Info,

@@ -76,7 +76,15 @@ pub(crate) fn build_finding_block(
         block_lines.extend([
             format!("Source: {}:{}", finding.path.display(), finding.start_line),
             format!("Rule: [{}]", finding.rule_id),
+            format!("Rule severity: [{severity}]"),
+            format!("Rule status: [{status}]"),
             format!("Rule description: {description}"),
+            format!("Message: {}", finding.message),
+            format!(
+                "Function range: [{}-{}]",
+                function_context.start_line, function_context.end_line
+            ),
+            format!("Auto triage: [{}]", triage.label),
             format!("Auto triage note: {}", triage.note),
             "Function:".to_string(),
         ]);
@@ -146,7 +154,11 @@ fn build_missing_file_block(
         block_lines.extend([
             format!("Source: {}:{}", finding.path.display(), finding.start_line),
             format!("Rule: [{}]", finding.rule_id),
+            format!("Rule severity: [{severity}]"),
+            format!("Rule status: [{status}]"),
             format!("Rule description: {description}"),
+            format!("Message: {}", finding.message),
+            format!("Auto triage: [{}]", triage.label),
             format!("Auto triage note: {}", triage.note),
             "Function: [FILE_NOT_FOUND]".to_string(),
         ]);

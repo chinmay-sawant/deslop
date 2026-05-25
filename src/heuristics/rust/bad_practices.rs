@@ -5426,10 +5426,15 @@ fn rule_body_match(spec: &RuleSpec, body_lower: &str) -> bool {
     {
         return false;
     }
-    spec.markers
+    let actionable_matches = spec
+        .markers
         .iter()
         .filter(|marker| marker_is_actionable(marker))
-        .any(|marker| body_lower.contains(&marker.to_ascii_lowercase()))
+        .filter(|marker| body_lower.contains(&marker.to_ascii_lowercase()))
+        .count();
+
+    let required = minimum_actionable_matches(spec);
+    actionable_matches >= required
 }
 
 fn first_match_line(
@@ -5488,6 +5493,23 @@ fn marker_is_actionable(marker: &str) -> bool {
         || marker.contains('.')
         || marker.contains('_')
         || marker.chars().any(|ch| ch.is_ascii_uppercase())
+}
+
+fn minimum_actionable_matches(spec: &RuleSpec) -> usize {
+    if !spec.required_evidence.is_empty() {
+        return 1;
+    }
+    if spec.loop_only || spec.file_only || spec.manifest_only {
+        return 1;
+    }
+
+    let actionable = spec
+        .markers
+        .iter()
+        .filter(|marker| marker_is_actionable(marker))
+        .count();
+
+    if actionable >= 4 { 2 } else { 1 }
 }
 
 fn rule_severity(rule_id: &str) -> Severity {

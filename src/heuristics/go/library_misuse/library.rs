@@ -548,6 +548,13 @@ fn logging_findings(
             || bl.text.contains(".Errorf("))
             && bl.text.contains("err")
         {
+            let has_context_wrap = bl.text.contains("%w")
+                || bl.text.contains("witherror(")
+                || bl.text.contains("withfields(")
+                || bl.text.contains("stack");
+            if !has_context_wrap {
+                continue;
+            }
             for next in lines.iter().skip(i + 1).take(3) {
                 if next.text.starts_with("return") && next.text.contains("err") {
                     findings.push(Finding {

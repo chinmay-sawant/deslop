@@ -1,4 +1,4 @@
-.PHONY: build test clean fmt lint help scan scan-info scan-gopdfsuit scan-gopdfsuit-info scan-snapback scan-snapback-info scan-claw scan-claw-info
+.PHONY: build test clean fmt lint help scan scan-info scan-gopdfsuit scan-gopdfsuit-info scan-snapback scan-snapback-info scan-claw scan-claw-info fp-regression-check
 
 # Path to scan (can be overridden with 'make scan PATH=<path>')
 # For now hardcoded the path for personal use, you can customize this as required
@@ -7,6 +7,8 @@ PATH_TO_SCAN_SNAPBACK ?= /home/chinmay/ChinmayPersonalProjects/SnapBack
 PATH_TO_SCAN ?= .
 PATH_TO_SCAN_CLAW ?= /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/claw-code-main
 WSL_REPO_ROOT ?= /home/chinmay/ChinmayPersonalProjects/deslop
+BASELINE_CSV ?= reports/chunk_analysis_all_baseline.csv
+CURRENT_CSV ?= reports/chunk_analysis_all.csv
 CARGO ?= cargo
 
 ifeq ($(OS),Windows_NT)
@@ -62,6 +64,9 @@ scan-claw:
 scan-claw-info:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_CLAW) --ignore hallucinated_import_call --no-fail > temp_claw.txt
 
+fp-regression-check:
+	python3 scripts/fp_regression_check.py --baseline $(BASELINE_CSV) --current $(CURRENT_CSV) --max-global-fp-delta 0 --max-per-rule-fp-delta 0
+
 # Clean build artifacts and temporary files
 clean:
 	$(CARGO) clean
@@ -93,4 +98,5 @@ help:
 	@echo "  scan-snapback-info - Informational snapback scan that keeps output but does not fail make"
 	@echo "  scan-claw - Scan the claw project and save results to temp_claw.txt"
 	@echo "  scan-claw-info - Informational claw scan that keeps output but does not fail make"
+	@echo "  fp-regression-check - Compare baseline and current chunk-analysis FP drift using scripts/fp_regression_check.py"
 	@echo "  temp        - Run a temporary scan on the real repo project and process results"

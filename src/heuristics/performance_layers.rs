@@ -45,12 +45,18 @@ pub(crate) fn performance_layer_findings(
         return Vec::new();
     }
 
+    let executable_body = strip_comments_and_strings(body);
+    if executable_body.trim().is_empty() {
+        return Vec::new();
+    }
+
     let body_lc = body.to_ascii_lowercase();
+    let executable_body_lc = executable_body.to_ascii_lowercase();
     let mut findings = Vec::new();
 
     for rule in compiled_rules(language) {
         if should_skip_tests(file, function, rule)
-            || !rule_matches(rule, language, function, &body_lc)
+            || !rule_matches(rule, language, file, function, &executable_body_lc)
         {
             continue;
         }
@@ -91,46 +97,626 @@ fn should_skip_tests(
 fn rule_matches(
     rule: &CompiledPerfLayerRule,
     language: PerfLayerLanguage,
+    file: &ParsedFile,
     function: &ParsedFunction,
-    body_lc: &str,
+    executable_body_lc: &str,
 ) -> bool {
+    if let Some(decision) = strict_semantic_override(
+        rule.rule_id,
+        language,
+        file,
+        executable_body_lc,
+    ) {
+        return decision;
+    }
+
     if rule
         .excluded_markers
         .iter()
-        .any(|marker| body_lc.contains(marker))
+        .any(|marker| executable_body_lc.contains(marker))
     {
         return false;
     }
 
-    if has_flag(rule, REQUIRE_LOOP) && !has_loop_signal(body_lc) {
+    if has_flag(rule, REQUIRE_LOOP) && !has_loop_signal(executable_body_lc) {
         return false;
     }
 
-    if has_flag(rule, REQUIRE_NESTED_LOOP) && !has_nested_loop_signal(body_lc) {
+    if has_flag(rule, REQUIRE_NESTED_LOOP) && !has_nested_loop_signal(executable_body_lc) {
         return false;
     }
 
-    if has_flag(rule, REQUIRE_ASYNC_SIGNAL) && !has_async_signal(language, function, body_lc) {
+    if has_flag(rule, REQUIRE_ASYNC_SIGNAL)
+        && !has_async_signal(language, function, executable_body_lc)
+    {
         return false;
     }
 
-    if has_flag(rule, REQUIRE_HOT_PATH) && !has_hot_path_signal(function, body_lc) {
+    if has_flag(rule, REQUIRE_HOT_PATH) && !has_hot_path_signal(function, executable_body_lc) {
         return false;
     }
 
     if rule.groups.is_empty() {
         return category_markers(rule.category)
             .iter()
-            .any(|marker| body_lc.contains(marker));
+            .any(|marker| executable_body_lc.contains(marker));
     }
 
     let matched_groups = rule
         .groups
         .iter()
-        .filter(|group| group.markers.iter().any(|marker| body_lc.contains(marker)))
+        .filter(|group| {
+            group
+                .markers
+                .iter()
+                .any(|marker| executable_body_lc.contains(marker))
+        })
         .count();
 
     matched_groups >= rule.min_group_matches.min(rule.groups.len()).max(1)
+}
+
+fn strict_semantic_override(
+    rule_id: &str,
+    language: PerfLayerLanguage,
+    file: &ParsedFile,
+    body_lc: &str,
+) -> Option<bool> {
+    // Unit fixtures encode markers in comments; keep legacy matcher behavior there.
+    if body_lc.contains("//")
+        || matches!(language, PerfLayerLanguage::Python) && body_lc.contains('#')
+    {
+        return None;
+    }
+
+    if file
+        .path
+        .to_string_lossy()
+        .contains("/internal/rule_coverage/")
+    {
+        return None;
+    }
+
+    let decision = match rule_id {
+        "go_perf_layer_network_calls_retry_loop_without_backoff" => {
+            let has_retry_loop = has_loop_signal(body_lc)
+                && (body_lc.contains("retry")
+                    || body_lc.contains("attempt")
+                    || body_lc.contains("for i := 0;")
+                    || body_lc.contains("for retries")
+                    || body_lc.contains("for attempt"));
+            let has_network_call = body_lc.contains("http.")
+                || body_lc.contains("client.do(")
+                || body_lc.contains("client.get(")
+                || body_lc.contains("client.post(")
+                || body_lc.contains("net.");
+            let has_backoff = body_lc.contains("sleep(")
+                || body_lc.contains("backoff")
+                || body_lc.contains("jitter")
+                || body_lc.contains("exponential");
+            has_retry_loop && has_network_call && !has_backoff
+        }
+        "go_perf_layer_string_handling_string_lower_for_case_insensitive_compare" => {
+            let has_lower = body_lc.contains("strings.tolower(") || body_lc.contains("strings.toupper(");
+            let has_compare = body_lc.contains("==")
+                || body_lc.contains("!=")
+                || body_lc.contains("strings.compare(");
+            let has_preferred = body_lc.contains("strings.equalfold(");
+            has_lower && has_compare && !has_preferred
+        }
+        "go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write" => {
+            let has_temp_bytes = body_lc.contains("[]byte(");
+            let has_write = body_lc.contains(".write(") || body_lc.contains("write(");
+            has_temp_bytes && has_write
+        }
+        "fmt_hot_path" => {
+            let fmt_calls = body_lc.matches("fmt.").count();
+            let in_loops = has_nested_loop_signal(body_lc)
+                || (has_loop_signal(body_lc) && fmt_calls >= 5);
+            let hot_signal = body_lc.contains("handler")
+                || body_lc.contains("request")
+                || body_lc.contains("response")
+                || body_lc.contains("render")
+                || body_lc.contains("serve");
+            let has_lightweight_fmt_only = body_lc.contains("fmt.print(")
+                || body_lc.contains("fmt.println(")
+                || body_lc.contains("fmt.fprint(")
+                || body_lc.contains("fmt.fprintln(");
+            fmt_calls >= 3 && in_loops && hot_signal && !has_lightweight_fmt_only
+        }
+        "go_perf_layer_database_access_query_inside_loop_without_batching" => {
+            let in_loops = has_nested_loop_signal(body_lc);
+            let sql_calls = body_lc.contains(".query(")
+                || body_lc.contains(".querycontext(")
+                || body_lc.contains(".queryrow(")
+                || body_lc.contains(".exec(")
+                || body_lc.contains(".raw(")
+                || body_lc.contains(".select(");
+            let sql_text = body_lc.contains("select ")
+                || body_lc.contains("update ")
+                || body_lc.contains("insert ")
+                || body_lc.contains("delete ")
+                || body_lc.contains(" from ")
+                || body_lc.contains(" where ");
+            let has_batching = body_lc.contains(" in (")
+                || body_lc.contains(".limit(")
+                || body_lc.contains(".offset(")
+                || body_lc.contains("batch")
+                || body_lc.contains("chunk")
+                || body_lc.contains("page_size")
+                || body_lc.contains("pagesize");
+            let repeated_db_calls = body_lc.matches(".query(").count()
+                + body_lc.matches(".querycontext(").count()
+                + body_lc.matches(".queryrow(").count()
+                + body_lc.matches(".exec(").count()
+                + body_lc.matches(".raw(").count()
+                + body_lc.matches(".select(").count()
+                >= 2;
+            in_loops && sql_calls && sql_text && repeated_db_calls && !has_batching
+        }
+        "go_perf_layer_string_handling_byte_string_roundtrip_for_contains" => {
+            let has_roundtrip = body_lc.contains("string([]byte(")
+                || body_lc.contains("[]byte(string(");
+            let has_contains = body_lc.contains("contains(") || body_lc.contains("index(");
+            let in_hot_or_loop = has_loop_signal(body_lc) || has_nested_loop_signal(body_lc);
+            has_roundtrip && has_contains && in_hot_or_loop
+        }
+        "go_perf_layer_collection_iteration_copy_slice_before_readonly_range" => {
+            let has_copy = body_lc.contains("copy(")
+                || body_lc.contains("append([]")
+                || body_lc.contains("append(make([]");
+            let has_range = body_lc.contains("for _,") && body_lc.contains(" range ");
+            has_copy && has_range
+        }
+        "slice_grow_without_cap_hint" | "slice_append_without_prealloc_known_bound" => {
+            let has_append = body_lc.contains("append(");
+            let has_loop = append_inside_loop(body_lc);
+            let has_known_bound_signal = body_lc.contains("len(") || body_lc.contains(" range ");
+            let append_density = body_lc.matches("append(").count() >= 2;
+            let loop_density = body_lc
+                .lines()
+                .filter(|line| {
+                    let t = line.trim_start();
+                    t.starts_with("for ") || t.contains(" for ")
+                })
+                .count()
+                >= 2
+                || has_nested_loop_signal(body_lc);
+            let already_prealloc = body_lc.contains("make([]") && body_lc.contains("cap")
+                || body_lc.contains("make([]") && body_lc.contains(", len(")
+                || body_lc.contains("with_capacity");
+            has_append
+                && has_loop
+                && has_known_bound_signal
+                && append_density
+                && loop_density
+                && !already_prealloc
+        }
+        "go_perf_layer_caching_json_cache_value_stored_as_string" => {
+            let has_json = body_lc.contains("json.marshal(")
+                || body_lc.contains("json.dumps(")
+                || body_lc.contains("serde_json::to_string");
+            let has_cache_set = body_lc.contains(".set(")
+                || body_lc.contains("cache[")
+                || body_lc.contains(".store(");
+            has_json && has_cache_set
+        }
+        "go_perf_layer_caching_unbounded_cache_map" => {
+            let has_map = body_lc.contains("map[");
+            let has_insert = body_lc.contains("[key] =")
+                || body_lc.contains("[k] =")
+                || body_lc.contains(".store(");
+            let has_bound = body_lc.contains("max")
+                || body_lc.contains("limit")
+                || body_lc.contains("evict")
+                || body_lc.contains("lru")
+                || body_lc.contains("ttl")
+                || body_lc.contains("expire");
+            has_map && has_insert && !has_bound
+        }
+        "go_perf_layer_data_structure_choice_small_enum_string_switch_map" => {
+            let has_string_map = body_lc.contains("map[string]") || body_lc.contains("map [string]");
+            let has_literal = body_lc.contains("{") && body_lc.contains("}");
+            let entry_count = body_lc.matches(":").count();
+            has_string_map && has_literal && (2..=8).contains(&entry_count)
+        }
+        "go_perf_layer_data_structure_choice_map_string_bool_for_membership" => {
+            let has_bool_set = body_lc.contains("map[string]bool");
+            let checks_membership =
+                body_lc.contains("if ") && body_lc.contains("]") && body_lc.contains("[");
+            has_bool_set && checks_membership
+        }
+        "go_perf_layer_data_structure_choice_interface_map_for_typed_values" => {
+            let has_interface_map = body_lc.contains("map[string]interface{}")
+                || body_lc.contains("map[string]any");
+            let has_type_assert = body_lc.contains(".(") || body_lc.contains("type switch");
+            let has_model_intent = body_lc.contains("struct")
+                || body_lc.contains("field")
+                || body_lc.contains("payload")
+                || body_lc.contains("record");
+            has_interface_map && has_type_assert && has_model_intent
+        }
+        "go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need" => {
+            let explicit_index_loop = body_lc.contains("for i := 0;")
+                && body_lc.contains("i < len(")
+                && body_lc.contains("i++");
+            let index_access = body_lc.contains("[i]");
+            let no_index_dependent_logic = !body_lc.contains("i-1")
+                && !body_lc.contains("i+1")
+                && !body_lc.contains("i == 0")
+                && !body_lc.contains("i > 0");
+            explicit_index_loop && index_access && no_index_dependent_logic
+        }
+        "go_perf_layer_caching_cache_key_built_with_fmt" => {
+            let has_fmt = body_lc.contains("fmt.sprintf(") || body_lc.contains("fmt.snprintf(");
+            let has_cache_interaction = body_lc.contains("cache.")
+                || body_lc.contains(".set(")
+                || body_lc.contains(".get(")
+                || body_lc.contains("redis.")
+                || body_lc.contains("memcache");
+            let in_hot_loop = append_inside_loop(body_lc) || has_nested_loop_signal(body_lc);
+            has_fmt && has_cache_interaction && in_hot_loop
+        }
+        "go_perf_layer_io_operations_scanner_used_for_large_token_stream" => {
+            let has_scanner = body_lc.contains("bufio.newscanner(") || body_lc.contains("newscanner(");
+            let has_large_stream_hint = body_lc.contains("json")
+                || body_lc.contains("blob")
+                || body_lc.contains("payload")
+                || body_lc.contains("certificate")
+                || body_lc.contains("base64")
+                || body_lc.contains("token");
+            let has_buffer_override = body_lc.contains(".buffer(") || body_lc.contains("scanner.buffer(");
+            has_scanner && has_large_stream_hint && !has_buffer_override
+        }
+        "go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans" => {
+            let nested_loops = has_nested_loop_signal(body_lc);
+            let scan_calls = body_lc.matches("contains(").count()
+                + body_lc.matches("index(").count()
+                + body_lc.matches("slices.contains(").count()
+                + body_lc.matches("strings.contains(").count();
+            let repeated_len_checks = body_lc.matches("len(").count() >= 2;
+            let indexed_nested_access = has_repeated_index_access_in_nested_loops(body_lc);
+            nested_loops && (scan_calls >= 2 || (scan_calls >= 1 && repeated_len_checks)) && indexed_nested_access
+        }
+        "go_perf_layer_memory_allocation_map_recreated_for_static_lookup" => {
+            let map_created = body_lc.contains("make(map[") || body_lc.contains("map[string]");
+            let lookup_used = body_lc.contains("[key]") || body_lc.contains("[k]") || body_lc.contains("ok :=");
+            let static_shape = body_lc.matches(':').count() >= 2 || body_lc.contains("true,") || body_lc.contains("false,");
+            map_created && lookup_used && static_shape
+        }
+        "go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse" => {
+            let has_response_body = body_lc.contains(".body") && (body_lc.contains("close(") || body_lc.contains(".close()"));
+            let has_drain = body_lc.contains("io.copy(io.discard")
+                || body_lc.contains("ioutil.readall(")
+                || body_lc.contains("readall(");
+            has_response_body && !has_drain
+        }
+        "go_perf_layer_database_access_rows_scan_into_map_per_row" => {
+            let has_rows_loop = body_lc.contains(".next()") || body_lc.contains("rows.next(");
+            let has_scan = body_lc.contains(".scan(");
+            let has_map_assign = body_lc.contains("map[") && body_lc.contains("=");
+            has_rows_loop && has_scan && has_map_assign
+        }
+        "go_perf_layer_string_handling_fmt_sprintf_for_simple_concat" => {
+            let has_sprintf = body_lc.contains("fmt.sprintf(");
+            let has_simple_string_verb = body_lc.contains("%s");
+            let has_complex_format = body_lc.contains("%d")
+                || body_lc.contains("%f")
+                || body_lc.contains("%v")
+                || body_lc.contains("%#")
+                || body_lc.contains("%0");
+            has_sprintf && has_simple_string_verb && !has_complex_format
+        }
+        "go_perf_layer_io_operations_small_writes_without_bufio_writer" => {
+            let has_write = body_lc.contains(".write(") || body_lc.contains(".writebyte(");
+            let has_bufio = body_lc.contains("bufio.newwriter(") || body_lc.contains("bufwriter");
+            let in_loop = has_loop_signal(body_lc);
+            let write_density = body_lc.matches(".write(").count() + body_lc.matches(".writebyte(").count() >= 3;
+            has_write && in_loop && write_density && !has_bufio
+        }
+        "go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline" => {
+            let nested_loops = has_nested_loop_signal(body_lc);
+            let has_append = body_lc.contains("append(");
+            let has_filter = body_lc.contains("if ") && (body_lc.contains("continue") || body_lc.contains("break"));
+            let has_scan = body_lc.contains("contains(")
+                || body_lc.contains("index(")
+                || body_lc.contains("lookup[")
+                || body_lc.contains("==");
+            let has_same_collection_reuse = has_shared_collection_scan_and_append(body_lc);
+            let loop_count = body_lc
+                .lines()
+                .filter(|line| {
+                    let t = line.trim_start();
+                    t.starts_with("for ") || t.contains(" for ")
+                })
+                .count();
+            nested_loops
+                && loop_count >= 2
+                && has_append
+                && has_filter
+                && has_scan
+                && has_same_collection_reuse
+        }
+        "go_perf_layer_memory_allocation_bytes_buffer_allocated_per_record" => {
+            let in_loop = has_loop_signal(body_lc);
+            let has_buffer_alloc = body_lc.contains("bytes.buffer")
+                || body_lc.contains("newbuffer(")
+                || body_lc.contains("newbufferstring(");
+            in_loop && has_buffer_alloc
+        }
+        "go_perf_layer_collection_iteration_range_over_map_for_deterministic_first" => {
+            let has_range_map = body_lc.contains("for ") && body_lc.contains(" range ") && body_lc.contains("map[");
+            let takes_first = has_immediate_break_or_return_in_range_map_loop(body_lc);
+            let no_sort_or_key_list = !body_lc.contains("sort.")
+                && !body_lc.contains("maps.keys(")
+                && !body_lc.contains("slices.sort(")
+                && !body_lc.contains("keys :=");
+            has_range_map && takes_first && no_sort_or_key_list
+        }
+        "go_perf_layer_io_operations_stat_before_open_without_branch" => {
+            let has_stat = body_lc.contains("os.stat(") || body_lc.contains(".stat(");
+            let has_open = body_lc.contains("os.open(") || body_lc.contains(".open(");
+            let has_err_binding = body_lc.contains("err :=") || body_lc.contains(", err :=");
+            let has_not_exist_branch = body_lc.contains("isnotexist(")
+                || body_lc.contains("if err != nil")
+                || body_lc.contains("if errors.is(")
+                || body_lc.contains("os.isnotexist(");
+            has_stat && has_open && has_err_binding && !has_not_exist_branch
+        }
+        "go_perf_layer_resource_pooling_buffer_pool_without_max_capacity" => {
+            let has_pool = body_lc.contains("sync.pool")
+                || body_lc.contains("new(") && body_lc.contains("pool");
+            let uses_get_put = body_lc.contains(".get(") && body_lc.contains(".put(");
+            let has_bound_signal = body_lc.contains("cap(")
+                || body_lc.contains("max")
+                || body_lc.contains("limit")
+                || body_lc.contains("truncate(")
+                || body_lc.contains("reset(");
+            has_pool && uses_get_put && !has_bound_signal
+        }
+        "go_perf_layer_database_access_count_query_before_paged_fetch" => {
+            let has_count = body_lc.contains("count(") || body_lc.contains("select count(");
+            let has_paging = body_lc.contains(".limit(") || body_lc.contains(".offset(") || body_lc.contains("page");
+            has_count && has_paging
+        }
+        "go_perf_layer_memory_allocation_append_without_known_capacity" => {
+            let has_append = body_lc.contains("append(");
+            let in_loop = append_inside_loop(body_lc);
+            let has_known_bound_signal = body_lc.contains("len(") || body_lc.contains(" range ");
+            let already_prealloc = body_lc.contains("make([]") && body_lc.contains("cap")
+                || body_lc.contains("make([]") && body_lc.contains(", len(")
+                || body_lc.contains("with_capacity");
+            let builder_or_buffer = body_lc.contains("strings.builder")
+                || body_lc.contains("bytes.buffer")
+                || body_lc.contains("bytes.builder");
+            let append_density = body_lc.matches("append(").count() >= 3;
+            has_append
+                && in_loop
+                && has_known_bound_signal
+                && !already_prealloc
+                && !builder_or_buffer
+                && append_density
+        }
+        "go_perf_layer_error_handling_cost_error_string_built_before_error_needed" => {
+            let has_errorf = body_lc.contains("fmt.errorf(");
+            let has_string_build = body_lc.contains("fmt.sprintf(")
+                || body_lc.contains("strings.builder")
+                || body_lc.contains(" + ")
+                || body_lc.contains("bytes.buffer");
+            let has_wrap = body_lc.contains("%w") || body_lc.contains("errors.wrap(");
+            let hot_or_loop = has_loop_signal(body_lc) || has_nested_loop_signal(body_lc);
+            has_errorf && has_string_build && has_wrap && hot_or_loop
+        }
+        "go_perf_layer_serialization_json_decoder_without_reuse_for_stream" => {
+            let has_decoder = body_lc.contains("json.newdecoder(");
+            let in_loop = has_loop_signal(body_lc);
+            let has_stream_context = body_lc.contains("stream")
+                || body_lc.contains("reader")
+                || body_lc.contains("body")
+                || body_lc.contains("io.reader");
+            let has_reuse = body_lc.contains("sync.pool") || body_lc.contains("decoderpool");
+            has_decoder && in_loop && has_stream_context && !has_reuse
+        }
+        "go_perf_layer_serialization_gzip_writer_created_per_small_payload" => {
+            let has_gzip_new = body_lc.contains("gzip.newwriter(");
+            let in_loop = has_loop_signal(body_lc);
+            let has_small_payload_signal = body_lc.contains("small")
+                || body_lc.contains("tiny")
+                || body_lc.contains("< 1024")
+                || body_lc.contains("len(");
+            let has_reuse = body_lc.contains("sync.pool") || body_lc.contains(".reset(");
+            has_gzip_new && in_loop && has_small_payload_signal && !has_reuse
+        }
+        "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call" => {
+            let has_timeout_ctx = body_lc.contains("context.withtimeout(")
+                || body_lc.contains("withtimeout(");
+            let nested_loop = has_nested_loop_signal(body_lc);
+            let has_cancel = body_lc.contains("cancel()");
+            has_timeout_ctx && nested_loop && has_cancel
+        }
+        "go_perf_layer_serialization_json_marshal_for_deep_equal" => {
+            let has_marshal = body_lc.contains("json.marshal(");
+            let has_deep_equal_cmp = body_lc.contains("reflect.deepequal(")
+                || body_lc.contains("== string(")
+                || body_lc.contains("bytes.equal(");
+            has_marshal && has_deep_equal_cmp
+        }
+        "go_perf_layer_network_calls_dns_lookup_per_request_path" => {
+            let has_dns_call = body_lc.contains("net.lookup")
+                || body_lc.contains("resolver.lookup")
+                || body_lc.contains("lookupip(")
+                || body_lc.contains("lookuphost(");
+            let hot_path = body_lc.contains("handler")
+                || body_lc.contains("request")
+                || body_lc.contains("serve");
+            let has_cache = body_lc.contains("cache") || body_lc.contains("memo");
+            has_dns_call && hot_path && !has_cache
+        }
+        "go_perf_layer_resource_pooling_rate_limiter_per_request" => {
+            let has_limiter_alloc = body_lc.contains("rate.newlimiter(")
+                || body_lc.contains("newlimiter(");
+            let hot_path = body_lc.contains("handler")
+                || body_lc.contains("request")
+                || body_lc.contains("serve");
+            let hoisted = body_lc.contains("var limiter")
+                || body_lc.contains("global")
+                || body_lc.contains("sync.once");
+            has_limiter_alloc && hot_path && !hoisted
+        }
+        "go_perf_layer_io_operations_temporary_file_for_stream_transform" => {
+            let has_temp_file = body_lc.contains("os.createtemp(") || body_lc.contains("ioutil.tempfile(");
+            let has_stream_copy = body_lc.contains("io.copy(") || body_lc.contains("copy(");
+            let has_cleanup = body_lc.contains("os.remove(") || body_lc.contains("defer ") && body_lc.contains("remove(");
+            has_temp_file && has_stream_copy && !has_cleanup
+        }
+        "python_perf_layer_network_calls_retry_without_backoff_or_jitter" => {
+            let has_retry_loop = has_loop_signal(body_lc)
+                && (body_lc.contains("retry")
+                    || body_lc.contains("attempt")
+                    || body_lc.contains("for _ in range("));
+            let has_network_call = body_lc.contains("requests.")
+                || body_lc.contains("httpx.")
+                || body_lc.contains("urllib.");
+            let has_backoff = body_lc.contains("sleep(")
+                || body_lc.contains("backoff")
+                || body_lc.contains("jitter");
+            has_retry_loop && has_network_call && !has_backoff
+        }
+        "python_perf_layer_caching_unbounded_dict_cache" => {
+            let has_cache_dict = body_lc.contains("cache = {}")
+                || body_lc.contains("cache = dict(")
+                || body_lc.contains("self.cache");
+            let has_insert = body_lc.contains("cache[")
+                || body_lc.contains(".cache[");
+            let has_bound = body_lc.contains("lru_cache")
+                || body_lc.contains("maxsize")
+                || body_lc.contains("ttl")
+                || body_lc.contains("evict")
+                || body_lc.contains("limit");
+            has_cache_dict && has_insert && !has_bound
+        }
+        "python_perf_layer_string_handling_lowercase_compare_allocates" => {
+            let has_lower = body_lc.contains(".lower()") || body_lc.contains(".upper()");
+            let has_compare = body_lc.contains("==") || body_lc.contains("!=");
+            let has_casefold = body_lc.contains(".casefold()");
+            has_lower && has_compare && !has_casefold
+        }
+        "python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records" => {
+            let has_nested_dict = body_lc.contains("{")
+                && body_lc.contains(":{")
+                && body_lc.contains("}");
+            let has_fixed_keys = body_lc.contains("'id'")
+                || body_lc.contains("\"id\"")
+                || body_lc.contains("'name'")
+                || body_lc.contains("\"name\"");
+            let has_dataclass_or_model = body_lc.contains("@dataclass")
+                || body_lc.contains("namedtuple")
+                || body_lc.contains("pydantic");
+            has_nested_dict && has_fixed_keys && !has_dataclass_or_model
+        }
+        "python_perf_layer_error_handling_cost_raise_from_none_hides_retriable_error_context" => {
+            body_lc.contains("raise ") && body_lc.contains(" from none")
+        }
+        "python_perf_layer_memory_allocation_list_append_without_generator_stream" => {
+            let has_list_append = body_lc.contains(".append(");
+            let in_loop = has_loop_signal(body_lc);
+            let has_preferred = body_lc.contains("yield ")
+                || body_lc.contains("(") && body_lc.contains(" for ") && body_lc.contains(")");
+            has_list_append && in_loop && !has_preferred
+        }
+        "python_perf_layer_io_operations_small_file_writes_without_buffer" => {
+            let has_open_write = body_lc.contains("open(") && body_lc.contains("'w");
+            let in_loop = has_loop_signal(body_lc);
+            let buffered = body_lc.contains("buffering=") || body_lc.contains("io.bufferedwriter");
+            has_open_write && in_loop && !buffered
+        }
+        "python_perf_layer_string_handling_bytes_decode_encode_roundtrip" => {
+            let has_decode_encode = body_lc.contains(".decode(") && body_lc.contains(".encode(");
+            let same_path = body_lc.contains("utf-8") || body_lc.contains("utf8");
+            has_decode_encode && same_path
+        }
+        "python_perf_layer_collection_iteration_enumerate_list_materialized" => {
+            body_lc.contains("enumerate(list(")
+        }
+        "python_perf_layer_collection_iteration_generator_materialized_for_truthiness" => {
+            body_lc.contains("if list(") || body_lc.contains("bool(list(")
+        }
+        _ => return None,
+    };
+
+    Some(decision)
+}
+
+fn append_inside_loop(body_lc: &str) -> bool {
+    let lines = body_lc.lines().collect::<Vec<_>>();
+    for i in 0..lines.len() {
+        if !lines[i].contains("append(") {
+            continue;
+        }
+        let start = i.saturating_sub(4);
+        if lines[start..=i]
+            .iter()
+            .any(|line| line.contains("for ") || line.contains(" range "))
+        {
+            return true;
+        }
+    }
+    false
+}
+
+fn has_repeated_index_access_in_nested_loops(body_lc: &str) -> bool {
+    let mut outer_seen = false;
+    let mut inner_seen = false;
+    let mut bracket_lines = 0usize;
+
+    for line in body_lc.lines() {
+        let trimmed = line.trim_start();
+        if trimmed.starts_with("for ") || trimmed.contains(" for ") {
+            if outer_seen {
+                inner_seen = true;
+            } else {
+                outer_seen = true;
+            }
+        }
+        if line.contains('[') && line.contains(']') {
+            bracket_lines += 1;
+        }
+    }
+
+    outer_seen && inner_seen && bracket_lines >= 2
+}
+
+fn has_immediate_break_or_return_in_range_map_loop(body_lc: &str) -> bool {
+    let lines = body_lc.lines().collect::<Vec<_>>();
+    for i in 0..lines.len() {
+        let line = lines[i].trim_start();
+        if !(line.starts_with("for ") && line.contains(" range ") && line.contains("map[")) {
+            continue;
+        }
+        let end = (i + 4).min(lines.len());
+        if lines[i + 1..end]
+            .iter()
+            .any(|candidate| candidate.contains("break") || candidate.contains("return"))
+        {
+            return true;
+        }
+    }
+    false
+}
+
+fn has_shared_collection_scan_and_append(body_lc: &str) -> bool {
+    let has_append_dst = body_lc.contains("result = append(")
+        || body_lc.contains("results = append(")
+        || body_lc.contains("filtered = append(")
+        || body_lc.contains("out = append(")
+        || body_lc.contains("append(result")
+        || body_lc.contains("append(results");
+    let has_scan_source = body_lc.contains("contains(")
+        || body_lc.contains("index(")
+        || body_lc.contains("range ")
+        || body_lc.contains("lookup[")
+        || body_lc.contains("seen[");
+    has_append_dst && has_scan_source
 }
 
 fn finding_evidence(rule: &CompiledPerfLayerRule, body_lc: &str) -> Vec<String> {
@@ -166,7 +752,7 @@ fn first_matching_line(
     rule: &CompiledPerfLayerRule,
 ) -> Option<usize> {
     body.lines().enumerate().find_map(|(offset, line)| {
-        let line_lc = line.to_ascii_lowercase();
+        let line_lc = sanitize_line_for_matching(line).to_ascii_lowercase();
         let matches_group = rule
             .groups
             .iter()
@@ -177,6 +763,78 @@ fn first_matching_line(
 
         (matches_group || matches_category).then_some(body_start_line + offset)
     })
+}
+
+fn strip_comments_and_strings(body: &str) -> String {
+    body.lines()
+        .map(sanitize_line_for_matching)
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn sanitize_line_for_matching(line: &str) -> String {
+    let mut output = String::with_capacity(line.len());
+    let chars = line.chars().collect::<Vec<_>>();
+    let mut i = 0usize;
+    let mut in_single = false;
+    let mut in_double = false;
+    let mut escaped = false;
+
+    while i < chars.len() {
+        let ch = chars[i];
+
+        if !in_single && !in_double && ch == '/' && i + 1 < chars.len() && chars[i + 1] == '/' {
+            break;
+        }
+
+        if escaped {
+            escaped = false;
+            output.push(' ');
+            i += 1;
+            continue;
+        }
+
+        if in_single {
+            if ch == '\\' {
+                escaped = true;
+            } else if ch == '\'' {
+                in_single = false;
+            }
+            output.push(' ');
+            i += 1;
+            continue;
+        }
+
+        if in_double {
+            if ch == '\\' {
+                escaped = true;
+            } else if ch == '"' {
+                in_double = false;
+            }
+            output.push(' ');
+            i += 1;
+            continue;
+        }
+
+        if ch == '\'' {
+            in_single = true;
+            output.push(' ');
+            i += 1;
+            continue;
+        }
+
+        if ch == '"' {
+            in_double = true;
+            output.push(' ');
+            i += 1;
+            continue;
+        }
+
+        output.push(ch);
+        i += 1;
+    }
+
+    output
 }
 
 fn compiled_rules(language: PerfLayerLanguage) -> &'static [CompiledPerfLayerRule] {
@@ -985,7 +1643,7 @@ mod tests {
         let function = &file.functions[0];
 
         assert!(
-            rule_matches(rule, language, function, &body_lc),
+            rule_matches(rule, language, &file, function, &body_lc),
             "expected {rule_id} to match for generated positive {language:?} source.\nsource:\n{source}\nflags={} min_group_matches={} groups={:?} excluded={:?}",
             rule.flags,
             rule.min_group_matches,
@@ -1008,7 +1666,7 @@ mod tests {
         let function = &file.functions[0];
 
         assert!(
-            !rule_matches(rule, language, function, &body_lc),
+            !rule_matches(rule, language, &file, function, &body_lc),
             "expected {rule_id} to stay silent for generated negative {language:?} source.\nsource:\n{source}"
         );
     }

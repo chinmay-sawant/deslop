@@ -198,8 +198,14 @@ fn http_boundary_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
 
     let response_bindings = http_response_bindings(&lines, &http_aliases);
     for (name, line, target) in &response_bindings {
+        let handed_off = lines.iter().any(|candidate| {
+            candidate.text.contains(&format!("({},", name))
+                || candidate.text.contains(&format!(", {}", name))
+                || candidate.text.contains(&format!("{} )", name))
+        });
         if !contains_text(&lines, &format!("{name}.Body.Close()"))
             && !returns_binding(function, name)
+            && !handed_off
         {
             findings.push(Finding {
                 rule_id: "http_response_body_not_closed".to_string(),

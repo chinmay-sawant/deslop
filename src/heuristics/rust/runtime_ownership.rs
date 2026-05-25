@@ -332,10 +332,12 @@ fn process_env_toggle_findings(file: &ParsedFile, function: &ParsedFunction) -> 
 }
 
 fn request_path_like(file: &ParsedFile, function: &ParsedFunction) -> bool {
-    has_import_fragment(file, "axum")
+    (has_import_fragment(file, "axum")
+        || has_import_fragment(file, "axum::")
+        || has_import_fragment(file, "tower_http"))
         && contains_any(
             &function.signature_text,
-            &["State<", "Json<", "Path<", "Query<", "Form<"],
+            &["State<", "Json<", "Path<", "Query<", "Form<", "axum::extract::"],
         )
         || has_import_fragment(file, "actix_web")
             && contains_any(
@@ -347,10 +349,6 @@ fn request_path_like(file: &ParsedFile, function: &ParsedFunction) -> bool {
                 &function.signature_text,
                 &["Request<", "tonic::Request<", "Streaming<"],
             )
-        || contains_any(
-            &function.signature_text,
-            &["Request<", "HttpRequest", "Responder", "Handler", "State<"],
-        )
 }
 
 fn has_import_fragment(file: &ParsedFile, fragment: &str) -> bool {

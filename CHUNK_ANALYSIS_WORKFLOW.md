@@ -1,93 +1,207 @@
 # Chunk Snippet Analysis Workflow (6 Subagents)
 
 ## Objective
-Analyze snippet chunks from:
+
+Manually triage every finding in chunk files under:
+
 `/home/chinmay/ChinmayPersonalProjects/deslop/scripts/chunks`
 
-The snippets may contain Go, Rust, or Python code. Perform architecture-grade review and produce a **CSV-formatted output**.
+Read each chunk file directly, review each finding block, and classify each finding as exactly one of:
+
+- `true_positive`
+- `false_positive`
+
+Produce a deterministic CSV with one row per finding.
 
 ## Hard Constraints
-- Work as a **senior solution architect**.
-- Perform analysis **without using any tools**.
-- Use exactly **6 subagents** with distinct responsibilities.
-- Every CSV row must include:
-  - `chunk_file_path`
-  - `subchunk_number` (from `Finding X/4098`)
-- Preserve deterministic, machine-readable output.
 
-## Input Pattern
-Each chunk file contains multiple findings like:
-- `Finding X/4098`
-- `Source: /absolute/path/to/file.ext:line`
+- Read `Chunk_*.txt` files directly. Do not use Python triage/classifier scripts.
+- Use exactly 6 subagents, each with a disjoint partition.
+- Each finding gets exactly one decision.
+- Allowed decision labels are only `true_positive` and `false_positive`.
+- Output must be machine-readable CSV with stable header.
+
+## Current Dataset Snapshot
+
+At the time of this update:
+
+- Directory: `/home/chinmay/ChinmayPersonalProjects/deslop/scripts/chunks`
+- File pattern: `Chunk_<start>_<end>.txt`
+- Chunk files: `239`
+- Findings: `5952`
+- Last file: `Chunk_5951_5952.txt`
+
+Recompute before every new run (do not assume static counts).
+
+## Finding Block Format
+
+Each chunk contains finding blocks separated by:
+
+`====================================================================================================`
+
+Each block includes:
+
+- `Finding X/TOTAL`
+- `Source: /abs/path/file.ext:line`
 - `Rule: [rule_id]`
 - `Rule description: ...`
 - `Auto triage note: ...`
-- `Function: ...`
+- `Function:` snippet
 
-## 6-Subagent Design
+Extract fields:
 
-### Subagent 1: Context Extractor
-- Parse each finding block.
-- Extract: chunk file path, finding number, source path, line, rule id, rule description, auto triage note, function body.
+- `subchunk_number` = global `X` from `Finding X/TOTAL`
+- `source_file_path`
+- `source_line`
+- `rule_id`
+- `rule_description`
+- `auto_triage_note`
+- `function_body`
 
-### Subagent 2: Language + Syntax Specialist
-- Identify language: Go / Rust / Python.
-- Validate whether the snippet is semantically coherent.
-- Flag parsing ambiguity when snippet is partial.
+## Classification Rules
 
-### Subagent 3: Rule Intent Validator
-- Interpret what the rule is trying to detect.
-- Check if observed code truly matches the rule intent.
-- Mark likely false-positive conditions.
+### `true_positive`
 
-### Subagent 4: Architecture & Design Reviewer
-- Evaluate coupling, abstraction boundaries, reliability, maintainability, and scalability implications.
-- Focus on system-level impact, not only line-level style.
+The snippet actually shows the defect/anti-pattern targeted by the rule.
 
-### Subagent 5: Risk & Priority Assessor
-- Assign severity: `critical|high|medium|low|info`.
-- Assign confidence: `high|medium|low`.
-- Explain blast radius and production risk.
+### `false_positive`
 
-### Subagent 6: Decision Synthesizer
-- Produce final action: `actionable|needs_context|false_positive|defer`.
-- Provide concise remediation guidance and rationale.
-- Emit final CSV row.
+The match is heuristic/syntactic but not a real issue in visible snippet context.
 
-## Decision Policy
-- `actionable`: clear defect/risk and enough context to fix now.
-- `needs_context`: likely issue but dependent on missing repository/runtime context.
-- `false_positive`: rule matched but practical defect not supported by snippet.
-- `defer`: valid observation but low-impact / not cost-effective currently.
+Typical false-positive cases:
+
+- Rule intent does not match shown code
+- Snippet is benign/intentional
+- Snippet does not include the claimed risky behavior
+- Evidence is insufficient to support defect claim
+
+No third category is allowed.
 
 ## CSV Output Contract
-Output only CSV rows with this exact header:
+
+Header must be exactly:
 
 ```csv
-chunk_file_path,subchunk_number,source_file_path,source_line,language,rule_id,severity,confidence,decision,architectural_risk,remediation_summary,rationale
+chunk_file_path,subchunk_number,source_file_path,source_line,rule_id,decision,rationale
 ```
 
-## Field Semantics
-- `chunk_file_path`: absolute path of the chunk file being analyzed.
-- `subchunk_number`: numeric value from `Finding X/4098` => `X`.
-- `source_file_path`: path before the colon from `Source:`.
-- `source_line`: line number after the colon from `Source:`.
-- `language`: `go|rust|python|unknown`.
-- `rule_id`: value inside `Rule: [ ... ]`.
-- `severity`: `critical|high|medium|low|info`.
-- `confidence`: `high|medium|low`.
-- `decision`: `actionable|needs_context|false_positive|defer`.
-- `architectural_risk`: short tag list (e.g., `coupling;reliability;performance`).
-- `remediation_summary`: one-line fix guidance.
-- `rationale`: one-line decision justification.
+Field requirements:
 
-## Example Row
-```csv
-/home/chinmay/ChinmayPersonalProjects/deslop/scripts/chunks/Chunk_1_25.txt,1,/home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/handlers/handlers.go,34,go,feature_flag_lookup_without_config_abstraction,low,medium,needs_context,coupling;maintainability,Introduce a narrow feature-flag interface injected into handlers to reduce direct flag lookups,Code suggests direct environment/config probing in handler flow but full dependency graph is not visible
+- `chunk_file_path`: absolute path to chunk file
+- `subchunk_number`: global finding number (`X` from `Finding X/TOTAL`)
+- `source_file_path`: source path from `Source:` line
+- `source_line`: source line from `Source:` line
+- `rule_id`: value inside `Rule: [ ... ]`
+- `decision`: `true_positive` or `false_positive`
+- `rationale`: one-line evidence-based justification
+
+## 6-Subagent Partition (5952 Findings)
+
+Use contiguous finding ranges:
+
+- SA1: findings `1-1000` -> `reports/chunk_analysis_part1.csv`
+- SA2: findings `1001-2000` -> `reports/chunk_analysis_part2.csv`
+- SA3: findings `2001-3000` -> `reports/chunk_analysis_part3.csv`
+- SA4: findings `3001-4000` -> `reports/chunk_analysis_part4.csv`
+- SA5: findings `4001-5000` -> `reports/chunk_analysis_part5.csv`
+- SA6: findings `5001-5952` -> `reports/chunk_analysis_part6.csv`
+
+Mapped file ranges for current dataset:
+
+- SA1: `Chunk_1_25.txt` .. `Chunk_976_1000.txt`
+- SA2: `Chunk_1001_1025.txt` .. `Chunk_1976_2000.txt`
+- SA3: `Chunk_2001_2025.txt` .. `Chunk_2976_3000.txt`
+- SA4: `Chunk_3001_3025.txt` .. `Chunk_3976_4000.txt`
+- SA5: `Chunk_4001_4025.txt` .. `Chunk_4976_5000.txt`
+- SA6: `Chunk_5001_5025.txt` .. `Chunk_5951_5952.txt`
+
+## Subagent Responsibilities
+
+Each subagent must:
+
+1. Read every assigned chunk file in full.
+2. Parse every finding block.
+3. Review rule intent + snippet manually.
+4. Emit exactly one CSV row per finding.
+5. Use global `subchunk_number` from `Finding X/TOTAL`.
+6. Write only its own part CSV file.
+
+## Merge Target
+
+Merge parts into:
+
+`/home/chinmay/ChinmayPersonalProjects/deslop/reports/chunk_analysis_all.csv`
+
+Include header once.
+
+## From-Scratch Validation Runbook (Using Subagents)
+
+Use this checklist after every run.
+
+### 1) Dataset discovery
+
+- Count chunk files.
+- Confirm first and last chunk file names.
+- Confirm total findings from chunk headers (`Findings N-M of TOTAL`).
+
+### 2) Partition integrity
+
+- Verify each subagent received disjoint contiguous range.
+- Verify union of ranges covers full `1..TOTAL` with no gaps.
+
+### 3) Part-file schema checks
+
+For each `chunk_analysis_part*.csv`:
+
+- Header exactly matches contract.
+- `decision` column contains only `true_positive|false_positive`.
+- No empty required fields.
+
+### 4) Global-number checks
+
+- Confirm `subchunk_number` values are global finding IDs, not local per-file counters.
+- For each row, `subchunk_number` should align with `Finding X/TOTAL` in the source chunk block.
+
+### 5) Merge checks
+
+After creating `chunk_analysis_all.csv`:
+
+- Data row count must equal `TOTAL`.
+- `subchunk_number` must contain every integer `1..TOTAL` exactly once.
+- No duplicates, no missing IDs.
+- Decision domain still only TP/FP.
+
+### 6) Spot audit
+
+- Randomly sample rows from each partition.
+- Open corresponding chunk blocks and verify decision rationale matches visible snippet evidence.
+
+## Quick Validation Commands (Shell)
+
+```bash
+# 1) File count
+ls /home/chinmay/ChinmayPersonalProjects/deslop/scripts/chunks/Chunk_*.txt | sort -V | wc -l
+
+# 2) Merged row count (minus header)
+wc -l /home/chinmay/ChinmayPersonalProjects/deslop/reports/chunk_analysis_all.csv
+
+# 3) Decision domain
+cut -d, -f6 /home/chinmay/ChinmayPersonalProjects/deslop/reports/chunk_analysis_all.csv | tail -n +2 | sort | uniq -c
+
+# 4) Missing/duplicate subchunk IDs (adjust TOTAL as needed)
+awk -F',' 'NR>1{seen[$2]++} END{
+  total=5952;
+  miss=0; dup=0;
+  for(i=1;i<=total;i++){ if(!(i in seen)) miss++ }
+  for(k in seen){ if(seen[k]>1) dup += seen[k]-1 }
+  print "missing=" miss;
+  print "duplicate=" dup;
+}' /home/chinmay/ChinmayPersonalProjects/deslop/reports/chunk_analysis_all.csv
 ```
 
 ## Quality Bar
-- Be strict about evidence.
-- Do not over-escalate informational findings.
-- Favor architecture-aware decisions over generic lint-style commentary.
-- Keep remediation practical and minimally invasive.
+
+- Manual evidence-based decisions only.
+- No auto-classifier substitution.
+- One row per finding.
+- Deterministic, validated final CSV.

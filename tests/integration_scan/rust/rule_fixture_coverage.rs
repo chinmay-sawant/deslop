@@ -88,23 +88,17 @@ fn rust_rule_fixtures_do_not_reuse_normalized_scenario_shape() {
 }
 
 #[test]
-fn rust_rule_fixture_batch_000_099_is_parseable_scenario_code() {
-    assert_rust_rule_fixture_batch(0, 100);
-}
+fn rust_rule_fixture_batches_cover_all_registered_rules() {
+    let total = rust_rules().len();
+    assert!(total > 0, "expected at least one registered Rust rule");
 
-#[test]
-fn rust_rule_fixture_batch_100_199_is_parseable_scenario_code() {
-    assert_rust_rule_fixture_batch(100, 200);
-}
-
-#[test]
-fn rust_rule_fixture_batch_200_299_is_parseable_scenario_code() {
-    assert_rust_rule_fixture_batch(200, 300);
-}
-
-#[test]
-fn rust_rule_fixture_batch_300_349_is_parseable_scenario_code() {
-    assert_rust_rule_fixture_batch(300, 350);
+    let batch_size = 100;
+    let mut start = 0usize;
+    while start < total {
+        let end = (start + batch_size).min(total);
+        assert_rust_rule_fixture_batch(start, end);
+        start = end;
+    }
 }
 
 fn assert_rust_rule_fixture_batch(start: usize, end: usize) {
