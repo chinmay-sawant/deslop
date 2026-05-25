@@ -14,6 +14,23 @@ Use exactly 6 subagents:
 5. Prover-1
 6. Prover-2
 
+## Parallel 6-Lane Loop (For FP Reduction Iterations)
+
+After initial adjudication output is produced, run a 6-lane parallel loop each iteration:
+
+1. `Lane-1 Current Counts`
+   - Parse latest scan output and compute current rule-wise counts.
+2. `Lane-2 Truth Join`
+   - Join current rules with adjudication truth (`TP/FP`) from prior chunk analysis CSV.
+3. `Lane-3 Go Matcher Tightening`
+   - Patch highest-impact low-precision Go rules.
+4. `Lane-4 Python Matcher Tightening`
+   - Patch highest-impact low-precision Python rules.
+5. `Lane-5 Perf-Layer Tightening`
+   - Patch shared perf-layer strict semantic overrides.
+6. `Lane-6 Validation + Diff`
+   - Run tests, run scan, emit total delta + top rule deltas.
+
 ## Inputs (Replace Placeholders)
 - `TRIAGE_TABLE_MD`: absolute path to markdown file containing table rows.
 - Table columns expected:
@@ -57,6 +74,12 @@ So starts are: `1, 1001, 2001, 3001, 4001, 5001, ...`
 10. Produce final adjudication CSV.
 11. Produce companion CSV including absolute evidence file path per finding.
 12. Keep original final adjudication unchanged once generated; add enriched file separately.
+13. For FP reduction phases, execute the parallel 6-lane loop per iteration:
+    - select top low-precision high-volume families
+    - patch/tighten
+    - validate with tests
+    - re-scan and diff
+    - continue until target threshold
 
 ## Output Files (Template)
 - `batchXX_1000.md` files

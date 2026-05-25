@@ -8,26 +8,27 @@ pub(crate) const BINDING_LOCATION: &str = file!();
 
 pub(crate) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
+    if go.alloc_loops.len() < 2 {
+        return Vec::new();
+    }
 
-    go.alloc_loops
-        .iter()
-        .map(|line| Finding {
-            rule_id: "allocation_churn_in_loop".to_string(),
-            severity: Severity::Info,
-            path: file.path.clone(),
-            function_name: Some(function.fingerprint.name.clone()),
-            start_line: *line,
-            end_line: *line,
-            message: format!(
-                "function {} allocates new objects inside a loop",
-                function.fingerprint.name
-            ),
-            evidence: vec![
-                "make/new or buffer construction appears inside a loop".to_string(),
-                "repeated per-iteration allocation can create avoidable heap churn".to_string(),
-            ],
-        })
-        .collect()
+    let first_line = *go.alloc_loops.iter().min().unwrap_or(&function.fingerprint.start_line);
+    vec![Finding {
+        rule_id: "allocation_churn_in_loop".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: first_line,
+        end_line: first_line,
+        message: format!(
+            "function {} allocates new objects inside a loop",
+            function.fingerprint.name
+        ),
+        evidence: vec![
+            format!("loop-local allocation sites observed: {}", go.alloc_loops.len()),
+            "repeated per-iteration allocation can create avoidable heap churn".to_string(),
+        ],
+    }]
 }
 
 pub(crate) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
@@ -38,7 +39,7 @@ pub(crate) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
 
     // Tighten low-value hits: require clear loop pressure and dense repeated calls.
     let nested_loop_signal = has_nested_loop_signal(&function.body_text);
-    if go.fmt_loops.len() < 3
+    if go.fmt_loops.len() < 10
         || !nested_loop_signal
         || !has_fmt_hot_path_signal(function)
     {
@@ -92,6 +93,9 @@ pub(crate) fn reflect_findings(file: &ParsedFile, function: &ParsedFunction) -> 
 
 pub(crate) fn concat_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
+    if go.concat_loops.len() < 3 || !has_nested_loop_signal(&function.body_text) {
+        return Vec::new();
+    }
 
     go.concat_loops
         .iter()
@@ -518,7 +522,15 @@ pub(crate) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
                 || body_lc.contains("upload")
                 || body_lc.contains("download")
                 || body_lc.contains("body");
+            let large_payload_hint = body_lc.contains("large")
+                || body_lc.contains("mb")
+                || body_lc.contains("gb")
+                || body_lc.contains("archive")
+                || body_lc.contains("stream");
             if !heavy_payload_context {
+                return None;
+            }
+            if !large_payload_hint {
                 return None;
             }
 

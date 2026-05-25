@@ -90,10 +90,35 @@ fn binary_read_single_field(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let read_calls_in_loops = lines
+        .iter()
+        .filter(|line| line.in_loop && line.text.contains(".Read(") && line.text.contains('&'))
+        .count();
+    let has_raw_byte_indexing = lines.iter().any(|line| {
+        line.text.contains("[offset:")
+            || line.text.contains("[i:")
+            || line.text.contains("[pos:")
+            || line.text.contains("data[")
+            || line.text.contains("buf[")
+    });
+    let parse_like_function = {
+        let name = function.fingerprint.name.to_lowercase();
+        name.contains("decode")
+            || name.contains("parse")
+            || name.contains("read")
+            || name.contains("unmarshal")
+    };
     for alias in import_aliases_for(file, "encoding/binary") {
+        let mut emitted_for_alias = false;
         for bl in lines {
+            if emitted_for_alias {
+                break;
+            }
             if bl.text.contains(&format!("{alias}.Read(")) && bl.text.contains('&') {
                 if !bl.in_loop {
+                    continue;
+                }
+                if read_calls_in_loops < 4 || !parse_like_function || !has_raw_byte_indexing {
                     continue;
                 }
                 let scalar_read_pattern = bl.text.contains("LittleEndian")
@@ -127,6 +152,7 @@ fn binary_read_single_field(
                         "binary.ByteOrder.Uint32/Uint64 avoids reflection for scalar reads".into(),
                     ],
                 });
+                emitted_for_alias = true;
             }
         }
     }

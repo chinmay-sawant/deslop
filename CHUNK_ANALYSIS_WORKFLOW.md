@@ -176,6 +176,43 @@ After creating `chunk_analysis_all.csv`:
 - Randomly sample rows from each partition.
 - Open corresponding chunk blocks and verify decision rationale matches visible snippet evidence.
 
+## 6-Lane Reduction Loop (Subagent-Style, Parallel)
+
+Use this loop after initial TP/FP adjudication when reducing false positives toward the validated TP target.
+
+### Lanes
+
+1. `Lane-1 (Current Counts)`: parse latest scan output and produce current `rule_id -> count`.
+2. `Lane-2 (Truth Mapping)`: map each active `rule_id` to historical TP/FP counts from `reports/chunk_analysis_all.csv`.
+3. `Lane-3 (Go Tightening)`: tighten high-FP Go-specific rules first.
+4. `Lane-4 (Python Tightening)`: tighten high-FP Python-specific rules first.
+5. `Lane-5 (Perf-Layer Tightening)`: tighten cross-language performance-layer matchers/overrides.
+6. `Lane-6 (Validation)`: run tests + scan, diff rule deltas, persist iteration artifacts.
+
+### Execution Cycle
+
+For each iteration:
+
+1. Rank candidate rules by:
+   - high current count
+   - low historical precision (`TP / (TP + FP)`)
+   - high absolute FP count in adjudication truth
+2. Tighten only the top families for that iteration.
+3. Run:
+   - `cargo test --lib --tests`
+   - `make scan-gopdfsuit-info`
+4. Record:
+   - total findings delta
+   - top dropping rules
+   - top remaining rules
+5. Repeat until convergence target.
+
+### Iteration Artifacts
+
+- Save each scan output as `reports/fp-iterations/temp_gopdfsuit_iterN.txt`.
+- Save each rule count snapshot as `reports/fp-iterations/iterN_rule_counts.csv`.
+- Keep baseline snapshot for diffing.
+
 ## Quick Validation Commands (Shell)
 
 ```bash

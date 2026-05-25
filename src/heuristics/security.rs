@@ -8,6 +8,9 @@ use super::common::{identifier_tokens, import_alias_lookup};
 const WEAK_CRYPTO_IMPORTS: &[&str] = &["crypto/md5", "crypto/sha1", "crypto/des", "crypto/rc4"];
 
 pub(super) fn crypto_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if is_non_production_context(file) {
+        return Vec::new();
+    }
     let import_aliases = import_alias_lookup(&file.imports);
     let mut findings = Vec::new();
 
@@ -41,6 +44,21 @@ pub(super) fn crypto_findings(file: &ParsedFile, function: &ParsedFunction) -> V
     }
 
     findings
+}
+
+fn is_non_production_context(file: &ParsedFile) -> bool {
+    if file.is_test_file {
+        return true;
+    }
+    let path = file.path.to_string_lossy().to_ascii_lowercase();
+    path.contains("/sample")
+        || path.contains("/samples/")
+        || path.contains("/example")
+        || path.contains("/examples/")
+        || path.contains("/benchmark")
+        || path.contains("/benchmarks/")
+        || path.contains("/testdata/")
+        || path.contains("/fixtures/")
 }
 
 pub(super) fn pkg_secret_findings(file: &ParsedFile) -> Vec<Finding> {

@@ -16,6 +16,7 @@ pub(super) fn public_api_any_contract_findings(
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     if function.is_test_function
+        || is_non_production_python_context(file)
         || !looks_like_public_python_api(function)
         || is_to_dict_wrapper(function)
         || should_skip_python_wide_contract(file, function)
@@ -50,6 +51,22 @@ pub(super) fn public_api_any_contract_findings(
             format!("signature={signature}"),
         ],
     }]
+}
+
+fn is_non_production_python_context(file: &ParsedFile) -> bool {
+    if file.is_test_file {
+        return true;
+    }
+    let path = file.path.to_string_lossy().to_ascii_lowercase();
+    path.contains("/sample")
+        || path.contains("/samples/")
+        || path.contains("/example")
+        || path.contains("/examples/")
+        || path.contains("/benchmark")
+        || path.contains("/benchmarks/")
+        || path.contains("/testdata/")
+        || path.contains("/fixtures/")
+        || path.contains("/tests/")
 }
 
 pub(super) fn pyproject_repo_findings(

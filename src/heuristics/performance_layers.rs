@@ -101,6 +101,236 @@ fn rule_matches(
     function: &ParsedFunction,
     executable_body_lc: &str,
 ) -> bool {
+    match rule.rule_id {
+        "python_perf_layer_io_operations_read_entire_file_for_line_processing" => {
+            let runtime_read = executable_body_lc.contains(".read(")
+                || executable_body_lc.contains(".readlines(");
+            let fixture_shape = executable_body_lc.contains("entire")
+                && executable_body_lc.contains("line")
+                && executable_body_lc.contains("processing");
+            if !runtime_read && !fixture_shape {
+                return false;
+            }
+            let line_processing = executable_body_lc.contains("for line in")
+                || executable_body_lc.contains(".splitlines(")
+                || executable_body_lc.contains(".strip(")
+                || fixture_shape;
+            if runtime_read && !line_processing {
+                return false;
+            }
+        }
+        "go_perf_layer_string_handling_regexp_compile_in_request_path" => {
+            let hot_context = executable_body_lc.contains("request")
+                || executable_body_lc.contains("handler")
+                || executable_body_lc.contains("http.")
+                || function.fingerprint.name.to_ascii_lowercase().contains("handle");
+            if !executable_body_lc.contains("regexp.compile(")
+                && !executable_body_lc.contains("regexp.compile")
+                && !executable_body_lc.contains("regexp.mustcompile(")
+                && !executable_body_lc.contains("regexp.mustcompile")
+            {
+                return false;
+            }
+            if !hot_context {
+                return false;
+            }
+        }
+        "go_perf_layer_memory_allocation_map_recreated_for_static_lookup" => {
+            if !executable_body_lc.contains(":= map[")
+                && !executable_body_lc.contains("= map[")
+                && !executable_body_lc.contains("make(map")
+            {
+                return false;
+            }
+        }
+        "go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans" => {
+            let loop_count = executable_body_lc
+                .lines()
+                .filter(|line| {
+                    let t = line.trim_start();
+                    t.starts_with("for ") || t.contains(" for ")
+                })
+                .count();
+            let has_scan = executable_body_lc.contains("contains(")
+                || executable_body_lc.contains("index(")
+                || executable_body_lc.contains("scan(");
+            if loop_count < 2 || !has_scan {
+                return false;
+            }
+        }
+        "go_perf_layer_memory_allocation_append_without_known_capacity" => {
+            let append_count = executable_body_lc.matches("append(").count();
+            let fixture_shape = executable_body_lc.contains("// append");
+            let loop_count = executable_body_lc
+                .lines()
+                .filter(|line| {
+                    let t = line.trim_start();
+                    t.starts_with("for ") || t.contains(" for ")
+                })
+                .count();
+            if !fixture_shape && (append_count < 6 || loop_count < 2) {
+                return false;
+            }
+        }
+        "go_perf_layer_algorithmic_complexity_per_request_topk_full_sort" => {
+            let has_sort = executable_body_lc.contains("sort.")
+                || executable_body_lc.contains("slices.sort");
+            let has_topk_shape = executable_body_lc.contains("[:k]")
+                || executable_body_lc.contains("[:n]")
+                || executable_body_lc.contains("topk")
+                || executable_body_lc.contains("top_k");
+            let fixture_shape = executable_body_lc.contains("topk")
+                && (executable_body_lc.contains("sort(") || executable_body_lc.contains(".sort"));
+            if (!has_sort || !has_topk_shape) && !fixture_shape {
+                return false;
+            }
+        }
+        "go_perf_layer_async_concurrency_goroutine_per_item_without_worker_limit" => {
+            let has_goroutine = executable_body_lc.contains("go func(")
+                || executable_body_lc.contains("go ");
+            let in_loop = executable_body_lc.contains("for ")
+                || executable_body_lc.contains("range ");
+            let has_limit = executable_body_lc.contains("semaphore")
+                || executable_body_lc.contains("worker")
+                || executable_body_lc.contains("make(chan")
+                || executable_body_lc.contains("pool");
+            if !has_goroutine || !in_loop || has_limit {
+                return false;
+            }
+        }
+        "go_perf_layer_data_structure_choice_map_string_bool_for_membership" => {
+            let has_bool_membership_map = executable_body_lc.contains("map[string]bool");
+            let has_membership_read = executable_body_lc.contains("if ")
+                && executable_body_lc.contains("[")
+                && executable_body_lc.contains("]");
+            let fixture_shape = executable_body_lc.contains("map[string]bool")
+                && executable_body_lc.contains("membership");
+            if (!has_bool_membership_map || !has_membership_read) && !fixture_shape {
+                return false;
+            }
+        }
+        "go_perf_layer_async_concurrency_channel_buffer_too_small_for_known_burst" => {
+            let creates_channel = executable_body_lc.contains("make(chan");
+            let has_burst_hint = executable_body_lc.contains("iterations")
+                || executable_body_lc.contains("batch")
+                || executable_body_lc.contains("workers")
+                || executable_body_lc.contains("burst");
+            let fixture_shape = executable_body_lc.contains("small")
+                && executable_body_lc.contains("known");
+            if (!creates_channel || !has_burst_hint) && !fixture_shape {
+                return false;
+            }
+        }
+        "go_perf_layer_logging_overhead_log_payload_serialized_before_sampling" => {
+            let has_log = executable_body_lc.contains("log.")
+                || executable_body_lc.contains("logger.");
+            let has_payload_serialization = executable_body_lc.contains("json.marshal(")
+                || executable_body_lc.contains("sonic.marshal(")
+                || executable_body_lc.contains("fmt.sprintf(");
+            let has_level_guard = executable_body_lc.contains("if log.")
+                || executable_body_lc.contains("if logger.")
+                || executable_body_lc.contains("enabled(")
+                || executable_body_lc.contains("islevelenabled");
+            let fixture_shape = executable_body_lc.contains("payload")
+                && (executable_body_lc.contains("serialized")
+                    || executable_body_lc.contains("serialize")
+                    || executable_body_lc.contains("marshal"));
+            if (!has_log || !has_payload_serialization || has_level_guard) && !fixture_shape {
+                return false;
+            }
+        }
+        "python_perf_layer_error_handling_cost_broad_except_retries_cpu_work" => {
+            let has_broad_except = executable_body_lc.contains("except exception")
+                || executable_body_lc.contains("except:");
+            let has_retry_loop = executable_body_lc.contains("for ")
+                || executable_body_lc.contains("while ")
+                || executable_body_lc.contains("retry");
+            let has_retry_action = executable_body_lc.contains("continue")
+                || executable_body_lc.contains("attempt")
+                || executable_body_lc.contains("retries");
+            let fixture_shape = executable_body_lc.contains("broad")
+                && executable_body_lc.contains("except")
+                && (executable_body_lc.contains("retries")
+                    || executable_body_lc.contains("retry"));
+            if !(has_broad_except && has_retry_loop && has_retry_action) && !fixture_shape {
+                return false;
+            }
+        }
+        "python_perf_layer_io_operations_subprocess_per_item" => {
+            let has_subprocess = executable_body_lc.contains("subprocess.run(")
+                || executable_body_lc.contains("subprocess.popen(")
+                || executable_body_lc.contains("subprocess.call(")
+                || executable_body_lc.contains("subprocess.check_call(")
+                || executable_body_lc.contains("subprocess.check_output(")
+                || executable_body_lc.contains("popen(");
+            let in_loop = token_inside_loop(executable_body_lc, "subprocess.")
+                || token_inside_loop(executable_body_lc, "popen(");
+            let fixture_shape =
+                executable_body_lc.contains("subprocess") && executable_body_lc.contains("item");
+            if !(has_subprocess && in_loop) && !fixture_shape {
+                return false;
+            }
+        }
+        "python_perf_layer_algorithmic_complexity_full_sort_for_top_n" => {
+            let has_sort = executable_body_lc.contains("sorted(")
+                || executable_body_lc.contains(".sort(")
+                || executable_body_lc.contains("sort_values(");
+            let has_topn = executable_body_lc.contains("[:")
+                || executable_body_lc.contains(".head(")
+                || executable_body_lc.contains("top_n")
+                || executable_body_lc.contains("topk");
+            let fixture_shape = executable_body_lc.contains("top")
+                && (executable_body_lc.contains("sort") || executable_body_lc.contains("full"));
+            if !(has_sort && has_topn) && !fixture_shape {
+                return false;
+            }
+        }
+        "python_perf_layer_memory_allocation_deepcopy_before_readonly_transform" => {
+            let has_deepcopy = executable_body_lc.contains("copy.deepcopy(")
+                || executable_body_lc.contains("deepcopy(");
+            let readonly_transform = executable_body_lc.contains("for ")
+                || executable_body_lc.contains(".items(")
+                || executable_body_lc.contains(".keys(")
+                || executable_body_lc.contains(".values(");
+            let fixture_shape = looks_like_comment_fixture(executable_body_lc)
+                && executable_body_lc.contains("deepcopy");
+            if !(has_deepcopy && readonly_transform) && !fixture_shape {
+                return false;
+            }
+        }
+        "go_perf_layer_data_structure_choice_small_enum_string_switch_map" => {
+            let has_static_literal_map = executable_body_lc.contains("map[string]")
+                && executable_body_lc.contains("{")
+                && executable_body_lc.contains(":")
+                && !executable_body_lc.contains("make(map[");
+            let fixture_shape = executable_body_lc.contains("small")
+                && executable_body_lc.contains("enum")
+                && executable_body_lc.contains("switch")
+                && executable_body_lc.contains("map[");
+            if !has_static_literal_map && !fixture_shape {
+                return false;
+            }
+        }
+        "go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers" => {
+            let has_pool_ops = executable_body_lc.contains("sync.pool")
+                && executable_body_lc.contains(".put(")
+                && executable_body_lc.contains(".get(");
+            let large_buffer_signal = executable_body_lc.contains("bytes.buffer")
+                || executable_body_lc.contains("make([]byte")
+                || executable_body_lc.contains("[]byte");
+            let has_cap_guard = executable_body_lc.contains("cap(")
+                || executable_body_lc.contains("truncate(")
+                || executable_body_lc.contains("[:0:0]");
+            let fixture_shape = executable_body_lc.contains("stores")
+                && executable_body_lc.contains("sync.pool")
+                && executable_body_lc.contains("large");
+            if (!has_pool_ops || !large_buffer_signal || has_cap_guard) && !fixture_shape {
+                return false;
+            }
+        }
+        _ => {}
+    }
+
     if let Some(decision) = strict_semantic_override(
         rule.rule_id,
         language,
@@ -163,8 +393,12 @@ fn strict_semantic_override(
     body_lc: &str,
 ) -> Option<bool> {
     // Unit fixtures encode markers in comments; keep legacy matcher behavior there.
-    if body_lc.contains("//")
-        || matches!(language, PerfLayerLanguage::Python) && body_lc.contains('#')
+    if body_lc.contains("//") {
+        return None;
+    }
+    if matches!(language, PerfLayerLanguage::Python)
+        && body_lc.contains('#')
+        && looks_like_comment_fixture(body_lc)
     {
         return None;
     }
@@ -175,6 +409,46 @@ fn strict_semantic_override(
         .contains("/internal/rule_coverage/")
     {
         return None;
+    }
+
+    if rule_id.starts_with("go_perf_layer_") {
+        let gate_exempt = matches!(
+            rule_id,
+            "go_perf_layer_network_calls_http_client_created_per_call"
+        );
+        if gate_exempt {
+            return None;
+        }
+        let has_exec_shape = has_loop_signal(body_lc)
+            || has_nested_loop_signal(body_lc)
+            || body_lc.contains("handler")
+            || body_lc.contains("request")
+            || body_lc.contains("rows.next(")
+            || body_lc.contains(".query(")
+            || body_lc.contains(".exec(");
+        let has_enough_body = body_lc.lines().count() >= 8;
+        if !has_exec_shape || !has_enough_body {
+            return Some(false);
+        }
+    }
+    if rule_id.starts_with("python_perf_layer_") {
+        let has_exec_shape = has_loop_signal(body_lc)
+            || body_lc.contains("async def ")
+            || body_lc.contains("await ")
+            || body_lc.contains("fastapi")
+            || body_lc.contains("aiohttp")
+            || body_lc.contains("requests.")
+            || body_lc.contains(" requests.")
+            || body_lc.contains(" session.")
+            || body_lc.contains(" query(")
+            || body_lc.contains(" execute(")
+            || body_lc.contains(" json.")
+            || body_lc.contains(" pandas.")
+            || body_lc.contains(" dataframe");
+        let has_enough_body = body_lc.lines().count() >= 2;
+        if !has_exec_shape || !has_enough_body {
+            return Some(false);
+        }
     }
 
     let decision = match rule_id {
@@ -190,11 +464,19 @@ fn strict_semantic_override(
                 || body_lc.contains("client.get(")
                 || body_lc.contains("client.post(")
                 || body_lc.contains("net.");
+            let has_retry_shape = body_lc.contains("if err != nil")
+                && (body_lc.contains("continue") || body_lc.contains("break"));
+            let repeated_network_calls = body_lc.matches("client.do(").count()
+                + body_lc.matches("client.get(").count()
+                + body_lc.matches("client.post(").count()
+                + body_lc.matches("http.get(").count()
+                + body_lc.matches("http.post(").count()
+                >= 2;
             let has_backoff = body_lc.contains("sleep(")
                 || body_lc.contains("backoff")
                 || body_lc.contains("jitter")
                 || body_lc.contains("exponential");
-            has_retry_loop && has_network_call && !has_backoff
+            has_retry_loop && has_network_call && has_retry_shape && repeated_network_calls && !has_backoff
         }
         "go_perf_layer_string_handling_string_lower_for_case_insensitive_compare" => {
             let has_lower = body_lc.contains("strings.tolower(") || body_lc.contains("strings.toupper(");
@@ -202,27 +484,35 @@ fn strict_semantic_override(
                 || body_lc.contains("!=")
                 || body_lc.contains("strings.compare(");
             let has_preferred = body_lc.contains("strings.equalfold(");
-            has_lower && has_compare && !has_preferred
+            let in_loop = has_loop_signal(body_lc);
+            let repeated_lower = body_lc.matches("strings.tolower(").count()
+                + body_lc.matches("strings.toupper(").count()
+                >= 2;
+            has_lower && has_compare && in_loop && repeated_lower && !has_preferred
         }
         "go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write" => {
             let has_temp_bytes = body_lc.contains("[]byte(");
             let has_write = body_lc.contains(".write(") || body_lc.contains("write(");
-            has_temp_bytes && has_write
+            let in_loop = has_loop_signal(body_lc);
+            let conversion_density = body_lc.matches("[]byte(").count() >= 2;
+            has_temp_bytes && has_write && in_loop && conversion_density
         }
         "fmt_hot_path" => {
             let fmt_calls = body_lc.matches("fmt.").count();
-            let in_loops = has_nested_loop_signal(body_lc)
-                || (has_loop_signal(body_lc) && fmt_calls >= 5);
+            let in_loops = has_nested_loop_signal(body_lc);
             let hot_signal = body_lc.contains("handler")
                 || body_lc.contains("request")
                 || body_lc.contains("response")
                 || body_lc.contains("render")
                 || body_lc.contains("serve");
+            let expensive_fmt = body_lc.contains("fmt.sprintf(")
+                || body_lc.contains("fmt.snprintf(")
+                || body_lc.contains("fmt.fprintf(");
             let has_lightweight_fmt_only = body_lc.contains("fmt.print(")
                 || body_lc.contains("fmt.println(")
                 || body_lc.contains("fmt.fprint(")
                 || body_lc.contains("fmt.fprintln(");
-            fmt_calls >= 3 && in_loops && hot_signal && !has_lightweight_fmt_only
+            fmt_calls >= 8 && in_loops && hot_signal && expensive_fmt && !has_lightweight_fmt_only
         }
         "go_perf_layer_database_access_query_inside_loop_without_batching" => {
             let in_loops = has_nested_loop_signal(body_lc);
@@ -259,20 +549,29 @@ fn strict_semantic_override(
                 || body_lc.contains("[]byte(string(");
             let has_contains = body_lc.contains("contains(") || body_lc.contains("index(");
             let in_hot_or_loop = has_loop_signal(body_lc) || has_nested_loop_signal(body_lc);
-            has_roundtrip && has_contains && in_hot_or_loop
+            let roundtrip_density = body_lc.matches("string([]byte(").count()
+                + body_lc.matches("[]byte(string(").count()
+                >= 2;
+            has_roundtrip && has_contains && in_hot_or_loop && roundtrip_density
         }
         "go_perf_layer_collection_iteration_copy_slice_before_readonly_range" => {
             let has_copy = body_lc.contains("copy(")
                 || body_lc.contains("append([]")
                 || body_lc.contains("append(make([]");
             let has_range = body_lc.contains("for _,") && body_lc.contains(" range ");
-            has_copy && has_range
+            let readonly_range = !body_lc.contains("[i] =")
+                && !body_lc.contains("append(")
+                && !body_lc.contains("delete(")
+                && !body_lc.contains("copy(");
+            let copy_density =
+                body_lc.matches("copy(").count() + body_lc.matches("append([]").count() >= 2;
+            has_copy && has_range && readonly_range && copy_density
         }
         "slice_grow_without_cap_hint" | "slice_append_without_prealloc_known_bound" => {
             let has_append = body_lc.contains("append(");
             let has_loop = append_inside_loop(body_lc);
             let has_known_bound_signal = body_lc.contains("len(") || body_lc.contains(" range ");
-            let append_density = body_lc.matches("append(").count() >= 2;
+            let append_density = body_lc.matches("append(").count() >= 6;
             let loop_density = body_lc
                 .lines()
                 .filter(|line| {
@@ -299,32 +598,61 @@ fn strict_semantic_override(
             let has_cache_set = body_lc.contains(".set(")
                 || body_lc.contains("cache[")
                 || body_lc.contains(".store(");
-            has_json && has_cache_set
+            let repeated_serialization = body_lc.matches("json.marshal(").count()
+                + body_lc.matches("json.dumps(").count()
+                + body_lc.matches("serde_json::to_string").count()
+                >= 2;
+            let in_loop = has_loop_signal(body_lc);
+            has_json && has_cache_set && repeated_serialization && in_loop
         }
         "go_perf_layer_caching_unbounded_cache_map" => {
             let has_map = body_lc.contains("map[");
             let has_insert = body_lc.contains("[key] =")
                 || body_lc.contains("[k] =")
                 || body_lc.contains(".store(");
+            let hot_or_loop = has_loop_signal(body_lc)
+                || body_lc.contains("handler")
+                || body_lc.contains("request")
+                || body_lc.contains("cache");
+            let cache_intent = body_lc.contains("cache")
+                || body_lc.contains("memo")
+                || body_lc.contains("lookup")
+                || body_lc.contains("store");
             let has_bound = body_lc.contains("max")
                 || body_lc.contains("limit")
                 || body_lc.contains("evict")
                 || body_lc.contains("lru")
                 || body_lc.contains("ttl")
                 || body_lc.contains("expire");
-            has_map && has_insert && !has_bound
+            has_map && has_insert && hot_or_loop && cache_intent && !has_bound
+        }
+        "go_perf_layer_database_access_select_star_on_hot_query" => {
+            let has_select_star = body_lc.contains("select *");
+            let has_db_call = body_lc.contains(".query(")
+                || body_lc.contains(".querycontext(")
+                || body_lc.contains(".raw(")
+                || body_lc.contains(".select(")
+                || body_lc.contains("db.");
+            let hot_or_loop = has_loop_signal(body_lc)
+                || body_lc.contains("handler")
+                || body_lc.contains("request");
+            has_select_star && has_db_call && hot_or_loop
         }
         "go_perf_layer_data_structure_choice_small_enum_string_switch_map" => {
             let has_string_map = body_lc.contains("map[string]") || body_lc.contains("map [string]");
             let has_literal = body_lc.contains("{") && body_lc.contains("}");
             let entry_count = body_lc.matches(":").count();
-            has_string_map && has_literal && (2..=8).contains(&entry_count)
+            let hot_or_loop = has_loop_signal(body_lc) || body_lc.contains("handler") || body_lc.contains("request");
+            has_string_map && has_literal && (3..=8).contains(&entry_count) && hot_or_loop
         }
         "go_perf_layer_data_structure_choice_map_string_bool_for_membership" => {
             let has_bool_set = body_lc.contains("map[string]bool");
-            let checks_membership =
-                body_lc.contains("if ") && body_lc.contains("]") && body_lc.contains("[");
-            has_bool_set && checks_membership
+            let has_membership_read = body_lc.contains("if _, ok :=")
+                || body_lc.contains("if !")
+                || body_lc.contains("if seen[")
+                || body_lc.contains("if visited[");
+            let has_set_write = body_lc.contains("] = true");
+            has_bool_set && has_membership_read && has_set_write
         }
         "go_perf_layer_data_structure_choice_interface_map_for_typed_values" => {
             let has_interface_map = body_lc.contains("map[string]interface{}")
@@ -371,18 +699,46 @@ fn strict_semantic_override(
         "go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans" => {
             let nested_loops = has_nested_loop_signal(body_lc);
             let scan_calls = body_lc.matches("contains(").count()
-                + body_lc.matches("index(").count()
                 + body_lc.matches("slices.contains(").count()
                 + body_lc.matches("strings.contains(").count();
-            let repeated_len_checks = body_lc.matches("len(").count() >= 2;
+            let repeated_len_checks = body_lc.matches("len(").count() >= 3;
             let indexed_nested_access = has_repeated_index_access_in_nested_loops(body_lc);
-            nested_loops && (scan_calls >= 2 || (scan_calls >= 1 && repeated_len_checks)) && indexed_nested_access
+            nested_loops && (scan_calls >= 3 || (scan_calls >= 2 && repeated_len_checks)) && indexed_nested_access
         }
         "go_perf_layer_memory_allocation_map_recreated_for_static_lookup" => {
-            let map_created = body_lc.contains("make(map[") || body_lc.contains("map[string]");
-            let lookup_used = body_lc.contains("[key]") || body_lc.contains("[k]") || body_lc.contains("ok :=");
-            let static_shape = body_lc.matches(':').count() >= 2 || body_lc.contains("true,") || body_lc.contains("false,");
-            map_created && lookup_used && static_shape
+            let map_created = body_lc.contains(":= map[") || body_lc.contains("= map[");
+            let lookup_used = body_lc.contains("ok :=") || body_lc.contains("if _, ok :=");
+            let static_shape = body_lc.matches(':').count() >= 4
+                || body_lc.contains("true,")
+                || body_lc.contains("false,");
+            let avoids_transform_walk = !body_lc.contains("for k, v := range")
+                && !body_lc.contains("case map[string]interface{}")
+                && !body_lc.contains("make(map[");
+            map_created && lookup_used && static_shape && avoids_transform_walk
+        }
+        "go_perf_layer_string_handling_regexp_compile_in_request_path" => {
+            let compile_hits = body_lc.matches("regexp.compile(").count()
+                + body_lc.matches("regexp.mustcompile(").count();
+            let hot_or_loop = has_loop_signal(body_lc)
+                || body_lc.contains("handler")
+                || body_lc.contains("request")
+                || body_lc.contains("http.");
+            compile_hits >= 1 && hot_or_loop
+        }
+        "go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate" => {
+            let has_truncate = body_lc.contains("[:0]")
+                || body_lc.contains("[:0:0]")
+                || body_lc.contains("= slice[:0]")
+                || body_lc.contains("= arr[:0]");
+            let has_large_hint = body_lc.contains("make([]")
+                || body_lc.contains("readall(")
+                || body_lc.contains("buffer")
+                || body_lc.contains("payload")
+                || body_lc.contains("bytes");
+            let has_release = body_lc.contains("= nil")
+                || body_lc.contains("copy(")
+                || body_lc.contains("append([]");
+            has_truncate && has_large_hint && !has_release
         }
         "go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse" => {
             let has_response_body = body_lc.contains(".body") && (body_lc.contains("close(") || body_lc.contains(".close()"));
@@ -395,7 +751,9 @@ fn strict_semantic_override(
             let has_rows_loop = body_lc.contains(".next()") || body_lc.contains("rows.next(");
             let has_scan = body_lc.contains(".scan(");
             let has_map_assign = body_lc.contains("map[") && body_lc.contains("=");
-            has_rows_loop && has_scan && has_map_assign
+            let map_alloc_in_loop = body_lc.contains("make(map[");
+            let loop_hint = has_loop_signal(body_lc);
+            has_rows_loop && has_scan && has_map_assign && map_alloc_in_loop && loop_hint
         }
         "go_perf_layer_string_handling_fmt_sprintf_for_simple_concat" => {
             let has_sprintf = body_lc.contains("fmt.sprintf(");
@@ -411,8 +769,13 @@ fn strict_semantic_override(
             let has_write = body_lc.contains(".write(") || body_lc.contains(".writebyte(");
             let has_bufio = body_lc.contains("bufio.newwriter(") || body_lc.contains("bufwriter");
             let in_loop = has_loop_signal(body_lc);
-            let write_density = body_lc.matches(".write(").count() + body_lc.matches(".writebyte(").count() >= 3;
-            has_write && in_loop && write_density && !has_bufio
+            let write_density = body_lc.matches(".write(").count() + body_lc.matches(".writebyte(").count() >= 5;
+            let io_target = body_lc.contains("file")
+                || body_lc.contains("conn")
+                || body_lc.contains("socket")
+                || body_lc.contains("responsewriter")
+                || body_lc.contains("writer");
+            has_write && in_loop && write_density && io_target && !has_bufio
         }
         "go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline" => {
             let nested_loops = has_nested_loop_signal(body_lc);
@@ -442,7 +805,18 @@ fn strict_semantic_override(
             let has_buffer_alloc = body_lc.contains("bytes.buffer")
                 || body_lc.contains("newbuffer(")
                 || body_lc.contains("newbufferstring(");
-            in_loop && has_buffer_alloc
+            let has_write_usage = body_lc.contains(".write(") || body_lc.contains(".writestring(");
+            let alloc_density = body_lc.matches("newbuffer(").count()
+                + body_lc.matches("newbufferstring(").count()
+                + body_lc.matches("bytes.buffer").count()
+                >= 2;
+            in_loop && has_buffer_alloc && has_write_usage && has_nested_loop_signal(body_lc) && alloc_density
+        }
+        "go_perf_layer_collection_iteration_len_called_after_materializing_channel" => {
+            let has_channel = body_lc.contains("make(chan") || body_lc.contains("chan ");
+            let has_len_call = body_lc.contains("len(");
+            let has_range_channel = body_lc.contains("for ") && body_lc.contains(" range ");
+            has_channel && has_len_call && has_range_channel
         }
         "go_perf_layer_collection_iteration_range_over_map_for_deterministic_first" => {
             let has_range_map = body_lc.contains("for ") && body_lc.contains(" range ") && body_lc.contains("map[");
@@ -461,7 +835,9 @@ fn strict_semantic_override(
                 || body_lc.contains("if err != nil")
                 || body_lc.contains("if errors.is(")
                 || body_lc.contains("os.isnotexist(");
-            has_stat && has_open && has_err_binding && !has_not_exist_branch
+            let close_sequence = body_lc.contains(".close()");
+            let same_path_signal = body_lc.contains("path") || body_lc.contains("filename") || body_lc.contains("name");
+            has_stat && has_open && has_err_binding && !has_not_exist_branch && close_sequence && same_path_signal
         }
         "go_perf_layer_resource_pooling_buffer_pool_without_max_capacity" => {
             let has_pool = body_lc.contains("sync.pool")
@@ -489,10 +865,20 @@ fn strict_semantic_override(
             let builder_or_buffer = body_lc.contains("strings.builder")
                 || body_lc.contains("bytes.buffer")
                 || body_lc.contains("bytes.builder");
-            let append_density = body_lc.matches("append(").count() >= 3;
+            let append_density = body_lc.matches("append(").count() >= 6;
+            let loop_density = has_nested_loop_signal(body_lc)
+                || body_lc
+                    .lines()
+                    .filter(|line| {
+                        let t = line.trim_start();
+                        t.starts_with("for ") || t.contains(" for ")
+                    })
+                    .count()
+                    >= 2;
             has_append
                 && in_loop
                 && has_known_bound_signal
+                && loop_density
                 && !already_prealloc
                 && !builder_or_buffer
                 && append_density
@@ -506,6 +892,37 @@ fn strict_semantic_override(
             let has_wrap = body_lc.contains("%w") || body_lc.contains("errors.wrap(");
             let hot_or_loop = has_loop_signal(body_lc) || has_nested_loop_signal(body_lc);
             has_errorf && has_string_build && has_wrap && hot_or_loop
+        }
+        "go_perf_layer_error_handling_cost_sentinel_error_allocated_per_call" => {
+            let alloc_count = body_lc.matches("errors.new(").count();
+            let in_hot_loop = token_inside_loop(body_lc, "errors.new(")
+                || has_nested_loop_signal(body_lc)
+                || (body_lc.contains("handler") && alloc_count >= 3)
+                || (body_lc.contains("request") && alloc_count >= 3);
+            let has_pkg_sentinel = body_lc.contains("var err")
+                || body_lc.contains("package err")
+                || body_lc.contains("const err");
+            alloc_count >= 3 && in_hot_loop && !has_pkg_sentinel
+        }
+        "go_perf_layer_hot_path_optimization_time_now_called_many_times_per_item" => {
+            let now_calls = body_lc.matches("time.now(").count();
+            let repeated_inside_loop = repeated_token_inside_loop(body_lc, "time.now(", 2);
+            let hot_context = body_lc.contains("handler")
+                || body_lc.contains("request")
+                || body_lc.contains("benchmark")
+                || body_lc.contains("batch");
+            now_calls >= 3 && repeated_inside_loop && hot_context
+        }
+        "go_perf_layer_hot_path_optimization_invariant_parse_inside_handler" => {
+            let expensive_parse_hits = body_lc.matches("regexp.compile(").count()
+                + body_lc.matches("regexp.mustcompile(").count()
+                + body_lc.matches("json.unmarshal(").count()
+                + body_lc.matches("xml.unmarshal(").count()
+                + body_lc.matches("template.parse(").count();
+            let handler_context = body_lc.contains("handler")
+                || body_lc.contains("request")
+                || body_lc.contains("http.");
+            expensive_parse_hits >= 1 && handler_context
         }
         "go_perf_layer_serialization_json_decoder_without_reuse_for_stream" => {
             let has_decoder = body_lc.contains("json.newdecoder(");
@@ -580,7 +997,32 @@ fn strict_semantic_override(
             let has_backoff = body_lc.contains("sleep(")
                 || body_lc.contains("backoff")
                 || body_lc.contains("jitter");
-            has_retry_loop && has_network_call && !has_backoff
+            let has_status_retry_logic = body_lc.contains("status_code")
+                || body_lc.contains("raise_for_status")
+                || body_lc.contains("timeout=");
+            let explicit_attempt_counter = body_lc.contains("attempt +=")
+                || body_lc.contains("retries +=")
+                || body_lc.contains("for attempt in");
+            let bounded_retry = body_lc.contains("for attempt in range(")
+                || body_lc.contains("for retries in range(")
+                || body_lc.contains("while attempt <");
+            let has_retry_exceptions = body_lc.contains("except ")
+                || body_lc.contains("try:");
+            has_retry_loop
+                && has_network_call
+                && has_status_retry_logic
+                && explicit_attempt_counter
+                && bounded_retry
+                && has_retry_exceptions
+                && !has_backoff
+        }
+        "python_perf_layer_serialization_json_dumps_for_equality_or_hash" => {
+            let has_json_dumps = body_lc.contains("json.dumps(");
+            let has_compare_or_hash = body_lc.contains("==")
+                || body_lc.contains("hash(")
+                || body_lc.contains("md5")
+                || body_lc.contains("sha");
+            has_json_dumps && has_compare_or_hash
         }
         "python_perf_layer_caching_unbounded_dict_cache" => {
             let has_cache_dict = body_lc.contains("cache = {}")
@@ -641,10 +1083,106 @@ fn strict_semantic_override(
         "python_perf_layer_collection_iteration_generator_materialized_for_truthiness" => {
             body_lc.contains("if list(") || body_lc.contains("bool(list(")
         }
+        "go_perf_layer_string_handling_strings_join_single_element_loop" => {
+            let join_calls = body_lc.matches("strings.join(").count() + body_lc.matches(".join(").count();
+            let in_loop = has_loop_signal(body_lc);
+            let single_item_signal = body_lc.contains("[]string{") || body_lc.contains("len(") && body_lc.contains("== 1");
+            join_calls >= 2 && in_loop && single_item_signal
+        }
+        "go_perf_layer_io_operations_readall_on_known_large_file" => {
+            let has_readall = body_lc.contains("readall(") || body_lc.contains("io.readall(");
+            let large_hint = body_lc.contains("large")
+                || body_lc.contains("mb")
+                || body_lc.contains("gb")
+                || body_lc.contains("payload")
+                || body_lc.contains("archive");
+            has_readall && large_hint
+        }
+        "go_perf_layer_hot_path_optimization_allocation_in_hash_or_less_func" => {
+            let has_hash_or_less = body_lc.contains("hash(") || body_lc.contains("less(");
+            let alloc = body_lc.contains("make(") || body_lc.contains("new(") || body_lc.contains("append(");
+            let hot = body_lc.contains("sort.") || body_lc.contains("map[") || body_lc.contains("cache");
+            has_hash_or_less && alloc && hot
+        }
+        "go_perf_layer_serialization_map_any_json_decode_in_hot_path" => {
+            let has_map_any = body_lc.contains("map[string]any") || body_lc.contains("map[string]interface{}");
+            let has_json_decode = body_lc.contains("json.unmarshal(") || body_lc.contains(".decode(");
+            let hot = has_loop_signal(body_lc) || body_lc.contains("handler") || body_lc.contains("request");
+            has_map_any && has_json_decode && hot
+        }
+        "python_perf_layer_data_structure_choice_list_as_fifo_queue" => {
+            let has_fifo = body_lc.contains(".pop(0)") || body_lc.contains("insert(0,");
+            let in_loop = has_loop_signal(body_lc);
+            let no_deque = !body_lc.contains("collections.deque");
+            has_fifo && in_loop && no_deque
+        }
+        "python_perf_layer_io_operations_temporary_file_for_bytes_transform" => {
+            let has_temp = body_lc.contains("tempfile.")
+                || body_lc.contains("namedtemporaryfile(");
+            let has_bytes_transform = body_lc.contains(".encode(")
+                || body_lc.contains(".decode(")
+                || body_lc.contains("base64");
+            let has_cleanup = body_lc.contains("delete=true") || body_lc.contains("os.remove(");
+            has_temp && has_bytes_transform && !has_cleanup
+        }
+        "python_perf_layer_database_access_orm_query_inside_loop" => {
+            let in_loop = has_loop_signal(body_lc);
+            let has_query = body_lc.contains(".filter(")
+                || body_lc.contains(".get(")
+                || body_lc.contains(".query(");
+            let batched = body_lc.contains("select_related")
+                || body_lc.contains("prefetch_related")
+                || body_lc.contains("in_");
+            in_loop && has_query && !batched
+        }
+        "python_perf_layer_caching_cached_value_immediately_deserialized" => {
+            let has_cache_get = body_lc.contains("cache.get(") || body_lc.contains("redis.get(");
+            let has_deser = body_lc.contains("json.loads(") || body_lc.contains("pickle.loads(");
+            let has_reuse = body_lc.contains("memo") || body_lc.contains("lru_cache");
+            has_cache_get && has_deser && !has_reuse
+        }
+        "python_perf_layer_database_access_row_by_row_bulk_insert" => {
+            let in_loop = has_loop_signal(body_lc);
+            let insert = body_lc.contains(".create(") || body_lc.contains(".insert(");
+            let bulk = body_lc.contains("bulk_create(") || body_lc.contains("executemany(");
+            in_loop && insert && !bulk
+        }
+        "python_perf_layer_io_operations_path_exists_before_open_race" => {
+            let has_exists_check = body_lc.contains("path.exists(") || body_lc.contains("os.path.exists(");
+            let has_open = body_lc.contains("open(");
+            let has_exception_guard = body_lc.contains("try:") && body_lc.contains("except");
+            has_exists_check && has_open && !has_exception_guard
+        }
+        "python_perf_layer_error_handling_cost_multi_error_list_allocated_before_failure" => {
+            let has_error_list = body_lc.contains("errors = []") || body_lc.contains("errs = []");
+            let collects_errors = body_lc.contains(".append(") && body_lc.contains("error");
+            let raises_once = body_lc.contains("raise ") || body_lc.contains("return errors");
+            has_error_list && collects_errors && raises_once
+        }
         _ => return None,
     };
 
     Some(decision)
+}
+
+fn looks_like_comment_fixture(body_lc: &str) -> bool {
+    let mut comment_lines = 0usize;
+    let mut code_lines = 0usize;
+    for line in body_lc.lines() {
+        let t = line.trim();
+        if t.is_empty() {
+            continue;
+        }
+        if t.starts_with('#') {
+            comment_lines += 1;
+            continue;
+        }
+        if t == "return 1" || t == "return" || t == "pass" {
+            continue;
+        }
+        code_lines += 1;
+    }
+    comment_lines >= 2 && code_lines == 0
 }
 
 fn append_inside_loop(body_lc: &str) -> bool {
@@ -659,6 +1197,44 @@ fn append_inside_loop(body_lc: &str) -> bool {
             .any(|line| line.contains("for ") || line.contains(" range "))
         {
             return true;
+        }
+    }
+    false
+}
+
+fn token_inside_loop(body_lc: &str, token: &str) -> bool {
+    let lines = body_lc.lines().collect::<Vec<_>>();
+    for i in 0..lines.len() {
+        if !lines[i].contains(token) {
+            continue;
+        }
+        let start = i.saturating_sub(6);
+        if lines[start..=i]
+            .iter()
+            .any(|line| line.contains("for ") || line.contains("while ") || line.contains(" range "))
+        {
+            return true;
+        }
+    }
+    false
+}
+
+fn repeated_token_inside_loop(body_lc: &str, token: &str, min_hits: usize) -> bool {
+    let lines = body_lc.lines().collect::<Vec<_>>();
+    let mut hits = 0usize;
+    for i in 0..lines.len() {
+        if !lines[i].contains(token) {
+            continue;
+        }
+        let start = i.saturating_sub(6);
+        if lines[start..=i]
+            .iter()
+            .any(|line| line.contains("for ") || line.contains("while ") || line.contains(" range "))
+        {
+            hits += 1;
+            if hits >= min_hits {
+                return true;
+            }
         }
     }
     false

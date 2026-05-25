@@ -260,7 +260,8 @@ fn slice_grow_without_cap_hint(
         .iter()
         .filter(|line| line.in_loop && line.text.contains("append("))
         .count();
-    if append_count_in_loops < 2 {
+    let nested_loop_lines = lines.iter().filter(|line| line.in_loop).count();
+    if append_count_in_loops < 8 || nested_loop_lines < 2 {
         return findings;
     }
 

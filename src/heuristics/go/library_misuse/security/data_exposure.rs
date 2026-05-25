@@ -82,11 +82,19 @@ fn error_detail_client(
     if !is_request_path_function(file, function) {
         return findings;
     }
+    let mut emitted = false;
     for bl in lines {
+        if emitted {
+            break;
+        }
+        let lower = bl.text.to_lowercase();
         if (bl.text.contains("c.JSON(")
             || bl.text.contains("c.String(")
             || bl.text.contains("http.Error("))
             && bl.text.contains("err.Error()")
+            && (bl.text.contains("500")
+                || lower.contains("statusinternalservererror")
+                || lower.contains("http.statusinternalservererror"))
         {
             findings.push(Finding {
                 rule_id: "error_detail_leaked_to_client".into(),
@@ -104,6 +112,7 @@ fn error_detail_client(
                     "internal errors can leak stack traces and schemas".into(),
                 ],
             });
+            emitted = true;
         }
     }
     findings

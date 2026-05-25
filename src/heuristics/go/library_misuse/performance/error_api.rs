@@ -99,6 +99,9 @@ fn errors_new_hot_path(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
+    if function.fingerprint.line_count < 25 {
+        return findings;
+    }
     for alias in import_aliases_for(file, "errors") {
         let mut error_new_lines: Vec<usize> = Vec::new();
         for bl in lines {

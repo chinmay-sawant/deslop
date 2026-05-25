@@ -308,7 +308,7 @@ fn slice_append_without_prealloc_findings(
         .iter()
         .filter(|line| line.in_loop && line.text.contains("append("))
         .count();
-    if append_count_in_loops < 2 {
+    if append_count_in_loops < 6 {
         return findings;
     }
 
@@ -338,6 +338,16 @@ fn slice_append_without_prealloc_findings(
                             && (candidate.text.contains("len(") || candidate.text.contains(" range "))
                     });
                     if !has_known_bound_signal {
+                        continue;
+                    }
+                    let has_zero_cap_seed = lines.iter().any(|candidate| {
+                        candidate.line < body_line.line
+                            && (candidate.text.contains(&format!("{target} := []"))
+                                || candidate.text.contains(&format!("var {target} []"))
+                                || candidate.text.contains(&format!("{target} := make([]"))
+                                    && candidate.text.contains(", 0)"))
+                    });
+                    if !has_zero_cap_seed {
                         continue;
                     }
                     findings.push(Finding {
@@ -464,6 +474,13 @@ fn map_growth_without_size_hint_findings(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let append_count_in_loops = lines
+        .iter()
+        .filter(|line| line.in_loop && line.text.contains("append("))
+        .count();
+    if append_count_in_loops < 6 {
+        return findings;
+    }
 
     for body_line in lines.iter().filter(|bl| bl.in_loop) {
         if (body_line.text.contains("[") && body_line.text.contains("] ="))
@@ -517,10 +534,21 @@ fn builder_without_grow_findings(
         for body_line in lines {
             if body_line.text.contains(&builder_marker) {
                 let has_grow = lines.iter().any(|other| other.text.contains(".Grow("));
+                let looped_writes = lines
+                    .iter()
+                    .filter(|other| other.in_loop && other.text.contains(".WriteString("))
+                    .count();
+                let loop_count = lines.iter().filter(|other| other.in_loop).count();
+                let has_bound_hint = lines.iter().any(|other| {
+                    other.text.contains("len(")
+                        || other.text.contains("cap(")
+                        || other.text.contains("size")
+                        || other.text.contains("count")
+                });
                 if !has_grow
-                    && lines
-                        .iter()
-                        .any(|other| other.in_loop && other.text.contains(".WriteString("))
+                    && looped_writes >= 6
+                    && loop_count >= 2
+                    && has_bound_hint
                 {
                     findings.push(Finding {
                         rule_id: "strings_builder_without_grow_known_bound".to_string(),
@@ -551,10 +579,21 @@ fn builder_without_grow_findings(
                 && !body_line.text.contains(&format!("{alias}.NewBuffer("))
             {
                 let has_grow = lines.iter().any(|other| other.text.contains(".Grow("));
+                let looped_writes = lines
+                    .iter()
+                    .filter(|other| other.in_loop && other.text.contains(".Write"))
+                    .count();
+                let loop_count = lines.iter().filter(|other| other.in_loop).count();
+                let has_bound_hint = lines.iter().any(|other| {
+                    other.text.contains("len(")
+                        || other.text.contains("cap(")
+                        || other.text.contains("size")
+                        || other.text.contains("count")
+                });
                 if !has_grow
-                    && lines
-                        .iter()
-                        .any(|other| other.in_loop && other.text.contains(".Write"))
+                    && looped_writes >= 6
+                    && loop_count >= 2
+                    && has_bound_hint
                 {
                     findings.push(Finding {
                         rule_id: "bytes_buffer_without_grow_known_bound".to_string(),

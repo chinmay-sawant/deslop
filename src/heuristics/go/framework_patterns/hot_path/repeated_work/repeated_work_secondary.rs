@@ -439,18 +439,20 @@ fn filter_count_iterate_findings(
         }
     }
 
-    if range_blocks.len() < 3 {
+    if range_blocks.len() < 4 {
         return Vec::new();
     }
 
-    let has_filter_count_iterate_pattern = range_blocks.windows(3).any(|window| {
+    let has_filter_count_iterate_pattern = range_blocks.windows(4).any(|window| {
         let gap1 = window[1] - window[0];
         let gap2 = window[2] - window[1];
-        gap1 < 15 && gap2 < 15
-    });
+        let gap3 = window[3] - window[2];
+        gap1 < 15 && gap2 < 15 && gap3 < 15
+    }) && lines.iter().any(|line| line.text.contains("if "))
+        && lines.iter().any(|line| line.text.contains("count") || line.text.contains("len("));
 
     if has_filter_count_iterate_pattern {
-        let anchor = range_blocks[2];
+        let anchor = range_blocks[3];
         vec![Finding {
             rule_id: "filter_then_count_then_iterate".to_string(),
             severity: Severity::Info,

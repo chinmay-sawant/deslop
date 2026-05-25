@@ -20,10 +20,20 @@ pub(crate) fn core_hot_path_findings(file: &ParsedFile, function: &ParsedFunctio
     findings.extend(core_repeated_work_findings(file, function, &lines));
 
     for alias in import_aliases_for(file, "regexp") {
+        let compile_hits = lines
+            .iter()
+            .filter(|body_line| {
+                body_line.in_loop
+                    && (body_line.text.contains(&format!("{alias}.Compile("))
+                        || body_line.text.contains(&format!("{alias}.MustCompile(")))
+            })
+            .count();
         for body_line in &lines {
             if body_line.in_loop
                 && (body_line.text.contains(&format!("{alias}.Compile("))
                     || body_line.text.contains(&format!("{alias}.MustCompile(")))
+                && is_request_path_function(file, function)
+                && compile_hits >= 2
             {
                 findings.push(Finding {
                     rule_id: "regexp_compile_in_hot_path".to_string(),

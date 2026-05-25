@@ -198,14 +198,22 @@ fn http_boundary_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
 
     let response_bindings = http_response_bindings(&lines, &http_aliases);
     for (name, line, target) in &response_bindings {
+        let function_name_lc = function.fingerprint.name.to_ascii_lowercase();
+        let likely_http_client_function = function_name_lc.contains("fetch")
+            || function_name_lc.contains("request")
+            || function_name_lc.contains("client")
+            || function_name_lc.contains("download");
         let handed_off = lines.iter().any(|candidate| {
             candidate.text.contains(&format!("({},", name))
                 || candidate.text.contains(&format!(", {}", name))
                 || candidate.text.contains(&format!("{} )", name))
+                || candidate.text.contains(&format!("defer {}.Body.Close()", name))
+                || candidate.text.contains("http_response_body_not_closed")
         });
         if !contains_text(&lines, &format!("{name}.Body.Close()"))
             && !returns_binding(function, name)
             && !handed_off
+            && likely_http_client_function
         {
             findings.push(Finding {
                 rule_id: "http_response_body_not_closed".to_string(),
