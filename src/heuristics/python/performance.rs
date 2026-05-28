@@ -20,6 +20,9 @@ pub(super) fn string_concat_findings(file: &ParsedFile, function: &ParsedFunctio
     }
 
     let python = function.python_evidence();
+    if python.concat_loops.len() < 3 {
+        return Vec::new();
+    }
 
     python
         .concat_loops
@@ -84,6 +87,22 @@ pub(super) fn full_dataset_load_findings(
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     if function.is_test_function {
+        return Vec::new();
+    }
+    let lower_body = function.body_text.to_ascii_lowercase();
+    let heavy_context = lower_body.contains("request")
+        || lower_body.contains("response")
+        || lower_body.contains("upload")
+        || lower_body.contains("download")
+        || lower_body.contains("json")
+        || lower_body.contains("xml")
+        || lower_body.contains("yaml");
+    let large_hint = lower_body.contains("large")
+        || lower_body.contains("mb")
+        || lower_body.contains("gb")
+        || lower_body.contains("archive")
+        || lower_body.contains("stream");
+    if !heavy_context || !large_hint {
         return Vec::new();
     }
 
@@ -680,6 +699,8 @@ pub(super) fn project_agnostic_performance_findings(
                 "row_factory",
             ],
         )
+        && lower_body.contains(".copy(")
+        && (lower_body.contains(".values()") || lower_body.contains(".items()"))
     {
         findings.push(push(
             "copy_of_mapping_created_only_to_read_values",

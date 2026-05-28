@@ -1,6 +1,8 @@
 use tempfile::{Builder, TempDir};
 
-use super::{apply_repository_config, is_generated, next_code_line, parse_rule_ids};
+use super::{
+    apply_repository_config, apply_test_burst_cap, is_generated, next_code_line, parse_rule_ids,
+};
 use crate::RepoConfig;
 use crate::model::{Finding, Severity};
 
@@ -133,4 +135,30 @@ fn exact_duplicate_findings_are_collapsed_by_scan_sorting() {
     });
 
     assert_eq!(findings.len(), 1);
+}
+
+#[test]
+fn caps_extreme_same_line_bursts_and_keeps_highest_severity() {
+    let mut findings = Vec::new();
+    for index in 0..10 {
+        let severity = match index {
+            0 => Severity::Error,
+            1 | 2 => Severity::Warning,
+            _ => Severity::Info,
+        };
+        findings.push(Finding {
+            rule_id: format!("rule_{index}"),
+            severity,
+            path: std::path::PathBuf::from("src/lib.rs"),
+            function_name: Some("demo".to_string()),
+            start_line: 42,
+            end_line: 42,
+            message: "demo".to_string(),
+            evidence: Vec::new(),
+        });
+    }
+
+    let capped = apply_test_burst_cap(findings);
+    assert_eq!(capped.len(), 4);
+    assert!(capped.iter().any(|finding| finding.severity == Severity::Error));
 }

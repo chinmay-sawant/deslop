@@ -632,8 +632,10 @@ pub(crate) fn api_type_hint_findings(file: &ParsedFile, function: &ParsedFunctio
     let python = function.python_evidence();
 
     if function.is_test_function
+        || is_non_production_python_context(file)
         || function.fingerprint.name.starts_with('_')
         || python.has_complete_type_hints
+        || function.fingerprint.line_count < 15
     {
         return Vec::new();
     }
@@ -651,4 +653,20 @@ pub(crate) fn api_type_hint_findings(file: &ParsedFile, function: &ParsedFunctio
         ),
         evidence: vec!["signature_annotations=incomplete".to_string()],
     }]
+}
+
+fn is_non_production_python_context(file: &ParsedFile) -> bool {
+    if file.is_test_file {
+        return true;
+    }
+    let path = file.path.to_string_lossy().to_ascii_lowercase();
+    path.contains("/sample")
+        || path.contains("/samples/")
+        || path.contains("/example")
+        || path.contains("/examples/")
+        || path.contains("/benchmark")
+        || path.contains("/benchmarks/")
+        || path.contains("/testdata/")
+        || path.contains("/fixtures/")
+        || path.contains("/tests/")
 }

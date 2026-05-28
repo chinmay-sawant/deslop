@@ -5,6 +5,9 @@ pub(super) fn crypto_findings(
     function: &ParsedFunction,
     lines: &[BodyLine],
 ) -> Vec<Finding> {
+    if is_non_production_context(file) {
+        return Vec::new();
+    }
     let mut findings = Vec::new();
     findings.extend(insecure_random(file, function, lines));
     findings.extend(tls_skip_verify(file, function, lines));
@@ -17,6 +20,21 @@ pub(super) fn crypto_findings(
     findings.extend(bcrypt_cost_low(file, function, lines));
     findings.extend(rsa_key_small(file, function, lines));
     findings
+}
+
+fn is_non_production_context(file: &ParsedFile) -> bool {
+    if file.is_test_file {
+        return true;
+    }
+    let path = file.path.to_string_lossy().to_ascii_lowercase();
+    path.contains("/sample")
+        || path.contains("/samples/")
+        || path.contains("/example")
+        || path.contains("/examples/")
+        || path.contains("/benchmark")
+        || path.contains("/benchmarks/")
+        || path.contains("/testdata/")
+        || path.contains("/fixtures/")
 }
 
 fn insecure_random(

@@ -77,6 +77,14 @@ pub(crate) struct RustFileData {
 }
 
 impl ParsedFile {
+    pub(crate) fn has_strong_code_anchors(&self) -> bool {
+        !self.functions.is_empty()
+            || !self.symbols.is_empty()
+            || !self.imports.is_empty()
+            || !self.top_level_bindings.is_empty()
+            || !self.module_scope_calls.is_empty()
+    }
+
     /// Access Go-specific file data. Returns `None` if the file is not Go.
     pub(crate) fn go_data(&self) -> Option<&GoFileData> {
         match &self.lang {

@@ -41,6 +41,9 @@ pub(super) fn test_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
         && summary.error_assertion_calls == 0
         && summary.production_calls > 0
         && summary.skip_calls == 0
+        && summary.assertion_like_calls >= 3
+        && summary.production_calls >= 3
+        && function.fingerprint.line_count >= 20
     {
         findings.push(Finding {
             rule_id: "happy_path_only_test".to_string(),

@@ -587,16 +587,51 @@ fn handler_error_shape_key(lines: &[super::framework_patterns::BodyLine]) -> Opt
 fn error_string_switch_line(lines: &[super::framework_patterns::BodyLine]) -> Option<usize> {
     lines
         .iter()
-        .find(|line| line.text.contains("err.Error()"))
+        .find(|line| {
+            let lower = line.text.to_lowercase();
+            line.text.contains("err.Error()")
+                && (lower.contains("switch ")
+                    || lower.contains("case ")
+                    || lower.contains("contains(")
+                    || lower.contains("=="))
+        })
         .map(|line| line.line)
 }
 
 fn raw_db_error_response_line(lines: &[super::framework_patterns::BodyLine]) -> Option<usize> {
+    let has_db_context = lines.iter().any(|line| {
+        let lower = line.text.to_lowercase();
+        lower.contains("gorm")
+            || lower.contains("sql.")
+            || lower.contains("database/sql")
+            || lower.contains("query(")
+            || lower.contains("queryrow(")
+            || lower.contains("rows.")
+            || lower.contains("scan(")
+            || lower.contains("tx.")
+            || lower.contains("repo.")
+            || lower.contains("repository")
+            || lower.contains("db.")
+    });
+    if !has_db_context {
+        return None;
+    }
+
     lines
         .iter()
         .find(|line| {
+            let lower = line.text.to_lowercase();
+            let line_has_db_signal = lower.contains("database")
+                || lower.contains("sql")
+                || lower.contains("gorm")
+                || lower.contains("db")
+                || lower.contains("query");
             line.text.contains("err.Error()")
                 && (line.text.contains("c.JSON(") || line.text.contains("gin.H") || line.text.contains("http.Error("))
+                && (line.text.contains("500")
+                    || lower.contains("statusinternalservererror")
+                    || lower.contains("internal server error"))
+                && line_has_db_signal
         })
         .map(|line| line.line)
 }

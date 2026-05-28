@@ -304,6 +304,13 @@ fn slice_append_without_prealloc_findings(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let append_count_in_loops = lines
+        .iter()
+        .filter(|line| line.in_loop && line.text.contains("append("))
+        .count();
+    if append_count_in_loops < 6 {
+        return findings;
+    }
 
     for body_line in lines.iter().filter(|bl| bl.in_loop) {
         if body_line.text.contains("append(")
@@ -323,12 +330,26 @@ fn slice_append_without_prealloc_findings(
                     && prior.text.contains(&target)
             });
             if !has_prealloc && !reuses_existing_capacity {
-                let has_range_bound = lines.iter().any(|prior| {
-                    prior.line < body_line.line
-                        && prior.text.contains("range ")
-                        && prior.text.contains("for ")
-                });
-                if has_range_bound {
+                if let Some(range_var) = nearest_range_loop_var(lines, body_line.line)
+                    && body_line.text.contains(&range_var)
+                {
+                    let has_known_bound_signal = lines.iter().any(|candidate| {
+                        candidate.line <= body_line.line
+                            && (candidate.text.contains("len(") || candidate.text.contains(" range "))
+                    });
+                    if !has_known_bound_signal {
+                        continue;
+                    }
+                    let has_zero_cap_seed = lines.iter().any(|candidate| {
+                        candidate.line < body_line.line
+                            && (candidate.text.contains(&format!("{target} := []"))
+                                || candidate.text.contains(&format!("var {target} []"))
+                                || candidate.text.contains(&format!("{target} := make([]"))
+                                    && candidate.text.contains(", 0)"))
+                    });
+                    if !has_zero_cap_seed {
+                        continue;
+                    }
                     findings.push(Finding {
                         rule_id: "slice_append_without_prealloc_known_bound".to_string(),
                         severity: Severity::Info,
@@ -351,6 +372,39 @@ fn slice_append_without_prealloc_findings(
     }
 
     findings
+}
+
+fn nearest_range_loop_var(lines: &[BodyLine], line: usize) -> Option<String> {
+    let mut found = None;
+    for prior in lines.iter().filter(|l| l.line < line) {
+        if !prior.text.contains("for ") || !prior.text.contains(" range ") {
+            continue;
+        }
+        let distance = line.saturating_sub(prior.line);
+        if distance > 8 {
+            continue;
+        }
+        if let Some((lhs, _rhs)) = prior.text.split_once(":= range ") {
+            let parts = lhs.split(',').map(str::trim).collect::<Vec<_>>();
+            if let Some(last) = parts.last()
+                && local_identifier_name(last)
+            {
+                found = Some((*last).to_string());
+            }
+        }
+    }
+    found
+}
+
+fn local_identifier_name(text: &str) -> bool {
+    let mut chars = text.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+    if !(first.is_ascii_alphabetic() || first == '_') {
+        return false;
+    }
+    chars.all(|ch| ch.is_ascii_alphanumeric() || ch == '_')
 }
 
 fn append_reuses_existing_slice_capacity(
@@ -420,6 +474,13 @@ fn map_growth_without_size_hint_findings(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let append_count_in_loops = lines
+        .iter()
+        .filter(|line| line.in_loop && line.text.contains("append("))
+        .count();
+    if append_count_in_loops < 6 {
+        return findings;
+    }
 
     for body_line in lines.iter().filter(|bl| bl.in_loop) {
         if (body_line.text.contains("[") && body_line.text.contains("] ="))
@@ -473,10 +534,21 @@ fn builder_without_grow_findings(
         for body_line in lines {
             if body_line.text.contains(&builder_marker) {
                 let has_grow = lines.iter().any(|other| other.text.contains(".Grow("));
+                let looped_writes = lines
+                    .iter()
+                    .filter(|other| other.in_loop && other.text.contains(".WriteString("))
+                    .count();
+                let loop_count = lines.iter().filter(|other| other.in_loop).count();
+                let has_bound_hint = lines.iter().any(|other| {
+                    other.text.contains("len(")
+                        || other.text.contains("cap(")
+                        || other.text.contains("size")
+                        || other.text.contains("count")
+                });
                 if !has_grow
-                    && lines
-                        .iter()
-                        .any(|other| other.in_loop && other.text.contains(".WriteString("))
+                    && looped_writes >= 6
+                    && loop_count >= 2
+                    && has_bound_hint
                 {
                     findings.push(Finding {
                         rule_id: "strings_builder_without_grow_known_bound".to_string(),
@@ -507,10 +579,21 @@ fn builder_without_grow_findings(
                 && !body_line.text.contains(&format!("{alias}.NewBuffer("))
             {
                 let has_grow = lines.iter().any(|other| other.text.contains(".Grow("));
+                let looped_writes = lines
+                    .iter()
+                    .filter(|other| other.in_loop && other.text.contains(".Write"))
+                    .count();
+                let loop_count = lines.iter().filter(|other| other.in_loop).count();
+                let has_bound_hint = lines.iter().any(|other| {
+                    other.text.contains("len(")
+                        || other.text.contains("cap(")
+                        || other.text.contains("size")
+                        || other.text.contains("count")
+                });
                 if !has_grow
-                    && lines
-                        .iter()
-                        .any(|other| other.in_loop && other.text.contains(".Write"))
+                    && looped_writes >= 6
+                    && loop_count >= 2
+                    && has_bound_hint
                 {
                     findings.push(Finding {
                         rule_id: "bytes_buffer_without_grow_known_bound".to_string(),

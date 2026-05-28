@@ -13,6 +13,10 @@ pub(crate) fn evaluate_file(
     index: &RepositoryIndex,
     analysis_config: &AnalysisConfig,
 ) -> Vec<Finding> {
+    if file.syntax_error && !file.has_strong_code_anchors() {
+        return Vec::new();
+    }
+
     let mut findings = evaluate_file_specs(shared_rule_specs(), file, index, analysis_config);
     findings.extend(evaluate_file_specs(
         language_rule_specs(file.language),

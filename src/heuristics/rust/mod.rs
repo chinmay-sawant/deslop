@@ -98,22 +98,78 @@ pub(crate) fn first_line_with_any(body: &str, base_line: usize, markers: &[&str]
 }
 
 pub(crate) fn has_secret_like_text(text: &str) -> bool {
-    let normalized = text.to_ascii_lowercase();
-    [
-        "password",
-        "secret",
-        "token",
-        "api_key",
-        "apikey",
-        "access_token",
-        "private_key",
-        "cert",
-        "certificate",
-        "auth",
-        "key",
-    ]
-    .iter()
-    .any(|token| normalized.contains(token))
+    matches_token(
+        text,
+        &[
+            "password",
+            "secret",
+            "token",
+            "api_key",
+            "apikey",
+            "access_token",
+            "private_key",
+            "cert",
+            "certificate",
+            "auth",
+            "key",
+        ],
+    )
+}
+
+fn whole_identifier_tokens(name: &str) -> Vec<String> {
+    let mut tokens = Vec::new();
+    let mut current = String::new();
+    let chars = name.chars().collect::<Vec<_>>();
+
+    for (i, ch) in chars.iter().enumerate() {
+        if !ch.is_ascii_alphanumeric() {
+            if !current.is_empty() {
+                tokens.push(current.to_ascii_lowercase());
+                current.clear();
+            }
+            continue;
+        }
+
+        if i > 0 {
+            let prev = chars[i - 1];
+            if ch.is_ascii_uppercase() && prev.is_ascii_lowercase() && !current.is_empty() {
+                tokens.push(current.to_ascii_lowercase());
+                current.clear();
+            }
+        }
+
+        current.push(*ch);
+    }
+
+    if !current.is_empty() {
+        tokens.push(current.to_ascii_lowercase());
+    }
+
+    tokens
+}
+
+fn matches_token(name: &str, tokens: &[&str]) -> bool {
+    let normalized = name.to_ascii_lowercase();
+    let identifier_tokens = whole_identifier_tokens(name);
+
+    let expanded = identifier_tokens
+        .iter()
+        .flat_map(|token| token.split('_'))
+        .filter(|token| !token.is_empty())
+        .collect::<Vec<_>>();
+
+    tokens
+        .iter()
+        .map(|token| token.to_ascii_lowercase())
+        .any(|token| {
+            normalized == token
+                || expanded.iter().any(|candidate| *candidate == token)
+                || token.contains('_')
+                    && {
+                        let parts = token.split('_').collect::<Vec<_>>();
+                        parts.iter().all(|part| expanded.iter().any(|c| c == part))
+                    }
+        })
 }
 
 pub(crate) fn has_numeric_narrowing_cast(line: &str) -> bool {
@@ -262,13 +318,6 @@ fn sensitive_default_like(name: &str) -> bool {
             "port", "token", "password", "api_key", "secret", "key", "enabled",
         ],
     )
-}
-
-fn matches_token(name: &str, tokens: &[&str]) -> bool {
-    let normalized = name.to_ascii_lowercase();
-    tokens
-        .iter()
-        .any(|token| normalized == *token || normalized.contains(token))
 }
 
 fn is_std_mutex(file: &ParsedFile, function: &ParsedFunction) -> bool {

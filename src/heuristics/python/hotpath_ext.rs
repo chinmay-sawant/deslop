@@ -484,7 +484,7 @@ pub(super) fn filter_count_iterate_findings(
     }
 
     for (target, lines) in &comprehension_targets {
-        if lines.len() >= 3 {
+        if lines.len() >= 4 {
             findings.push(Finding {
                 rule_id: "filter_then_count_then_iterate".to_string(),
                 severity: Severity::Info,

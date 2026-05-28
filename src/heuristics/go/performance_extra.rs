@@ -853,10 +853,22 @@ fn builder_buffer_findings(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     let fmt_aliases = import_aliases_for(file, "fmt");
+    let looped_context = lines.iter().any(|line| line.in_loop);
+    let single_byte_write_count = lines
+        .iter()
+        .filter(|line| {
+            receiver_for_method(line.text.as_str(), "WriteString").is_some()
+                && single_byte_string_literal(line.text.as_str())
+                && line.in_loop
+        })
+        .count();
 
     for line in lines {
         if let Some(receiver) = receiver_for_method(line.text.as_str(), "WriteString")
             && single_byte_string_literal(line.text.as_str())
+            && looped_context
+            && line.in_loop
+            && single_byte_write_count >= 4
         {
             if builder_names.contains(receiver.as_str()) {
                 findings.push(performance_finding(

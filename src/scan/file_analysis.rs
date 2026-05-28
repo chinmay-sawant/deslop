@@ -96,10 +96,20 @@ fn analyze_file(path: &Path) -> FileOutcome {
             };
 
             match analyzer.parse_file(&path, &source) {
-                Ok(file) => FileOutcome::Parsed {
-                    file: Box::new(file),
-                    suppressions,
-                },
+                Ok(file) => {
+                    if file.syntax_error && !file.has_strong_code_anchors() {
+                        return FileOutcome::Failed(ParseFailure {
+                            path: path.clone(),
+                            message: "likely_non_code_text: syntax errors with no code anchors"
+                                .to_string(),
+                        });
+                    }
+
+                    FileOutcome::Parsed {
+                        file: Box::new(file),
+                        suppressions,
+                    }
+                }
                 Err(error) => FileOutcome::Failed(ParseFailure {
                     path: path.clone(),
                     message: error.to_string(),

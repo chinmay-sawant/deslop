@@ -8,30 +8,43 @@ pub(crate) const BINDING_LOCATION: &str = file!();
 
 pub(crate) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
+    if go.alloc_loops.len() < 2 {
+        return Vec::new();
+    }
 
-    go.alloc_loops
-        .iter()
-        .map(|line| Finding {
-            rule_id: "allocation_churn_in_loop".to_string(),
-            severity: Severity::Info,
-            path: file.path.clone(),
-            function_name: Some(function.fingerprint.name.clone()),
-            start_line: *line,
-            end_line: *line,
-            message: format!(
-                "function {} allocates new objects inside a loop",
-                function.fingerprint.name
-            ),
-            evidence: vec![
-                "make/new or buffer construction appears inside a loop".to_string(),
-                "repeated per-iteration allocation can create avoidable heap churn".to_string(),
-            ],
-        })
-        .collect()
+    let first_line = *go.alloc_loops.iter().min().unwrap_or(&function.fingerprint.start_line);
+    vec![Finding {
+        rule_id: "allocation_churn_in_loop".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: first_line,
+        end_line: first_line,
+        message: format!(
+            "function {} allocates new objects inside a loop",
+            function.fingerprint.name
+        ),
+        evidence: vec![
+            format!("loop-local allocation sites observed: {}", go.alloc_loops.len()),
+            "repeated per-iteration allocation can create avoidable heap churn".to_string(),
+        ],
+    }]
 }
 
 pub(crate) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
+    if go.fmt_loops.is_empty() {
+        return Vec::new();
+    }
+
+    // Tighten low-value hits: require clear loop pressure and dense repeated calls.
+    let nested_loop_signal = has_nested_loop_signal(&function.body_text);
+    if go.fmt_loops.len() < 10
+        || !nested_loop_signal
+        || !has_fmt_hot_path_signal(function)
+    {
+        return Vec::new();
+    }
 
     go.fmt_loops
         .iter()
@@ -80,6 +93,9 @@ pub(crate) fn reflect_findings(file: &ParsedFile, function: &ParsedFunction) -> 
 
 pub(crate) fn concat_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
+    if go.concat_loops.len() < 3 || !has_nested_loop_signal(&function.body_text) {
+        return Vec::new();
+    }
 
     go.concat_loops
         .iter()
@@ -134,6 +150,13 @@ pub(crate) fn db_findings(
     let go = function.go_evidence();
     let mut findings = Vec::new();
     let nested_loop_signal = enable_go_semantic && has_nested_loop_signal(&function.body_text);
+    let body_lc = function.body_text.to_ascii_lowercase();
+    let has_batching_signal = has_batching_signal(&body_lc);
+    let in_loop_query_count = go
+        .db_query_calls
+        .iter()
+        .filter(|call| call.in_loop && call.method_name != "Preload" && is_sql_like_query_method(&call.method_name))
+        .count();
 
     for query_call in go.db_query_calls {
         if query_call.in_loop && query_call.method_name != "Preload" {
@@ -164,24 +187,33 @@ pub(crate) fn db_findings(
                     },
                 ],
             });
-            findings.push(Finding {
-                rule_id: "go_perf_layer_database_access_query_inside_loop_without_batching"
-                    .to_string(),
-                severity: Severity::Warning,
-                path: file.path.clone(),
-                function_name: Some(function.fingerprint.name.clone()),
-                start_line: query_call.line,
-                end_line: query_call.line,
-                message: format!(
-                    "function {} issues SQL-style queries inside a loop without batching",
-                    function.fingerprint.name
-                ),
-                evidence: vec![
-                    format!("looped query method: {receiver}.{}", query_call.method_name),
-                    "existing Go data-access analysis observed a database query on an iterative path"
+            if nested_loop_signal
+                && !has_batching_signal
+                && !query_call.query_uses_dynamic_construction
+                && !query_looks_batched(query_call.query_text.as_deref())
+                && is_sql_like_query_method(&query_call.method_name)
+                && query_looks_sql(query_call.query_text.as_deref())
+                && in_loop_query_count >= 2
+            {
+                findings.push(Finding {
+                    rule_id: "go_perf_layer_database_access_query_inside_loop_without_batching"
                         .to_string(),
-                ],
-            });
+                    severity: Severity::Warning,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: query_call.line,
+                    end_line: query_call.line,
+                    message: format!(
+                        "function {} issues SQL-style queries inside a loop without batching",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("looped query method: {receiver}.{}", query_call.method_name),
+                        "existing Go data-access analysis observed a database query on an iterative path"
+                            .to_string(),
+                    ],
+                });
+            }
         }
 
         let Some(query_text) = &query_call.query_text else {
@@ -356,6 +388,75 @@ fn has_nested_loop_signal(body_text: &str) -> bool {
     false
 }
 
+fn has_fmt_hot_path_signal(function: &ParsedFunction) -> bool {
+    let name = function.fingerprint.name.to_ascii_lowercase();
+    let body_lc = function.body_text.to_ascii_lowercase();
+    let hot_name = [
+        "handler",
+        "request",
+        "serve",
+        "process",
+        "render",
+        "marshal",
+        "encode",
+        "decode",
+        "worker",
+        "ingest",
+        "transform",
+    ]
+    .iter()
+    .any(|marker| name.contains(marker));
+    let hot_body = body_lc.contains("http.")
+        || body_lc.contains("ctx.")
+        || body_lc.contains("request")
+        || body_lc.contains("response")
+        || body_lc.contains("writer")
+        || body_lc.contains("gin.")
+        || body_lc.contains("fiber.");
+    hot_name || hot_body || has_nested_loop_signal(&function.body_text)
+}
+
+fn has_batching_signal(body_lc: &str) -> bool {
+    body_lc.contains(".limit(")
+        || body_lc.contains(".offset(")
+        || body_lc.contains("batch")
+        || body_lc.contains("chunk")
+        || body_lc.contains("pagesize")
+        || body_lc.contains("page_size")
+        || body_lc.contains("per_page")
+}
+
+fn query_looks_batched(query_text: Option<&str>) -> bool {
+    let Some(query_text) = query_text else {
+        return false;
+    };
+    let normalized = query_text.to_ascii_uppercase();
+    normalized.contains(" IN (")
+        || normalized.contains(" LIMIT ")
+        || normalized.contains(" OFFSET ")
+        || normalized.contains(" GROUP BY ")
+}
+
+fn query_looks_sql(query_text: Option<&str>) -> bool {
+    let Some(query_text) = query_text else {
+        return false;
+    };
+    let normalized = query_text.to_ascii_uppercase();
+    normalized.contains("SELECT ")
+        || normalized.contains("UPDATE ")
+        || normalized.contains("INSERT ")
+        || normalized.contains("DELETE ")
+        || normalized.contains("FROM ")
+        || normalized.contains("WHERE ")
+}
+
+fn is_sql_like_query_method(method_name: &str) -> bool {
+    matches!(
+        method_name,
+        "Query" | "QueryContext" | "QueryRow" | "QueryRowContext" | "Exec" | "ExecContext" | "Raw" | "Select"
+    )
+}
+
 fn has_builder_usage(body_text: &str) -> bool {
     let normalized = body_text.replace(char::is_whitespace, "");
     normalized.contains("strings.Builder")
@@ -393,6 +494,7 @@ fn contains_keyword(line: &str, keyword: &str) -> bool {
 
 pub(crate) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let import_aliases = import_alias_lookup(&file.imports);
+    let body_lc = function.body_text.to_ascii_lowercase();
 
     function
         .calls
@@ -410,6 +512,27 @@ pub(crate) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
                 )),
                 _ => None,
             }?;
+            let heavy_payload_context = body_lc.contains("http.")
+                || body_lc.contains("request")
+                || body_lc.contains("response")
+                || body_lc.contains("json.")
+                || body_lc.contains("yaml.")
+                || body_lc.contains("xml.")
+                || body_lc.contains("multipart")
+                || body_lc.contains("upload")
+                || body_lc.contains("download")
+                || body_lc.contains("body");
+            let large_payload_hint = body_lc.contains("large")
+                || body_lc.contains("mb")
+                || body_lc.contains("gb")
+                || body_lc.contains("archive")
+                || body_lc.contains("stream");
+            if !heavy_payload_context {
+                return None;
+            }
+            if !large_payload_hint {
+                return None;
+            }
 
             Some(Finding {
                 rule_id: "full_dataset_load".to_string(),

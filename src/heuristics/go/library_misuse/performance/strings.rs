@@ -185,7 +185,7 @@ fn sprintf_simple_string(
                         && !fmt_str.contains("%#")
                         && !fmt_str.contains("%w");
                     let count = fmt_str.matches("%s").count();
-                    if has_only_s && count >= 2 {
+                    if has_only_s && count >= 3 && lines.iter().any(|line| line.in_loop) {
                         findings.push(Finding {
                             rule_id: "sprintf_for_simple_string_format".into(),
                             severity: Severity::Info,

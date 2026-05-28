@@ -13,7 +13,7 @@ pub(super) fn overlong_finding(file: &ParsedFile, function: &ParsedFunction) -> 
     }
 
     let token_count = identifier_token_count(&function.fingerprint.name);
-    if function.fingerprint.name.len() < 28 || token_count < 5 {
+    if function.fingerprint.name.len() < 40 || token_count < 7 {
         return None;
     }
 
@@ -103,18 +103,23 @@ pub(super) fn generic_finding(file: &ParsedFile, function: &ParsedFunction) -> O
 }
 
 pub(super) fn weak_finding(file: &ParsedFile, function: &ParsedFunction) -> Option<Finding> {
+    if function.is_test_function || function.fingerprint.name.starts_with('_') {
+        return None;
+    }
     if !function.fingerprint.contains_any_type && !function.fingerprint.contains_empty_interface {
         return None;
     }
     if should_skip_python_weak_typing(file, function) {
         return None;
     }
+    if function.fingerprint.line_count < 10 {
+        return None;
+    }
+    if function.fingerprint.type_assertion_count > 0 {
+        return None;
+    }
 
-    let severity = if function.fingerprint.type_assertion_count == 0 {
-        Severity::Warning
-    } else {
-        Severity::Info
-    };
+    let severity = Severity::Warning;
 
     let mut evidence = Vec::new();
     if function.fingerprint.contains_any_type {

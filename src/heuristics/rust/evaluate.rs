@@ -64,10 +64,18 @@ const NON_TEST_CALL_RULES: [(&str, &str, &str); 2] = [
     ),
 ];
 
+fn should_suppress_low_confidence_rust(file: &ParsedFile) -> bool {
+    file.syntax_error && !file.has_strong_code_anchors()
+}
+
 pub(crate) fn evaluate_rust_file_hygiene_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
+    if should_suppress_low_confidence_rust(file) {
+        return Vec::new();
+    }
+
     let mut findings = Vec::new();
 
     for (macro_name, rule_id, message_suffix) in NON_TEST_MACRO_RULES {
@@ -212,6 +220,10 @@ pub(crate) fn rust_import_resolution_findings(
     function: &ParsedFunction,
     index: &RepositoryIndex,
 ) -> Vec<Finding> {
+    if should_suppress_low_confidence_rust(file) {
+        return Vec::new();
+    }
+
     let Some(package_name) = &file.package_name else {
         return Vec::new();
     };
@@ -228,5 +240,9 @@ pub(crate) fn rust_local_call_findings(
     function: &ParsedFunction,
     index: &RepositoryIndex,
 ) -> Vec<Finding> {
+    if should_suppress_low_confidence_rust(file) {
+        return Vec::new();
+    }
+
     rust_call_findings(file, function, index, &file.imports)
 }

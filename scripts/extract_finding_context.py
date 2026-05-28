@@ -109,7 +109,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--context",
         type=int,
-        default=1,
+        default=8,
         help="How many lines to include above and below the flagged line.",
     )
     parser.add_argument(

@@ -543,13 +543,30 @@ fn logging_findings(
 
     // C5 error_logged_and_returned
     for (i, bl) in lines.iter().enumerate() {
-        if (bl.text.contains("log.Error(")
-            || bl.text.contains("logger.Error(")
-            || bl.text.contains(".Errorf("))
-            && bl.text.contains("err")
+        let bl_lc = bl.text.to_ascii_lowercase();
+        if (bl_lc.contains("log.error(")
+            || bl_lc.contains("logger.error(")
+            || bl_lc.contains(".errorf("))
+            && bl_lc.contains("err")
         {
+            let has_context_wrap = bl_lc.contains("%w")
+                || bl_lc.contains("witherror(")
+                || bl_lc.contains("withfields(")
+                || bl_lc.contains("stack")
+                || bl_lc.contains("zap.")
+                || bl_lc.contains("slog.");
+            if !has_context_wrap {
+                continue;
+            }
             for next in lines.iter().skip(i + 1).take(3) {
-                if next.text.starts_with("return") && next.text.contains("err") {
+                let next_lc = next.text.to_ascii_lowercase();
+                if next_lc.starts_with("return err") {
+                    let wraps_on_return = next_lc.contains("%w")
+                        || next_lc.contains("fmt.errorf(")
+                        || next_lc.contains("errors.wrap(");
+                    if wraps_on_return {
+                        continue;
+                    }
                     findings.push(Finding {
                         rule_id: "error_logged_and_returned".into(),
                         severity: Severity::Info,
