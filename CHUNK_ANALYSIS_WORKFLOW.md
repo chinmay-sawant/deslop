@@ -6,10 +6,7 @@ Manually triage every finding in chunk files under:
 
 `/home/chinmay/ChinmayPersonalProjects/deslop/scripts/chunks`
 
-Read each chunk file directly, review each finding block, and classify each finding as exactly one of:
-
-- `true_positive`
-- `false_positive`
+Read each chunk file directly, review each finding block, and assign a **`confidence`** score for how likely the match is a **genuine defect** (what used to be called a true positive).
 
 Produce a deterministic CSV with one row per finding.
 
@@ -17,10 +14,10 @@ Produce a deterministic CSV with one row per finding.
 
 - Read `Chunk_*.txt` files directly. Do not use Python triage/classifier scripts.
 - Use exactly 6 subagents, each with a disjoint partition.
-- Each finding gets exactly one decision.
-- Allowed decision labels are only `true_positive` and `false_positive`.
+- Each finding gets exactly one **`confidence`** value on **0.00–1.00**, formatted as a **two-decimal float** (e.g. `0.69`, `0.05`, `0.92`).
+- No string labels (`true_positive`, `false_positive`, `needs_context`, `defer`, `actionable`, etc.).
 - Output must be machine-readable CSV with stable header.
-- Do not auto-mark findings as `false_positive` when `Function: [FUNCTION_NOT_FOUND]` appears.
+- Do not auto-score low confidence (e.g. `0.10`) when `Function: [FUNCTION_NOT_FOUND]` appears without source-file cross-check.
 - Always analyze the full finding context in chunk text first, then verify against the referenced source path from `Source: /abs/path/file.ext:line`.
 - Source-file validation is mandatory for adjudication when path is available.
 
@@ -61,17 +58,29 @@ Extract fields:
 - `auto_triage_note`
 - `function_body`
 
-## Classification Rules
+## How to Score Confidence (Manual Review Only)
 
-### `true_positive`
+For **each** finding, estimate how confident you are that the snippet **actually exhibits** the defect the rule targets.
 
-The snippet actually shows the defect/anti-pattern targeted by the rule.
+Think of **`confidence` like an AI temperature**: a single float from **0.00** to **1.00**, always written with **two decimal places**.
 
-### `false_positive`
+| Range | Meaning |
+|---|---|
+| **0.85–1.00** | Very confident genuine defect — clear evidence; a reasonable engineer would act on it |
+| **0.65–0.84** | Likely genuine defect — pattern matches rule intent with minor caveats |
+| **0.36–0.64** | Uncertain / borderline — partial snippet, mixed signals, or rule intent only partly applies |
+| **0.15–0.35** | Likely false alarm — heuristic match but context makes the issue benign or inapplicable |
+| **0.00–0.14** | Very confident false alarm — rule does not apply; pattern is intentional, idiomatic, or absent |
 
-The match is heuristic/syntactic but not a real issue in visible snippet context.
+### High confidence (near 1.00)
 
-Typical false-positive cases:
+The snippet **clearly exhibits** the defect/anti-pattern targeted by the rule. Use **0.85+** when you would previously have called it a true positive with little doubt.
+
+### Low confidence (near 0.00)
+
+The match is heuristic/syntactic but not a real issue in visible snippet context. Use **0.15 or below** when you would previously have called it a false positive with little doubt.
+
+Typical low-score cases:
 
 - Rule intent does not match shown code
 - Snippet is benign/intentional
@@ -79,7 +88,9 @@ Typical false-positive cases:
 - Evidence is insufficient to support defect claim
 - Rule text is generic but source-file inspection disproves the claim for the referenced location
 
-No third category is allowed.
+### Middle band (e.g. 0.45–0.69)
+
+Use when evidence is genuinely mixed. Do **not** force `0.00` or `1.00` when uncertainty is honest. The rationale must explain why the number landed where it did.
 
 ## Mandatory Context-First Rule (Critical)
 
@@ -93,16 +104,16 @@ For every finding:
    - `Function` block
 2. If function body is missing (`[FUNCTION_NOT_FOUND]`), do **not** stop.
 3. Open the referenced file from `Source:` and inspect around the cited line.
-4. Decide TP/FP only after chunk-context + source-file cross-check.
+4. Assign **`confidence`** only after chunk-context + source-file cross-check.
 
-This rule overrides any earlier shortcut that treated missing function snippets as automatic FP.
+This rule overrides any earlier shortcut that treated missing function snippets as automatic low confidence.
 
 ## CSV Output Contract
 
 Header must be exactly:
 
 ```csv
-chunk_file_path,subchunk_number,source_file_path,source_line,rule_id,decision,rationale
+chunk_file_path,subchunk_number,source_file_path,source_line,rule_id,confidence,rationale
 ```
 
 Field requirements:
@@ -112,8 +123,16 @@ Field requirements:
 - `source_file_path`: source path from `Source:` line
 - `source_line`: source line from `Source:` line
 - `rule_id`: value inside `Rule: [ ... ]`
-- `decision`: `true_positive` or `false_positive`
-- `rationale`: one-line evidence-based justification
+- `confidence`: **0.00–1.00** (two decimals) — likelihood the finding is a **genuine defect**; higher = more likely real issue, lower = more likely false alarm
+- `rationale`: one-line evidence-based justification tied to the score
+
+## Example Rows
+
+```csv
+chunk_file_path,subchunk_number,source_file_path,source_line,rule_id,confidence,rationale
+/home/chinmay/ChinmayPersonalProjects/deslop/scripts/chunks/Chunk_1_25.txt,1,/home/chinmay/ChinmayPersonalProjects/deslop/real-repos/sqlx/Makefile,1,ci_missing_go_test_race,0.08,Makefile defines test-race target; rule claim not supported by visible snippet
+/home/chinmay/ChinmayPersonalProjects/deslop/scripts/chunks/Chunk_1_25.txt,4,/home/chinmay/ChinmayPersonalProjects/deslop/real-repos/sqlx/bind.go,106,buffer_write_rune_ascii_literal,0.91,rebindBuff calls WriteRune for ASCII literal instead of WriteByte
+```
 
 ## 6-Subagent Partition (5952 Findings)
 
@@ -144,9 +163,21 @@ Each subagent must:
 3. Review rule intent + chunk context manually.
 4. Open referenced source files and inspect cited locations.
 5. If `FUNCTION_NOT_FOUND`, continue adjudication using message/rule/source file context.
-6. Emit exactly one CSV row per finding.
-7. Use global `subchunk_number` from `Finding X/TOTAL`.
-8. Write only its own part CSV file.
+6. Assign **`confidence`** (0.00–1.00, two decimals) with a one-line rationale.
+7. Emit exactly one CSV row per finding.
+8. Use global `subchunk_number` from `Finding X/TOTAL`.
+9. Write only its own part CSV file.
+
+### Role breakdown
+
+| Role | Task |
+|---|---|
+| File Reader | List and read assigned chunk files; confirm headers |
+| Finding Parser | Split blocks; extract source, rule, notes, function body |
+| Rule Intent Reviewer | Determine what defect the rule targets |
+| Code Reviewer | Judge whether snippet matches rule intent |
+| Confidence Scorer | Assign 0.00–1.00 score with evidence-based rationale |
+| CSV Writer | Emit one row per finding; no skips or duplicates |
 
 ## Merge Target
 
@@ -176,7 +207,7 @@ Use this checklist after every run.
 For each `chunk_analysis_part*.csv`:
 
 - Header exactly matches contract.
-- `decision` column contains only `true_positive|false_positive`.
+- `confidence` column values are numeric, in **0.00–1.00**, with **two decimal places**.
 - No empty required fields.
 
 ### 4) Global-number checks
@@ -191,23 +222,23 @@ After creating `chunk_analysis_all.csv`:
 - Data row count must equal `TOTAL`.
 - `subchunk_number` must contain every integer `1..TOTAL` exactly once.
 - No duplicates, no missing IDs.
-- Decision domain still only TP/FP.
+- All `confidence` values remain in **0.00–1.00** with two decimals.
 
 ### 6) Spot audit
 
 - Randomly sample rows from each partition.
-- Open corresponding chunk blocks and verify decision rationale matches visible snippet evidence.
+- Open corresponding chunk blocks and verify rationale matches visible snippet evidence and the confidence band.
 
 ## 6-Lane Reduction Loop (Subagent-Style, Parallel)
 
-Use this loop after initial TP/FP adjudication when reducing false positives toward the validated TP target.
+Use this loop after initial adjudication when reducing false alarms toward validated high-confidence findings.
 
 ### Lanes
 
 1. `Lane-1 (Current Counts)`: parse latest scan output and produce current `rule_id -> count`.
-2. `Lane-2 (Truth Mapping)`: map each active `rule_id` to historical TP/FP counts from `reports/chunk_analysis_all.csv`.
-3. `Lane-3 (Go Tightening)`: tighten high-FP Go-specific rules first.
-4. `Lane-4 (Python Tightening)`: tighten high-FP Python-specific rules first.
+2. `Lane-2 (Truth Mapping)`: map each active `rule_id` to historical confidence distribution from `reports/chunk_analysis_all.csv` (treat **≥ 0.85** as high-confidence genuine, **≤ 0.15** as high-confidence false alarm; middle band is uncertain).
+3. `Lane-3 (Go Tightening)`: tighten high–false-alarm Go-specific rules first.
+4. `Lane-4 (Python Tightening)`: tighten high–false-alarm Python-specific rules first.
 5. `Lane-5 (Perf-Layer Tightening)`: tighten cross-language performance-layer matchers/overrides.
 6. `Lane-6 (Validation)`: run tests + scan, diff rule deltas, persist iteration artifacts.
 
@@ -217,8 +248,8 @@ For each iteration:
 
 1. Rank candidate rules by:
    - high current count
-   - low historical precision (`TP / (TP + FP)`)
-   - high absolute FP count in adjudication truth
+   - low historical precision (share of rows with confidence **≥ 0.85** among adjudicated rows for that rule)
+   - high count of rows with confidence **≤ 0.15**
 2. Tighten only the top families for that iteration.
 3. Run:
    - `cargo test --lib --tests`
@@ -244,10 +275,28 @@ ls /home/chinmay/ChinmayPersonalProjects/deslop/scripts/chunks/Chunk_*.txt | sor
 # 2) Merged row count (minus header)
 wc -l /home/chinmay/ChinmayPersonalProjects/deslop/reports/chunk_analysis_all.csv
 
-# 3) Decision domain
-cut -d, -f6 /home/chinmay/ChinmayPersonalProjects/deslop/reports/chunk_analysis_all.csv | tail -n +2 | sort | uniq -c
+# 3) Confidence range sanity (field 6 = confidence)
+awk -F',' 'NR>1{
+  if ($6+0 < 0 || $6+0 > 1) bad++;
+  if ($6 !~ /^[0-9]+\.[0-9]{2}$/) fmt++;
+} END{
+  print "out_of_range=" bad+0;
+  print "bad_format=" fmt+0;
+}' /home/chinmay/ChinmayPersonalProjects/deslop/reports/chunk_analysis_all.csv
 
-# 4) Missing/duplicate subchunk IDs (adjust TOTAL as needed)
+# 4) Confidence band histogram
+awk -F',' 'NR>1{
+  c=$6+0;
+  if (c<=0.15) a++;
+  else if (c>=0.85) b++;
+  else m++;
+} END{
+  print "low_0.00-0.15=" a+0;
+  print "mid_0.16-0.84=" m+0;
+  print "high_0.85-1.00=" b+0;
+}' /home/chinmay/ChinmayPersonalProjects/deslop/reports/chunk_analysis_all.csv
+
+# 5) Missing/duplicate subchunk IDs (adjust TOTAL as needed)
 awk -F',' 'NR>1{seen[$2]++} END{
   total=5952;
   miss=0; dup=0;
@@ -260,7 +309,9 @@ awk -F',' 'NR>1{seen[$2]++} END{
 
 ## Quality Bar
 
-- Manual evidence-based decisions only.
+- Manual evidence-based scoring only.
 - No auto-classifier substitution.
 - One row per finding.
+- Always emit two decimal places (`0.70`, not `0.7`).
+- Do not inflate confidence on informational or mismatched rules — use the low band (≤ 0.35) when the rule clearly does not apply.
 - Deterministic, validated final CSV.

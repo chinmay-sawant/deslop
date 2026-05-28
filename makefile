@@ -74,10 +74,8 @@ clean:
 	rm -rf scripts/findings/functions scripts/chunks
 
 temp:
-	cargo run -- scan /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/gogcli --no-fail > temp.txt
-	python3 scripts/extract_function_context_json.py temp.txt \
-		--output-dir frontend/public/findings \
-		--include-function-text
+	cargo run -- scan /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/clawvisor --no-fail > temp.txt
+
 
 # Display help for make targets
 help:
